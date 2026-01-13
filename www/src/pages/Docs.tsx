@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { BookOpen, Terminal, Settings, Puzzle } from 'lucide-react'
 import { DocsLayout, MarkdownContent, type NavGroup } from '../components/docs'
 
@@ -19,8 +19,7 @@ const navigation: NavGroup[] = [
   }
 ]
 
-const overviewContent = `
-## What is Dewey?
+const overviewContent = `## What is Dewey?
 
 Dewey is a documentation toolkit for React projects. Named after Melvil Dewey, creator of the Dewey Decimal Classification system, it helps you build beautiful docs and generate agent-ready files.
 
@@ -74,8 +73,7 @@ export function DocsPage() {
 \`\`\`
 `
 
-const quickstartContent = `
-## Installation
+const quickstartContent = `## Installation
 
 Install both packages:
 
@@ -189,8 +187,7 @@ export function DocPage({ content }) {
 \`\`\`
 `
 
-const configurationContent = `
-## dewey.config.ts
+const configurationContent = `## dewey.config.ts
 
 The configuration file defines your project context:
 
@@ -268,8 +265,7 @@ sections: ['overview', 'architecture', 'api', 'troubleshooting']
 | \`required\` | \`string[]\` | \`['overview', 'quickstart']\` | Required doc sections |
 `
 
-const componentsContent = `
-## DocsLayout
+const componentsContent = `## DocsLayout
 
 The main layout component:
 
@@ -387,6 +383,66 @@ const content: Record<string, string> = {
   components: componentsContent,
 }
 
+// Raw markdown view - plain text display
+function RawMarkdownView() {
+  const { slug } = useParams<{ slug: string }>()
+  const pageId = slug?.replace('.md', '') || ''
+  const pageContent = content[pageId]
+
+  if (!pageContent) {
+    return (
+      <div
+        style={{
+          padding: '2rem',
+          fontFamily: 'var(--font-mono)',
+          background: '#fafafa',
+          minHeight: '100vh',
+        }}
+      >
+        <p>Document not found: {slug}</p>
+      </div>
+    )
+  }
+
+  // Add frontmatter-style header
+  const page = allPages.find(p => p.id === pageId)
+  const fullMarkdown = `---
+title: ${page?.title || pageId}
+description: ${page?.description || ''}
+---
+
+# ${page?.title || pageId}
+
+${pageContent.trim()}
+`
+
+  return (
+    <div
+      style={{
+        padding: '2rem',
+        fontFamily: 'var(--font-mono)',
+        fontSize: '14px',
+        lineHeight: '1.6',
+        background: '#fafafa',
+        minHeight: '100vh',
+        maxWidth: '100%',
+        overflow: 'auto',
+      }}
+    >
+      <pre
+        style={{
+          margin: 0,
+          whiteSpace: 'pre-wrap',
+          wordWrap: 'break-word',
+          color: '#2e3538',
+        }}
+      >
+        {fullMarkdown}
+      </pre>
+    </div>
+  )
+}
+
 function DocsPage({ pageId }: { pageId: string }) {
   const page = allPages.find(p => p.id === pageId)
   const { prev, next } = getNavigation(pageId)
@@ -413,6 +469,9 @@ export function Docs() {
   return (
     <Routes>
       <Route index element={<Navigate to="overview" replace />} />
+      {/* Raw markdown routes - must come before regular routes */}
+      <Route path=":slug.md" element={<RawMarkdownView />} />
+      {/* Regular doc pages */}
       <Route path="overview" element={<DocsPage pageId="overview" />} />
       <Route path="quickstart" element={<DocsPage pageId="quickstart" />} />
       <Route path="configuration" element={<DocsPage pageId="configuration" />} />

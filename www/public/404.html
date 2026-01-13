@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Dewey</title>
+    <script>
+      // Single Page App redirect for GitHub Pages
+      // Converts path to query string and redirects to index
+      const path = window.location.pathname + window.location.search + window.location.hash;
+      window.location.replace('/' + '?p=' + encodeURIComponent(path));
+    </script>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>

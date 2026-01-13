@@ -1,0 +1,22 @@
+{
+  "name": "dewey",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Documentation component library with agent-ready outputs",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean"
+  },
+  "keywords": [
+    "documentation",
+    "docs",
+    "react",
+    "components",
+    "agents",
+    "llm"
+  ],
+  "author": "Arach Tchoupani",
+  "license": "MIT"
+}

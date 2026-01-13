@@ -1,0 +1,48 @@
+{
+  "name": "@dewey/cli",
+  "version": "0.1.0",
+  "description": "CLI for documentation scaffolding, auditing, and agent file generation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "dewey": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "dev": "tsup src/index.ts --watch",
+    "build": "tsup src/index.ts --format esm --dts",
+    "clean": "rm -rf dist",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "cosmiconfig": "^9.0.0",
+    "gray-matter": "^4.0.3",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  },
+  "keywords": [
+    "documentation",
+    "docs",
+    "cli",
+    "generator",
+    "agents",
+    "llm",
+    "audit"
+  ],
+  "author": "Arach Tchoupani",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arach/dewey"
+  }
+}

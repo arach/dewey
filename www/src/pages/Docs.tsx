@@ -383,25 +383,14 @@ const content: Record<string, string> = {
   components: componentsContent,
 }
 
-// Raw markdown view - plain text display
+// Raw markdown view - truly raw plain text
 function RawMarkdownView() {
   const { slug } = useParams<{ slug: string }>()
   const pageId = slug?.replace('.md', '') || ''
   const pageContent = content[pageId]
 
   if (!pageContent) {
-    return (
-      <div
-        style={{
-          padding: '2rem',
-          fontFamily: 'var(--font-mono)',
-          background: '#fafafa',
-          minHeight: '100vh',
-        }}
-      >
-        <p>Document not found: {slug}</p>
-      </div>
-    )
+    return <pre>Document not found: {slug}</pre>
   }
 
   // Add frontmatter-style header
@@ -416,30 +405,11 @@ description: ${page?.description || ''}
 ${pageContent.trim()}
 `
 
+  // Truly raw - no styling, just plain text
   return (
-    <div
-      style={{
-        padding: '2rem',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '14px',
-        lineHeight: '1.6',
-        background: '#fafafa',
-        minHeight: '100vh',
-        maxWidth: '100%',
-        overflow: 'auto',
-      }}
-    >
-      <pre
-        style={{
-          margin: 0,
-          whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-          color: '#2e3538',
-        }}
-      >
-        {fullMarkdown}
-      </pre>
-    </div>
+    <pre style={{ margin: 0, padding: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap' }}>
+      {fullMarkdown}
+    </pre>
   )
 }
 

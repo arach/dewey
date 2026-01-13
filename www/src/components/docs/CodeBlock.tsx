@@ -115,10 +115,10 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
         </span>
         <button
           onClick={copyToClipboard}
-          className="flex items-center gap-1.5 px-2 py-1 text-[11px] rounded-md transition-all opacity-0 group-hover:opacity-100"
+          className="flex items-center gap-1.5 px-2 py-1 text-[11px] rounded-md transition-all hover:bg-white/10"
           style={{
-            color: 'rgba(255, 255, 255, 0.5)',
-            background: copied ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+            color: copied ? '#10b981' : 'rgba(255, 255, 255, 0.5)',
+            background: copied ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
           }}
           title="Copy code"
         >

@@ -1,6 +1,9 @@
 name: Publish to npm
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       package:
@@ -12,13 +15,10 @@ on:
           - cli
           - both
       version:
-        description: 'Version bump type'
+        description: 'Version (e.g., 0.2.0) or bump type (patch/minor/major)'
         required: true
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+        type: string
+        default: 'patch'
       dry_run:
         description: 'Dry run (no actual publish)'
         required: false
@@ -52,42 +52,53 @@ jobs:
       - name: Build packages
         run: pnpm build
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Get version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: tag_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Bump version and publish @dewey/docs
-        if: inputs.package == 'docs' || inputs.package == 'both'
+      - name: Publish @arach/dewey-docs (tag)
+        if: startsWith(github.ref, 'refs/tags/v')
         working-directory: packages/docs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm version ${{ inputs.version }} --no-git-tag-version
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "DRY RUN: Would publish @dewey/docs"
-            npm publish --dry-run --access public
-          else
-            npm publish --access public
-          fi
+          npm version ${{ steps.tag_version.outputs.VERSION }} --no-git-tag-version --allow-same-version
+          npm publish --access public
 
-      - name: Bump version and publish @dewey/cli
-        if: inputs.package == 'cli' || inputs.package == 'both'
+      - name: Publish @arach/dewey-cli (tag)
+        if: startsWith(github.ref, 'refs/tags/v')
         working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm version ${{ inputs.version }} --no-git-tag-version
+          npm version ${{ steps.tag_version.outputs.VERSION }} --no-git-tag-version --allow-same-version
+          npm publish --access public
+
+      - name: Publish @arach/dewey-docs (manual)
+        if: github.event_name == 'workflow_dispatch' && (inputs.package == 'docs' || inputs.package == 'both')
+        working-directory: packages/docs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "DRY RUN: Would publish @dewey/cli"
+            echo "DRY RUN: Would publish @arach/dewey-docs"
             npm publish --dry-run --access public
           else
             npm publish --access public
           fi
 
-      - name: Commit version bumps
-        if: inputs.dry_run == false
+      - name: Publish @arach/dewey-cli (manual)
+        if: github.event_name == 'workflow_dispatch' && (inputs.package == 'cli' || inputs.package == 'both')
+        working-directory: packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          git add .
-          git commit -m "🔖 Bump ${{ inputs.package }} to ${{ inputs.version }}" || echo "No changes to commit"
-          git push
+          npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "DRY RUN: Would publish @arach/dewey-cli"
+            npm publish --dry-run --access public
+          else
+            npm publish --access public
+          fi

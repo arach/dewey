@@ -6,14 +6,6 @@ on:
       - 'v*'
   workflow_dispatch:
     inputs:
-      package:
-        description: 'Package to publish'
-        required: true
-        type: choice
-        options:
-          - docs
-          - cli
-          - both
       version:
         description: 'Version (e.g., 0.2.0) or bump type (patch/minor/major)'
         required: true
@@ -31,8 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -49,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build packages
+      - name: Build
         run: pnpm build
 
       - name: Get version from tag
@@ -57,7 +47,7 @@ jobs:
         id: tag_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Publish @arach/dewey-docs (tag)
+      - name: Publish @arach/dewey (tag)
         if: startsWith(github.ref, 'refs/tags/v')
         working-directory: packages/docs
         env:
@@ -66,38 +56,15 @@ jobs:
           npm version ${{ steps.tag_version.outputs.VERSION }} --no-git-tag-version --allow-same-version
           npm publish --access public
 
-      - name: Publish @arach/dewey-cli (tag)
-        if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: packages/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm version ${{ steps.tag_version.outputs.VERSION }} --no-git-tag-version --allow-same-version
-          npm publish --access public
-
-      - name: Publish @arach/dewey-docs (manual)
-        if: github.event_name == 'workflow_dispatch' && (inputs.package == 'docs' || inputs.package == 'both')
+      - name: Publish @arach/dewey (manual)
+        if: github.event_name == 'workflow_dispatch'
         working-directory: packages/docs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "DRY RUN: Would publish @arach/dewey-docs"
-            npm publish --dry-run --access public
-          else
-            npm publish --access public
-          fi
-
-      - name: Publish @arach/dewey-cli (manual)
-        if: github.event_name == 'workflow_dispatch' && (inputs.package == 'cli' || inputs.package == 'both')
-        working-directory: packages/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "DRY RUN: Would publish @arach/dewey-cli"
+            echo "DRY RUN: Would publish @arach/dewey"
             npm publish --dry-run --access public
           else
             npm publish --access public

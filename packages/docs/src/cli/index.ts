@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import chalk from 'chalk'
 import { initCommand } from './commands/init.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'

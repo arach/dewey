@@ -1,5 +1,5 @@
 {
-  "name": "@dewey/docs",
+  "name": "@arach/dewey-docs",
   "version": "0.1.0",
   "description": "React documentation components with dark mode, syntax highlighting, and agent-ready features",
   "type": "module",

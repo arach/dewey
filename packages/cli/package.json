@@ -1,5 +1,5 @@
 {
-  "name": "@dewey/cli",
+  "name": "@arach/dewey-cli",
   "version": "0.1.0",
   "description": "CLI for documentation scaffolding, auditing, and agent file generation",
   "type": "module",

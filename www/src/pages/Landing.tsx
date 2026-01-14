@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 function InstallCommand() {
   const [copied, setCopied] = useState(false)
-  const command = 'pnpm add @dewey/docs @dewey/cli'
+  const command = 'pnpm add @arach/dewey'
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(command)
@@ -199,7 +199,7 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Packages */}
+      {/* Features */}
       <section className="relative z-10 py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -207,62 +207,25 @@ export function Landing() {
               className="text-2xl font-semibold mb-3 font-serif"
               style={{ color: 'var(--arc-ink)' }}
             >
-              Two packages, one goal
+              One package, everything you need
             </h2>
             <p style={{ color: 'var(--arc-muted)' }}>
-              Beautiful docs for users, structured context for AI agents.
+              CLI tools and React components in a single{' '}
+              <code
+                className="px-2 py-0.5 rounded text-[13px]"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  background: 'rgba(0,0,0,0.06)',
+                }}
+              >
+                @arach/dewey
+              </code>{' '}
+              package.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* @dewey/docs */}
-            <div
-              className="rounded-2xl p-7 transition-all hover:shadow-lg"
-              style={{
-                background: 'rgba(255, 255, 255, 0.7)',
-                border: '1px solid var(--arc-border)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
-                style={{ background: 'rgba(240, 124, 79, 0.15)' }}
-              >
-                <BookOpen className="w-5 h-5" style={{ color: 'var(--arc-accent)' }} />
-              </div>
-              <h3
-                className="text-lg font-semibold mb-2 font-serif"
-                style={{ color: 'var(--arc-ink)' }}
-              >
-                @dewey/docs
-              </h3>
-              <p
-                className="text-[14px] mb-5 leading-relaxed"
-                style={{ color: 'var(--arc-muted)' }}
-              >
-                React components for documentation sites. Layouts, code blocks,
-                markdown rendering, and more.
-              </p>
-              <ul className="space-y-2.5">
-                {[
-                  'Dark mode & responsive design',
-                  'Syntax highlighting',
-                  'Auto table of contents',
-                  'Copy for Agent feature',
-                ].map((feature, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-2 text-[13px]"
-                    style={{ color: 'var(--arc-ink-soft)' }}
-                  >
-                    <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--arc-accent-2)' }} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* @dewey/cli */}
+            {/* CLI */}
             <div
               className="rounded-2xl p-7 transition-all hover:shadow-lg"
               style={{
@@ -281,21 +244,68 @@ export function Landing() {
                 className="text-lg font-semibold mb-2 font-serif"
                 style={{ color: 'var(--arc-ink)' }}
               >
-                @dewey/cli
+                CLI Tools
               </h3>
               <p
                 className="text-[14px] mb-5 leading-relaxed"
                 style={{ color: 'var(--arc-muted)' }}
               >
-                CLI for scaffolding, auditing, and generating agent-ready
-                documentation files.
+                Scaffold, audit, and generate agent-ready documentation files
+                from the command line.
               </p>
               <ul className="space-y-2.5">
                 {[
-                  'dewey init → scaffold docs',
-                  'dewey audit → validate completeness',
-                  'dewey generate → create AGENTS.md',
+                  'npx dewey init → scaffold docs',
+                  'npx dewey audit → validate completeness',
+                  'npx dewey generate → create AGENTS.md',
                   'Configurable via dewey.config.ts',
+                ].map((feature, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center gap-2 text-[13px]"
+                    style={{ color: 'var(--arc-ink-soft)' }}
+                  >
+                    <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--arc-accent-2)' }} />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Components */}
+            <div
+              className="rounded-2xl p-7 transition-all hover:shadow-lg"
+              style={{
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid var(--arc-border)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
+                style={{ background: 'rgba(240, 124, 79, 0.15)' }}
+              >
+                <BookOpen className="w-5 h-5" style={{ color: 'var(--arc-accent)' }} />
+              </div>
+              <h3
+                className="text-lg font-semibold mb-2 font-serif"
+                style={{ color: 'var(--arc-ink)' }}
+              >
+                React Components
+              </h3>
+              <p
+                className="text-[14px] mb-5 leading-relaxed"
+                style={{ color: 'var(--arc-muted)' }}
+              >
+                Beautiful docs components. Layouts, code blocks,
+                callouts, tabs, and more.
+              </p>
+              <ul className="space-y-2.5">
+                {[
+                  'Dark mode & responsive design',
+                  'Syntax highlighting',
+                  'Auto table of contents',
+                  'Copy for Agent feature',
                 ].map((feature, i) => (
                   <li
                     key={i}

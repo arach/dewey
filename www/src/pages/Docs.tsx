@@ -23,18 +23,20 @@ const overviewContent = `## What is Dewey?
 
 Dewey is a documentation toolkit for React projects. Named after Melvil Dewey, creator of the Dewey Decimal Classification system, it helps you build beautiful docs and generate agent-ready files.
 
-### Two Packages
+### One Package
 
-**@dewey/docs** - React components for documentation sites:
+**@arach/dewey** provides everything you need:
+
+**CLI tools:**
+- \`npx dewey init\` - Scaffold docs structure
+- \`npx dewey audit\` - Validate completeness
+- \`npx dewey generate\` - Create AGENTS.md, llms.txt, docs.json
+
+**React components:**
 - DocsLayout with sidebar, TOC, dark mode
 - MarkdownContent with syntax highlighting
 - CodeBlock with copy button
 - "Copy for Agent" feature
-
-**@dewey/cli** - CLI for scaffolding and generation:
-- \`dewey init\` - Scaffold docs structure
-- \`dewey audit\` - Validate completeness
-- \`dewey generate\` - Create AGENTS.md, llms.txt, docs.json
 
 ### Why Dewey?
 
@@ -46,7 +48,7 @@ Dewey is a documentation toolkit for React projects. Named after Melvil Dewey, c
 ## Quick Example
 
 \`\`\`tsx
-import { DocsLayout, MarkdownContent } from '@dewey/docs'
+import { DocsLayout, MarkdownContent } from '@arach/dewey'
 
 const navigation = [
   {
@@ -75,10 +77,10 @@ export function DocsPage() {
 
 const quickstartContent = `## Installation
 
-Install both packages:
+Install the package:
 
 \`\`\`bash
-pnpm add @dewey/docs @dewey/cli
+pnpm add @arach/dewey
 \`\`\`
 
 ## Initialize Your Project
@@ -98,7 +100,7 @@ This creates:
 Edit \`dewey.config.ts\` with your project context:
 
 \`\`\`typescript
-/** @type {import('@dewey/cli').DeweyConfig} */
+/** @type {import('@arach/dewey').DeweyConfig} */
 export default {
   project: {
     name: 'MyProject',
@@ -170,7 +172,7 @@ This creates:
 Import components for your docs site:
 
 \`\`\`tsx
-import { DocsLayout, MarkdownContent } from '@dewey/docs'
+import { DocsLayout, MarkdownContent } from '@arach/dewey'
 
 export function DocPage({ content }) {
   return (
@@ -192,7 +194,7 @@ const configurationContent = `## dewey.config.ts
 The configuration file defines your project context:
 
 \`\`\`typescript
-/** @type {import('@dewey/cli').DeweyConfig} */
+/** @type {import('@arach/dewey').DeweyConfig} */
 export default {
   project: { ... },
   agent: { ... },

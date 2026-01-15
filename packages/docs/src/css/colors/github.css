@@ -1,0 +1,76 @@
+/**
+ * Dewey GitHub Color Preset
+ * Clean, professional theme inspired by GitHub's design
+ */
+
+:root {
+  /* Core colors */
+  --color-dw-background: hsl(0, 0%, 100%);
+  --color-dw-foreground: hsl(210, 12%, 16%);
+  --color-dw-primary: hsl(212, 92%, 45%);
+  --color-dw-primary-foreground: hsl(0, 0%, 100%);
+  --color-dw-secondary: hsl(210, 18%, 96%);
+  --color-dw-secondary-foreground: hsl(210, 12%, 16%);
+  --color-dw-muted: hsl(210, 14%, 96%);
+  --color-dw-muted-foreground: hsl(210, 10%, 46%);
+  --color-dw-accent: hsl(210, 18%, 94%);
+  --color-dw-accent-foreground: hsl(210, 12%, 16%);
+
+  /* Borders & rings */
+  --color-dw-border: hsl(210, 18%, 87%);
+  --color-dw-ring: hsl(212, 92%, 45%);
+
+  /* Semantic colors */
+  --color-dw-info: hsl(212, 92%, 45%);
+  --color-dw-info-foreground: hsl(0, 0%, 100%);
+  --color-dw-warning: hsl(39, 100%, 50%);
+  --color-dw-warning-foreground: hsl(0, 0%, 9%);
+  --color-dw-error: hsl(356, 72%, 53%);
+  --color-dw-error-foreground: hsl(0, 0%, 100%);
+  --color-dw-success: hsl(137, 55%, 40%);
+  --color-dw-success-foreground: hsl(0, 0%, 100%);
+
+  /* Code blocks */
+  --color-dw-code-bg: hsl(210, 17%, 97%);
+  --color-dw-code-border: hsl(210, 18%, 90%);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: hsl(210, 20%, 98%);
+  --color-dw-sidebar-border: hsl(210, 18%, 90%);
+  --color-dw-sidebar-active: hsl(212, 92%, 45%);
+  --color-dw-sidebar-active-bg: hsl(212, 92%, 96%);
+}
+
+.dark {
+  /* Core colors - dark mode (GitHub dark) */
+  --color-dw-background: hsl(215, 21%, 11%);
+  --color-dw-foreground: hsl(210, 17%, 82%);
+  --color-dw-primary: hsl(212, 97%, 63%);
+  --color-dw-primary-foreground: hsl(0, 0%, 100%);
+  --color-dw-secondary: hsl(215, 19%, 16%);
+  --color-dw-secondary-foreground: hsl(210, 17%, 82%);
+  --color-dw-muted: hsl(215, 17%, 18%);
+  --color-dw-muted-foreground: hsl(210, 12%, 55%);
+  --color-dw-accent: hsl(215, 19%, 20%);
+  --color-dw-accent-foreground: hsl(210, 17%, 82%);
+
+  /* Borders & rings */
+  --color-dw-border: hsl(215, 14%, 25%);
+  --color-dw-ring: hsl(212, 97%, 63%);
+
+  /* Semantic colors - dark */
+  --color-dw-info: hsl(212, 97%, 63%);
+  --color-dw-warning: hsl(39, 100%, 60%);
+  --color-dw-error: hsl(356, 72%, 63%);
+  --color-dw-success: hsl(137, 55%, 50%);
+
+  /* Code blocks */
+  --color-dw-code-bg: hsl(215, 19%, 14%);
+  --color-dw-code-border: hsl(215, 14%, 22%);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: hsl(215, 21%, 9%);
+  --color-dw-sidebar-border: hsl(215, 14%, 18%);
+  --color-dw-sidebar-active: hsl(212, 97%, 63%);
+  --color-dw-sidebar-active-bg: hsl(212, 80%, 18%);
+}

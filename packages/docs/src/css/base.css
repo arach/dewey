@@ -1,0 +1,561 @@
+/**
+ * Dewey Base Styles
+ * Core component styles using CSS variables
+ */
+
+/* ============================================
+   Layout
+   ============================================ */
+
+.dw-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-dw-background);
+  color: var(--color-dw-foreground);
+}
+
+.dw-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dw-content {
+  flex: 1;
+  max-width: 80ch;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* ============================================
+   Sidebar
+   ============================================ */
+
+.dw-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--color-dw-sidebar-bg);
+  border-right: 1px solid var(--color-dw-sidebar-border);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.dw-sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-dw-sidebar-border);
+}
+
+.dw-sidebar-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-dw-foreground);
+}
+
+.dw-sidebar-nav {
+  padding: 1rem;
+}
+
+.dw-sidebar-group {
+  margin-bottom: 1.5rem;
+}
+
+.dw-sidebar-group-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-dw-muted-foreground);
+  padding: 0.5rem 0.75rem;
+}
+
+.dw-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  color: var(--color-dw-muted-foreground);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dw-sidebar-item:hover {
+  background: var(--color-dw-accent);
+  color: var(--color-dw-accent-foreground);
+}
+
+.dw-sidebar-item.active {
+  background: var(--color-dw-sidebar-active-bg);
+  color: var(--color-dw-sidebar-active);
+  font-weight: 500;
+}
+
+.dw-sidebar-item-icon {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.7;
+}
+
+/* ============================================
+   Table of Contents
+   ============================================ */
+
+.dw-toc {
+  width: 220px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+  padding: 1rem;
+  border-left: 1px solid var(--color-dw-border);
+}
+
+.dw-toc-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-dw-muted-foreground);
+  margin-bottom: 0.75rem;
+}
+
+.dw-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dw-toc-item {
+  margin-bottom: 0.25rem;
+}
+
+.dw-toc-link {
+  display: block;
+  padding: 0.25rem 0;
+  font-size: 0.8125rem;
+  color: var(--color-dw-muted-foreground);
+  text-decoration: none;
+  transition: color 0.15s;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  margin-left: -1px;
+}
+
+.dw-toc-link:hover {
+  color: var(--color-dw-foreground);
+}
+
+.dw-toc-link.active {
+  color: var(--color-dw-primary);
+  border-left-color: var(--color-dw-primary);
+}
+
+.dw-toc-link[data-level="3"] {
+  padding-left: 1.5rem;
+}
+
+.dw-toc-link[data-level="4"] {
+  padding-left: 2.25rem;
+}
+
+/* ============================================
+   Prose / Markdown Content
+   ============================================ */
+
+.dw-prose {
+  line-height: 1.75;
+  color: var(--color-dw-foreground);
+}
+
+.dw-prose h1,
+.dw-prose h2,
+.dw-prose h3,
+.dw-prose h4 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-dw-foreground);
+}
+
+.dw-prose h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.dw-prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-dw-border);
+}
+
+.dw-prose h3 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.dw-prose h4 {
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dw-prose p {
+  margin-bottom: 1.25rem;
+}
+
+.dw-prose a {
+  color: var(--color-dw-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dw-prose a:hover {
+  opacity: 0.8;
+}
+
+.dw-prose strong {
+  font-weight: 600;
+}
+
+.dw-prose ul,
+.dw-prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.dw-prose li {
+  margin-bottom: 0.5rem;
+}
+
+.dw-prose li::marker {
+  color: var(--color-dw-muted-foreground);
+}
+
+.dw-prose blockquote {
+  border-left: 3px solid var(--color-dw-border);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: var(--color-dw-muted-foreground);
+  font-style: italic;
+}
+
+.dw-prose hr {
+  border: none;
+  border-top: 1px solid var(--color-dw-border);
+  margin: 2rem 0;
+}
+
+/* Code */
+.dw-prose code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Monaco, 'Cascadia Code', monospace;
+  font-size: 0.875em;
+  background: var(--color-dw-code-bg);
+  border: 1px solid var(--color-dw-code-border);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.dw-prose pre {
+  background: var(--color-dw-code-bg);
+  border: 1px solid var(--color-dw-code-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.dw-prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* Tables */
+.dw-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.dw-prose th,
+.dw-prose td {
+  border: 1px solid var(--color-dw-border);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.dw-prose th {
+  background: var(--color-dw-secondary);
+  font-weight: 600;
+}
+
+.dw-prose tr:nth-child(even) {
+  background: var(--color-dw-secondary);
+}
+
+/* ============================================
+   Callout / Admonition
+   ============================================ */
+
+.dw-callout {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border: 1px solid;
+}
+
+.dw-callout-info {
+  background: color-mix(in oklch, var(--color-dw-info) 10%, transparent);
+  border-color: color-mix(in oklch, var(--color-dw-info) 30%, transparent);
+}
+
+.dw-callout-warning {
+  background: color-mix(in oklch, var(--color-dw-warning) 10%, transparent);
+  border-color: color-mix(in oklch, var(--color-dw-warning) 30%, transparent);
+}
+
+.dw-callout-error {
+  background: color-mix(in oklch, var(--color-dw-error) 10%, transparent);
+  border-color: color-mix(in oklch, var(--color-dw-error) 30%, transparent);
+}
+
+.dw-callout-success {
+  background: color-mix(in oklch, var(--color-dw-success) 10%, transparent);
+  border-color: color-mix(in oklch, var(--color-dw-success) 30%, transparent);
+}
+
+.dw-callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dw-callout-info .dw-callout-title {
+  color: var(--color-dw-info);
+}
+
+.dw-callout-warning .dw-callout-title {
+  color: var(--color-dw-warning);
+}
+
+.dw-callout-error .dw-callout-title {
+  color: var(--color-dw-error);
+}
+
+.dw-callout-success .dw-callout-title {
+  color: var(--color-dw-success);
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+
+.dw-card {
+  background: var(--color-dw-background);
+  border: 1px solid var(--color-dw-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.dw-card:hover {
+  border-color: var(--color-dw-ring);
+}
+
+.dw-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.dw-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-dw-foreground);
+}
+
+.dw-card-description {
+  font-size: 0.875rem;
+  color: var(--color-dw-muted-foreground);
+}
+
+.dw-card-icon {
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-dw-primary);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.dw-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid transparent;
+}
+
+.dw-button-primary {
+  background: var(--color-dw-primary);
+  color: var(--color-dw-primary-foreground);
+}
+
+.dw-button-primary:hover {
+  opacity: 0.9;
+}
+
+.dw-button-outline {
+  background: transparent;
+  border-color: var(--color-dw-border);
+  color: var(--color-dw-foreground);
+}
+
+.dw-button-outline:hover {
+  background: var(--color-dw-accent);
+}
+
+.dw-button-ghost {
+  background: transparent;
+  color: var(--color-dw-foreground);
+}
+
+.dw-button-ghost:hover {
+  background: var(--color-dw-accent);
+}
+
+/* ============================================
+   Code Block
+   ============================================ */
+
+.dw-code-block {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.dw-code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--color-dw-secondary);
+  border: 1px solid var(--color-dw-code-border);
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-dw-muted-foreground);
+}
+
+.dw-code-block-header + pre {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.dw-copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.375rem;
+  background: var(--color-dw-secondary);
+  border: 1px solid var(--color-dw-border);
+  border-radius: 0.25rem;
+  color: var(--color-dw-muted-foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.dw-code-block:hover .dw-copy-button {
+  opacity: 1;
+}
+
+.dw-copy-button:hover {
+  color: var(--color-dw-foreground);
+}
+
+/* ============================================
+   Badge
+   ============================================ */
+
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: var(--color-dw-secondary);
+  color: var(--color-dw-secondary-foreground);
+}
+
+.dw-badge-info {
+  background: color-mix(in oklch, var(--color-dw-info) 15%, transparent);
+  color: var(--color-dw-info);
+}
+
+.dw-badge-success {
+  background: color-mix(in oklch, var(--color-dw-success) 15%, transparent);
+  color: var(--color-dw-success);
+}
+
+.dw-badge-warning {
+  background: color-mix(in oklch, var(--color-dw-warning) 15%, transparent);
+  color: var(--color-dw-warning);
+}
+
+.dw-badge-error {
+  background: color-mix(in oklch, var(--color-dw-error) 15%, transparent);
+  color: var(--color-dw-error);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .dw-toc {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dw-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .dw-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dw-content {
+    padding: 1rem;
+  }
+}

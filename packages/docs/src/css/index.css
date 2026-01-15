@@ -1,0 +1,19 @@
+/**
+ * Dewey CSS
+ *
+ * Main entry point for Dewey styles.
+ * Import this file to get all base styles with the neutral color preset.
+ *
+ * Usage:
+ *   import '@arach/dewey/css'
+ *
+ * For a different color preset, import it before this file:
+ *   import '@arach/dewey/css/colors/ocean.css'
+ *   import '@arach/dewey/css'
+ */
+
+/* Default color preset (neutral) */
+@import './colors/neutral.css';
+
+/* Base component styles */
+@import './base.css';

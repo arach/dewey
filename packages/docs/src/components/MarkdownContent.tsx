@@ -1,6 +1,8 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
+import matter from 'gray-matter'
+import { useMemo } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { HeadingLink } from './HeadingLink'
 
@@ -10,6 +12,15 @@ interface MarkdownContentProps {
 }
 
 export function MarkdownContent({ content, isDark = false }: MarkdownContentProps) {
+  // Strip frontmatter if present
+  const body = useMemo(() => {
+    // Only process if content might have frontmatter (starts with ---)
+    if (content.trimStart().startsWith('---')) {
+      const { content: parsed } = matter(content)
+      return parsed
+    }
+    return content
+  }, [content])
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -225,7 +236,7 @@ export function MarkdownContent({ content, isDark = false }: MarkdownContentProp
         ),
       }}
     >
-      {content}
+      {body}
     </ReactMarkdown>
   )
 }

@@ -155,7 +155,7 @@ export function PromptSlideout({
           right: 0,
           bottom: 0,
           width: '100%',
-          maxWidth: '600px',
+          maxWidth: '760px',
           background: '#faf9f7',
           boxShadow: '-4px 0 24px rgba(16, 21, 24, 0.12)',
           zIndex: 1000,
@@ -293,19 +293,32 @@ export function PromptSlideout({
                     ),
                     code: ({ children, className }) => {
                       const isBlock = className?.includes('language-')
+                      const content = String(children).replace(/\n$/, '')
+
                       if (isBlock) {
+                        // Simple JSON syntax highlighting
+                        const highlighted = content
+                          .replace(/"([^"]+)":/g, '<span style="color:#7c3aed">"$1"</span>:')
+                          .replace(/: "([^"]+)"/g, ': <span style="color:#059669">"$1"</span>')
+                          .replace(/: (\d+)/g, ': <span style="color:#d97706">$1</span>')
+                          .replace(/→/g, '<span style="color:#8b9298">→</span>')
+
                         return (
                           <pre style={{
-                            margin: '0.75rem 0',
-                            padding: '0.75rem 1rem',
+                            margin: '0.5rem 0',
+                            padding: '0.625rem 0.875rem',
                             borderRadius: '0.5rem',
-                            background: 'rgba(16, 21, 24, 0.04)',
-                            border: '1px solid rgba(16, 21, 24, 0.08)',
+                            background: '#fefefe',
+                            border: '1px solid rgba(16, 21, 24, 0.1)',
                             overflow: 'auto',
-                            fontSize: '0.8125rem',
+                            fontSize: '0.75rem',
+                            lineHeight: 1.5,
                             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
                           }}>
-                            <code style={{ color: '#101518' }}>{children}</code>
+                            <code
+                              style={{ color: '#374151' }}
+                              dangerouslySetInnerHTML={{ __html: highlighted }}
+                            />
                           </pre>
                         )
                       }
@@ -314,9 +327,9 @@ export function PromptSlideout({
                           padding: '0.125rem 0.375rem',
                           borderRadius: '0.25rem',
                           background: 'rgba(16, 21, 24, 0.06)',
-                          fontSize: '0.8125rem',
+                          fontSize: '0.75rem',
                           fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-                          color: '#101518',
+                          color: '#374151',
                         }}>
                           {children}
                         </code>

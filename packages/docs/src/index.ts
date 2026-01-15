@@ -1,10 +1,61 @@
+// ============================================
+// Main Entry Point Components
+// ============================================
+
+// DocsApp - The main entry point for a complete docs site
+export { DocsApp, default as DocsAppDefault } from './components/DocsApp'
+export type { DocsAppProps, DocsAppConfig } from './components/DocsApp'
+
+// DocsIndex - Card-based landing page
+export { DocsIndex } from './components/DocsIndex'
+export type { DocsIndexProps } from './components/DocsIndex'
+
+// ============================================
+// Provider & Context
+// ============================================
+
+export {
+  DeweyProvider,
+  useDewey,
+  useTheme,
+  useComponents,
+  useLink,
+} from './components/DeweyProvider'
+export type {
+  DeweyProviderProps,
+  DeweyContextValue,
+  ThemePreset,
+  ThemeConfig,
+  FrameworkComponents,
+} from './components/DeweyProvider'
+
+// ============================================
 // Layout Components
+// ============================================
+
 export { default as DocsLayout } from './components/DocsLayout'
 export { default as MarkdownContent } from './components/MarkdownContent'
 export { default as CodeBlock } from './components/CodeBlock'
 export { default as HeadingLink } from './components/HeadingLink'
 
+// Sidebar - Left navigation
+export { Sidebar } from './components/Sidebar'
+export type { SidebarProps } from './components/Sidebar'
+
+// TableOfContents - Right minimap with scroll-spy
+export {
+  TableOfContents,
+  AutoTableOfContents,
+  useActiveSection,
+  extractTocItems,
+  extractTocFromDom,
+} from './components/TableOfContents'
+export type { TableOfContentsProps, TocItem } from './components/TableOfContents'
+
+// ============================================
 // UI Components
+// ============================================
+
 export { Callout } from './components/Callout'
 export type { CalloutProps, CalloutType } from './components/Callout'
 
@@ -26,11 +77,39 @@ export type { ApiTableProps, ApiProperty } from './components/ApiTable'
 export { Badge } from './components/Badge'
 export type { BadgeProps, BadgeVariant } from './components/Badge'
 
+// ============================================
 // Hooks
+// ============================================
+
 export { useDarkMode } from './hooks/useDarkMode'
 export { useTableOfContents, extractSections } from './hooks/useTableOfContents'
 
+// ============================================
+// Utilities
+// ============================================
+
+export { cn } from './utils/cn'
+export { resolveIcon, commonIcons } from './utils/icons'
+export type { CommonIconName } from './utils/icons'
+
+// ============================================
 // Types
+// ============================================
+
+// Page Tree types
+export type {
+  PageTree,
+  PageNode,
+  PageItem,
+  PageFolder,
+  PageSeparator,
+  FlatPage,
+  NavigationConfig,
+  NavigationGroup,
+  NavigationItem,
+} from './types/page-tree'
+
+// Legacy types (backward compatibility)
 export type {
   NavItem,
   NavGroup,

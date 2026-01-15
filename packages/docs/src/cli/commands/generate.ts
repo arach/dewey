@@ -141,11 +141,16 @@ function generateLlmsTxt(projectName: string, tagline: string | undefined, docs:
   for (const doc of docs) {
     lines.push(`## ${doc.title}`)
     lines.push('')
-    // Take first paragraph
-    const firstPara = doc.content.split('\n\n')[0]
-    if (firstPara) {
-      lines.push(firstPara.replace(/^#+\s+.+$/m, '').trim())
-      lines.push('')
+    // Find first non-heading paragraph with actual content
+    const paragraphs = doc.content.split('\n\n')
+    for (const para of paragraphs) {
+      // Strip any headings from the paragraph
+      const content = para.replace(/^#+\s+.+$/gm, '').trim()
+      if (content) {
+        lines.push(content)
+        lines.push('')
+        break
+      }
     }
   }
 

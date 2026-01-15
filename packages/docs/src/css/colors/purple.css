@@ -1,0 +1,70 @@
+/**
+ * Dewey Purple Color Preset
+ * Elegant purple-accented theme
+ */
+
+:root {
+  /* Core colors */
+  --color-dw-background: hsl(270, 10%, 98%);
+  --color-dw-foreground: hsl(270, 20%, 10%);
+  --color-dw-primary: hsl(262, 83%, 58%);
+  --color-dw-primary-foreground: hsl(0, 0%, 100%);
+  --color-dw-secondary: hsl(270, 15%, 94%);
+  --color-dw-secondary-foreground: hsl(270, 20%, 10%);
+  --color-dw-muted: hsl(270, 10%, 94%);
+  --color-dw-muted-foreground: hsl(270, 10%, 45%);
+  --color-dw-accent: hsl(270, 20%, 92%);
+  --color-dw-accent-foreground: hsl(270, 20%, 10%);
+
+  /* Borders & rings */
+  --color-dw-border: hsl(270, 10%, 88%);
+  --color-dw-ring: hsl(262, 83%, 58%);
+
+  /* Semantic colors */
+  --color-dw-info: oklch(62.3% 0.214 259.815);
+  --color-dw-info-foreground: hsl(0, 0%, 100%);
+  --color-dw-warning: oklch(76.9% 0.188 70.08);
+  --color-dw-warning-foreground: hsl(0, 0%, 9%);
+  --color-dw-error: oklch(63.7% 0.237 25.331);
+  --color-dw-error-foreground: hsl(0, 0%, 100%);
+  --color-dw-success: oklch(72.3% 0.219 149.579);
+  --color-dw-success-foreground: hsl(0, 0%, 100%);
+
+  /* Code blocks */
+  --color-dw-code-bg: hsl(270, 15%, 96%);
+  --color-dw-code-border: hsl(270, 10%, 88%);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: hsl(270, 15%, 97%);
+  --color-dw-sidebar-border: hsl(270, 10%, 90%);
+  --color-dw-sidebar-active: hsl(262, 83%, 58%);
+  --color-dw-sidebar-active-bg: hsl(262, 80%, 95%);
+}
+
+.dark {
+  /* Core colors - dark mode */
+  --color-dw-background: hsl(265, 25%, 8%);
+  --color-dw-foreground: hsl(270, 15%, 93%);
+  --color-dw-primary: hsl(262, 83%, 68%);
+  --color-dw-primary-foreground: hsl(0, 0%, 100%);
+  --color-dw-secondary: hsl(265, 20%, 14%);
+  --color-dw-secondary-foreground: hsl(270, 15%, 93%);
+  --color-dw-muted: hsl(265, 15%, 16%);
+  --color-dw-muted-foreground: hsl(270, 10%, 60%);
+  --color-dw-accent: hsl(265, 20%, 18%);
+  --color-dw-accent-foreground: hsl(270, 15%, 93%);
+
+  /* Borders & rings */
+  --color-dw-border: hsl(265, 15%, 20%);
+  --color-dw-ring: hsl(262, 83%, 58%);
+
+  /* Code blocks */
+  --color-dw-code-bg: hsl(265, 20%, 12%);
+  --color-dw-code-border: hsl(265, 15%, 18%);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: hsl(265, 25%, 10%);
+  --color-dw-sidebar-border: hsl(265, 15%, 15%);
+  --color-dw-sidebar-active: hsl(262, 83%, 68%);
+  --color-dw-sidebar-active-bg: hsl(262, 60%, 18%);
+}

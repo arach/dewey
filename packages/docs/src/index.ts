@@ -95,6 +95,13 @@ export { PromptSlideout } from './components/PromptSlideout'
 export type { PromptSlideoutProps, PromptParam } from './components/PromptSlideout'
 
 // ============================================
+// PromptSlideout Generation
+// ============================================
+
+export { promptSlideoutGenerator } from './skills/prompt-slideout-generator'
+export type { PromptSlideoutConfig } from './skills/prompt-slideout-generator'
+
+// ============================================
 // Hooks
 // ============================================
 

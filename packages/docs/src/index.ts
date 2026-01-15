@@ -33,6 +33,10 @@ export type {
 // Layout Components
 // ============================================
 
+// Header - Sticky header with brand, back link, theme toggle
+export { Header } from './components/Header'
+export type { HeaderProps } from './components/Header'
+
 export { default as DocsLayout } from './components/DocsLayout'
 export { default as MarkdownContent } from './components/MarkdownContent'
 export { default as CodeBlock } from './components/CodeBlock'

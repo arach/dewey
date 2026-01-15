@@ -14,8 +14,8 @@ export interface PageItem {
   id: string
   /** Display name in navigation */
   name: string
-  /** URL path */
-  url: string
+  /** URL path (optional, computed from basePath + id if not provided) */
+  url?: string
   /** Lucide icon name (e.g., 'BookOpen', 'Code') */
   icon?: string
   /** Short description shown in cards/tooltips */
@@ -73,7 +73,7 @@ export interface PageTree {
 export interface FlatPage {
   id: string
   name: string
-  url: string
+  url?: string
   description?: string
   /** Breadcrumb path (folder names) */
   breadcrumb: string[]

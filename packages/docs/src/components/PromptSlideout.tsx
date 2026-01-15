@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { X, Copy, Check, Sparkles, Bot, Play } from 'lucide-react'
+import { X, Copy, Check, Sparkles, Info } from 'lucide-react'
 
 export interface PromptMessage {
   role: 'system' | 'user' | 'assistant'
@@ -30,13 +30,13 @@ export interface PromptSlideoutProps {
 }
 
 /**
- * PromptSlideout - Prompt editor/playground panel
+ * PromptSlideout - Warm, polished prompt editor panel
  *
  * Features:
- * - System context rendered as markdown-like display
- * - Editable prompt with {VARIABLE} syntax highlighting
- * - Live variable substitution
- * - Code editor aesthetic
+ * - System context as collapsible reference
+ * - Variables section with input fields
+ * - Editable prompt textarea with live variable substitution
+ * - Quick copy for the final prompt
  */
 export function PromptSlideout({
   isOpen,
@@ -51,8 +51,28 @@ export function PromptSlideout({
   const [isVisible, setIsVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const [variableValues, setVariableValues] = useState<Record<string, string>>({})
+  const [editedPrompt, setEditedPrompt] = useState('')
+  const [showSystemContext, setShowSystemContext] = useState(false)
 
-  // Initialize variable values with examples
+  // Parse prompt into messages if it's a string
+  const messages: PromptMessage[] = useMemo(() =>
+    typeof prompt === 'string'
+      ? [{ role: 'user', content: prompt }]
+      : prompt
+  , [prompt])
+
+  // Get system message and user message separately
+  const systemMessage = messages.find(m => m.role === 'system')
+  const userMessage = messages.find(m => m.role === 'user')
+
+  // Initialize edited prompt when opening
+  useEffect(() => {
+    if (isOpen && userMessage) {
+      setEditedPrompt(userMessage.content)
+    }
+  }, [isOpen, userMessage])
+
+  // Initialize variable values
   useEffect(() => {
     const initial: Record<string, string> = {}
     variables.forEach(v => {
@@ -77,47 +97,33 @@ export function PromptSlideout({
     }
   }, [isOpen])
 
-  // Parse prompt into messages if it's a string
-  const messages: PromptMessage[] = typeof prompt === 'string'
-    ? [{ role: 'user', content: prompt }]
-    : prompt
-
-  // Get system message and user message separately
-  const systemMessage = messages.find(m => m.role === 'system')
-  const userMessage = messages.find(m => m.role === 'user')
-
   // Substitute variables in content
   const substituteVariables = useCallback((content: string) => {
     let result = content
     Object.entries(variableValues).forEach(([name, value]) => {
       if (value) {
         result = result.replace(new RegExp(`\\{${name}\\}`, 'g'), value)
-        // Also handle [NAME] format for backwards compatibility
         result = result.replace(new RegExp(`\\[${name}\\]`, 'g'), value)
       }
     })
     return result
   }, [variableValues])
 
-  // Get the final prompt for copying
+  // Get the final prompt for copying (just the user prompt, substituted)
   const getFinalPrompt = useCallback(() => {
-    let result = ''
-    if (systemMessage) {
-      result += `[System Context]\n${systemMessage.content}\n\n`
-    }
-    if (userMessage) {
-      result += substituteVariables(userMessage.content)
-    }
-    return result.trim()
-  }, [systemMessage, userMessage, substituteVariables])
+    return substituteVariables(editedPrompt).trim()
+  }, [editedPrompt, substituteVariables])
 
-  // Check if all required variables are filled
-  const allVariablesFilled = useMemo(() => {
-    return variables.every(v => {
-      const value = variableValues[v.name]
-      return value && value.trim().length > 0
+  // Check for unfilled variables in the prompt
+  const hasUnfilledVariables = useMemo(() => {
+    const varPattern = /\{[A-Z_]+\}/g
+    const matches = editedPrompt.match(varPattern) || []
+    return matches.some(match => {
+      const varName = match.slice(1, -1)
+      const value = variableValues[varName]
+      return !value || value.trim().length === 0
     })
-  }, [variables, variableValues])
+  }, [editedPrompt, variableValues])
 
   const handleCopy = async () => {
     try {
@@ -142,40 +148,6 @@ export function PromptSlideout({
 
   if (!isVisible) return null
 
-  // Render content with variable highlighting
-  const renderWithVariables = (content: string) => {
-    // Match both {VAR} and [VAR] patterns
-    const parts = content.split(/(\{[A-Z_]+\}|\[[A-Z_]+\])/g)
-    return parts.map((part, i) => {
-      const match = part.match(/^\{([A-Z_]+)\}$/) || part.match(/^\[([A-Z_]+)\]$/)
-      if (match) {
-        const varName = match[1]
-        const value = variableValues[varName]
-        const hasValue = value && value.trim().length > 0
-
-        return (
-          <span
-            key={i}
-            style={{
-              background: hasValue
-                ? 'rgba(16, 185, 129, 0.15)'
-                : 'rgba(240, 124, 79, 0.15)',
-              color: hasValue
-                ? 'rgb(16, 185, 129)'
-                : 'var(--color-dw-primary, #f07c4f)',
-              padding: '0.125rem 0.5rem',
-              borderRadius: '0.25rem',
-              fontWeight: 500,
-            }}
-          >
-            {hasValue ? value : `{${varName}}`}
-          </span>
-        )
-      }
-      return part
-    })
-  }
-
   return (
     <>
       {/* Backdrop */}
@@ -184,8 +156,8 @@ export function PromptSlideout({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(4px)',
+          background: 'rgba(16, 21, 24, 0.4)',
+          backdropFilter: 'blur(8px)',
           zIndex: 999,
           opacity: isAnimating ? 1 : 0,
           transition: 'opacity 300ms ease-out',
@@ -201,15 +173,14 @@ export function PromptSlideout({
           right: 0,
           bottom: 0,
           width: '100%',
-          maxWidth: '720px',
-          background: '#1a1a1a',
-          boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.3)',
+          maxWidth: '560px',
+          background: '#faf9f7',
+          boxShadow: '-4px 0 24px rgba(16, 21, 24, 0.12)',
           zIndex: 1000,
           display: 'flex',
           flexDirection: 'column',
           transform: isAnimating ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)',
-          color: '#e5e5e5',
         }}
       >
         {/* Header */}
@@ -218,9 +189,8 @@ export function PromptSlideout({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '1rem 1.5rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            background: '#141414',
+            padding: '1.25rem 1.5rem',
+            borderBottom: '1px solid rgba(16, 21, 24, 0.08)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -229,21 +199,27 @@ export function PromptSlideout({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '2rem',
-                height: '2rem',
-                borderRadius: '0.5rem',
-                background: 'rgba(240, 124, 79, 0.15)',
+                width: '2.25rem',
+                height: '2.25rem',
+                borderRadius: '0.625rem',
+                background: 'linear-gradient(135deg, rgba(240, 124, 79, 0.12) 0%, rgba(240, 124, 79, 0.06) 100%)',
                 color: '#f07c4f',
               }}
             >
               <Sparkles size={18} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#fff' }}>
+              <h2 style={{
+                margin: 0,
+                fontSize: '1.0625rem',
+                fontWeight: 600,
+                color: '#101518',
+                fontFamily: "'Fraunces', serif",
+              }}>
                 {title}
               </h2>
               {description && (
-                <p style={{ margin: 0, fontSize: '0.8125rem', color: '#888' }}>
+                <p style={{ margin: 0, fontSize: '0.8125rem', color: '#5c676c', marginTop: '0.125rem' }}>
                   {description}
                 </p>
               )}
@@ -261,118 +237,103 @@ export function PromptSlideout({
               borderRadius: '0.5rem',
               border: 'none',
               background: 'transparent',
-              color: '#888',
+              color: '#5c676c',
               cursor: 'pointer',
+              transition: 'background 150ms',
             }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.06)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Main Content */}
-        <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '1.5rem' }}>
 
-          {/* System Context */}
+          {/* System Context - Collapsible */}
           {systemMessage && (
-            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <div
+            <div style={{ marginBottom: '1.5rem' }}>
+              <button
+                onClick={() => setShowSystemContext(!showSystemContext)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  padding: '0.75rem 1.5rem',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  padding: '0.625rem 0.875rem',
+                  width: '100%',
+                  borderRadius: '0.5rem',
+                  border: '1px solid rgba(16, 21, 24, 0.08)',
+                  background: 'rgba(16, 21, 24, 0.02)',
+                  color: '#5c676c',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'background 150ms',
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.02)'}
               >
-                <Bot size={14} style={{ color: '#888' }} />
-                <span style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888' }}>
-                  System Context
+                <Info size={14} />
+                <span>System Context</span>
+                <span style={{ marginLeft: 'auto', opacity: 0.6 }}>
+                  {showSystemContext ? '−' : '+'}
                 </span>
-              </div>
-              <div
-                style={{
-                  padding: '1rem 1.5rem',
-                  fontSize: '0.8125rem',
-                  lineHeight: 1.7,
-                  color: '#aaa',
-                  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-                  whiteSpace: 'pre-wrap',
-                  background: 'rgba(0, 0, 0, 0.2)',
-                }}
-              >
-                {systemMessage.content}
-              </div>
+              </button>
+
+              {showSystemContext && (
+                <div
+                  style={{
+                    marginTop: '0.5rem',
+                    padding: '0.875rem 1rem',
+                    borderRadius: '0.5rem',
+                    background: 'rgba(16, 21, 24, 0.03)',
+                    border: '1px solid rgba(16, 21, 24, 0.06)',
+                    fontSize: '0.8125rem',
+                    lineHeight: 1.6,
+                    color: '#5c676c',
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {systemMessage.content}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Prompt Editor */}
-          {userMessage && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.75rem 1.5rem',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                }}
-              >
-                <Play size={14} style={{ color: '#f07c4f' }} />
-                <span style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#f07c4f' }}>
-                  Prompt
-                </span>
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  padding: '1.25rem 1.5rem',
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.8,
-                  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-                  whiteSpace: 'pre-wrap',
-                  color: '#e5e5e5',
-                  minHeight: '200px',
-                }}
-              >
-                {renderWithVariables(userMessage.content)}
-              </div>
-            </div>
-          )}
-
-          {/* Variables Panel */}
+          {/* Variables Section */}
           {variables.length > 0 && (
-            <div
-              style={{
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                background: '#141414',
-              }}
-            >
-              <div
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                }}
-              >
-                <span style={{ fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#888' }}>
-                  Variables
-                </span>
-              </div>
-              <div style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{
+                margin: '0 0 0.75rem 0',
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: '#8b9298'
+              }}>
+                Variables
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {variables.map((variable) => (
                   <div key={variable.name}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.375rem' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '0.5rem',
+                      marginBottom: '0.375rem'
+                    }}>
                       <code
                         style={{
                           fontSize: '0.75rem',
                           color: '#f07c4f',
-                          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
+                          fontWeight: 500,
                         }}
                       >
                         {`{${variable.name}}`}
                       </code>
-                      <span style={{ fontSize: '0.75rem', color: '#666' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#8b9298' }}>
                         {variable.description}
                       </span>
                     </div>
@@ -385,21 +346,20 @@ export function PromptSlideout({
                         width: '100%',
                         padding: '0.625rem 0.875rem',
                         borderRadius: '0.5rem',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        background: 'rgba(0, 0, 0, 0.3)',
-                        color: '#e5e5e5',
+                        border: '1px solid rgba(16, 21, 24, 0.12)',
+                        background: 'white',
+                        color: '#101518',
                         fontSize: '0.875rem',
-                        fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
                         outline: 'none',
-                        transition: 'border-color 150ms, background 150ms',
+                        transition: 'border-color 150ms, box-shadow 150ms',
                       }}
                       onFocus={(e) => {
                         e.target.style.borderColor = 'rgba(240, 124, 79, 0.5)'
-                        e.target.style.background = 'rgba(0, 0, 0, 0.5)'
+                        e.target.style.boxShadow = '0 0 0 3px rgba(240, 124, 79, 0.1)'
                       }}
                       onBlur={(e) => {
-                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'
-                        e.target.style.background = 'rgba(0, 0, 0, 0.3)'
+                        e.target.style.borderColor = 'rgba(16, 21, 24, 0.12)'
+                        e.target.style.boxShadow = 'none'
                       }}
                     />
                   </div>
@@ -407,45 +367,119 @@ export function PromptSlideout({
               </div>
             </div>
           )}
-        </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1rem 1.5rem',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            background: '#141414',
-          }}
-        >
-          <p style={{ margin: 0, fontSize: '0.75rem', color: '#666' }}>
-            {allVariablesFilled || variables.length === 0
-              ? 'Ready to copy — paste into your AI assistant'
-              : 'Fill in variables above to complete the prompt'}
-          </p>
-
-          <button
-            onClick={handleCopy}
-            style={{
+          {/* Editable Prompt */}
+          <div>
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.625rem 1.25rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: copied ? '#10b981' : '#f07c4f',
-              color: 'white',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background 150ms',
-            }}
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? 'Copied!' : 'Copy Prompt'}
-          </button>
+              justifyContent: 'space-between',
+              marginBottom: '0.75rem'
+            }}>
+              <h3 style={{
+                margin: 0,
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: '#8b9298'
+              }}>
+                Prompt
+              </h3>
+              {hasUnfilledVariables && (
+                <span style={{
+                  fontSize: '0.6875rem',
+                  color: '#f07c4f',
+                  fontWeight: 500,
+                }}>
+                  Fill variables above
+                </span>
+              )}
+            </div>
+            <div style={{ position: 'relative' }}>
+              <textarea
+                value={substituteVariables(editedPrompt)}
+                onChange={(e) => {
+                  // When editing, we need to reverse-substitute to preserve variable syntax
+                  // For simplicity, just update the raw prompt
+                  setEditedPrompt(e.target.value)
+                }}
+                style={{
+                  width: '100%',
+                  minHeight: '240px',
+                  padding: '1rem',
+                  borderRadius: '0.75rem',
+                  border: '1px solid rgba(16, 21, 24, 0.12)',
+                  background: 'white',
+                  color: '#101518',
+                  fontSize: '0.9375rem',
+                  lineHeight: 1.7,
+                  outline: 'none',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 150ms, box-shadow 150ms',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'rgba(240, 124, 79, 0.4)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(240, 124, 79, 0.08)'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 21, 24, 0.12)'
+                  e.target.style.boxShadow = 'none'
+                }}
+              />
+
+              {/* Copy button inside textarea area */}
+              <button
+                onClick={handleCopy}
+                style={{
+                  position: 'absolute',
+                  bottom: '0.75rem',
+                  right: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  padding: '0.5rem 0.875rem',
+                  borderRadius: '0.5rem',
+                  border: 'none',
+                  background: copied ? '#10b981' : '#f07c4f',
+                  color: 'white',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 150ms, transform 100ms',
+                  boxShadow: '0 2px 8px rgba(240, 124, 79, 0.25)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!copied) e.currentTarget.style.background = '#e86a3a'
+                }}
+                onMouseLeave={(e) => {
+                  if (!copied) e.currentTarget.style.background = '#f07c4f'
+                }}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer hint */}
+        <div
+          style={{
+            padding: '1rem 1.5rem',
+            borderTop: '1px solid rgba(16, 21, 24, 0.06)',
+            background: 'rgba(16, 21, 24, 0.02)',
+          }}
+        >
+          <p style={{
+            margin: 0,
+            fontSize: '0.75rem',
+            color: '#8b9298',
+            textAlign: 'center',
+          }}>
+            Edit the prompt above, then copy and paste into your AI assistant
+          </p>
         </div>
       </div>
     </>

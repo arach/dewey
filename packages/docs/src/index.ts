@@ -82,6 +82,16 @@ export { Badge } from './components/Badge'
 export type { BadgeProps, BadgeVariant } from './components/Badge'
 
 // ============================================
+// Agent-Friendly Components
+// ============================================
+
+export { CopyButtons } from './components/CopyButtons'
+export type { CopyButtonsProps } from './components/CopyButtons'
+
+export { AgentContext } from './components/AgentContext'
+export type { AgentContextProps } from './components/AgentContext'
+
+// ============================================
 // Hooks
 // ============================================
 

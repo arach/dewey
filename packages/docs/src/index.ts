@@ -102,6 +102,13 @@ export { promptSlideoutGenerator } from './skills/prompt-slideout-generator'
 export type { PromptSlideoutConfig } from './skills/prompt-slideout-generator'
 
 // ============================================
+// Docs Review Agent
+// ============================================
+
+export { docsReviewAgent } from './skills/docs-review-agent'
+export type { DocsReviewResult } from './skills/docs-review-agent'
+
+// ============================================
 // Hooks
 // ============================================
 

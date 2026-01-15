@@ -19,6 +19,7 @@
       "types": "./dist/index.d.ts"
     },
     "./css": "./dist/css/index.css",
+    "./css/base.css": "./dist/css/base.css",
     "./css/colors/neutral.css": "./dist/css/colors/neutral.css",
     "./css/colors/ocean.css": "./dist/css/colors/ocean.css",
     "./css/colors/emerald.css": "./dist/css/colors/emerald.css",
@@ -26,6 +27,7 @@
     "./css/colors/dusk.css": "./dist/css/colors/dusk.css",
     "./css/colors/rose.css": "./dist/css/colors/rose.css",
     "./css/colors/github.css": "./dist/css/colors/github.css",
+    "./css/colors/warm.css": "./dist/css/colors/warm.css",
     "./styles": "./dist/css/index.css",
     "./tailwind": {
       "import": "./dist/tailwind/preset.js",

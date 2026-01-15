@@ -1,4 +1,5 @@
 import React from 'react'
+import { ArrowRight, BookOpen } from 'lucide-react'
 import { useDewey, useLink } from './DeweyProvider'
 import { resolveIcon } from '../utils/icons'
 import type { PageNode, PageItem, PageFolder } from '../types/page-tree'
@@ -14,12 +15,25 @@ export interface DocsIndexProps {
   projectName?: string
   /** Project tagline */
   tagline?: string
+  /** Extended description below tagline */
+  description?: string
   /** Base path for doc links */
   basePath?: string
   /** Custom hero content */
   hero?: React.ReactNode
   /** Show search input */
   showSearch?: boolean
+  /** Hero icon (Lucide icon name or component) */
+  heroIcon?: string | React.ComponentType<{ className?: string }>
+  /** Quick links section */
+  quickLinks?: Array<{
+    label: string
+    href: string
+    external?: boolean
+    primary?: boolean
+  }>
+  /** Layout mode for sections */
+  layout?: 'stacked' | 'columns'
 }
 
 // ============================================
@@ -40,22 +54,27 @@ function DocCard({ item, basePath }: DocCardProps) {
       href={`${basePath}/${item.id}`}
       className="dw-card group"
     >
-      {Icon && (
-        <div className="dw-card-icon">
-          <Icon className="w-full h-full" />
-        </div>
-      )}
-      <h3 className="dw-card-title">
-        {item.name}
-        {item.badge && (
-          <span className={`dw-badge dw-badge-${item.badgeColor || 'default'} ml-2`}>
-            {item.badge}
-          </span>
+      <div className="dw-card-header">
+        {Icon && (
+          <div className="dw-card-icon-box">
+            <Icon />
+          </div>
         )}
-      </h3>
-      {item.description && (
-        <p className="dw-card-description">{item.description}</p>
-      )}
+        <div className="dw-card-content">
+          <span className="dw-card-title">
+            {item.name}
+            {item.badge && (
+              <span className={`dw-badge dw-badge-${item.badgeColor || 'default'}`}>
+                {item.badge}
+              </span>
+            )}
+          </span>
+          {item.description && (
+            <p className="dw-card-description">{item.description}</p>
+          )}
+        </div>
+      </div>
+      <ArrowRight className="dw-card-arrow" />
     </Link>
   )
 }
@@ -77,11 +96,9 @@ function DocSection({ folder, basePath }: DocSectionProps) {
   if (pages.length === 0) return null
 
   return (
-    <section className="mb-12">
-      <h2 className="text-lg font-semibold mb-4 text-[var(--color-dw-foreground)]">
-        {folder.name}
-      </h2>
-      <div className="dw-card-grid">
+    <section className="dw-docs-section">
+      <h2 className="dw-docs-section-title">{folder.name}</h2>
+      <div className="dw-docs-section-cards">
         {pages.map((item) => (
           <DocCard key={item.id} item={item} basePath={basePath} />
         ))}
@@ -98,12 +115,24 @@ export function DocsIndex({
   tree,
   projectName = 'Documentation',
   tagline,
+  description,
   basePath = '/docs',
   hero,
   showSearch = false,
+  heroIcon,
+  quickLinks,
+  layout = 'columns',
 }: DocsIndexProps) {
   // Access provider for potential future use
   useDewey()
+  const Link = useLink()
+
+  // Resolve hero icon
+  const HeroIcon = heroIcon
+    ? typeof heroIcon === 'string'
+      ? resolveIcon(heroIcon)
+      : heroIcon
+    : BookOpen
 
   // Separate top-level pages from folders
   const topLevelPages = tree.filter(
@@ -114,49 +143,43 @@ export function DocsIndex({
   )
 
   return (
-    <div className="dw-content">
+    <div className="dw-content dw-docs-index">
       {/* Hero section */}
       {hero ?? (
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4 text-[var(--color-dw-foreground)]">
-            {projectName}
-          </h1>
-          {tagline && (
-            <p className="text-lg text-[var(--color-dw-muted-foreground)] max-w-2xl mx-auto">
-              {tagline}
-            </p>
-          )}
+        <div className="dw-hero">
+          <div className="dw-hero-icon-box">
+            {HeroIcon && <HeroIcon className="dw-hero-icon" />}
+          </div>
+          <div className="dw-hero-content">
+            <h1 className="dw-hero-title">{projectName}</h1>
+            {tagline && <p className="dw-hero-tagline">{tagline}</p>}
+          </div>
         </div>
+      )}
+
+      {/* Description */}
+      {description && (
+        <p className="dw-docs-description">{description}</p>
       )}
 
       {/* Search (placeholder for now) */}
       {showSearch && (
-        <div className="mb-8 max-w-xl mx-auto">
-          <div className="relative">
+        <div className="dw-search-box">
+          <div className="dw-search-box-inner">
             <input
               type="search"
               placeholder="Search documentation..."
-              className="w-full px-4 py-3 rounded-lg border text-sm
-                bg-[var(--color-dw-background)]
-                border-[var(--color-dw-border)]
-                text-[var(--color-dw-foreground)]
-                placeholder:text-[var(--color-dw-muted-foreground)]
-                focus:outline-none focus:ring-2 focus:ring-[var(--color-dw-ring)]"
+              className="dw-search-input"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-xs rounded
-              bg-[var(--color-dw-secondary)]
-              text-[var(--color-dw-muted-foreground)]
-              border border-[var(--color-dw-border)]">
-              /
-            </kbd>
+            <kbd className="dw-search-kbd">/</kbd>
           </div>
         </div>
       )}
 
       {/* Top-level pages as cards */}
       {topLevelPages.length > 0 && (
-        <section className="mb-12">
-          <div className="dw-card-grid">
+        <section className="dw-docs-section">
+          <div className="dw-docs-section-cards">
             {topLevelPages.map((item) => (
               <DocCard key={item.id} item={item} basePath={basePath} />
             ))}
@@ -164,10 +187,32 @@ export function DocsIndex({
         </section>
       )}
 
-      {/* Folder sections */}
-      {folders.map((folder) => (
-        <DocSection key={folder.name} folder={folder} basePath={basePath} />
-      ))}
+      {/* Folder sections in two-column layout */}
+      <div className={`dw-docs-sections ${layout === 'columns' ? 'dw-docs-sections-columns' : ''}`}>
+        {folders.map((folder) => (
+          <DocSection key={folder.name} folder={folder} basePath={basePath} />
+        ))}
+      </div>
+
+      {/* Quick links at bottom */}
+      {quickLinks && quickLinks.length > 0 && (
+        <div className="dw-docs-quick-links">
+          <h3 className="dw-docs-section-title">Quick Links</h3>
+          <div className="dw-docs-quick-links-buttons">
+            {quickLinks.map((link, i) => (
+              <Link
+                key={i}
+                href={link.href}
+                className={`dw-docs-quick-link ${link.primary ? 'dw-docs-quick-link-primary' : ''}`}
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {link.label}
+                {link.external && <ArrowRight className="dw-quick-link-icon" />}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

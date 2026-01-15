@@ -1,0 +1,105 @@
+/**
+ * Dewey Warm Color Preset
+ * Exact match to Arc's production styling
+ * Cream background with terracotta accents
+ */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Space+Grotesk:wght@300..700&display=swap');
+
+:root {
+  /* Fonts */
+  --font-dw-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-dw-serif: 'Fraunces', serif;
+  --font-dw-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Core colors - exact Arc values */
+  --color-dw-background: #f7f3ec;
+  --color-dw-foreground: #101518;
+  --color-dw-primary: #f07c4f;
+  --color-dw-primary-foreground: #1c120a;
+  --color-dw-primary-gradient: linear-gradient(135deg, #f07c4f, #f2a071);
+  --color-dw-primary-shadow: 0 12px 24px rgba(240, 124, 79, 0.28);
+  --color-dw-primary-glow: 0 0 0 4px rgba(240, 124, 79, 0.2);
+
+  --color-dw-secondary: rgba(255, 255, 255, 0.75);
+  --color-dw-secondary-foreground: #101518;
+  --color-dw-muted: rgba(16, 21, 24, 0.04);
+  --color-dw-muted-foreground: #5c676c;
+  --color-dw-accent: rgba(240, 124, 79, 0.12);
+  --color-dw-accent-foreground: #f07c4f;
+
+  /* Borders & rings */
+  --color-dw-border: rgba(16, 21, 24, 0.12);
+  --color-dw-border-subtle: rgba(16, 21, 24, 0.08);
+  --color-dw-ring: #f07c4f;
+
+  /* Semantic colors */
+  --color-dw-info: oklch(62.3% 0.214 259.815);
+  --color-dw-info-foreground: hsl(0, 0%, 100%);
+  --color-dw-warning: oklch(76.9% 0.188 70.08);
+  --color-dw-warning-foreground: hsl(0, 0%, 9%);
+  --color-dw-error: oklch(63.7% 0.237 25.331);
+  --color-dw-error-foreground: hsl(0, 0%, 100%);
+  --color-dw-success: oklch(72.3% 0.219 149.579);
+  --color-dw-success-foreground: hsl(0, 0%, 100%);
+
+  /* Code blocks */
+  --color-dw-code-bg: rgba(255, 255, 255, 0.75);
+  --color-dw-code-border: rgba(16, 21, 24, 0.12);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: rgba(247, 243, 236, 0.95);
+  --color-dw-sidebar-border: rgba(16, 21, 24, 0.1);
+  --color-dw-sidebar-active: #f07c4f;
+  --color-dw-sidebar-active-bg: rgba(240, 124, 79, 0.1);
+
+  /* Card specific - exact Arc values */
+  --color-dw-card-bg: rgba(255, 255, 255, 0.75);
+  --color-dw-card-border: rgba(16, 21, 24, 0.12);
+  --color-dw-card-shadow: 0 10px 24px rgba(16, 23, 32, 0.1);
+  --color-dw-card-icon-bg: rgba(16, 21, 24, 0.04);
+
+  /* Hero */
+  --color-dw-hero-icon-bg: rgba(240, 124, 79, 0.12);
+  --color-dw-hero-icon-border: rgba(240, 124, 79, 0.2);
+}
+
+.dark {
+  /* Core colors - dark mode */
+  --color-dw-background: #0a0c0e;
+  --color-dw-foreground: #e5e7eb;
+  --color-dw-primary: #f07c4f;
+  --color-dw-primary-foreground: #1c120a;
+  --color-dw-secondary: rgba(255, 255, 255, 0.03);
+  --color-dw-secondary-foreground: #e5e7eb;
+  --color-dw-muted: rgba(255, 255, 255, 0.05);
+  --color-dw-muted-foreground: #6b7280;
+  --color-dw-accent: rgba(240, 124, 79, 0.15);
+  --color-dw-accent-foreground: #f07c4f;
+
+  /* Borders & rings */
+  --color-dw-border: rgba(255, 255, 255, 0.06);
+  --color-dw-border-subtle: rgba(255, 255, 255, 0.04);
+  --color-dw-ring: #f07c4f;
+
+  /* Code blocks */
+  --color-dw-code-bg: rgba(255, 255, 255, 0.03);
+  --color-dw-code-border: rgba(255, 255, 255, 0.06);
+
+  /* Sidebar */
+  --color-dw-sidebar-bg: rgba(15, 18, 20, 0.95);
+  --color-dw-sidebar-border: rgba(255, 255, 255, 0.08);
+  --color-dw-sidebar-active: #f07c4f;
+  --color-dw-sidebar-active-bg: rgba(240, 124, 79, 0.15);
+
+  /* Card specific */
+  --color-dw-card-bg: rgba(255, 255, 255, 0.03);
+  --color-dw-card-border: rgba(255, 255, 255, 0.06);
+  --color-dw-card-shadow: none;
+  --color-dw-card-icon-bg: rgba(255, 255, 255, 0.05);
+
+  /* Hero */
+  --color-dw-hero-icon-bg: rgba(240, 124, 79, 0.15);
+  --color-dw-hero-icon-border: rgba(240, 124, 79, 0.25);
+}

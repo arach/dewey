@@ -33,6 +33,10 @@ export type {
 // Layout Components
 // ============================================
 
+// Header - Sticky header with brand, back link, theme toggle
+export { Header } from './components/Header'
+export type { HeaderProps } from './components/Header'
+
 export { default as DocsLayout } from './components/DocsLayout'
 export { default as MarkdownContent } from './components/MarkdownContent'
 export { default as CodeBlock } from './components/CodeBlock'
@@ -76,6 +80,33 @@ export type { ApiTableProps, ApiProperty } from './components/ApiTable'
 
 export { Badge } from './components/Badge'
 export type { BadgeProps, BadgeVariant } from './components/Badge'
+
+// ============================================
+// Agent-Friendly Components
+// ============================================
+
+export { CopyButtons } from './components/CopyButtons'
+export type { CopyButtonsProps } from './components/CopyButtons'
+
+export { AgentContext } from './components/AgentContext'
+export type { AgentContextProps } from './components/AgentContext'
+
+export { PromptSlideout } from './components/PromptSlideout'
+export type { PromptSlideoutProps, PromptParam } from './components/PromptSlideout'
+
+// ============================================
+// PromptSlideout Generation
+// ============================================
+
+export { promptSlideoutGenerator } from './skills/prompt-slideout-generator'
+export type { PromptSlideoutConfig } from './skills/prompt-slideout-generator'
+
+// ============================================
+// Docs Review Agent
+// ============================================
+
+export { docsReviewAgent } from './skills/docs-review-agent'
+export type { DocsReviewResult } from './skills/docs-review-agent'
 
 // ============================================
 // Hooks

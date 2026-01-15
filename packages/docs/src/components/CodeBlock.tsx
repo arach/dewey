@@ -94,7 +94,7 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
           border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
         }}
       >
-        {/* Header with language and copy button */}
+        {/* Header with traffic lights, language and copy button */}
         <div
           className="flex items-center justify-between px-4 py-2"
           style={{
@@ -102,12 +102,21 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
             borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
           }}
         >
-          <span
-            className="text-xs font-medium uppercase tracking-wider"
-            style={{ color: isDark ? '#6b7280' : '#5c676c' }}
-          >
-            {language === 'text' ? 'code' : language}
-          </span>
+          <div className="flex items-center gap-3">
+            {/* Traffic lights */}
+            <div className="flex items-center gap-1.5">
+              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#ff5f56' }} />
+              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#ffbd2e' }} />
+              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#27ca40' }} />
+            </div>
+            {/* Language label */}
+            <span
+              className="text-xs font-medium tracking-wide"
+              style={{ color: isDark ? '#6b7280' : '#5c676c' }}
+            >
+              {language === 'text' ? 'code' : language}
+            </span>
+          </div>
           <button
             onClick={copyToClipboard}
             className="flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors"

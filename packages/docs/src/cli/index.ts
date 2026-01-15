@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { initCommand } from './commands/init.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
+import { agentCoachCommand } from './commands/agent-coach.js'
 
 const program = new Command()
 
@@ -33,6 +34,14 @@ program
   .option('--llms-txt', 'Generate only llms.txt')
   .option('--docs-json', 'Generate only docs.json')
   .action(generateCommand)
+
+program
+  .command('agent')
+  .description('Check agent-readiness and get recommendations')
+  .option('-v, --verbose', 'Show detailed check results')
+  .option('--json', 'Output as JSON')
+  .option('--fix', 'Auto-create missing files and folders')
+  .action(agentCoachCommand)
 
 program.parse()
 

@@ -31,10 +31,14 @@ export interface TableOfContentsProps {
 
 /**
  * Hook to track which section is currently in view
+ * When user can't scroll anymore (at bottom), follows mouse position
  */
 export function useActiveSection(items: TocItem[], offset = 100): string {
   const [activeId, setActiveId] = useState<string>('')
+  const [isAtBottom, setIsAtBottom] = useState(false)
+  const [mouseActiveId, setMouseActiveId] = useState<string>('')
 
+  // IntersectionObserver for normal scroll behavior
   useEffect(() => {
     if (typeof window === 'undefined' || items.length === 0) return
 
@@ -67,7 +71,62 @@ export function useActiveSection(items: TocItem[], offset = 100): string {
     return () => observer.disconnect()
   }, [items, offset])
 
-  return activeId
+  // Detect when at bottom of page
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const checkIfAtBottom = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      const scrollHeight = document.documentElement.scrollHeight
+      const clientHeight = document.documentElement.clientHeight
+      // Consider "at bottom" when within 50px of the end
+      const atBottom = scrollTop + clientHeight >= scrollHeight - 50
+      setIsAtBottom(atBottom)
+    }
+
+    window.addEventListener('scroll', checkIfAtBottom, { passive: true })
+    checkIfAtBottom() // Check initially
+
+    return () => window.removeEventListener('scroll', checkIfAtBottom)
+  }, [])
+
+  // Mouse-follow behavior when at bottom
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isAtBottom || items.length === 0) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const mouseY = e.clientY
+
+      // Find the section heading closest to the mouse Y position
+      let closestId = ''
+      let closestDistance = Infinity
+
+      items.forEach((item) => {
+        const element = document.getElementById(item.id)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          const elementCenterY = rect.top + rect.height / 2
+          const distance = Math.abs(mouseY - elementCenterY)
+
+          if (distance < closestDistance) {
+            closestDistance = distance
+            closestId = item.id
+          }
+        }
+      })
+
+      if (closestId) {
+        setMouseActiveId(closestId)
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isAtBottom, items])
+
+  // Return mouse-based active ID when at bottom, otherwise scroll-based
+  return isAtBottom && mouseActiveId ? mouseActiveId : activeId
 }
 
 // ============================================

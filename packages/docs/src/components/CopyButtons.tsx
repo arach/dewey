@@ -201,6 +201,7 @@ export function CopyButtons({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'flex-end',
                   gap: '0.5rem',
                   width: '100%',
                   padding: '0.5rem 0.75rem',
@@ -209,7 +210,7 @@ export function CopyButtons({
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  textAlign: 'left',
+                  textAlign: 'right',
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
@@ -221,6 +222,7 @@ export function CopyButtons({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'flex-end',
                   gap: '0.5rem',
                   width: '100%',
                   padding: '0.5rem 0.75rem',
@@ -229,7 +231,7 @@ export function CopyButtons({
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  textAlign: 'left',
+                  textAlign: 'right',
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}

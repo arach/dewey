@@ -4,6 +4,22 @@
  */
 
 /* ============================================
+   Shared Spacing System
+   ============================================ */
+:root {
+  /* Header baseline: distance from top of content area to text baseline */
+  --dw-header-baseline: 3rem;
+
+  /* Font sizes for header elements */
+  --dw-sidebar-title-size: 1rem;
+  --dw-page-title-size: 2.25rem;
+  --dw-toc-title-size: 0.6875rem;
+
+  /* Baseline ratio (~80% for Latin fonts) */
+  --dw-baseline-ratio: 0.8;
+}
+
+/* ============================================
    Header
    ============================================ */
 
@@ -285,7 +301,6 @@
   line-height: 1.6;
   color: var(--color-dw-muted-foreground);
   margin-bottom: 3rem;
-  max-width: 42rem;
 }
 
 .dw-docs-sections {
@@ -393,7 +408,8 @@
   flex: 1;
   max-width: 80ch;
   margin: 0 auto;
-  padding: 2rem;
+  /* Calculated: baseline - (font-size × ratio) = 3rem - (2.25rem × 0.8) = 1.2rem */
+  padding: calc(var(--dw-header-baseline) - var(--dw-page-title-size) * var(--dw-baseline-ratio)) 2rem 1.5rem;
   width: 100%;
 }
 
@@ -414,7 +430,9 @@
 }
 
 .dw-sidebar-header {
-  padding: 1rem 1rem 0.75rem;
+  /* Calculated: baseline - (font-size × ratio) = 3rem - (1rem × 0.8) = 2.2rem */
+  padding: calc(var(--dw-header-baseline) - var(--dw-sidebar-title-size) * var(--dw-baseline-ratio)) 1rem 1rem;
+  border: none;
 }
 
 .dw-sidebar-title {
@@ -495,7 +513,8 @@
   position: sticky;
   top: 3.5rem;
   height: calc(100vh - 3.5rem);
-  padding: 1.5rem 1rem;
+  /* Calculated: baseline - (font-size × ratio) = 3rem - (0.6875rem × 0.8) = 2.45rem */
+  padding: calc(var(--dw-header-baseline) - var(--dw-toc-title-size) * var(--dw-baseline-ratio)) 1rem 1.5rem;
   padding-left: 1.5rem;
   overflow-y: auto;
   align-self: flex-start;

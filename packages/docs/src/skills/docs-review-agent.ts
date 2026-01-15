@@ -3,7 +3,7 @@
  *
  * A Dewey skill for reviewing documentation quality page-by-page.
  * Cross-references docs against codebase to catch drift.
- * Creates a standard review structure in docs/reviews/.
+ * Creates a standard review structure in .dewey/reviews/.
  *
  * @example
  * import { docsReviewAgent } from '@arach/dewey'
@@ -12,7 +12,7 @@
  * const prompt = docsReviewAgent.reviewPage
  *   .replace('{DOC_FILE}', 'docs/api.md')
  *   .replace('{SOURCE_FILES}', 'src/utils/constants.ts, src/types/index.ts')
- *   .replace('{OUTPUT_FILE}', 'docs/reviews/api.md')
+ *   .replace('{OUTPUT_FILE}', '.dewey/reviews/api.md')
  */
 
 export interface DocsReviewResult {
@@ -34,7 +34,7 @@ export const docsReviewAgent = {
   /**
    * What this skill does
    */
-  purpose: `Review documentation quality page-by-page, cross-referencing against codebase to catch drift between docs and implementation. Creates structured reviews in docs/reviews/.`,
+  purpose: `Review documentation quality page-by-page, cross-referencing against codebase to catch drift between docs and implementation. Creates structured reviews in .dewey/reviews/.`,
 
   /**
    * The 5 review criteria
@@ -68,23 +68,35 @@ export const docsReviewAgent = {
   ],
 
   /**
-   * Standard file structure for reviews
+   * Standard file structure for Dewey artifacts
    */
   fileStructure: `
-docs/reviews/
-├── README.md           # Summary table + critical issues
-├── [page-name].md      # Individual page review
-├── [page-name].md
-└── ...
+.dewey/                     # All Dewey-generated artifacts (gitignore-friendly)
+├── reviews/                # Documentation quality assessments
+│   ├── summary.md          # Overview table + critical issues
+│   └── [page-name].md      # Individual page reviews
+├── prompts/                # Generated PromptSlideout configs
+├── drift/                  # Codebase drift reports
+└── config.json             # Dewey project settings
 `,
 
   /**
-   * Initialize reviews folder for a project
+   * Initialize .dewey folder for a project
    */
-  init: `Create the docs review structure for this project.
+  init: `Create the .dewey folder structure for this project.
 
-1. Create \`docs/reviews/\` directory
-2. Create \`docs/reviews/README.md\` with this template:
+1. Create directories:
+   \`\`\`
+   mkdir -p .dewey/reviews .dewey/prompts .dewey/drift
+   \`\`\`
+
+2. Add to .gitignore (optional):
+   \`\`\`
+   # Dewey generated artifacts
+   .dewey/
+   \`\`\`
+
+3. Create \`.dewey/reviews/summary.md\` with this template:
 
 \`\`\`markdown
 # Documentation Reviews

@@ -92,7 +92,7 @@ export { AgentContext } from './components/AgentContext'
 export type { AgentContextProps } from './components/AgentContext'
 
 export { PromptSlideout } from './components/PromptSlideout'
-export type { PromptSlideoutProps, PromptMessage } from './components/PromptSlideout'
+export type { PromptSlideoutProps, PromptParam } from './components/PromptSlideout'
 
 // ============================================
 // Hooks

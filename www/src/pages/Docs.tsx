@@ -1,5 +1,5 @@
 import { Routes, Route, useParams, Link } from 'react-router-dom'
-import { BookOpen, Terminal, Settings, Puzzle, Bot, Sparkles, FileText, ArrowRight, Library } from 'lucide-react'
+import { BookOpen, Terminal, Settings, Puzzle, Bot, Sparkles, ArrowRight, Library } from 'lucide-react'
 import { DocsLayout, MarkdownContent, type NavGroup } from '../components/docs'
 
 // ============================================
@@ -1275,7 +1275,7 @@ function DocsIndexPage() {
                           className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
                           style={{ background: 'rgba(31, 122, 101, 0.1)' }}
                         >
-                          <Icon className="w-5 h-5" style={{ color: 'var(--arc-accent-2)' }} />
+                          <span style={{ color: 'var(--arc-accent-2)' }}><Icon className="w-5 h-5" /></span>
                         </div>
                       )}
                       <div className="flex-grow min-w-0">

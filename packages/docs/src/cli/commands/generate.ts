@@ -9,6 +9,7 @@ interface GenerateOptions {
   agentsMd?: boolean
   llmsTxt?: boolean
   docsJson?: boolean
+  installMd?: boolean
 }
 
 interface DocSection {
@@ -173,6 +174,180 @@ function generateDocsJson(projectName: string, version: string | undefined, docs
   return JSON.stringify(data, null, 2)
 }
 
+/**
+ * Generate install.md following the installmd.org standard
+ * @see https://installmd.org
+ */
+function generateInstallMd(config: Awaited<ReturnType<typeof loadConfig>>, docs: DocSection[]): string {
+  if (!config) return ''
+
+  const lines: string[] = []
+  const projectName = config.project.name.toLowerCase().replace(/\s+/g, '-')
+  const install = config.install
+
+  // H1 with lowercase hyphenated name
+  lines.push(`# ${projectName}`)
+  lines.push('')
+
+  // Blockquote description
+  if (config.project.tagline) {
+    lines.push(`> ${config.project.tagline}`)
+    lines.push('')
+  }
+
+  // Agent instruction
+  lines.push(`You are an expert at installing ${config.project.name}. Execute these steps autonomously`)
+  lines.push('and inform the user of any decisions made. Request approval before running')
+  lines.push('installation commands.')
+  lines.push('')
+
+  // OBJECTIVE section
+  lines.push('## OBJECTIVE')
+  lines.push('')
+  if (install?.objective) {
+    lines.push(install.objective)
+  } else {
+    lines.push(`Install and configure ${config.project.name}.`)
+  }
+  lines.push('')
+
+  // DONE WHEN section
+  lines.push('## DONE WHEN')
+  lines.push('')
+  if (install?.doneWhen) {
+    lines.push(`\`${install.doneWhen.command}\`${install.doneWhen.expectedOutput ? ` returns ${install.doneWhen.expectedOutput}` : ' completes successfully'}`)
+  } else {
+    // Try to infer from project type
+    switch (config.project.type) {
+      case 'npm-package':
+        lines.push(`\`npm list ${projectName}\` shows the package installed.`)
+        break
+      case 'cli-tool':
+        lines.push(`\`${projectName} --version\` returns a version number.`)
+        break
+      case 'macos-app':
+        lines.push(`The app is installed in /Applications and can be launched.`)
+        break
+      default:
+        lines.push(`Installation completes without errors.`)
+    }
+  }
+  lines.push('')
+
+  // TODO section (checklist)
+  lines.push('## TODO')
+  lines.push('')
+  if (install?.steps && install.steps.length > 0) {
+    for (const step of install.steps) {
+      lines.push(`- [ ] ${step.description}`)
+    }
+  } else {
+    // Default steps based on project type
+    lines.push('- [ ] Verify prerequisites')
+    lines.push('- [ ] Install the package')
+    if (config.project.type !== 'npm-package') {
+      lines.push('- [ ] Configure initial settings')
+    }
+    lines.push('- [ ] Verify installation')
+  }
+  lines.push('')
+
+  // Prerequisites section (if any)
+  if (install?.prerequisites && install.prerequisites.length > 0) {
+    lines.push('## Prerequisites')
+    lines.push('')
+    for (const prereq of install.prerequisites) {
+      lines.push(`- ${prereq}`)
+    }
+    lines.push('')
+  }
+
+  // Detailed step sections
+  if (install?.steps && install.steps.length > 0) {
+    install.steps.forEach((step, index) => {
+      lines.push(`## Step ${index + 1}: ${step.description}`)
+      lines.push('')
+      if (step.command) {
+        lines.push('```bash')
+        lines.push(step.command)
+        lines.push('```')
+        lines.push('')
+      }
+      if (step.alternatives && step.alternatives.length > 0) {
+        for (const alt of step.alternatives) {
+          lines.push(`**Alternative for ${alt.condition}:**`)
+          lines.push('```bash')
+          lines.push(alt.command)
+          lines.push('```')
+          lines.push('')
+        }
+      }
+    })
+  } else {
+    // Generate default steps from quickstart doc if available
+    const quickstart = docs.find(d => d.id === 'quickstart')
+    if (quickstart) {
+      lines.push('## Installation')
+      lines.push('')
+      // Extract installation section from quickstart if possible
+      const installMatch = quickstart.content.match(/## Installation[\s\S]*?(?=##|$)/)
+      if (installMatch) {
+        lines.push(installMatch[0].replace('## Installation', '').trim())
+      } else {
+        // Fallback based on project type
+        switch (config.project.type) {
+          case 'npm-package':
+          case 'react-library':
+            lines.push('```bash')
+            lines.push('# Using pnpm (recommended)')
+            lines.push(`pnpm add ${projectName}`)
+            lines.push('')
+            lines.push('# Using npm')
+            lines.push(`npm install ${projectName}`)
+            lines.push('')
+            lines.push('# Using yarn')
+            lines.push(`yarn add ${projectName}`)
+            lines.push('```')
+            break
+          case 'cli-tool':
+            lines.push('```bash')
+            lines.push('# Using pnpm')
+            lines.push(`pnpm add -g ${projectName}`)
+            lines.push('')
+            lines.push('# Using npm')
+            lines.push(`npm install -g ${projectName}`)
+            lines.push('```')
+            break
+          case 'macos-app':
+            lines.push('```bash')
+            lines.push('# Using Homebrew')
+            lines.push(`brew install --cask ${projectName}`)
+            lines.push('')
+            lines.push('# Or build from source')
+            lines.push('swift build -c release')
+            lines.push('```')
+            break
+          default:
+            lines.push('See documentation for installation instructions.')
+        }
+      }
+      lines.push('')
+    }
+  }
+
+  // EXECUTE NOW section
+  lines.push('## EXECUTE NOW')
+  lines.push('')
+  lines.push('Proceed with installation following the TODO checklist above.')
+  lines.push('')
+
+  // Footer
+  lines.push('---')
+  lines.push(`Generated by [Dewey](https://github.com/arach/dewey) | [installmd.org](https://installmd.org)`)
+
+  return lines.join('\n')
+}
+
 export async function generateCommand(options: GenerateOptions) {
   const cwd = process.cwd()
   const config = await loadConfig(cwd)
@@ -206,11 +381,12 @@ export async function generateCommand(options: GenerateOptions) {
   const docs = await loadDocs(docsPath, sectionsToInclude)
 
   // Determine which files to generate
-  const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson
+  const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd
   const filesToGenerate = {
     agentsMd: generateAll || options.agentsMd,
     llmsTxt: generateAll || options.llmsTxt,
     docsJson: generateAll || options.docsJson,
+    installMd: generateAll || options.installMd,
   }
 
   // Generate AGENTS.md
@@ -248,6 +424,14 @@ export async function generateCommand(options: GenerateOptions) {
     const filePath = join(outputPath, 'docs.json')
     await writeFile(filePath, content)
     console.log(chalk.green('✓') + ` Generated ${chalk.cyan('docs.json')}`)
+  }
+
+  // Generate install.md (installmd.org standard)
+  if (filesToGenerate.installMd) {
+    const content = generateInstallMd(config, docs)
+    const filePath = join(outputPath, 'install.md')
+    await writeFile(filePath, content)
+    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('install.md')} (installmd.org standard)`)
   }
 
   console.log(chalk.blue('\n✨ Agent files generated!\n'))

@@ -245,6 +245,31 @@ export default {
     output: './',
     required: ['overview', 'quickstart'],
   },
+
+  // install.md configuration (installmd.org standard)
+  // Generates LLM-executable installation instructions
+  install: {
+    // What gets installed
+    objective: 'Install and configure {{PROJECT_NAME}}.',
+
+    // How to verify successful installation
+    doneWhen: {
+      command: '{{PROJECT_NAME}} --version',
+      expectedOutput: 'version number',
+    },
+
+    // Requirements before installation
+    prerequisites: [
+      // 'Node.js >= 18',
+      // 'pnpm (recommended)',
+    ],
+
+    // Installation steps (rendered as TODO checklist)
+    steps: [
+      // { description: 'Install the package', command: 'pnpm add {{PROJECT_NAME}}' },
+      // { description: 'Verify installation', command: '{{PROJECT_NAME}} --version' },
+    ],
+  },
 }
 `
 
@@ -325,5 +350,11 @@ export async function initCommand(options: InitOptions) {
   console.log(chalk.gray('  2. Write your documentation in docs/'))
   console.log(chalk.gray('  3. Run') + chalk.cyan(' dewey audit ') + chalk.gray('to check completeness'))
   console.log(chalk.gray('  4. Run') + chalk.cyan(' dewey generate ') + chalk.gray('to create agent files'))
+  console.log()
+  console.log(chalk.gray('Generated files include:'))
+  console.log(chalk.gray('  - AGENTS.md    Context for AI agents'))
+  console.log(chalk.gray('  - llms.txt     General software context'))
+  console.log(chalk.gray('  - docs.json    Structured documentation'))
+  console.log(chalk.gray('  - install.md   LLM-executable installation (installmd.org)'))
   console.log()
 }

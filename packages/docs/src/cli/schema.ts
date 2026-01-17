@@ -65,14 +65,43 @@ export const DocsConfig = z.object({
 })
 
 /**
+ * install.md configuration - follows installmd.org standard
+ * @see https://installmd.org
+ */
+export const InstallConfig = z.object({
+  /** Installation objective (what gets installed) */
+  objective: z.string().optional(),
+  /** Verification command and expected output */
+  doneWhen: z.object({
+    command: z.string(),
+    expectedOutput: z.string().optional(),
+  }).optional(),
+  /** Prerequisites before installation */
+  prerequisites: z.array(z.string()).default([]),
+  /** Installation steps (will be rendered as markdown checkboxes) */
+  steps: z.array(z.object({
+    description: z.string(),
+    command: z.string().optional(),
+    alternatives: z.array(z.object({
+      condition: z.string(),
+      command: z.string(),
+    })).optional(),
+  })).default([]),
+  /** Custom URL where install.md will be hosted (for piping support) */
+  hostedUrl: z.string().optional(),
+})
+
+/**
  * Full Dewey configuration schema
  */
 export const DeweyConfig = z.object({
   project: ProjectConfig,
   agent: AgentConfig.default({}),
   docs: DocsConfig.default({}),
+  install: InstallConfig.optional(),
 })
 export type DeweyConfig = z.infer<typeof DeweyConfig>
+export type InstallConfig = z.infer<typeof InstallConfig>
 
 /**
  * Helper to create a typed config

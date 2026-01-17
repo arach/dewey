@@ -28,11 +28,12 @@ program
 
 program
   .command('generate')
-  .description('Generate agent-ready files (AGENTS.md, llms.txt, docs.json)')
+  .description('Generate agent-ready files (AGENTS.md, llms.txt, docs.json, install.md)')
   .option('-o, --output <dir>', 'Output directory')
   .option('--agents-md', 'Generate only AGENTS.md')
   .option('--llms-txt', 'Generate only llms.txt')
   .option('--docs-json', 'Generate only docs.json')
+  .option('--install-md', 'Generate only install.md (installmd.org standard)')
   .action(generateCommand)
 
 program
@@ -47,5 +48,5 @@ program.parse()
 
 // Export for programmatic use
 export { defineConfig } from './schema.js'
-export type { DeweyConfig, ProjectType, AgentRule } from './schema.js'
+export type { DeweyConfig, ProjectType, AgentRule, InstallConfig } from './schema.js'
 export { loadConfig, configExists } from './config.js'

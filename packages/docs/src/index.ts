@@ -109,6 +109,13 @@ export { docsReviewAgent } from './skills/docs-review-agent'
 export type { DocsReviewResult } from './skills/docs-review-agent'
 
 // ============================================
+// Install.md Generator (installmd.org standard)
+// ============================================
+
+export { installMdGenerator } from './skills/install-md-generator'
+export type { InstallMdConfig } from './skills/install-md-generator'
+
+// ============================================
 // Hooks
 // ============================================
 

@@ -19,11 +19,23 @@
 - [ ] `Accordion` — collapsible sections
 - [ ] `LinkCard` — rich navigation cards
 
+### 4. install.md Generation
+- [x] Add `InstallConfig` schema
+- [x] Add `installMdGenerator` skill
+- [x] Add `--install-md` flag to generate command
+- [x] Add install config to dewey.config.ts template
+
 ---
 
 ## Backlog
 
-### Documentation
+### Documentation (Priority - from self-review)
+- [ ] Document install.md generation (installmd.org standard)
+- [ ] Document `dewey agent` command
+- [ ] Document Skills system (docsReviewAgent, promptSlideoutGenerator, installMdGenerator)
+- [ ] Document Agent-Friendly components (AgentContext, PromptSlideout, CopyButtons)
+- [ ] Document theming system (DeweyProvider, 8 presets, CSS vars, Tailwind preset)
+- [ ] Expand Components page (16 undocumented components)
 - [ ] Component usage docs in www
 - [ ] Contributing guide
 - [ ] Changelog

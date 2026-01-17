@@ -1,0 +1,51 @@
+# dewey
+
+> Documentation toolkit for AI-agent-ready docs
+
+## What it does
+
+Dewey helps you build documentation that AI agents can actually use:
+- Generates AGENTS.md, llms.txt, docs.json, install.md
+- Provides 22 React components for docs sites
+- Includes skills (LLM prompts) for reviewing and improving docs
+- Validates docs against source code to catch drift
+
+## Installation
+
+pnpm add @arach/dewey
+
+## CLI Commands
+
+dewey init      - Create docs/ folder and dewey.config.ts
+dewey audit     - Check documentation completeness
+dewey generate  - Create agent-ready files
+dewey agent     - Score agent-readiness (0-100)
+
+## Key Concepts
+
+1. Agent Content Pattern
+   - Each page has two versions: human (.md) and agent (.agent.md)
+   - Agent versions are dense, structured, self-contained
+   - "Copy for Agent" copies the .agent.md version
+
+2. Skills System
+   - Skills are LLM prompts, not code
+   - They guide agents to review, improve, generate docs
+   - Three built-in: docsReviewAgent, promptSlideoutGenerator, installMdGenerator
+
+3. install.md Standard
+   - Follows installmd.org specification
+   - LLM-executable installation instructions
+   - Can be piped: curl url/install.md | claude
+
+## Documentation
+
+- Overview: /docs/overview
+- Quickstart: /docs/quickstart
+- Components: /docs/components
+- Configuration: /docs/configuration
+
+## Links
+
+- GitHub: https://github.com/arach/dewey
+- npm: https://www.npmjs.com/package/@arach/dewey

@@ -249,6 +249,191 @@ PASS = 18+/25, NEEDS_WORK = below 18
 \`\`\`
 
 This is a quick validation without full review scoring.`,
+
+  /**
+   * Generate summary.md from individual review files
+   */
+  generateSummary: `You are a Dewey documentation review agent. Generate a summary report.
+
+**Review files directory:** {REVIEWS_DIR}
+**Run number:** {RUN_NUMBER}
+**Date:** {DATE}
+
+**Instructions:**
+
+1. Read all individual review files in {REVIEWS_DIR}/*.md (except summary.md)
+2. Extract scores from each review
+3. Generate summary.md with this exact format:
+
+\`\`\`markdown
+# Documentation Reviews
+
+Dewey documentation quality assessments.
+
+## Criteria
+
+1. **Grounding** - Does the page explain its purpose clearly?
+2. **Completeness** - Are all relevant details included?
+3. **Clarity** - Is the writing clear and technical?
+4. **Examples** - Are there useful code examples?
+5. **Agent-Friendliness** - Can an AI use this page effectively?
+
+---
+
+## Review Summary
+
+| Run | Date | Pages | Avg Score | Pass | Fail | Issues | Remediations |
+|-----|------|-------|-----------|------|------|--------|--------------|
+| #{RUN_NUMBER} | {DATE} | {PAGE_COUNT} | {AVG}/25 | {PASS_COUNT} | {FAIL_COUNT} | {ISSUE_COUNT} | {REMEDIATION_COUNT} |
+
+---
+
+## Pages
+
+| Page | G | C | Cl | E | AF | Total | Status | Review |
+|------|---|---|----|----|----|----|--------|--------|
+| {page} | {g} | {c} | {cl} | {e} | {af} | {total}/25 | {status} | [review](./{page}.md) |
+
+**Legend:** G=Grounding, C=Completeness, Cl=Clarity, E=Examples, AF=Agent-Friendliness
+
+---
+
+## Critical Issues ({ISSUE_COUNT} total)
+
+[List all issues from all reviews, numbered]
+
+---
+
+## Remediations ({REMEDIATION_COUNT} recommended)
+
+### Priority 1: [Category]
+- [ ] [Remediation from reviews]
+
+### Priority 2: [Category]
+- [ ] [Remediation]
+
+---
+
+## Progress Tracking
+
+\\\`\\\`\\\`
+Run #{RUN_NUMBER}: {AVG}/25 avg {PROGRESS_BAR} {PERCENT}% ({STATUS})
+Target: 18/25 avg ██████████████░░░░░░ 72% (PASS)
+\\\`\\\`\\\`
+
+---
+
+*Last updated: {DATE}*
+\`\`\`
+
+**Calculations:**
+- PASS threshold: 18+/25 (72%)
+- Avg Score: Sum of all totals / number of pages
+- Progress bar: 20 chars, filled proportionally to avg/25`,
+
+  /**
+   * Update summary after a new review iteration
+   */
+  updateSummary: `You are a Dewey documentation review agent. Update the summary after improvements.
+
+**Current summary:** {SUMMARY_FILE}
+**New review files:** {REVIEWS_DIR}
+**Previous run number:** {PREV_RUN}
+
+**Instructions:**
+
+1. Read the current summary.md
+2. Read all updated review files
+3. Add a new row to the Review Summary table:
+   - Increment run number
+   - Calculate new averages
+   - Count new pass/fail
+4. Update the Pages table with new scores
+5. Update Critical Issues (remove fixed, add new)
+6. Update Remediations (check off completed, add new)
+7. Update Progress Tracking with new run
+
+**Key:** Show score deltas from previous run:
+- If score improved: "+2" in notes
+- If score decreased: "-1" in notes
+- Track which remediations were completed
+
+**Goal:** Iterate until Avg Score >= 18/25 (PASS threshold)`,
+
+  /**
+   * Fix documentation based on review
+   */
+  fixFromReview: `You are a Dewey documentation improvement agent.
+
+**Review file:** {REVIEW_FILE}
+**Doc file to fix:** {DOC_FILE}
+**Source files for reference:** {SOURCE_FILES}
+
+**Instructions:**
+
+1. Read the review file to understand issues and recommendations
+2. Read the source files to get accurate values
+3. Edit the documentation file to fix issues:
+
+   For each issue:
+   - If DRIFT: Update documented values to match source code
+   - If MISSING: Add the missing documentation
+   - If UNCLEAR: Rewrite for clarity
+   - If NO_EXAMPLES: Add working code examples
+
+4. After fixes, the page should score higher on:
+   - Completeness: All features documented with correct values
+   - Agent-Friendliness: Structured data, explicit valid values
+
+**Critical:**
+- Use actual values from source code, never guess
+- Add tables for enums with all valid values
+- Add prop tables with types, defaults, required markers
+- Ensure examples are copy-pasteable and work
+
+**Output:** The fixed documentation content.`,
+
+  /**
+   * Self-review cycle for iterative improvement
+   */
+  iterateCycle: `You are running a Dewey documentation improvement cycle.
+
+**Project root:** {PROJECT_ROOT}
+**Docs location:** {DOCS_DIR}
+**Source location:** {SRC_DIR}
+**Reviews location:** {REVIEWS_DIR}
+
+**The Cycle:**
+
+1. **REVIEW** - Run reviewAll to score all doc pages
+   - Generate individual review files
+   - Generate summary.md with aggregate metrics
+
+2. **ANALYZE** - Identify highest-impact fixes
+   - Pages with lowest scores
+   - Issues blocking agent-friendliness
+   - Drift from codebase (critical)
+
+3. **FIX** - Apply fixes using fixFromReview
+   - Start with lowest-scoring page
+   - Fix drift issues first (accuracy)
+   - Then completeness (coverage)
+   - Then agent-friendliness (structure)
+
+4. **RE-REVIEW** - Score the fixed pages
+   - Update individual reviews
+   - Update summary with new run
+   - Track score deltas
+
+5. **ITERATE** - Repeat until target met
+   - Target: All pages >= 18/25
+   - Or: Avg score >= 18/25
+   - Stop when no more improvements possible
+
+**Success criteria:**
+- All DRIFT issues resolved
+- All pages have PASS verdict
+- Summary shows positive trend across runs`,
 }
 
 export default docsReviewAgent

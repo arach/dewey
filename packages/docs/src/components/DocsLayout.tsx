@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
-  ArrowLeft, Book, Menu, X, ChevronRight, Sun, Moon, Copy, Check, Bot, ChevronLeft
+  ArrowLeft, Book, Menu, X, ChevronRight, Sun, Moon, Copy, Check, Bot, ChevronLeft, Sparkles
 } from 'lucide-react'
 
 // Navigation structure for docs - consumers will override this
@@ -214,6 +214,8 @@ export interface DocsLayoutProps {
   basePath?: string
   homeUrl?: string
   markdown?: string
+  /** Agent-optimized content for "Copy for Agent" button */
+  agentContent?: string
   // Prev/Next navigation
   prevPage?: { id: string; title: string }
   nextPage?: { id: string; title: string }
@@ -231,13 +233,14 @@ export default function DocsLayout({
   basePath = '/docs',
   homeUrl = '/',
   markdown,
+  agentContent,
   prevPage,
   nextPage,
 }: DocsLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
   const [copied, setCopied] = useState<'markdown' | 'agent' | null>(null)
-  const [copyMenuOpen, setCopyMenuOpen] = useState(false)
+  const [showPromptBuilder, setShowPromptBuilder] = useState(false)
   const location = useLocation()
 
   // Extract current page from URL
@@ -247,17 +250,20 @@ export default function DocsLayout({
     if (markdown) {
       await navigator.clipboard.writeText(markdown)
       setCopied('markdown')
-      setCopyMenuOpen(false)
       setTimeout(() => setCopied(null), 2000)
     }
   }
 
   const handleCopyForAgent = async () => {
-    const agentContent = `# ${title}\n\n${description || ''}\n\n${markdown || ''}`
-    await navigator.clipboard.writeText(agentContent)
+    // Use provided agent content, or generate a basic version
+    const content = agentContent || `# ${title}\n\n${description || ''}\n\n${markdown || ''}`
+    await navigator.clipboard.writeText(content)
     setCopied('agent')
-    setCopyMenuOpen(false)
     setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleOpenPromptBuilder = () => {
+    setShowPromptBuilder(true)
   }
 
   const currentBadge = badgeStyles[badgeColor] || badgeStyles.blue
@@ -398,67 +404,71 @@ export default function DocsLayout({
               )}
             </div>
 
-            {/* Page controls - Copy dropdown */}
+            {/* Page controls - Three visible copy buttons */}
             {markdown && (
               <div className="flex items-center gap-2 ml-4 mt-2">
-                <div className="relative">
-                  <button
-                    onClick={() => setCopyMenuOpen(!copyMenuOpen)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                    style={{
-                      color: isDark ? '#9ca3af' : '#5c676c',
-                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.12)'}`,
-                      background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
-                    }}
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>Copy</span>
-                        <ChevronRight className="w-3 h-3 rotate-90" />
-                      </>
-                    )}
-                  </button>
+                {/* Prompt Builder button */}
+                <button
+                  onClick={handleOpenPromptBuilder}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{
+                    color: '#8b5cf6',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    background: isDark ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.08)',
+                  }}
+                  title="Open prompt builder"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Prompt</span>
+                </button>
 
-                  {/* Dropdown menu */}
-                  {copyMenuOpen && (
+                {/* Copy Markdown button */}
+                <button
+                  onClick={handleCopyMarkdown}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{
+                    color: isDark ? '#9ca3af' : '#5c676c',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.12)'}`,
+                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
+                  }}
+                  title="Copy as markdown"
+                >
+                  {copied === 'markdown' ? (
                     <>
-                      <div
-                        className="fixed inset-0 z-40"
-                        onClick={() => setCopyMenuOpen(false)}
-                      />
-                      <div
-                        className="absolute right-0 mt-1 w-44 rounded-lg shadow-lg z-50 py-1 overflow-hidden"
-                        style={{
-                          background: isDark ? '#1a1d20' : '#ffffff',
-                          border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.12)'}`,
-                        }}
-                      >
-                        <button
-                          onClick={handleCopyMarkdown}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors hover:bg-black/5"
-                          style={{ color: isDark ? '#d1d5db' : '#2e3538' }}
-                        >
-                          <Copy className="w-3.5 h-3.5" style={{ color: isDark ? '#6b7280' : '#5c676c' }} />
-                          Copy Markdown
-                        </button>
-                        <button
-                          onClick={handleCopyForAgent}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors hover:bg-black/5"
-                          style={{ color: isDark ? '#d1d5db' : '#2e3538' }}
-                        >
-                          <Bot className="w-3.5 h-3.5" style={{ color: isDark ? '#6b7280' : '#5c676c' }} />
-                          Copy for Agent
-                        </button>
-                      </div>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy</span>
                     </>
                   )}
-                </div>
+                </button>
+
+                {/* Copy for Agent button */}
+                <button
+                  onClick={handleCopyForAgent}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{
+                    color: '#3b82f6',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    background: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                  }}
+                  title="Copy agent-optimized content"
+                >
+                  {copied === 'agent' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="w-3.5 h-3.5" />
+                      <span>Agent</span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -642,6 +652,168 @@ export default function DocsLayout({
           border-radius: 8px;
         }
       `}</style>
+
+      {/* Prompt Builder Slideout */}
+      {showPromptBuilder && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-50"
+            onClick={() => setShowPromptBuilder(false)}
+          />
+          <div
+            className="fixed right-0 top-0 bottom-0 w-full max-w-lg z-50 shadow-2xl"
+            style={{
+              background: isDark ? '#0f1214' : '#ffffff',
+              borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+            }}
+          >
+            <div className="h-full flex flex-col">
+              {/* Header */}
+              <div
+                className="flex items-center justify-between px-6 py-4 border-b"
+                style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ background: 'rgba(139, 92, 246, 0.15)' }}
+                  >
+                    <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                  </div>
+                  <div>
+                    <h2
+                      className="font-semibold"
+                      style={{ color: isDark ? '#f3f4f6' : '#101518' }}
+                    >
+                      Prompt Builder
+                    </h2>
+                    <p
+                      className="text-xs"
+                      style={{ color: isDark ? '#6b7280' : '#5c676c' }}
+                    >
+                      Build an AI-ready prompt from this page
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPromptBuilder(false)}
+                  className="p-2 rounded-lg transition-colors"
+                  style={{
+                    color: isDark ? '#6b7280' : '#5c676c',
+                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-6">
+                  {/* Template selection */}
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: isDark ? '#d1d5db' : '#2e3538' }}
+                    >
+                      Prompt Template
+                    </label>
+                    <select
+                      className="w-full px-3 py-2 rounded-lg text-sm"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        color: isDark ? '#d1d5db' : '#2e3538',
+                      }}
+                    >
+                      <option value="explain">Explain this documentation</option>
+                      <option value="implement">Help me implement this</option>
+                      <option value="troubleshoot">Troubleshoot an issue</option>
+                      <option value="custom">Custom prompt...</option>
+                    </select>
+                  </div>
+
+                  {/* Context preview */}
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: isDark ? '#d1d5db' : '#2e3538' }}
+                    >
+                      Context (from this page)
+                    </label>
+                    <div
+                      className="p-4 rounded-lg text-xs font-mono max-h-48 overflow-y-auto"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                        color: isDark ? '#9ca3af' : '#5c676c',
+                      }}
+                    >
+                      <pre className="whitespace-pre-wrap">
+                        {agentContent?.slice(0, 500) || markdown?.slice(0, 500) || 'No content available'}
+                        {((agentContent?.length || 0) > 500 || (markdown?.length || 0) > 500) && '...'}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Additional instructions */}
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: isDark ? '#d1d5db' : '#2e3538' }}
+                    >
+                      Additional Instructions
+                    </label>
+                    <textarea
+                      placeholder="Add specific requirements or questions..."
+                      rows={4}
+                      className="w-full px-3 py-2 rounded-lg text-sm resize-none"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        color: isDark ? '#d1d5db' : '#2e3538',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div
+                className="px-6 py-4 border-t flex gap-3"
+                style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+              >
+                <button
+                  onClick={() => setShowPromptBuilder(false)}
+                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  style={{
+                    color: isDark ? '#9ca3af' : '#5c676c',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    const content = agentContent || markdown || ''
+                    await navigator.clipboard.writeText(content)
+                    setShowPromptBuilder(false)
+                    setCopied('agent')
+                    setTimeout(() => setCopied(null), 2000)
+                  }}
+                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  style={{
+                    background: '#8b5cf6',
+                    color: '#ffffff',
+                  }}
+                >
+                  Copy Prompt
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

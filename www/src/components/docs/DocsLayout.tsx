@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
-  ArrowLeft, Book, Menu, X, ChevronRight, Sun, Moon, Copy, Check, Bot, ChevronLeft
+  ArrowLeft, Book, Menu, X, ChevronRight, Sun, Moon, Copy, Check, Bot, ChevronLeft, Sparkles
 } from 'lucide-react'
+import { PromptSlideout } from './PromptSlideout'
 
 // Navigation structure for docs - consumers will override this
 export interface NavItem {
@@ -58,6 +59,74 @@ interface DocsSidebarProps {
   basePath: string
 }
 
+// Collapsible sidebar group
+function SidebarGroup({
+  group,
+  currentPage,
+  basePath,
+  onClose,
+  isDark,
+}: {
+  group: NavGroup
+  currentPage: string
+  basePath: string
+  onClose: () => void
+  isDark: boolean
+}) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <div className="dw-sidebar-group">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="dw-sidebar-group-title"
+        style={{ color: isDark ? '#6b7280' : 'var(--arc-muted)' }}
+      >
+        <span>{group.title}</span>
+        <svg
+          className={`transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+          width="12"
+          height="12"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      {isOpen && (
+        <ul className="mt-1 space-y-0.5">
+          {group.items.map((item) => {
+            const isActive = currentPage === item.id
+            const Icon = item.icon
+            return (
+              <li key={item.id}>
+                <Link
+                  to={`${basePath}/${item.id}`}
+                  onClick={onClose}
+                  className={`dw-sidebar-item ${isActive ? 'active' : ''}`}
+                  style={{
+                    background: isActive
+                      ? isDark ? 'rgba(240, 124, 79, 0.15)' : 'rgba(240, 124, 79, 0.1)'
+                      : 'transparent',
+                    color: isActive
+                      ? 'var(--arc-accent)'
+                      : isDark ? '#d1d5db' : 'var(--arc-ink-soft)',
+                    fontWeight: isActive ? 500 : 400,
+                  }}
+                >
+                  {Icon && <Icon className="w-4 h-4 flex-shrink-0 opacity-60" />}
+                  <span>{item.title}</span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 function DocsSidebar({
   isOpen,
   onClose,
@@ -79,76 +148,44 @@ function DocsSidebar({
 
       {/* Sidebar */}
       <aside
-        className={`
-          fixed top-14 left-0 bottom-0 w-64 z-50
-          transform transition-transform duration-200 ease-in-out
-          lg:translate-x-0 lg:z-30
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
+        className={`dw-sidebar ${isOpen ? 'open' : ''} ${isDark ? 'dark' : ''}`}
         style={{
-          background: isDark ? 'rgba(15, 18, 20, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          background: isDark ? 'rgba(15, 18, 20, 0.95)' : 'rgba(247, 243, 236, 0.95)',
           borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'var(--arc-border)'}`,
-          backdropFilter: 'blur(12px)',
+          transform: isOpen ? 'translateX(0)' : undefined,
         }}
       >
-        <div className="p-5 overflow-y-auto h-full">
+        <div className="dw-sidebar-header">
           {/* Back to docs index */}
           <Link
             to={basePath}
-            className="flex items-center gap-2 text-sm font-medium mb-6 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium transition-colors"
             style={{ color: isDark ? '#9ca3af' : 'var(--arc-muted)' }}
           >
             <Book className="w-4 h-4" />
-            {projectName} Docs
+            <span className="dw-sidebar-title">{projectName} Docs</span>
           </Link>
-
-          {/* Navigation groups */}
-          <nav className="space-y-6">
-            {navigation.map((group) => (
-              <div key={group.title}>
-                <h3
-                  className="text-[10px] font-semibold uppercase tracking-[0.15em] mb-2"
-                  style={{ color: isDark ? '#6b7280' : 'var(--arc-muted)' }}
-                >
-                  {group.title}
-                </h3>
-                <ul className="space-y-0.5">
-                  {group.items.map((item) => {
-                    const isActive = currentPage === item.id
-                    const Icon = item.icon
-                    return (
-                      <li key={item.id}>
-                        <Link
-                          to={`${basePath}/${item.id}`}
-                          onClick={onClose}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[14px] transition-colors text-left"
-                          style={{
-                            background: isActive
-                              ? isDark ? 'rgba(240, 124, 79, 0.15)' : 'rgba(240, 124, 79, 0.1)'
-                              : 'transparent',
-                            color: isActive
-                              ? 'var(--arc-accent)'
-                              : isDark ? '#d1d5db' : 'var(--arc-ink-soft)',
-                            fontWeight: isActive ? 500 : 400,
-                          }}
-                        >
-                          {Icon && <Icon className="w-4 h-4 flex-shrink-0 opacity-60" />}
-                          <span>{item.title}</span>
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            ))}
-          </nav>
         </div>
+
+        {/* Navigation groups with collapsible sections */}
+        <nav className="dw-sidebar-nav">
+          {navigation.map((group) => (
+            <SidebarGroup
+              key={group.title}
+              group={group}
+              currentPage={currentPage}
+              basePath={basePath}
+              onClose={onClose}
+              isDark={isDark}
+            />
+          ))}
+        </nav>
       </aside>
     </>
   )
 }
 
-// Right sidebar table of contents
+// Right sidebar table of contents with Arc styling
 function TableOfContents({ sections, isDark }: { sections: DocSection[], isDark: boolean }) {
   const [activeSection, setActiveSection] = useState('')
 
@@ -176,42 +213,42 @@ function TableOfContents({ sections, isDark }: { sections: DocSection[], isDark:
 
   return (
     <aside
-      className="hidden xl:block fixed top-14 right-0 w-52 h-[calc(100vh-56px)] overflow-y-auto"
+      className={`dw-toc hidden xl:block ${isDark ? 'dark' : ''}`}
       style={{
-        background: isDark ? 'rgba(15, 18, 20, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'var(--arc-border)'}`,
-        backdropFilter: 'blur(8px)',
+        background: isDark ? 'rgba(15, 18, 20, 0.8)' : 'rgba(247, 243, 236, 0.6)',
+        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(16, 21, 24, 0.08)'}`,
       }}
     >
-      <div className="p-4">
-        <h4
-          className="text-[10px] font-semibold uppercase tracking-[0.15em] mb-3"
-          style={{ color: isDark ? '#6b7280' : 'var(--arc-muted)' }}
-        >
-          On this page
-        </h4>
-        <nav>
-          <ul className="space-y-1.5">
-            {sections.map((section) => (
-              <li key={section.id}>
+      <h4 className="dw-toc-title" style={{ color: isDark ? '#6b7280' : 'var(--arc-muted)' }}>
+        On this page
+      </h4>
+      <nav>
+        <ul className="dw-toc-list">
+          {sections.map((section) => {
+            const isActive = activeSection === section.id
+            return (
+              <li key={section.id} className="dw-toc-item">
                 <a
                   href={`#${section.id}`}
-                  className="block text-[13px] transition-colors leading-snug py-0.5"
+                  className={`dw-toc-link ${isActive ? 'active' : ''}`}
+                  data-level={section.level}
                   style={{
-                    paddingLeft: section.level === 3 ? '12px' : '0',
-                    color: activeSection === section.id
+                    paddingLeft: section.level === 3 ? '1.5rem' : '0.75rem',
+                    fontSize: section.level === 3 ? '0.75rem' : '0.8125rem',
+                    color: isActive
                       ? 'var(--arc-accent)'
-                      : isDark ? '#9ca3af' : 'var(--arc-muted)',
-                    fontWeight: activeSection === section.id ? 500 : 400,
+                      : isDark ? '#6b7280' : 'var(--arc-muted)',
+                    fontWeight: isActive ? 500 : 400,
+                    borderLeftColor: isActive ? 'var(--arc-accent)' : 'transparent',
                   }}
                 >
                   {section.title}
                 </a>
               </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
+            )
+          })}
+        </ul>
+      </nav>
     </aside>
   )
 }
@@ -238,6 +275,8 @@ export interface DocsLayoutProps {
   basePath?: string
   homeUrl?: string
   markdown?: string
+  /** Agent-optimized content for "Copy for Agent" button */
+  agentContent?: string
   // Prev/Next navigation
   prevPage?: { id: string; title: string }
   nextPage?: { id: string; title: string }
@@ -255,12 +294,14 @@ export default function DocsLayout({
   basePath = '/docs',
   homeUrl = '/',
   markdown,
+  agentContent,
   prevPage,
   nextPage,
 }: DocsLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
-  const [copied, setCopied] = useState<'markdown' | 'agent' | null>(null)
+  const [copied, setCopied] = useState<'markdown' | 'agent' | 'plain' | null>(null)
+  const [showPromptBuilder, setShowPromptBuilder] = useState(false)
   const [copyMenuOpen, setCopyMenuOpen] = useState(false)
   const location = useLocation()
 
@@ -274,6 +315,21 @@ export default function DocsLayout({
     return []
   }, [propSections, markdown])
 
+  // Strip markdown syntax to plain text
+  const stripMarkdown = (md: string): string => {
+    return md
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+      .replace(/^[\s]*[-*+]\s+/gm, '• ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  }
+
   const handleCopyMarkdown = async () => {
     if (markdown) {
       await navigator.clipboard.writeText(markdown)
@@ -283,11 +339,19 @@ export default function DocsLayout({
     }
   }
 
+  const handleCopyPlain = async () => {
+    if (markdown) {
+      await navigator.clipboard.writeText(stripMarkdown(markdown))
+      setCopied('plain')
+      setCopyMenuOpen(false)
+      setTimeout(() => setCopied(null), 2000)
+    }
+  }
+
   const handleCopyForAgent = async () => {
-    const agentContent = `# ${title}\n\n${description || ''}\n\n${markdown || ''}`
-    await navigator.clipboard.writeText(agentContent)
+    const content = agentContent || `# ${title}\n\n${description || ''}\n\n${markdown || ''}`
+    await navigator.clipboard.writeText(content)
     setCopied('agent')
-    setCopyMenuOpen(false)
     setTimeout(() => setCopied(null), 2000)
   }
 
@@ -321,21 +385,25 @@ export default function DocsLayout({
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Brand */}
+            {/* Brand - Arc-style with dot */}
             <Link
               to={basePath}
-              className="flex items-center gap-2.5 transition-colors"
+              className="flex items-baseline gap-2.5 transition-colors hover:opacity-80"
             >
               <span
-                className="w-2 h-2 rounded-full"
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0 relative top-[1px]"
                 style={{
                   background: 'var(--arc-accent)',
-                  boxShadow: '0 0 0 3px var(--arc-glow)',
+                  boxShadow: '0 0 0 4px rgba(240, 124, 79, 0.2)',
                 }}
               />
               <span
-                className="text-lg font-semibold font-serif"
-                style={{ color: isDark ? '#f3f4f6' : 'var(--arc-ink)' }}
+                className="text-lg font-semibold tracking-tight"
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  color: isDark ? '#f3f4f6' : 'var(--arc-ink)',
+                  letterSpacing: '-0.01em',
+                }}
               >
                 {projectName}
               </span>
@@ -400,9 +468,9 @@ export default function DocsLayout({
       {/* Right table of contents */}
       <TableOfContents sections={sections} isDark={isDark} />
 
-      {/* Main content */}
-      <main className="pt-14 lg:pl-64 xl:pr-52">
-        <div className="max-w-3xl mx-auto px-6 py-10">
+      {/* Main content - Arc-style layout with proper widths */}
+      <main className="pt-14 lg:pl-[280px] xl:pr-[220px]">
+        <div className="max-w-[48rem] mx-auto px-8 py-12">
           {/* Page header with controls */}
           <div className="flex items-start justify-between mb-8">
             <div className="flex-1">
@@ -438,29 +506,70 @@ export default function DocsLayout({
               )}
             </div>
 
-            {/* Page controls - Copy dropdown */}
+            {/* Page controls - Order: Prompt → Agent → Copy (with dropdown) */}
             {markdown && (
               <div className="flex items-center gap-2 ml-4 mt-1">
+                {/* 1. AI Prompt - Opens slideout */}
+                <button
+                  onClick={() => setShowPromptBuilder(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:shadow-sm"
+                  style={{
+                    color: 'var(--arc-accent)',
+                    border: '1px solid rgba(240, 124, 79, 0.3)',
+                    background: isDark ? 'rgba(240, 124, 79, 0.1)' : 'rgba(240, 124, 79, 0.08)',
+                  }}
+                  title="Open AI prompt builder"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Prompt</span>
+                </button>
+
+                {/* 2. Agent - Direct copy of agent content */}
+                <button
+                  onClick={handleCopyForAgent}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:shadow-sm"
+                  style={{
+                    color: 'var(--arc-accent-2)',
+                    border: '1px solid rgba(31, 122, 101, 0.3)',
+                    background: isDark ? 'rgba(31, 122, 101, 0.1)' : 'rgba(31, 122, 101, 0.08)',
+                  }}
+                  title="Copy agent-optimized content"
+                >
+                  {copied === 'agent' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="w-3.5 h-3.5" />
+                      <span>Agent</span>
+                    </>
+                  )}
+                </button>
+
+                {/* 3. Copy - Dropdown with Markdown / Plain text */}
                 <div className="relative">
                   <button
                     onClick={() => setCopyMenuOpen(!copyMenuOpen)}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:shadow-sm"
                     style={{
                       color: isDark ? '#9ca3af' : 'var(--arc-muted)',
                       border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'var(--arc-border)'}`,
                       background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
                     }}
+                    title="Copy page content"
                   >
-                    {copied ? (
+                    {copied === 'markdown' || copied === 'plain' ? (
                       <>
-                        <Check className="w-3.5 h-3.5" />
+                        <Check className="w-3.5 h-3.5" style={{ color: 'var(--arc-accent-2)' }} />
                         <span>Copied</span>
                       </>
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5" />
                         <span>Copy</span>
-                        <ChevronRight className="w-3 h-3 rotate-90" />
+                        <ChevronRight className="w-3 h-3 rotate-90 -ml-0.5" />
                       </>
                     )}
                   </button>
@@ -473,28 +582,30 @@ export default function DocsLayout({
                         onClick={() => setCopyMenuOpen(false)}
                       />
                       <div
-                        className="absolute right-0 mt-1 w-40 rounded-lg shadow-lg z-50 py-1 overflow-hidden"
+                        className="absolute right-0 mt-1 w-32 rounded-lg shadow-lg z-50 py-1 overflow-hidden"
                         style={{
                           background: isDark ? '#1a1d20' : '#ffffff',
                           border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'var(--arc-border)'}`,
-                          boxShadow: 'var(--arc-shadow-soft)',
+                          boxShadow: '0 4px 12px rgba(16, 21, 24, 0.12)',
                         }}
                       >
                         <button
                           onClick={handleCopyMarkdown}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-left transition-colors hover:bg-black/5"
+                          className="w-full flex items-center justify-end gap-2 px-3 py-2 text-[12px] text-right transition-colors"
                           style={{ color: isDark ? '#d1d5db' : 'var(--arc-ink-soft)' }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                         >
-                          <Copy className="w-3.5 h-3.5 opacity-50" />
-                          Copy Markdown
+                          Markdown
                         </button>
                         <button
-                          onClick={handleCopyForAgent}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-left transition-colors hover:bg-black/5"
+                          onClick={handleCopyPlain}
+                          className="w-full flex items-center justify-end gap-2 px-3 py-2 text-[12px] text-right transition-colors"
                           style={{ color: isDark ? '#d1d5db' : 'var(--arc-ink-soft)' }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                         >
-                          <Bot className="w-3.5 h-3.5 opacity-50" />
-                          Copy for Agent
+                          Plain text
                         </button>
                       </div>
                     </>
@@ -668,6 +779,25 @@ export default function DocsLayout({
           border-radius: 8px;
         }
       `}</style>
+
+      {/* Prompt Slideout - Using the real PromptSlideout component */}
+      <PromptSlideout
+        isOpen={showPromptBuilder}
+        onClose={() => setShowPromptBuilder(false)}
+        title={`${title} - AI Prompt`}
+        description="Build a prompt from this documentation page"
+        info={`This page contains documentation about "${title}". Edit the template below to customize your prompt, then copy to use with any AI assistant.`}
+        starterTemplate={`Help me understand and use "${title}".
+
+Here's the documentation:
+
+${agentContent || markdown || 'No content available'}
+
+{INSTRUCTIONS}`}
+        params={[
+          { name: 'INSTRUCTIONS', description: 'Additional questions or requirements', example: 'Focus on the API usage' },
+        ]}
+      />
     </div>
   )
 }

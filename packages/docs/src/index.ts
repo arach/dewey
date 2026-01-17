@@ -131,6 +131,27 @@ export { resolveIcon, commonIcons } from './utils/icons'
 export type { CommonIconName } from './utils/icons'
 
 // ============================================
+// Agent Content
+// ============================================
+
+export {
+  agentContent,
+  AgentContentBuilder,
+  renderAgentMarkdown,
+  renderAgentJson,
+  renderAgentPlainText,
+} from './utils/agent-content'
+export type {
+  AgentContent,
+  AgentSection,
+  TableSection,
+  EnumSection,
+  CodeSection,
+  TextSection,
+  ListSection,
+} from './utils/agent-content'
+
+// ============================================
 // Types
 // ============================================
 

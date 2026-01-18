@@ -2,41 +2,40 @@
 
 > Documentation toolkit for AI-agent-ready docs
 
+Use `/dewey` to apply these patterns when writing or reviewing documentation.
+
 ## What it does
 
-Dewey helps you build documentation that AI agents can actually use:
 - Generates AGENTS.md, llms.txt, docs.json, install.md
-- Provides 22 React components for docs sites
-- Includes skills (LLM prompts) for reviewing and improving docs
-- Validates docs against source code to catch drift
+- 22 React components for docs sites
+- Skills for reviewing and improving docs
+- Validates docs against source code
 
 ## Installation
 
 pnpm add @arach/dewey
 
-## CLI Commands
+## CLI
 
-dewey init      - Create docs/ folder and dewey.config.ts
-dewey audit     - Check documentation completeness
+dewey init      - Create docs/ folder and config
+dewey audit     - Check completeness
 dewey generate  - Create agent-ready files
 dewey agent     - Score agent-readiness (0-100)
 
 ## Key Concepts
 
 1. Agent Content Pattern
-   - Each page has two versions: human (.md) and agent (.agent.md)
-   - Agent versions are dense, structured, self-contained
-   - "Copy for Agent" copies the .agent.md version
+   - Each page has human (.md) and agent (.agent.md) versions
+   - Agent versions: dense, structured, self-contained
+   - Prefer structured data over prose for agent content
 
 2. Skills System
    - Skills are LLM prompts, not code
-   - They guide agents to review, improve, generate docs
-   - Three built-in: docsReviewAgent, promptSlideoutGenerator, installMdGenerator
+   - Built-in: docsReviewAgent, promptSlideoutGenerator, installMdGenerator
 
 3. install.md Standard
    - Follows installmd.org specification
-   - LLM-executable installation instructions
-   - Can be piped: curl url/install.md | claude
+   - LLM-executable: `curl url/install.md | claude`
 
 ## Documentation
 

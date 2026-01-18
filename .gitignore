@@ -31,3 +31,6 @@ coverage/
 # Misc
 *.tgz
 .turbo/
+
+# Claude Code local settings
+.claude/settings.local.json

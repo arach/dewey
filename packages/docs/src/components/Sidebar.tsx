@@ -85,16 +85,19 @@ function SidebarFolder({ folder, currentPage, basePath, onNavigate }: SidebarFol
         {Icon && <Icon className="dw-sidebar-item-icon" />}
         <span>{folder.name}</span>
         <svg
-          className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+          className="dw-sidebar-chevron"
+          style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          width="12"
+          height="12"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </button>
       {isOpen && (
-        <ul className="space-y-1">
+        <ul className="dw-sidebar-list">
           {folder.children.map((child) => (
             <SidebarNode
               key={child.type === 'separator' ? `sep-${child.name}` : (child as PageItem).id || (child as PageFolder).name}
@@ -124,11 +127,11 @@ interface SidebarNodeProps {
 function SidebarNode({ node, currentPage, basePath, onNavigate }: SidebarNodeProps) {
   if (node.type === 'separator') {
     return (
-      <li className="py-2">
+      <li className="dw-sidebar-separator">
         {node.name && (
           <span className="dw-sidebar-group-title">{node.name}</span>
         )}
-        {!node.name && <hr className="border-t border-[var(--color-dw-border)]" />}
+        {!node.name && <hr className="dw-sidebar-divider" />}
       </li>
     )
   }
@@ -177,7 +180,7 @@ export function Sidebar({
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="dw-sidebar-overlay"
           onClick={onClose}
         />
       )}
@@ -190,8 +193,8 @@ export function Sidebar({
         {/* Header */}
         <div className="dw-sidebar-header">
           {header ?? (
-            <Link href={basePath} className="flex items-center gap-2">
-              <Book className="w-4 h-4" />
+            <Link href={basePath} className="dw-sidebar-logo">
+              <Book style={{ width: 16, height: 16 }} />
               <span className="dw-sidebar-title">{projectName}</span>
             </Link>
           )}
@@ -200,17 +203,17 @@ export function Sidebar({
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden p-1 -mr-1"
+              className="dw-sidebar-close"
               aria-label="Close sidebar"
             >
-              <X className="w-5 h-5" />
+              <X style={{ width: 20, height: 20 }} />
             </button>
           )}
         </div>
 
         {/* Navigation */}
         <nav className="dw-sidebar-nav">
-          <ul className="space-y-1">
+          <ul className="dw-sidebar-list">
             {tree.map((node) => (
               <SidebarNode
                 key={node.type === 'separator' ? `sep-${node.name}` : (node as PageItem).id || (node as PageFolder).name}
@@ -225,7 +228,7 @@ export function Sidebar({
 
         {/* Footer */}
         {footer && (
-          <div className="mt-auto p-4 border-t border-[var(--color-dw-sidebar-border)]">
+          <div className="dw-sidebar-footer">
             {footer}
           </div>
         )}

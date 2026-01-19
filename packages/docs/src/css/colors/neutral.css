@@ -1,94 +1,101 @@
 /**
  * Dewey Neutral Color Preset
- * Default grayscale theme with clean, professional aesthetics
+ * Warm, elegant theme matching Arc docs style.
+ * Uses warm beige/cream tones with orange accent.
  */
 
 :root {
-  /* Core colors */
-  --color-dw-background: hsl(0, 0%, 100%);
-  --color-dw-foreground: hsl(0, 0%, 9%);
-  --color-dw-primary: hsl(0, 0%, 9%);
-  --color-dw-primary-foreground: hsl(0, 0%, 100%);
-  --color-dw-secondary: hsl(0, 0%, 96%);
-  --color-dw-secondary-foreground: hsl(0, 0%, 9%);
-  --color-dw-muted: hsl(0, 0%, 96%);
-  --color-dw-muted-foreground: hsl(0, 0%, 45%);
-  --color-dw-accent: hsl(0, 0%, 96%);
-  --color-dw-accent-foreground: hsl(0, 0%, 9%);
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: #fffcf9;
+  --dw-foreground: #1c1917;
 
-  /* Borders & rings */
-  --color-dw-border: hsl(0, 0%, 90%);
-  --color-dw-ring: hsl(0, 0%, 63%);
+  --dw-primary: #ea580c;
+  --dw-primary-foreground: #ffffff;
 
-  /* Semantic colors */
-  --color-dw-info: oklch(62.3% 0.214 259.815);
-  --color-dw-info-foreground: hsl(0, 0%, 100%);
-  --color-dw-warning: oklch(76.9% 0.188 70.08);
-  --color-dw-warning-foreground: hsl(0, 0%, 9%);
-  --color-dw-error: oklch(63.7% 0.237 25.331);
-  --color-dw-error-foreground: hsl(0, 0%, 100%);
-  --color-dw-success: oklch(72.3% 0.219 149.579);
-  --color-dw-success-foreground: hsl(0, 0%, 100%);
+  --dw-secondary: #faf7f5;
+  --dw-secondary-foreground: #292524;
 
-  /* Code blocks */
-  --color-dw-code-bg: hsl(0, 0%, 97%);
-  --color-dw-code-border: hsl(0, 0%, 90%);
+  --dw-muted: #f5f2ef;
+  --dw-muted-foreground: #78716c;
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: hsl(0, 0%, 98%);
-  --color-dw-sidebar-border: hsl(0, 0%, 92%);
-  --color-dw-sidebar-active: hsl(0, 0%, 9%);
-  --color-dw-sidebar-active-bg: hsl(0, 0%, 94%);
+  --dw-accent: #fef3eb;
+  --dw-accent-foreground: #9a3412;
+
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: #e7e5e4;
+  --dw-ring: #ea580c;
+
+  /* ─── Tailwind-compatible aliases (for arbitrary value classes) ─────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
+  --color-dw-ring: var(--dw-ring);
+
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: #0284c7;
+  --dw-info-foreground: #ffffff;
+
+  --dw-warning: #d97706;
+  --dw-warning-foreground: #1c1917;
+
+  --dw-error: #dc2626;
+  --dw-error-foreground: #ffffff;
+
+  --dw-success: #16a34a;
+  --dw-success-foreground: #ffffff;
+
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: #faf8f6;
+  --dw-code-border: #e7e5e4;
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: #faf8f5;
+  --dw-sidebar-border: #f0ebe6;
+  --dw-sidebar-active: #1c1917;
+  --dw-sidebar-active-bg: #fed7aa;
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: rgba(255, 252, 249, 0.95);
+  --dw-header-border: rgba(28, 25, 23, 0.06);
 }
 
-.dark {
-  /* Core colors - dark mode */
-  --color-dw-background: hsl(0, 0%, 7%);
-  --color-dw-foreground: hsl(0, 0%, 93%);
-  --color-dw-primary: hsl(0, 0%, 98%);
-  --color-dw-primary-foreground: hsl(0, 0%, 9%);
-  --color-dw-secondary: hsl(0, 0%, 15%);
-  --color-dw-secondary-foreground: hsl(0, 0%, 93%);
-  --color-dw-muted: hsl(0, 0%, 15%);
-  --color-dw-muted-foreground: hsl(0, 0%, 64%);
-  --color-dw-accent: hsl(0, 0%, 15%);
-  --color-dw-accent-foreground: hsl(0, 0%, 93%);
+/* ─── Dark Mode ────────────────────────────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: #0f172a;
+  --dw-foreground: #f1f5f9;
 
-  /* Borders & rings */
-  --color-dw-border: hsl(0, 0%, 20%);
-  --color-dw-ring: hsl(0, 0%, 30%);
+  --dw-primary: #22c55e;
+  --dw-primary-foreground: #0f172a;
 
-  /* Code blocks */
-  --color-dw-code-bg: hsl(0, 0%, 12%);
-  --color-dw-code-border: hsl(0, 0%, 20%);
+  --dw-secondary: #1e293b;
+  --dw-secondary-foreground: #f1f5f9;
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: hsl(0, 0%, 9%);
-  --color-dw-sidebar-border: hsl(0, 0%, 15%);
-  --color-dw-sidebar-active: hsl(0, 0%, 98%);
-  --color-dw-sidebar-active-bg: hsl(0, 0%, 15%);
-}
+  --dw-muted: #1e293b;
+  --dw-muted-foreground: #94a3b8;
 
-/* Support prefers-color-scheme for users without .dark class */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --color-dw-background: hsl(0, 0%, 7%);
-    --color-dw-foreground: hsl(0, 0%, 93%);
-    --color-dw-primary: hsl(0, 0%, 98%);
-    --color-dw-primary-foreground: hsl(0, 0%, 9%);
-    --color-dw-secondary: hsl(0, 0%, 15%);
-    --color-dw-secondary-foreground: hsl(0, 0%, 93%);
-    --color-dw-muted: hsl(0, 0%, 15%);
-    --color-dw-muted-foreground: hsl(0, 0%, 64%);
-    --color-dw-accent: hsl(0, 0%, 15%);
-    --color-dw-accent-foreground: hsl(0, 0%, 93%);
-    --color-dw-border: hsl(0, 0%, 20%);
-    --color-dw-ring: hsl(0, 0%, 30%);
-    --color-dw-code-bg: hsl(0, 0%, 12%);
-    --color-dw-code-border: hsl(0, 0%, 20%);
-    --color-dw-sidebar-bg: hsl(0, 0%, 9%);
-    --color-dw-sidebar-border: hsl(0, 0%, 15%);
-    --color-dw-sidebar-active: hsl(0, 0%, 98%);
-    --color-dw-sidebar-active-bg: hsl(0, 0%, 15%);
-  }
+  --dw-accent: #1e293b;
+  --dw-accent-foreground: #f1f5f9;
+
+  --dw-border: #334155;
+  --dw-ring: #22c55e;
+
+  --dw-code-bg: #1e293b;
+  --dw-code-border: #334155;
+
+  --dw-sidebar-bg: #0c1322;
+  --dw-sidebar-border: #1e293b;
+  --dw-sidebar-active: #f1f5f9;
+  --dw-sidebar-active-bg: #1e293b;
+
+  --dw-header-bg: rgba(15, 23, 42, 0.9);
+  --dw-header-border: rgba(241, 245, 249, 0.08);
 }

@@ -18,17 +18,58 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./css": "./dist/css/index.css",
-    "./css/base.css": "./dist/css/base.css",
-    "./css/colors/neutral.css": "./dist/css/colors/neutral.css",
-    "./css/colors/ocean.css": "./dist/css/colors/ocean.css",
-    "./css/colors/emerald.css": "./dist/css/colors/emerald.css",
-    "./css/colors/purple.css": "./dist/css/colors/purple.css",
-    "./css/colors/dusk.css": "./dist/css/colors/dusk.css",
-    "./css/colors/rose.css": "./dist/css/colors/rose.css",
-    "./css/colors/github.css": "./dist/css/colors/github.css",
-    "./css/colors/warm.css": "./dist/css/colors/warm.css",
-    "./styles": "./dist/css/index.css",
+    "./css": {
+      "style": "./dist/css/index.css",
+      "default": "./dist/css/index.css"
+    },
+    "./css/tailwind": {
+      "style": "./dist/css/tailwind.css",
+      "default": "./dist/css/tailwind.css"
+    },
+    "./css/tokens": {
+      "style": "./dist/css/tokens.css",
+      "default": "./dist/css/tokens.css"
+    },
+    "./css/base.css": {
+      "style": "./dist/css/base.css",
+      "default": "./dist/css/base.css"
+    },
+    "./css/colors/neutral.css": {
+      "style": "./dist/css/colors/neutral.css",
+      "default": "./dist/css/colors/neutral.css"
+    },
+    "./css/colors/ocean.css": {
+      "style": "./dist/css/colors/ocean.css",
+      "default": "./dist/css/colors/ocean.css"
+    },
+    "./css/colors/emerald.css": {
+      "style": "./dist/css/colors/emerald.css",
+      "default": "./dist/css/colors/emerald.css"
+    },
+    "./css/colors/purple.css": {
+      "style": "./dist/css/colors/purple.css",
+      "default": "./dist/css/colors/purple.css"
+    },
+    "./css/colors/dusk.css": {
+      "style": "./dist/css/colors/dusk.css",
+      "default": "./dist/css/colors/dusk.css"
+    },
+    "./css/colors/rose.css": {
+      "style": "./dist/css/colors/rose.css",
+      "default": "./dist/css/colors/rose.css"
+    },
+    "./css/colors/github.css": {
+      "style": "./dist/css/colors/github.css",
+      "default": "./dist/css/colors/github.css"
+    },
+    "./css/colors/warm.css": {
+      "style": "./dist/css/colors/warm.css",
+      "default": "./dist/css/colors/warm.css"
+    },
+    "./styles": {
+      "style": "./dist/css/index.css",
+      "default": "./dist/css/index.css"
+    },
     "./tailwind": {
       "import": "./dist/tailwind/preset.js",
       "types": "./dist/tailwind/preset.d.ts"
@@ -57,7 +98,6 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
     "commander": "^12.0.0",
     "cosmiconfig": "^9.0.0",
     "gray-matter": "^4.0.3",
@@ -66,7 +106,6 @@
     "react-markdown": "^9.0.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
-    "tailwind-merge": "^2.2.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
@@ -74,6 +113,9 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss": "^4.1.18",
     "tsup": "^8.0.0",
     "typescript": "^5.5.0",
     "vite": "^6.0.0",

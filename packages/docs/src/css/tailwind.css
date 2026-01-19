@@ -1,0 +1,72 @@
+/**
+ * Dewey Tailwind v4 Integration
+ *
+ * This file exposes Dewey's CSS variables to Tailwind v4's utility classes.
+ * Import this file AFTER your Tailwind import for projects using Tailwind v4.
+ *
+ * Usage in your project's CSS:
+ *
+ *   @import "tailwindcss";
+ *   @import "@arach/dewey/css/tailwind";
+ *
+ * Then you can use utilities like:
+ *   <div class="bg-dw-background text-dw-foreground">
+ *   <button class="bg-dw-primary text-dw-primary-foreground">
+ */
+
+@theme inline {
+  /* ─── Colors ─────────────────────────────────────────────────────────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+
+  --color-dw-border: var(--dw-border);
+  --color-dw-ring: var(--dw-ring);
+
+  /* Semantic */
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
+
+  /* Component-specific */
+  --color-dw-code-bg: var(--dw-code-bg);
+  --color-dw-code-border: var(--dw-code-border);
+  --color-dw-sidebar-bg: var(--dw-sidebar-bg);
+  --color-dw-sidebar-border: var(--dw-sidebar-border);
+  --color-dw-sidebar-active: var(--dw-sidebar-active);
+  --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
+  --color-dw-header-bg: var(--dw-header-bg);
+  --color-dw-header-border: var(--dw-header-border);
+
+  /* ─── Radius ─────────────────────────────────────────────────────────── */
+  --radius-dw-sm: var(--dw-radius-sm);
+  --radius-dw: var(--dw-radius);
+  --radius-dw-md: var(--dw-radius-md);
+  --radius-dw-lg: var(--dw-radius-lg);
+
+  /* ─── Fonts ──────────────────────────────────────────────────────────── */
+  --font-dw-sans: var(--dw-font-sans);
+  --font-dw-serif: var(--dw-font-serif);
+  --font-dw-mono: var(--dw-font-mono);
+
+  /* ─── Spacing ────────────────────────────────────────────────────────── */
+  --spacing-dw-header: var(--dw-header-height);
+  --spacing-dw-sidebar: var(--dw-sidebar-width);
+  --spacing-dw-toc: var(--dw-toc-width);
+}

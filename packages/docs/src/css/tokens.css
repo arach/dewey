@@ -1,0 +1,54 @@
+/**
+ * Dewey Design Tokens
+ *
+ * Core design tokens using OKLCH color space for better perceptual uniformity.
+ * These tokens are the single source of truth for the design system.
+ *
+ * Usage:
+ *   Consumers can override any token in their own CSS:
+ *
+ *   :root {
+ *     --dw-primary: oklch(0.6 0.2 145);  // Custom brand green
+ *   }
+ */
+
+:root {
+  /* ─── Radius ─────────────────────────────────────────────────────────── */
+  --dw-radius-sm: 0.25rem;
+  --dw-radius: 0.5rem;
+  --dw-radius-md: 0.75rem;
+  --dw-radius-lg: 1rem;
+  --dw-radius-full: 9999px;
+
+  /* ─── Spacing ────────────────────────────────────────────────────────── */
+  --dw-header-height: 3.5rem;
+  --dw-sidebar-width: 280px;
+  --dw-toc-width: 220px;
+  --dw-content-max-width: 80ch;
+
+  /* ─── Typography ─────────────────────────────────────────────────────── */
+  --dw-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --dw-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --dw-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Font sizes */
+  --dw-text-xs: 0.75rem;
+  --dw-text-sm: 0.875rem;
+  --dw-text-base: 1rem;
+  --dw-text-lg: 1.125rem;
+  --dw-text-xl: 1.25rem;
+  --dw-text-2xl: 1.5rem;
+  --dw-text-3xl: 1.875rem;
+  --dw-text-4xl: 2.25rem;
+
+  /* ─── Transitions ────────────────────────────────────────────────────── */
+  --dw-transition-fast: 150ms ease;
+  --dw-transition-normal: 200ms ease;
+  --dw-transition-slow: 300ms ease;
+
+  /* ─── Shadows ────────────────────────────────────────────────────────── */
+  --dw-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --dw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --dw-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --dw-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}

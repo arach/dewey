@@ -154,54 +154,47 @@ function DocsLayoutInternal({
     <div className="dw-layout">
       {/* Header */}
       {showHeader && (
-        <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center px-4
-          bg-[var(--color-dw-background)]/90 backdrop-blur-md
-          border-b border-[var(--color-dw-border)]">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 -ml-2 text-[var(--color-dw-muted-foreground)]"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+        <header className="dw-header">
+          <div className="dw-header-inner">
+            <div className="dw-header-left">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="dw-header-menu-btn"
+                style={{ display: 'none' }}
+              >
+                <Menu style={{ width: '1.25rem', height: '1.25rem' }} />
+              </button>
 
-            {/* Brand */}
-            <Link href={basePath} className="flex items-center gap-2 font-semibold">
-              <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-dw-primary)]" />
-              <span className="text-[var(--color-dw-foreground)]">{name}</span>
-            </Link>
+              {/* Brand */}
+              <Link href={basePath} className="dw-header-brand">
+                <span className="dw-header-brand-dot" />
+                <span className="dw-header-brand-name">{name}</span>
+              </Link>
 
-            {/* Divider */}
-            <span className="hidden sm:block w-px h-4 bg-[var(--color-dw-border)]" />
+              {/* Divider */}
+              <span className="dw-header-divider" />
 
-            {/* Home link */}
-            <Link
-              href={homeUrl}
-              className="hidden sm:flex items-center gap-1 text-xs uppercase tracking-wider
-                text-[var(--color-dw-muted-foreground)] hover:text-[var(--color-dw-foreground)]"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              Home
-            </Link>
-          </div>
+              {/* Home link */}
+              <Link href={homeUrl} className="dw-header-back">
+                <ArrowLeft className="dw-header-back-icon" />
+                Home
+              </Link>
+            </div>
 
-          <div className="ml-auto flex items-center gap-4">
-            {/* Theme toggle */}
-            <button
-              onClick={toggleDark}
-              className="p-1.5 rounded text-[var(--color-dw-muted-foreground)]
-                hover:text-[var(--color-dw-foreground)]"
-              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
+            <div className="dw-header-right">
+              {/* Theme toggle */}
+              <button
+                onClick={toggleDark}
+                className="dw-header-theme-toggle"
+                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDark ? <Sun style={{ width: '1rem', height: '1rem' }} /> : <Moon style={{ width: '1rem', height: '1rem' }} />}
+              </button>
 
-            {/* DOCS label */}
-            <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em]
-              text-[var(--color-dw-foreground)]">
-              DOCS
-            </span>
+              {/* DOCS label */}
+              <span className="dw-header-label">DOCS</span>
+            </div>
           </div>
         </header>
       )}
@@ -219,7 +212,7 @@ function DocsLayoutInternal({
       )}
 
       {/* Main content */}
-      <main className={`dw-main ${showHeader ? 'pt-14' : ''} ${showSidebar ? 'lg:pl-[280px]' : ''} ${showToc ? 'xl:pr-[220px]' : ''}`}>
+      <main className="dw-main">
         {isIndex ? (
           <DocsIndex
             tree={pageTree}
@@ -235,33 +228,29 @@ function DocsLayoutInternal({
 
             {/* Prev/Next navigation */}
             {showPrevNext && (prevPage || nextPage) && (
-              <nav className="mt-12 pt-6 border-t border-[var(--color-dw-border)] flex justify-between">
+              <nav className="dw-prev-next">
                 {prevPage ? (
                   <Link
                     href={`${basePath}/${prevPage.id}`}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border
-                      border-[var(--color-dw-border)] text-[var(--color-dw-muted-foreground)]
-                      hover:text-[var(--color-dw-foreground)] hover:border-[var(--color-dw-ring)]"
+                    className="dw-prev-next-link"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="dw-prev-next-icon" />
                     <div>
-                      <div className="text-[10px] uppercase tracking-wider opacity-60">Previous</div>
-                      <div className="text-sm font-medium">{prevPage.name}</div>
+                      <div className="dw-prev-next-label">Previous</div>
+                      <div className="dw-prev-next-title">{prevPage.name}</div>
                     </div>
                   </Link>
                 ) : <div />}
                 {nextPage ? (
                   <Link
                     href={`${basePath}/${nextPage.id}`}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border
-                      border-[var(--color-dw-border)] text-[var(--color-dw-muted-foreground)]
-                      hover:text-[var(--color-dw-foreground)] hover:border-[var(--color-dw-ring)]"
+                    className="dw-prev-next-link dw-prev-next-link-next"
                   >
-                    <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-wider opacity-60">Next</div>
-                      <div className="text-sm font-medium">{nextPage.name}</div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div className="dw-prev-next-label">Next</div>
+                      <div className="dw-prev-next-title">{nextPage.name}</div>
                     </div>
-                    <ArrowLeft className="w-4 h-4 rotate-180" />
+                    <ArrowLeft className="dw-prev-next-icon dw-prev-next-icon-next" />
                   </Link>
                 ) : <div />}
               </nav>
@@ -269,7 +258,7 @@ function DocsLayoutInternal({
           </div>
         ) : (
           <div className="dw-content">
-            <p className="text-[var(--color-dw-muted-foreground)]">
+            <p style={{ color: 'var(--dw-muted-foreground)' }}>
               Page not found: {currentPage}
             </p>
           </div>

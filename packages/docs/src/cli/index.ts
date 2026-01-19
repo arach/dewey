@@ -4,13 +4,14 @@ import { initCommand } from './commands/init.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
 import { agentCoachCommand } from './commands/agent-coach.js'
+import { createCommand } from './commands/create.js'
 
 const program = new Command()
 
 program
   .name('dewey')
   .description('Documentation scaffolding, auditing, and agent file generation')
-  .version('0.1.0')
+  .version('0.2.0')
 
 program
   .command('init')
@@ -43,6 +44,15 @@ program
   .option('--json', 'Output as JSON')
   .option('--fix', 'Auto-create missing files and folders')
   .action(agentCoachCommand)
+
+program
+  .command('create <project-dir>')
+  .description('Create a new docs site from markdown sources')
+  .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
+  .option('-n, --name <name>', 'Project name (defaults to directory name)')
+  .option('-t, --template <template>', 'Template to use (nextjs)', 'nextjs')
+  .option('--theme <theme>', 'Color theme (neutral, ocean, emerald)', 'neutral')
+  .action(createCommand)
 
 program.parse()
 

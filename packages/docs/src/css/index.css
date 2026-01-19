@@ -7,12 +7,20 @@
  * Usage:
  *   import '@arach/dewey/css'
  *
- * For a different color preset, import it before this file:
- *   import '@arach/dewey/css/colors/ocean.css'
+ * For a different color preset, import it after this file:
  *   import '@arach/dewey/css'
+ *   import '@arach/dewey/css/colors/ocean.css'
+ *
+ * For Tailwind v4 projects, also import the theme integration:
+ *   @import "tailwindcss";
+ *   @import "@arach/dewey/css";
+ *   @import "@arach/dewey/css/tailwind";
  */
 
-/* Default color preset (neutral) */
+/* Design tokens (radius, spacing, typography, etc.) */
+@import './tokens.css';
+
+/* Default color preset (neutral) - uses OKLCH colors */
 @import './colors/neutral.css';
 
 /* Base component styles */

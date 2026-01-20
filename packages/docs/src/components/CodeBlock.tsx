@@ -90,16 +90,16 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
       <div
         className="rounded-xl overflow-hidden"
         style={{
-          background: isDark ? '#1a1d20' : '#f5f5f5',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+          background: isDark ? '#1e2126' : '#faf8f5',
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,21,24,0.1)'}`,
         }}
       >
         {/* Header with traffic lights, language and copy button */}
         <div
           className="flex items-center justify-between px-4 py-2"
           style={{
-            background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(16,21,24,0.03)',
+            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(16,21,24,0.08)'}`,
           }}
         >
           <div className="flex items-center gap-3">

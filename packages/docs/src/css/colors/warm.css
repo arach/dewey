@@ -67,7 +67,7 @@
 
 .dark {
   /* Core colors - dark mode */
-  --color-dw-background: #0a0c0e;
+  --color-dw-background: #16181c;
   --color-dw-foreground: #e5e7eb;
   --color-dw-primary: #f07c4f;
   --color-dw-primary-foreground: #1c120a;
@@ -88,7 +88,7 @@
   --color-dw-code-border: rgba(255, 255, 255, 0.06);
 
   /* Sidebar */
-  --color-dw-sidebar-bg: rgba(15, 18, 20, 0.95);
+  --color-dw-sidebar-bg: rgba(22, 24, 28, 0.95);
   --color-dw-sidebar-border: rgba(255, 255, 255, 0.08);
   --color-dw-sidebar-active: #f07c4f;
   --color-dw-sidebar-active-bg: rgba(240, 124, 79, 0.15);

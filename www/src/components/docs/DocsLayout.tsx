@@ -303,6 +303,7 @@ export default function DocsLayout({
   const [copied, setCopied] = useState<'markdown' | 'agent' | 'plain' | null>(null)
   const [showPromptBuilder, setShowPromptBuilder] = useState(false)
   const [copyMenuOpen, setCopyMenuOpen] = useState(false)
+  const [agentPreview, setAgentPreview] = useState<{ content: string; copied: boolean } | null>(null)
   const location = useLocation()
 
   // Extract current page from URL
@@ -348,12 +349,36 @@ export default function DocsLayout({
     }
   }
 
-  const handleCopyForAgent = async () => {
+  const handleCopyForAgent = () => {
     const content = agentContent || `# ${title}\n\n${description || ''}\n\n${markdown || ''}`
-    await navigator.clipboard.writeText(content)
-    setCopied('agent')
-    setTimeout(() => setCopied(null), 2000)
+    setAgentPreview({ content, copied: false })
   }
+
+  const handleAgentCopy = async () => {
+    if (!agentPreview) return
+    await navigator.clipboard.writeText(agentPreview.content)
+    setAgentPreview({ ...agentPreview, copied: true })
+    setCopied('agent')
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setAgentPreview(null)
+      setCopied(null)
+    }, 5000)
+  }
+
+  const closeAgentPreview = () => {
+    setAgentPreview(null)
+  }
+
+  // Close agent preview on escape
+  useEffect(() => {
+    if (!agentPreview) return
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAgentPreview(null)
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [agentPreview])
 
   const currentBadge = badgeStyles[badgeColor] || badgeStyles.orange
 
@@ -779,6 +804,112 @@ export default function DocsLayout({
           border-radius: 8px;
         }
       `}</style>
+
+      {/* Agent Content Preview Slideout */}
+      {agentPreview && (
+        <>
+          <div
+            className="fixed inset-0 z-50"
+            style={{
+              background: 'rgba(16, 21, 24, 0.3)',
+              backdropFilter: 'blur(4px)',
+            }}
+            onClick={closeAgentPreview}
+          />
+          <div
+            className="fixed right-0 top-0 bottom-0 w-full max-w-lg z-50 shadow-2xl flex flex-col"
+            style={{
+              background: isDark ? '#16181c' : 'var(--arc-paper, #f7f3ec)',
+              borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'var(--arc-border, rgba(16,21,24,0.1))'}`,
+              animation: 'slideInRight 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            {/* Header */}
+            <div
+              className="flex items-center justify-between px-5 py-4"
+              style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'var(--arc-border, rgba(16,21,24,0.1))'}` }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: isDark ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.12)' }}
+                >
+                  <Bot className="w-4 h-4" style={{ color: '#22c55e' }} />
+                </div>
+                <div>
+                  <h2
+                    className="font-semibold text-sm"
+                    style={{ color: isDark ? '#f3f4f6' : 'var(--arc-ink, #101518)' }}
+                  >
+                    Agent-Optimized Content
+                  </h2>
+                  <p
+                    className="text-xs"
+                    style={{ color: isDark ? '#6b7280' : 'var(--arc-muted, #5c676c)' }}
+                  >
+                    Dense, structured content for AI assistants
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={closeAgentPreview}
+                className="p-2 rounded-lg transition-colors hover:bg-black/5"
+                style={{ color: isDark ? '#6b7280' : 'var(--arc-muted, #5c676c)' }}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-auto p-5">
+              <pre
+                className="text-xs font-mono whitespace-pre-wrap break-words"
+                style={{
+                  padding: '1rem',
+                  borderRadius: '0.5rem',
+                  background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.75)',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'var(--arc-border, rgba(16,21,24,0.1))'}`,
+                  color: isDark ? '#d1d5db' : 'var(--arc-ink, #2e3538)',
+                  lineHeight: 1.6,
+                }}
+              >
+                {agentPreview.content}
+              </pre>
+            </div>
+
+            {/* Footer */}
+            <div
+              className="px-5 py-4 flex items-center justify-between"
+              style={{
+                borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'var(--arc-border, rgba(16,21,24,0.1))'}`,
+                background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.5)',
+              }}
+            >
+              <span className="text-xs" style={{ color: isDark ? '#6b7280' : 'var(--arc-muted, #5c676c)' }}>
+                {agentPreview.content.length.toLocaleString()} characters
+              </span>
+              <button
+                onClick={handleAgentCopy}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{
+                  background: agentPreview.copied ? '#22c55e' : '#22c55e',
+                  color: '#ffffff',
+                  opacity: agentPreview.copied ? 0.9 : 1,
+                }}
+              >
+                {agentPreview.copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {agentPreview.copied ? 'Copied!' : 'Copy to Clipboard'}
+              </button>
+            </div>
+          </div>
+          <style>{`
+            @keyframes slideInRight {
+              from { transform: translateX(100%); }
+              to { transform: translateX(0); }
+            }
+          `}</style>
+        </>
+      )}
 
       {/* Prompt Slideout - Using the real PromptSlideout component */}
       <PromptSlideout

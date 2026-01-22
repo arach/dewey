@@ -13,9 +13,12 @@ out/
 .env.local
 .env.*.local
 
-# IDE
+# IDE / Editor configs
 .idea/
 .vscode/
+.cursor/
+.gemini/
+.opencode/
 *.swp
 *.swo
 .DS_Store
@@ -33,4 +36,10 @@ coverage/
 .turbo/
 
 # Claude Code local settings
-.claude/settings.local.json
+.claude/
+
+# GitHub skills (local)
+.github/skills/
+
+# Lock files (use pnpm-lock.yaml)
+www/bun.lock

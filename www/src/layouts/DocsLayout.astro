@@ -4,7 +4,16 @@ import Toc from '../components/Toc.astro'
 import { SidebarNav } from '../components/SidebarNav'
 import { navGroups } from '../lib/nav'
 
-const { title = 'Docs', headings = [] } = Astro.props
+const {
+  title = 'Docs',
+  headings = [],
+  description,
+  badge,
+  prompt,
+  rawMarkdown,
+  agentMarkdown,
+} = Astro.props
+
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
 ---
 
@@ -16,8 +25,64 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       </div>
     </aside>
 
-    <article class="doc-content min-w-0" data-pagefind-body>
-      <slot />
+    <article class="min-w-0" data-pagefind-body>
+      <div class="mb-10 flex items-start justify-between gap-6">
+        <div class="flex-1">
+          {badge && (
+            <div class="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+              {badge}
+            </div>
+          )}
+          <h1 class="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">{title}</h1>
+          {description && (
+            <p class="mt-3 text-lg text-[var(--color-text-muted)]">{description}</p>
+          )}
+        </div>
+
+        <div class="mt-2 flex items-center gap-2">
+          <a
+            class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/60 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+            href="/agents"
+          >
+            Agent
+          </a>
+
+          <div class="relative" data-copy-root>
+            <button
+              class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/60 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+              type="button"
+              data-copy-toggle
+            >
+              Copy
+            </button>
+            <div
+              class="absolute right-0 mt-1 hidden w-44 overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-lg"
+              data-copy-menu
+            >
+              <button class="w-full px-3 py-2 text-left text-xs hover:bg-[var(--color-surface-muted)]" data-copy-markdown>
+                Copy Markdown
+              </button>
+              <button class="w-full px-3 py-2 text-left text-xs hover:bg-[var(--color-surface-muted)]" data-copy-agent>
+                Copy for Agent
+              </button>
+            </div>
+          </div>
+
+          {prompt && (
+            <button
+              class="flex items-center gap-1.5 rounded-lg border border-[rgba(240,124,79,0.3)] bg-[rgba(240,124,79,0.08)] px-3 py-1.5 text-xs font-medium text-[var(--color-accent)]"
+              type="button"
+              data-prompt-toggle
+            >
+              AI Prompt
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div class="doc-content">
+        <slot />
+      </div>
     </article>
 
     <aside class="hidden lg:block" data-pagefind-ignore>
@@ -26,4 +91,97 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       </div>
     </aside>
   </div>
+
+  {prompt && (
+    <div
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40"
+      data-prompt-modal
+    >
+      <div class="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-xl">
+        <div class="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4">
+          <div>
+            <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">AI Prompt</p>
+            <h2 class="text-lg font-semibold">{title}</h2>
+          </div>
+          <button class="text-sm text-[var(--color-text-muted)]" data-prompt-close>Close</button>
+        </div>
+        <div class="max-h-[70vh] overflow-y-auto px-6 py-4">
+          <pre class="whitespace-pre-wrap text-sm text-[var(--color-text)]" data-prompt-content></pre>
+        </div>
+        <div class="flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-6 py-4">
+          <button class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs" data-prompt-copy>
+            Copy Prompt
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <script is:inline define:vars={{ rawMarkdown, agentMarkdown, prompt }}>
+    const copyRoot = document.querySelector('[data-copy-root]')
+    const toggle = document.querySelector('[data-copy-toggle]')
+    const menu = document.querySelector('[data-copy-menu]')
+    const copyMarkdown = document.querySelector('[data-copy-markdown]')
+    const copyAgent = document.querySelector('[data-copy-agent]')
+
+    if (toggle && menu) {
+      toggle.addEventListener('click', () => {
+        menu.classList.toggle('hidden')
+      })
+      document.addEventListener('click', (event) => {
+        if (!copyRoot || copyRoot.contains(event.target)) return
+        menu.classList.add('hidden')
+      })
+    }
+
+    const safeCopy = async (content) => {
+      if (!content) return
+      try {
+        await navigator.clipboard.writeText(content)
+      } catch {}
+    }
+
+    copyMarkdown?.addEventListener('click', async () => {
+      await safeCopy(rawMarkdown)
+      menu?.classList.add('hidden')
+    })
+
+    copyAgent?.addEventListener('click', async () => {
+      const agentContent = agentMarkdown || rawMarkdown
+      await safeCopy(agentContent)
+      menu?.classList.add('hidden')
+    })
+
+    const promptModal = document.querySelector('[data-prompt-modal]')
+    const promptToggle = document.querySelector('[data-prompt-toggle]')
+    const promptClose = document.querySelector('[data-prompt-close]')
+    const promptCopy = document.querySelector('[data-prompt-copy]')
+    const promptContent = document.querySelector('[data-prompt-content]')
+
+    if (promptContent && prompt) {
+      promptContent.textContent = prompt
+    }
+
+    const openPrompt = () => {
+      if (!promptModal) return
+      promptModal.classList.remove('hidden')
+      promptModal.classList.add('flex')
+    }
+
+    const closePrompt = () => {
+      if (!promptModal) return
+      promptModal.classList.add('hidden')
+      promptModal.classList.remove('flex')
+    }
+
+    promptToggle?.addEventListener('click', openPrompt)
+    promptClose?.addEventListener('click', closePrompt)
+    promptModal?.addEventListener('click', (event) => {
+      if (event.target === promptModal) closePrompt()
+    })
+
+    promptCopy?.addEventListener('click', async () => {
+      await safeCopy(prompt)
+    })
+  </script>
 </BaseLayout>

@@ -10,6 +10,10 @@ const { title = 'Dewey' } = Astro.props
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="icon" type="image/png" href="/og.png" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap"
+    />
     <slot name="head" />
   </head>
   <body>
@@ -17,14 +21,17 @@ const { title = 'Dewey' } = Astro.props
       <header class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur" data-pagefind-ignore>
         <div class="mx-auto flex w-full max-w-[1200px] items-center justify-between px-6 py-4">
           <div class="flex items-center gap-3">
-            <div class="h-8 w-8 rounded-md bg-[var(--color-accent)]"></div>
+            <div class="h-2.5 w-2.5 rounded-full bg-[var(--color-accent)] shadow-[0_0_0_4px_rgba(240,124,79,0.2)]"></div>
             <a class="text-lg font-semibold" href="/">Dewey</a>
           </div>
-          <nav class="flex items-center gap-4 text-sm text-[var(--color-text-muted)]" data-pagefind-ignore>
-            <a class="hover:text-[var(--color-text)]" href="/docs/overview">Docs</a>
-            <a class="hover:text-[var(--color-text)]" href="/agents">Agents</a>
-            <a class="hover:text-[var(--color-text)]" href="/search">Search</a>
-          </nav>
+          <div class="flex items-center gap-6 text-sm text-[var(--color-text-muted)]">
+            <nav class="flex items-center gap-4" data-pagefind-ignore>
+              <a class="hover:text-[var(--color-text)]" href="/docs">Docs</a>
+              <a class="hover:text-[var(--color-text)]" href="/agents">Agents</a>
+              <a class="hover:text-[var(--color-text)]" href="/search">Search</a>
+            </nav>
+            <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[var(--color-text)]">DOCS</span>
+          </div>
         </div>
       </header>
       <main class="mx-auto w-full max-w-[1200px] px-6 py-8" data-pagefind-body>
@@ -38,7 +45,7 @@ const { title = 'Dewey' } = Astro.props
           block.dataset.copyReady = 'true'
           const button = document.createElement('button')
           button.textContent = 'Copy'
-          button.className = 'absolute right-3 top-3 rounded bg-white/10 px-2 py-1 text-xs text-white transition hover:bg-white/20'
+          button.className = 'absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs text-white transition hover:bg-black/80'
           button.addEventListener('click', async () => {
             const code = block.querySelector('code')
             if (!code) return

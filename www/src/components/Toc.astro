@@ -3,13 +3,15 @@ const { headings = [] } = Astro.props
 const filtered = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
 ---
 
-<div class="space-y-3 text-sm">
+<div class="space-y-3 text-sm" data-toc>
   <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">On this page</p>
   <ul class="space-y-2">
     {filtered.map((heading) => (
       <li>
         <a
-          class="block text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+          class="block text-[13px] text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]"
+          data-toc-link
+          data-level={heading.depth}
           href={`#${heading.slug}`}
         >
           {heading.text}
@@ -18,3 +20,36 @@ const filtered = headings.filter((heading) => heading.depth >= 2 && heading.dept
     ))}
   </ul>
 </div>
+
+<script is:inline>
+  const tocLinks = document.querySelectorAll('[data-toc-link]')
+  const headings = Array.from(tocLinks)
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean)
+
+  if (headings.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          tocLinks.forEach((link) => link.classList.remove('is-active'))
+          const activeLink = document.querySelector(`[data-toc-link][href="#${entry.target.id}"]`)
+          if (activeLink) activeLink.classList.add('is-active')
+        })
+      },
+      { rootMargin: '-100px 0px -66% 0px' },
+    )
+
+    headings.forEach((heading) => observer.observe(heading))
+  }
+</script>
+
+<style is:inline>
+  [data-toc-link][data-level='3'] {
+    padding-left: 12px;
+  }
+  [data-toc-link].is-active {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+</style>

@@ -1,7 +1,10 @@
 @layer base {
   .doc-content {
-    line-height: 1.7;
+    font-size: 15px;
+    line-height: 1.75;
     color: var(--color-text);
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   .doc-content h1 {
@@ -11,20 +14,32 @@
   }
 
   .doc-content h2 {
-    font-size: 1.6rem;
-    margin: 2rem 0 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 3rem 0 1.25rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    scroll-margin-top: 100px;
+  }
+
+  .doc-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
 
   .doc-content h3 {
-    font-size: 1.2rem;
-    margin: 1.5rem 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+    scroll-margin-top: 100px;
   }
 
   .doc-content p,
   .doc-content ul,
   .doc-content ol,
   .doc-content table {
-    margin: 0 0 1rem;
+    margin: 0 0 1.25rem;
   }
 
   .doc-content ul,
@@ -33,33 +48,55 @@
   }
 
   .doc-content li {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .doc-content li::marker {
+    color: var(--color-text-muted);
   }
 
   .doc-content a {
     color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .doc-content a:hover {
+    text-decoration: underline;
+  }
+
+  .doc-content strong {
+    font-weight: 600;
+    color: var(--color-text);
   }
 
   .doc-content pre {
-    background: #0f1424;
-    border: 1px solid var(--color-border);
+    background: #1e1e1e;
+    border: 1px solid rgba(16, 21, 24, 0.2);
     border-radius: var(--radius-md);
     padding: 1rem 1.25rem;
     overflow-x: auto;
   }
 
   .doc-content code {
-    background: #121829;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.9em;
+    background: rgba(16, 21, 24, 0.06);
+    border: 1px solid rgba(16, 21, 24, 0.12);
+    border-radius: 4px;
+    padding: 0.15rem 0.4rem;
+    font-size: 12px;
   }
 
   .doc-content pre code {
     background: transparent;
     border: none;
     padding: 0;
+    color: inherit;
+  }
+
+  .doc-content hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 3rem 0;
   }
 
   .doc-content table {

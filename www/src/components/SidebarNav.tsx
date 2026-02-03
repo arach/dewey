@@ -33,7 +33,7 @@ export function SidebarNav({ groups, currentPath }: SidebarNavProps) {
                     <a
                       className={`block rounded px-2 py-1 transition ${
                         isActive
-                          ? 'bg-[var(--color-surface-muted)] text-[var(--color-accent-strong)]'
+                          ? 'bg-[rgba(240,124,79,0.1)] text-[var(--color-accent)]'
                           : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
                       }`}
                       href={item.href}

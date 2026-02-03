@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Search">
+  <Fragment slot="head">
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  </Fragment>
+
+  <section class="space-y-6">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Search</p>
+      <h1 class="text-3xl font-semibold">Find docs fast</h1>
+    </div>
+
+    <div id="search" class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4"></div>
+  </section>
+
+  <script src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new window.PagefindUI({
+          element: '#search',
+          showSubResults: true,
+        })
+      }
+    })
+  </script>
+</BaseLayout>

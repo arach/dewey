@@ -1,0 +1,60 @@
+---
+import '../styles/global.css'
+
+const { title = 'Dewey' } = Astro.props
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/png" href="/og.png" />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="root min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      <header class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur" data-pagefind-ignore>
+        <div class="mx-auto flex w-full max-w-[1200px] items-center justify-between px-6 py-4">
+          <div class="flex items-center gap-3">
+            <div class="h-8 w-8 rounded-md bg-[var(--color-accent)]"></div>
+            <a class="text-lg font-semibold" href="/">Dewey</a>
+          </div>
+          <nav class="flex items-center gap-4 text-sm text-[var(--color-text-muted)]" data-pagefind-ignore>
+            <a class="hover:text-[var(--color-text)]" href="/docs/overview">Docs</a>
+            <a class="hover:text-[var(--color-text)]" href="/agents">Agents</a>
+            <a class="hover:text-[var(--color-text)]" href="/search">Search</a>
+          </nav>
+        </div>
+      </header>
+      <main class="mx-auto w-full max-w-[1200px] px-6 py-8" data-pagefind-body>
+        <slot />
+      </main>
+    </div>
+    <script is:inline>
+      const addCopyButtons = () => {
+        document.querySelectorAll('pre').forEach((block) => {
+          if (block.dataset.copyReady) return
+          block.dataset.copyReady = 'true'
+          const button = document.createElement('button')
+          button.textContent = 'Copy'
+          button.className = 'absolute right-3 top-3 rounded bg-white/10 px-2 py-1 text-xs text-white transition hover:bg-white/20'
+          button.addEventListener('click', async () => {
+            const code = block.querySelector('code')
+            if (!code) return
+            await navigator.clipboard.writeText(code.innerText)
+            button.textContent = 'Copied'
+            setTimeout(() => (button.textContent = 'Copy'), 1200)
+          })
+          block.appendChild(button)
+        })
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', addCopyButtons)
+      } else {
+        addCopyButtons()
+      }
+    </script>
+  </body>
+</html>

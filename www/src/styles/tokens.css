@@ -1,0 +1,19 @@
+@layer base {
+  :root {
+    --color-bg: #0b0d12;
+    --color-surface: #131722;
+    --color-surface-muted: #0f121a;
+    --color-border: #232a3d;
+    --color-text: #e7e9ee;
+    --color-text-muted: #9aa3b2;
+    --color-accent: #7aa2f7;
+    --color-accent-strong: #8ab0ff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.2);
+    --sidebar-width: 260px;
+    --toc-width: 220px;
+    --content-max: 760px;
+  }
+}

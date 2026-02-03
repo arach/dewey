@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import Toc from '../components/Toc.astro'
+import { SidebarNav } from '../components/SidebarNav'
+import { navGroups } from '../lib/nav'
+
+const { title = 'Docs', headings = [] } = Astro.props
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
+---
+
+<BaseLayout title={title}>
+  <div class="grid gap-8 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)_var(--toc-width)]">
+    <aside class="hidden lg:block" data-pagefind-ignore>
+      <div class="sticky top-24">
+        <SidebarNav groups={navGroups} currentPath={currentPath} client:load />
+      </div>
+    </aside>
+
+    <article class="doc-content min-w-0" data-pagefind-body>
+      <slot />
+    </article>
+
+    <aside class="hidden lg:block" data-pagefind-ignore>
+      <div class="sticky top-24">
+        <Toc headings={headings} />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

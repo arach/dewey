@@ -1,0 +1,20 @@
+---
+const { headings = [] } = Astro.props
+const filtered = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+---
+
+<div class="space-y-3 text-sm">
+  <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">On this page</p>
+  <ul class="space-y-2">
+    {filtered.map((heading) => (
+      <li>
+        <a
+          class="block text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+          href={`#${heading.slug}`}
+        >
+          {heading.text}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>

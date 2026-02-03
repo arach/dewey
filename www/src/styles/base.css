@@ -4,7 +4,7 @@
   }
 
   html {
-    color-scheme: light;
+    color-scheme: dark;
     font-family: "Space Grotesk", "Inter", "SF Pro Text", system-ui, -apple-system, sans-serif;
     background: var(--color-bg);
     color: var(--color-text);

@@ -41,7 +41,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
 
         <div class="mt-2 flex items-center gap-2">
           <a
-            class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/60 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+            class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
             href="/agents"
           >
             Agent
@@ -49,14 +49,14 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
 
           <div class="relative" data-copy-root>
             <button
-              class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/60 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+              class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
               type="button"
               data-copy-toggle
             >
               Copy
             </button>
             <div
-              class="absolute right-0 mt-1 hidden w-44 overflow-hidden rounded-lg border border-[var(--color-border)] bg-white shadow-lg"
+              class="absolute right-0 mt-1 hidden w-44 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg"
               data-copy-menu
             >
               <button class="w-full px-3 py-2 text-left text-xs hover:bg-[var(--color-surface-muted)]" data-copy-markdown>
@@ -70,7 +70,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
 
           {prompt && (
             <button
-              class="flex items-center gap-1.5 rounded-lg border border-[rgba(240,124,79,0.3)] bg-[rgba(240,124,79,0.08)] px-3 py-1.5 text-xs font-medium text-[var(--color-accent)]"
+              class="flex items-center gap-1.5 rounded-lg border border-[rgba(240,124,79,0.3)] bg-[rgba(240,124,79,0.12)] px-3 py-1.5 text-xs font-medium text-[var(--color-accent)]"
               type="button"
               data-prompt-toggle
             >

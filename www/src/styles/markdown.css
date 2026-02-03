@@ -72,15 +72,15 @@
 
   .doc-content pre {
     background: #1e1e1e;
-    border: 1px solid rgba(16, 21, 24, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     padding: 1rem 1.25rem;
     overflow-x: auto;
   }
 
   .doc-content code {
-    background: rgba(16, 21, 24, 0.06);
-    border: 1px solid rgba(16, 21, 24, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 4px;
     padding: 0.15rem 0.4rem;
     font-size: 12px;

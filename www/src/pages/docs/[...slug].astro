@@ -2,11 +2,9 @@
 import DocsLayout from '../../layouts/DocsLayout.astro'
 import docsIndex from '../../../docs.json'
 
-const markdownFiles = import.meta.glob('../../../docs/**/*.md')
-const rawMarkdownFiles = import.meta.glob('../../../docs/**/*.md', { as: 'raw' })
-const agentMarkdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', { as: 'raw' })
-
 export async function getStaticPaths() {
+  const markdownFiles = import.meta.glob('../../../docs/**/*.md')
+
   const entries = Object.entries(markdownFiles).filter(([filePath]) => {
     if (filePath.includes('/docs/agent/')) return false
     if (filePath.endsWith('.agent.md')) return false
@@ -27,7 +25,9 @@ export async function getStaticPaths() {
   )
 }
 
-const { page, filePath } = Astro.props
+  const { page, filePath } = Astro.props
+  const rawMarkdownFiles = import.meta.glob('../../../docs/**/*.md', { as: 'raw' })
+  const agentMarkdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', { as: 'raw' })
 const { Content, frontmatter } = page
 const headings = (await page.getHeadings?.()) ?? page.headings ?? []
 const slug = filePath.split('/docs/')[1].replace(/\.md$/, '')

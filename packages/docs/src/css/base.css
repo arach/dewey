@@ -153,6 +153,50 @@
 }
 
 /* ============================================
+   Breadcrumbs
+   ============================================ */
+
+.dw-breadcrumbs {
+  margin-bottom: 1.5rem;
+  font-size: var(--dw-text-xs, 0.75rem);
+  color: var(--dw-muted-foreground);
+}
+
+.dw-breadcrumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dw-breadcrumbs-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dw-breadcrumbs-link {
+  color: var(--dw-muted-foreground);
+  text-decoration: none;
+  transition: color var(--dw-transition-fast, 150ms ease);
+}
+
+.dw-breadcrumbs-link:hover {
+  color: var(--dw-foreground);
+}
+
+.dw-breadcrumbs-label {
+  color: var(--dw-muted-foreground);
+}
+
+.dw-breadcrumbs-separator {
+  color: var(--dw-border);
+  margin: 0 0.25rem;
+}
+
+/* ============================================
    Sidebar
    ============================================ */
 

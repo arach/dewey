@@ -20,7 +20,22 @@ interface DocFile {
 
 interface NavSection {
   title: string
-  items: { id: string; title: string }[]
+  items: { id: string; title: string; description?: string }[]
+}
+
+const VALID_THEMES = ['neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github', 'warm'] as const
+type ThemeName = typeof VALID_THEMES[number]
+
+function resolveTheme(theme?: string): ThemeName {
+  if (!theme) return 'neutral'
+  if (VALID_THEMES.includes(theme as ThemeName)) return theme as ThemeName
+  console.log(chalk.yellow(`⚠️  Unknown theme "${theme}". Falling back to "neutral".`))
+  return 'neutral'
+}
+
+function resolveTemplate(template?: string): 'nextjs' | 'vite' {
+  if (template === 'nextjs' || template === 'vite') return template
+  return 'vite'
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -79,21 +94,21 @@ function generateNavigation(docs: DocFile[]): NavSection[] {
   if (gettingStarted.length > 0) {
     sections.push({
       title: 'Getting Started',
-      items: gettingStarted.map(d => ({ id: d.id, title: d.title })),
+      items: gettingStarted.map(d => ({ id: d.id, title: d.title, description: d.description })),
     })
   }
 
   if (features.length > 0) {
     sections.push({
       title: 'Features',
-      items: features.map(d => ({ id: d.id, title: d.title })),
+      items: features.map(d => ({ id: d.id, title: d.title, description: d.description })),
     })
   }
 
   if (reference.length > 0) {
     sections.push({
       title: 'Reference',
-      items: reference.map(d => ({ id: d.id, title: d.title })),
+      items: reference.map(d => ({ id: d.id, title: d.title, description: d.description })),
     })
   }
 
@@ -101,7 +116,7 @@ function generateNavigation(docs: DocFile[]): NavSection[] {
   if (sections.length === 0 && docs.length > 0) {
     sections.push({
       title: 'Documentation',
-      items: docs.map(d => ({ id: d.id, title: d.title })),
+      items: docs.map(d => ({ id: d.id, title: d.title, description: d.description })),
     })
   }
 
@@ -142,7 +157,7 @@ function generateDocsContent(docs: DocFile[]): string {
 }
 
 // Template files for Next.js docs site
-const TEMPLATES = {
+const NEXT_TEMPLATES = {
   'package.json': (projectName: string) => JSON.stringify({
     name: projectName,
     version: '0.1.0',
@@ -210,11 +225,12 @@ export default nextConfig
 }
 `,
 
-  'app/globals.css': () => `/* Google Fonts - Space Grotesk + Fraunces + JetBrains Mono */
+  'app/globals.css': (theme: ThemeName) => `/* Google Fonts - Space Grotesk + Fraunces + JetBrains Mono */
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @import "tailwindcss";
 @import "@arach/dewey/css";
+${theme === 'neutral' ? '' : `@import "@arach/dewey/css/colors/${theme}.css";`}
 
 @theme {
   --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -299,7 +315,7 @@ export default async function DocsPage({ params }: Props) {
 }
 `,
 
-  'app/docs/[[...slug]]/client.tsx': (projectName: string, nav: NavSection[]) => `'use client'
+  'app/docs/[[...slug]]/client.tsx': (projectName: string, nav: NavSection[], theme: ThemeName) => `'use client'
 
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -354,13 +370,14 @@ export default function DocsClientPage({ docs, initialPage }: DocsClientPageProp
           toc: true,
           header: true,
           prevNext: true,
+          breadcrumbs: true,
         },
       }}
       docs={docs}
       currentPage={initialPage}
       onNavigate={handleNavigate}
       providerProps={{
-        theme: 'neutral',
+        theme: '${theme}',
         defaultDark: false,
         components: {
           Link: NextLink,
@@ -372,11 +389,234 @@ export default function DocsClientPage({ docs, initialPage }: DocsClientPageProp
 `,
 }
 
+// Template files for Vite docs site
+const VITE_TEMPLATES = {
+  'package.json': (projectName: string) => JSON.stringify({
+    name: projectName,
+    version: '0.1.0',
+    private: true,
+    type: 'module',
+    scripts: {
+      dev: 'vite',
+      build: 'tsc -b && vite build',
+      preview: 'vite preview',
+    },
+    dependencies: {
+      '@arach/dewey': '^0.2.0',
+      'react': '^19.0.0',
+      'react-dom': '^19.0.0',
+      'react-router-dom': '^7.0.0',
+    },
+    devDependencies: {
+      '@types/react': '^19.0.0',
+      '@types/react-dom': '^19.0.0',
+      '@vitejs/plugin-react': '^4.3.0',
+      'typescript': '^5.5.0',
+      'vite': '^6.0.0',
+    },
+  }, null, 2),
+
+  'vite.config.ts': () => `import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+`,
+
+  'tsconfig.json': () => JSON.stringify({
+    compilerOptions: {
+      target: 'ES2020',
+      useDefineForClassFields: true,
+      lib: ['ES2020', 'DOM', 'DOM.Iterable'],
+      module: 'ESNext',
+      skipLibCheck: true,
+      moduleResolution: 'bundler',
+      allowImportingTsExtensions: true,
+      resolveJsonModule: true,
+      isolatedModules: true,
+      noEmit: true,
+      jsx: 'react-jsx',
+      strict: true,
+    },
+    include: ['src'],
+  }, null, 2),
+
+  'index.html': (projectName: string) => `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${projectName} Docs</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+`,
+
+  'src/main.tsx': () => `import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+)
+`,
+
+  'src/index.css': (theme: ThemeName) => `/* Fonts (Space Grotesk + Fraunces + JetBrains Mono) */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "@arach/dewey/css";
+${theme === 'neutral' ? '' : `@import "@arach/dewey/css/colors/${theme}.css";`}
+
+:root {
+  --dw-font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --dw-font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --dw-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+body {
+  margin: 0;
+  background: var(--dw-background);
+  color: var(--dw-foreground);
+}
+
+.dw-home {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: var(--dw-background);
+  color: var(--dw-foreground);
+  font-family: var(--dw-font-sans);
+}
+
+.dw-home-inner {
+  max-width: 48rem;
+  text-align: center;
+}
+
+.dw-home-title {
+  font-family: var(--dw-font-serif);
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dw-home-link {
+  color: var(--dw-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+`,
+
+  'src/App.tsx': () => `import { Routes, Route, Navigate } from 'react-router-dom'
+import { siteConfig } from './site.config'
+import DocsPage from './pages/Docs'
+import Home from './pages/Home'
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path={\`\${siteConfig.basePath}/*\`} element={<DocsPage />} />
+      <Route path="*" element={<Navigate to={siteConfig.basePath} replace />} />
+    </Routes>
+  )
+}
+`,
+
+  'src/pages/Home.tsx': (projectName: string) => `import { Link } from 'react-router-dom'
+import { siteConfig } from '../site.config'
+
+export default function Home() {
+  return (
+    <div className="dw-home">
+      <div className="dw-home-inner">
+        <h1 className="dw-home-title">${projectName}</h1>
+        <p style={{ color: 'var(--dw-muted-foreground)', marginBottom: '1.5rem' }}>
+          Main site placeholder. Customize this page or link to your real homepage.
+        </p>
+        <Link className="dw-home-link" to={siteConfig.basePath}>
+          Go to documentation →
+        </Link>
+      </div>
+    </div>
+  )
+}
+`,
+
+  'src/pages/Docs.tsx': () => `import type { ComponentProps } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { DocsApp } from '@arach/dewey/react'
+import { docs } from '../lib/docs-content'
+import { siteConfig, siteTheme, defaultPage } from '../site.config'
+
+function RouterLink({
+  href,
+  ...props
+}: ComponentProps<'a'> & { href: string }) {
+  return <Link to={href} {...props} />
+}
+
+export default function DocsPage() {
+  const navigate = useNavigate()
+  const params = useParams()
+  const slug = params['*']?.split('/')[0]
+  const pageId = slug && slug.length > 0 ? slug : defaultPage
+
+  return (
+    <DocsApp
+      config={siteConfig}
+      docs={docs}
+      currentPage={pageId}
+      onNavigate={(nextPage) => navigate(\`\${siteConfig.basePath}/\${nextPage}\`)}
+      providerProps={{
+        theme: siteTheme,
+        components: { Link: RouterLink },
+      }}
+    />
+  )
+}
+`,
+
+  'src/site.config.ts': (projectName: string, navigation: NavSection[], defaultPage: string, theme: ThemeName) => `import type { DocsAppConfig } from '@arach/dewey'
+
+export const siteTheme = '${theme}' as const
+export const defaultPage = '${defaultPage}'
+
+export const siteConfig = {
+  name: '${projectName}',
+  tagline: 'Documentation',
+  basePath: '/docs',
+  homeUrl: '/',
+  navigation: ${JSON.stringify(navigation, null, 2)},
+  layout: {
+    sidebar: true,
+    toc: true,
+    header: true,
+    prevNext: true,
+    breadcrumbs: true,
+  },
+} satisfies DocsAppConfig
+`,
+}
+
 export async function createCommand(projectDir: string, options: CreateOptions) {
   const cwd = process.cwd()
   const targetDir = join(cwd, projectDir)
   const sourcePath = options.source ? join(cwd, options.source) : join(cwd, 'docs')
   const projectName = options.name || basename(projectDir)
+  const template = resolveTemplate(options.template)
+  const theme = resolveTheme(options.theme)
 
   console.log(chalk.blue(`\n🚀 Creating Dewey docs site: ${projectName}\n`))
 
@@ -415,23 +655,35 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
   console.log(chalk.gray('\n📁 Creating project structure...'))
 
   await mkdir(targetDir, { recursive: true })
-  await mkdir(join(targetDir, 'app', 'docs', '[[...slug]]'), { recursive: true })
-  await mkdir(join(targetDir, 'lib'), { recursive: true })
 
   // Write template files
-  const files: [string, string][] = [
-    ['package.json', TEMPLATES['package.json'](projectName)],
-    ['next.config.ts', TEMPLATES['next.config.ts']()],
-    ['tsconfig.json', TEMPLATES['tsconfig.json']()],
-    ['postcss.config.mjs', TEMPLATES['postcss.config.mjs']()],
-    ['app/globals.css', TEMPLATES['app/globals.css']()],
-    ['app/layout.tsx', TEMPLATES['app/layout.tsx'](projectName)],
-    ['app/page.tsx', TEMPLATES['app/page.tsx']()],
-    ['app/docs/layout.tsx', TEMPLATES['app/docs/layout.tsx']()],
-    ['app/docs/[[...slug]]/page.tsx', TEMPLATES['app/docs/[[...slug]]/page.tsx'](navigation, defaultPage)],
-    ['app/docs/[[...slug]]/client.tsx', TEMPLATES['app/docs/[[...slug]]/client.tsx'](projectName, navigation)],
-    ['lib/docs-content/index.ts', generateDocsContent(docs)],
-  ]
+  const files: [string, string][] = template === 'nextjs'
+    ? [
+      ['package.json', NEXT_TEMPLATES['package.json'](projectName)],
+      ['next.config.ts', NEXT_TEMPLATES['next.config.ts']()],
+      ['tsconfig.json', NEXT_TEMPLATES['tsconfig.json']()],
+      ['postcss.config.mjs', NEXT_TEMPLATES['postcss.config.mjs']()],
+      ['app/globals.css', NEXT_TEMPLATES['app/globals.css'](theme)],
+      ['app/layout.tsx', NEXT_TEMPLATES['app/layout.tsx'](projectName)],
+      ['app/page.tsx', NEXT_TEMPLATES['app/page.tsx']()],
+      ['app/docs/layout.tsx', NEXT_TEMPLATES['app/docs/layout.tsx']()],
+      ['app/docs/[[...slug]]/page.tsx', NEXT_TEMPLATES['app/docs/[[...slug]]/page.tsx'](navigation, defaultPage)],
+      ['app/docs/[[...slug]]/client.tsx', NEXT_TEMPLATES['app/docs/[[...slug]]/client.tsx'](projectName, navigation, theme)],
+      ['lib/docs-content/index.ts', generateDocsContent(docs)],
+    ]
+    : [
+      ['package.json', VITE_TEMPLATES['package.json'](projectName)],
+      ['vite.config.ts', VITE_TEMPLATES['vite.config.ts']()],
+      ['tsconfig.json', VITE_TEMPLATES['tsconfig.json']()],
+      ['index.html', VITE_TEMPLATES['index.html'](projectName)],
+      ['src/main.tsx', VITE_TEMPLATES['src/main.tsx']()],
+      ['src/index.css', VITE_TEMPLATES['src/index.css'](theme)],
+      ['src/App.tsx', VITE_TEMPLATES['src/App.tsx']()],
+      ['src/pages/Home.tsx', VITE_TEMPLATES['src/pages/Home.tsx'](projectName)],
+      ['src/pages/Docs.tsx', VITE_TEMPLATES['src/pages/Docs.tsx']()],
+      ['src/site.config.ts', VITE_TEMPLATES['src/site.config.ts'](projectName, navigation, defaultPage, theme)],
+      ['src/lib/docs-content.ts', generateDocsContent(docs)],
+    ]
 
   for (const [filePath, content] of files) {
     const fullPath = join(targetDir, filePath)
@@ -442,7 +694,8 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
   }
 
   // Create .gitignore
-  await writeFile(join(targetDir, '.gitignore'), `# Dependencies
+  const gitignore = template === 'nextjs'
+    ? `# Dependencies
 node_modules
 .pnpm-store
 
@@ -453,7 +706,20 @@ out
 # Misc
 .DS_Store
 *.log
-`)
+`
+    : `# Dependencies
+node_modules
+.pnpm-store
+
+# Vite
+dist
+
+# Misc
+.DS_Store
+*.log
+`
+
+  await writeFile(join(targetDir, '.gitignore'), gitignore)
   console.log(chalk.green('✓') + ' .gitignore')
 
   console.log(chalk.blue('\n✨ Docs site created!\n'))
@@ -464,7 +730,9 @@ out
   console.log(chalk.gray('  pnpm dev'))
   console.log('')
   console.log('Your docs will be available at:')
-  console.log(chalk.cyan('  http://localhost:3000/docs/'))
+  console.log(chalk.cyan(template === 'nextjs'
+    ? '  http://localhost:3000/docs/'
+    : '  http://localhost:5173/docs/'))
   console.log('')
 
   if (docs.length > 0) {

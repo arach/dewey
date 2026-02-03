@@ -29,6 +29,7 @@ export interface DocsAppConfig {
     header?: boolean
     footer?: boolean
     prevNext?: boolean
+    breadcrumbs?: boolean
   }
 }
 
@@ -95,6 +96,11 @@ interface DocsLayoutInternalProps {
   pageTree: PageNode[]
 }
 
+interface BreadcrumbItem {
+  label: string
+  href?: string
+}
+
 function DocsLayoutInternal({
   config,
   docs,
@@ -118,6 +124,7 @@ function DocsLayoutInternal({
     toc: showToc = true,
     header: showHeader = true,
     prevNext: showPrevNext = true,
+    breadcrumbs: showBreadcrumbs = true,
   } = layout
 
   // Get current content
@@ -149,6 +156,35 @@ function DocsLayoutInternal({
   const currentIndex = flatPages.findIndex((p) => p.id === currentPage)
   const prevPage = currentIndex > 0 ? flatPages[currentIndex - 1] : null
   const nextPage = currentIndex < flatPages.length - 1 ? flatPages[currentIndex + 1] : null
+
+  const breadcrumbItems = useMemo((): BreadcrumbItem[] => {
+    if (!currentPage || currentPage === 'index') {
+      return [{ label: name, href: basePath }]
+    }
+
+    const items: BreadcrumbItem[] = [{ label: name, href: basePath }]
+    let groupLabel: string | null = null
+
+    if (config.navigation) {
+      for (const group of config.navigation) {
+        const match = group.items.find((item) => item.id === currentPage)
+        if (match) {
+          groupLabel = group.title
+          break
+        }
+      }
+    }
+
+    if (groupLabel) {
+      items.push({ label: groupLabel })
+    }
+
+    const currentItem = flatPages.find((page) => page.id === currentPage)
+    const currentLabel = currentItem?.name || currentPage
+    items.push({ label: currentLabel, href: `${basePath}/${currentPage}` })
+
+    return items
+  }, [basePath, currentPage, config.navigation, flatPages, name])
 
   return (
     <div className="dw-layout">
@@ -222,6 +258,27 @@ function DocsLayoutInternal({
           />
         ) : content ? (
           <div className="dw-content">
+            {showBreadcrumbs && (
+              <nav className="dw-breadcrumbs" aria-label="Breadcrumb">
+                <ol className="dw-breadcrumbs-list">
+                  {breadcrumbItems.map((item, index) => (
+                    <li key={`${item.label}-${index}`} className="dw-breadcrumbs-item">
+                      {item.href ? (
+                        <Link href={item.href} className="dw-breadcrumbs-link">
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <span className="dw-breadcrumbs-label">{item.label}</span>
+                      )}
+                      {index < breadcrumbItems.length - 1 && (
+                        <span className="dw-breadcrumbs-separator">/</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )}
+
             <article className="dw-prose">
               <MarkdownContent content={content} isDark={isDark} />
             </article>

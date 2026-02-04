@@ -18,7 +18,7 @@ const { title = 'Dewey' } = Astro.props
     <slot name="head" />
   </head>
   <body>
-    <div class="root min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div class="root min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]" data-theme-root>
       <header class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur" data-pagefind-ignore>
         <div class="mx-auto flex w-full max-w-[1320px] items-center justify-between px-6 py-4">
           <div class="flex items-center gap-3">
@@ -39,6 +39,14 @@ const { title = 'Dewey' } = Astro.props
             >
               Search…
               <span class="text-[10px] uppercase tracking-[0.2em]">⌘K</span>
+            </button>
+            <button
+              class="hidden sm:flex items-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-2.5 py-1.5 text-xs text-[var(--color-text-muted)]"
+              type="button"
+              data-theme-toggle
+              data-pagefind-ignore
+            >
+              Theme
             </button>
             <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[var(--color-text)]">DOCS</span>
           </div>
@@ -68,6 +76,23 @@ const { title = 'Dewey' } = Astro.props
       </div>
     </div>
     <script is:inline>
+      const themeRoot = document.querySelector('[data-theme-root]')
+      const themeToggle = document.querySelector('[data-theme-toggle]')
+      const savedTheme = localStorage.getItem('theme')
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+
+      if (themeRoot) {
+        themeRoot.setAttribute('data-theme', initialTheme)
+      }
+
+      themeToggle?.addEventListener('click', () => {
+        const current = themeRoot?.getAttribute('data-theme') || 'light'
+        const next = current === 'dark' ? 'light' : 'dark'
+        themeRoot?.setAttribute('data-theme', next)
+        localStorage.setItem('theme', next)
+      })
+
       const handleSearchShortcut = (event) => {
         const isMac = navigator.platform.toUpperCase().includes('MAC')
         const isCmdK = isMac ? event.metaKey && event.key.toLowerCase() === 'k' : event.ctrlKey && event.key.toLowerCase() === 'k'
@@ -81,8 +106,27 @@ const { title = 'Dewey' } = Astro.props
       const searchModal = document.querySelector('[data-search-modal]')
       const searchToggle = document.querySelector('[data-search-toggle]')
       const searchClose = document.querySelector('[data-search-close]')
-      const initPagefind = () => {
-        if (window.PagefindUI) {
+      const loadPagefind = () =>
+        new Promise((resolve) => {
+          if (window.PagefindUI) return resolve(true)
+          const existing = document.querySelector('script[data-pagefind]')
+          if (existing) {
+            existing.addEventListener('load', () => resolve(true))
+            existing.addEventListener('error', () => resolve(false))
+            return
+          }
+          const script = document.createElement('script')
+          script.src = '/pagefind/pagefind-ui.js'
+          script.async = true
+          script.dataset.pagefind = 'true'
+          script.addEventListener('load', () => resolve(true))
+          script.addEventListener('error', () => resolve(false))
+          document.head.appendChild(script)
+        })
+
+      const initPagefind = async () => {
+        const ok = await loadPagefind()
+        if (ok && window.PagefindUI) {
           new window.PagefindUI({
             element: '#search-modal',
             showSubResults: true,
@@ -136,6 +180,5 @@ const { title = 'Dewey' } = Astro.props
         addCopyButtons()
       }
     </script>
-    <script src="/pagefind/pagefind-ui.js"></script>
   </body>
 </html>

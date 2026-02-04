@@ -4,7 +4,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     font-family: "Space Grotesk", "Inter", "SF Pro Text", system-ui, -apple-system, sans-serif;
     background: var(--color-bg);
     color: var(--color-text);
@@ -16,6 +16,10 @@
     background: var(--color-bg);
     color: var(--color-text);
     position: relative;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
   }
 
   h1,

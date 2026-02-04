@@ -1,4 +1,7 @@
-const markdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', { as: 'raw' })
+const markdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', {
+  query: '?raw',
+  import: 'default',
+})
 
 export async function getStaticPaths() {
   return Object.keys(markdownFiles).map((filePath) => {

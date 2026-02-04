@@ -14,6 +14,9 @@ import BaseLayout from '../layouts/BaseLayout.astro'
     </div>
 
     <div id="search" class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4"></div>
+    <p id="search-fallback" class="text-sm text-[var(--color-text-muted)] hidden">
+      Search index is generated on build. Run <code>bun run build</code> to enable Pagefind locally.
+    </p>
   </section>
 
   <script src="/pagefind/pagefind-ui.js"></script>
@@ -24,6 +27,8 @@ import BaseLayout from '../layouts/BaseLayout.astro'
           element: '#search',
           showSubResults: true,
         })
+      } else {
+        document.getElementById('search-fallback')?.classList.remove('hidden')
       }
     })
   </script>

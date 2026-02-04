@@ -25,9 +25,7 @@ export async function getStaticPaths() {
   )
 }
 
-  const { page, filePath } = Astro.props
-  const rawMarkdownFiles = import.meta.glob('../../../docs/**/*.md', { as: 'raw' })
-  const agentMarkdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', { as: 'raw' })
+const { page, filePath } = Astro.props
 const { Content, frontmatter } = page
 const headings = (await page.getHeadings?.()) ?? page.headings ?? []
 const slug = filePath.split('/docs/')[1].replace(/\.md$/, '')
@@ -41,6 +39,15 @@ const title = frontmatter?.title ?? fallbackTitle
 const sectionId = slug.split('/')[0]
 const section = docsIndex.sections.find((entry) => entry.id === sectionId)
 const description = section?.description
+
+const rawMarkdownFiles = import.meta.glob('../../../docs/**/*.md', {
+  query: '?raw',
+  import: 'default',
+})
+const agentMarkdownFiles = import.meta.glob('../../../docs/agent/**/*.agent.md', {
+  query: '?raw',
+  import: 'default',
+})
 
 const rawLoader = rawMarkdownFiles[filePath]
 const rawMarkdown = rawLoader ? await rawLoader() : ''

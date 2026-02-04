@@ -40,12 +40,13 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
         </div>
 
         <div class="mt-2 flex items-center gap-2">
-          <a
+          <button
             class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
-            href="/agents"
+            type="button"
+            data-copy-agent-button
           >
             Agent
-          </a>
+          </button>
 
           <div class="relative" data-copy-root>
             <button
@@ -123,6 +124,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
     const menu = document.querySelector('[data-copy-menu]')
     const copyMarkdown = document.querySelector('[data-copy-markdown]')
     const copyAgent = document.querySelector('[data-copy-agent]')
+    const copyAgentButton = document.querySelector('[data-copy-agent-button]')
 
     if (toggle && menu) {
       toggle.addEventListener('click', () => {
@@ -150,6 +152,11 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       const agentContent = agentMarkdown || rawMarkdown
       await safeCopy(agentContent)
       menu?.classList.add('hidden')
+    })
+
+    copyAgentButton?.addEventListener('click', async () => {
+      const agentContent = agentMarkdown || rawMarkdown
+      await safeCopy(agentContent)
     })
 
     const promptModal = document.querySelector('[data-prompt-modal]')

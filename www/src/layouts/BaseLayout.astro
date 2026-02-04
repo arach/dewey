@@ -14,12 +14,13 @@ const { title = 'Dewey' } = Astro.props
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap"
     />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
     <slot name="head" />
   </head>
   <body>
     <div class="root min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <header class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur" data-pagefind-ignore>
-        <div class="mx-auto flex w-full max-w-[1200px] items-center justify-between px-6 py-4">
+        <div class="mx-auto flex w-full max-w-[1320px] items-center justify-between px-6 py-4">
           <div class="flex items-center gap-3">
             <div class="h-2.5 w-2.5 rounded-full bg-[var(--color-accent)] shadow-[0_0_0_4px_rgba(240,124,79,0.2)]"></div>
             <a class="text-lg font-semibold" href="/">Dewey</a>
@@ -30,15 +31,87 @@ const { title = 'Dewey' } = Astro.props
               <a class="hover:text-[var(--color-text)]" href="/agents">Agents</a>
               <a class="hover:text-[var(--color-text)]" href="/search">Search</a>
             </nav>
+            <button
+              class="hidden sm:flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs text-[var(--color-text-muted)]"
+              type="button"
+              data-search-toggle
+              data-pagefind-ignore
+            >
+              Search…
+              <span class="text-[10px] uppercase tracking-[0.2em]">⌘K</span>
+            </button>
             <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[var(--color-text)]">DOCS</span>
           </div>
         </div>
       </header>
-      <main class="mx-auto w-full max-w-[1200px] px-6 py-8" data-pagefind-body>
+      <main class="mx-auto w-full max-w-[1320px] px-6 py-8" data-pagefind-body>
         <slot />
       </main>
     </div>
+    <div
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-6"
+      data-search-modal
+      data-pagefind-ignore
+    >
+      <div class="w-full max-w-2xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Search</p>
+            <h2 class="text-lg font-semibold">Find docs fast</h2>
+          </div>
+          <button class="text-xs text-[var(--color-text-muted)]" data-search-close>Close</button>
+        </div>
+        <div id="search-modal" class="mt-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] p-4"></div>
+        <p id="search-modal-fallback" class="mt-3 hidden text-xs text-[var(--color-text-muted)]">
+          Search index is generated on build. Run <code>bun run build</code> to enable Pagefind locally.
+        </p>
+      </div>
+    </div>
     <script is:inline>
+      const handleSearchShortcut = (event) => {
+        const isMac = navigator.platform.toUpperCase().includes('MAC')
+        const isCmdK = isMac ? event.metaKey && event.key.toLowerCase() === 'k' : event.ctrlKey && event.key.toLowerCase() === 'k'
+        if (isCmdK) {
+          event.preventDefault()
+          window.dispatchEvent(new CustomEvent('open-search'))
+        }
+      }
+      window.addEventListener('keydown', handleSearchShortcut)
+
+      const searchModal = document.querySelector('[data-search-modal]')
+      const searchToggle = document.querySelector('[data-search-toggle]')
+      const searchClose = document.querySelector('[data-search-close]')
+      const initPagefind = () => {
+        if (window.PagefindUI) {
+          new window.PagefindUI({
+            element: '#search-modal',
+            showSubResults: true,
+          })
+        } else {
+          document.getElementById('search-modal-fallback')?.classList.remove('hidden')
+        }
+      }
+
+      const openSearch = () => {
+        if (!searchModal) return
+        searchModal.classList.remove('hidden')
+        searchModal.classList.add('flex')
+        initPagefind()
+      }
+
+      const closeSearch = () => {
+        if (!searchModal) return
+        searchModal.classList.add('hidden')
+        searchModal.classList.remove('flex')
+      }
+
+      searchToggle?.addEventListener('click', openSearch)
+      searchClose?.addEventListener('click', closeSearch)
+      searchModal?.addEventListener('click', (event) => {
+        if (event.target === searchModal) closeSearch()
+      })
+      window.addEventListener('open-search', openSearch)
+
       const addCopyButtons = () => {
         document.querySelectorAll('pre').forEach((block) => {
           if (block.dataset.copyReady) return
@@ -63,5 +136,6 @@ const { title = 'Dewey' } = Astro.props
         addCopyButtons()
       }
     </script>
+    <script src="/pagefind/pagefind-ui.js"></script>
   </body>
 </html>

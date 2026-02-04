@@ -1,18 +1,17 @@
-const markdownFiles = import.meta.glob('../../docs/**/*.md', { as: 'raw' })
-const excludePatterns = ['/docs/agent/', '.agent.md', '/docs/AGENTS.md']
+const markdownFiles = import.meta.glob('../../docs/**/*.md', {
+  query: '?raw',
+  import: 'default',
+})
 
 export async function getStaticPaths() {
-  return Object.keys(markdownFiles)
-    .filter((filePath) => !excludePatterns.some((pattern) => filePath.includes(pattern)))
-    .map((filePath) => {
-      const relative = filePath.split('/docs/')[1].replace(/\.md$/, '')
-      const slug = `docs/${relative}`
+  return Object.keys(markdownFiles).map((filePath) => {
+    const slug = filePath.split('/docs/')[1].replace(/\.md$/, '')
 
-      return {
-        params: { slug },
-        props: { filePath },
-      }
-    })
+    return {
+      params: { slug: `docs/${slug}` },
+      props: { filePath },
+    }
+  })
 }
 
 export async function GET({ props }) {

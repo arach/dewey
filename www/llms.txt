@@ -1,0 +1,21 @@
+# dewey
+
+> Documentation toolkit for AI-agent-ready docs
+
+## Documentation
+
+- Overview: /docs/overview
+- Quickstart: /docs/quickstart
+- Skills: /docs/skills
+
+## Overview
+
+Dewey is a documentation toolkit that makes your docs AI-agent-ready. It audits, scores, and generates optimized documentation for LLM consumption.
+
+## Quickstart
+
+Get your documentation agent-ready in under 5 minutes.
+
+## Skills
+
+Skills are LLM prompts that guide AI agents through specific tasks. They're not code - they're expert instructions.

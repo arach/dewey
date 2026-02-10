@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Agents">
+  <section class="space-y-8">
+    <div class="space-y-3">
+      <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Agent Entry</p>
+      <h1 class="text-3xl font-semibold">Agent-first resources</h1>
+      <p class="max-w-2xl text-[var(--color-text-muted)]">
+        These endpoints are optimized for AI agents and tooling. Raw markdown is available for agent docs.
+      </p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div
+        class="md:col-span-2 flex items-center justify-between gap-4 rounded-[var(--radius-lg)] border border-[rgba(240,124,79,0.2)] bg-[rgba(240,124,79,0.12)] p-4"
+      >
+        <div>
+          <div class="text-sm font-semibold text-[var(--color-text)]">Download complete context</div>
+          <div class="text-sm text-[var(--color-text-muted)]">Grab the full llms.txt bundle for agents.</div>
+        </div>
+        <a
+          class="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white"
+          href="/llms.txt"
+        >
+          llms.txt
+        </a>
+      </div>
+      <a
+        class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+        href="/AGENTS.md"
+      >
+        <h2 class="text-base font-semibold">AGENTS.md</h2>
+        <p class="mt-2 text-sm text-[var(--color-text-muted)]">Combined context for agents.</p>
+      </a>
+      <a
+        class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+        href="/llms.txt"
+      >
+        <h2 class="text-base font-semibold">llms.txt</h2>
+        <p class="mt-2 text-sm text-[var(--color-text-muted)]">Plain text project summary.</p>
+      </a>
+      <a
+        class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+        href="/lm.txt"
+      >
+        <h2 class="text-base font-semibold">lm.txt</h2>
+        <p class="mt-2 text-sm text-[var(--color-text-muted)]">Short alias for llms.txt.</p>
+      </a>
+      <a
+        class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+        href="/install.md"
+      >
+        <h2 class="text-base font-semibold">install.md</h2>
+        <p class="mt-2 text-sm text-[var(--color-text-muted)]">LLM-executable install guide.</p>
+      </a>
+      <a
+        class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+        href="/agents/overview.md"
+      >
+        <h2 class="text-base font-semibold">Agent Overview</h2>
+        <p class="mt-2 text-sm text-[var(--color-text-muted)]">Raw agent-optimized overview.</p>
+      </a>
+    </div>
+
+    <div class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] p-5 text-sm text-[var(--color-text-muted)]">
+      <p>
+        Human docs live at <code>/docs/*</code>. Raw human markdown lives at <code>/docs/*.md</code>.
+        Agent markdown lives at <code>/agents/*.md</code>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

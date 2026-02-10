@@ -11,7 +11,7 @@ export type HomeGroup = {
 
 export const homeGroups: HomeGroup[] = [
   {
-    title: 'Developers',
+    title: 'Get Started',
     cards: [
       {
         title: 'Overview',
@@ -20,52 +20,52 @@ export const homeGroups: HomeGroup[] = [
       },
       {
         title: 'Quickstart',
-        description: 'Get to a working setup in minutes.',
+        description: 'Install and generate your first agent files.',
         href: '/docs/quickstart',
       },
       {
         title: 'Skills',
-        description: 'Built-in prompts and how to extend them.',
+        description: 'LLM prompt templates for docs review.',
         href: '/docs/skills',
       },
     ],
   },
   {
-    title: 'Agents',
+    title: 'For AI Agents',
     cards: [
       {
         title: 'Agent Entry',
-        description: 'Agent-first resources and raw markdown.',
+        description: 'Raw markdown endpoints for LLMs.',
         href: '/agents',
       },
       {
         title: 'AGENTS.md',
-        description: 'Combined context for AI agents.',
+        description: 'Combined context with critical rules.',
         href: '/AGENTS.md',
       },
       {
         title: 'llms.txt',
-        description: 'Plain-text project summary for LLMs.',
+        description: 'Plain-text project summary.',
         href: '/llms.txt',
       },
     ],
   },
   {
-    title: 'System',
+    title: 'Generated Files',
     cards: [
       {
         title: 'install.md',
-        description: 'LLM-executable install guide.',
+        description: 'LLM-executable installation guide.',
         href: '/install.md',
       },
       {
         title: 'Prompt: audit-docs',
-        description: 'Prompt template for auditing docs.',
+        description: 'Audit docs for completeness.',
         href: '/docs/prompts/audit-docs',
       },
       {
         title: 'Prompt: create-agent-md',
-        description: 'Prompt template for creating agent files.',
+        description: 'Generate agent-optimized versions.',
         href: '/docs/prompts/create-agent-md',
       },
     ],

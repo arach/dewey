@@ -7,8 +7,8 @@
     "predev": "node scripts/copy-public.mjs",
     "build": "astro build",
     "prebuild": "node scripts/copy-public.mjs",
-    "postbuild": "npx -y pagefind --site dist",
-    "preview": "astro preview",
+    "postbuild": "npx -y pagefind --site dist && node scripts/sync-pagefind.mjs",
+    "preview": "node scripts/sync-pagefind.mjs && astro preview",
     "lint": "astro check"
   },
   "dependencies": {

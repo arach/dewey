@@ -29,7 +29,7 @@ const { title = 'Dewey' } = Astro.props
             <nav class="flex items-center gap-4" data-pagefind-ignore>
               <a class="hover:text-[var(--color-text)]" href="/docs">Docs</a>
               <a class="hover:text-[var(--color-text)]" href="/agents">Agents</a>
-              <a class="hover:text-[var(--color-text)]" href="/search">Search</a>
+              <button class="hover:text-[var(--color-text)]" type="button" data-search-toggle>Search</button>
             </nav>
             <button
               class="hidden sm:flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs text-[var(--color-text-muted)]"
@@ -76,109 +76,126 @@ const { title = 'Dewey' } = Astro.props
       </div>
     </div>
     <script is:inline>
-      const themeRoot = document.querySelector('[data-theme-root]')
-      const themeToggle = document.querySelector('[data-theme-toggle]')
-      const savedTheme = localStorage.getItem('theme')
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+      (() => {
+        const initUi = () => {
+          try {
+            const themeRoot = document.querySelector('[data-theme-root]')
+            const themeToggle = document.querySelector('[data-theme-toggle]')
+            let savedTheme = null
+            try {
+              savedTheme = localStorage.getItem('theme')
+            } catch {}
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+            const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
 
-      if (themeRoot) {
-        themeRoot.setAttribute('data-theme', initialTheme)
-      }
+            if (themeRoot) {
+              themeRoot.setAttribute('data-theme', initialTheme)
+            }
 
-      themeToggle?.addEventListener('click', () => {
-        const current = themeRoot?.getAttribute('data-theme') || 'light'
-        const next = current === 'dark' ? 'light' : 'dark'
-        themeRoot?.setAttribute('data-theme', next)
-        localStorage.setItem('theme', next)
-      })
+            themeToggle?.addEventListener('click', () => {
+              const current = themeRoot?.getAttribute('data-theme') || 'light'
+              const next = current === 'dark' ? 'light' : 'dark'
+              themeRoot?.setAttribute('data-theme', next)
+              try {
+                localStorage.setItem('theme', next)
+              } catch {}
+            })
 
-      const handleSearchShortcut = (event) => {
-        const isMac = navigator.platform.toUpperCase().includes('MAC')
-        const isCmdK = isMac ? event.metaKey && event.key.toLowerCase() === 'k' : event.ctrlKey && event.key.toLowerCase() === 'k'
-        if (isCmdK) {
-          event.preventDefault()
-          window.dispatchEvent(new CustomEvent('open-search'))
-        }
-      }
-      window.addEventListener('keydown', handleSearchShortcut)
+            const handleSearchShortcut = (event) => {
+              const isMac = navigator.platform?.toUpperCase().includes('MAC')
+              const isCmdK = isMac ? event.metaKey && event.key.toLowerCase() === 'k' : event.ctrlKey && event.key.toLowerCase() === 'k'
+              if (isCmdK) {
+                event.preventDefault()
+                window.dispatchEvent(new CustomEvent('open-search'))
+              }
+            }
+            window.addEventListener('keydown', handleSearchShortcut)
 
-      const searchModal = document.querySelector('[data-search-modal]')
-      const searchToggle = document.querySelector('[data-search-toggle]')
-      const searchClose = document.querySelector('[data-search-close]')
-      const loadPagefind = () =>
-        new Promise((resolve) => {
-          if (window.PagefindUI) return resolve(true)
-          const existing = document.querySelector('script[data-pagefind]')
-          if (existing) {
-            existing.addEventListener('load', () => resolve(true))
-            existing.addEventListener('error', () => resolve(false))
-            return
+            const searchModal = document.querySelector('[data-search-modal]')
+            const searchToggle = document.querySelector('[data-search-toggle]')
+            const searchClose = document.querySelector('[data-search-close]')
+
+            const loadPagefind = () =>
+              new Promise((resolve) => {
+                if (window.PagefindUI) return resolve(true)
+                const existing = document.querySelector('script[data-pagefind]')
+                if (existing) {
+                  existing.addEventListener('load', () => resolve(true))
+                  existing.addEventListener('error', () => resolve(false))
+                  return
+                }
+                const script = document.createElement('script')
+                script.src = '/pagefind/pagefind-ui.js'
+                script.async = true
+                script.dataset.pagefind = 'true'
+                script.addEventListener('load', () => resolve(true))
+                script.addEventListener('error', () => resolve(false))
+                document.head.appendChild(script)
+              })
+
+            const initPagefind = async () => {
+              const ok = await loadPagefind()
+              if (ok && window.PagefindUI) {
+                new window.PagefindUI({
+                  element: '#search-modal',
+                  showSubResults: true,
+                })
+              } else {
+                document.getElementById('search-modal-fallback')?.classList.remove('hidden')
+              }
+            }
+
+            const openSearch = () => {
+              if (!searchModal) return
+              searchModal.classList.remove('hidden')
+              searchModal.classList.add('flex')
+              initPagefind()
+            }
+
+            const closeSearch = () => {
+              if (!searchModal) return
+              searchModal.classList.add('hidden')
+              searchModal.classList.remove('flex')
+            }
+
+            searchToggle?.addEventListener('click', openSearch)
+            document.querySelector('[data-open-search]')?.addEventListener('click', openSearch)
+            searchClose?.addEventListener('click', closeSearch)
+            searchModal?.addEventListener('click', (event) => {
+              if (event.target === searchModal) closeSearch()
+            })
+            window.addEventListener('open-search', openSearch)
+          } catch (error) {
+            console.error('UI init failed', error)
           }
-          const script = document.createElement('script')
-          script.src = '/pagefind/pagefind-ui.js'
-          script.async = true
-          script.dataset.pagefind = 'true'
-          script.addEventListener('load', () => resolve(true))
-          script.addEventListener('error', () => resolve(false))
-          document.head.appendChild(script)
-        })
-
-      const initPagefind = async () => {
-        const ok = await loadPagefind()
-        if (ok && window.PagefindUI) {
-          new window.PagefindUI({
-            element: '#search-modal',
-            showSubResults: true,
-          })
-        } else {
-          document.getElementById('search-modal-fallback')?.classList.remove('hidden')
         }
-      }
 
-      const openSearch = () => {
-        if (!searchModal) return
-        searchModal.classList.remove('hidden')
-        searchModal.classList.add('flex')
-        initPagefind()
-      }
-
-      const closeSearch = () => {
-        if (!searchModal) return
-        searchModal.classList.add('hidden')
-        searchModal.classList.remove('flex')
-      }
-
-      searchToggle?.addEventListener('click', openSearch)
-      searchClose?.addEventListener('click', closeSearch)
-      searchModal?.addEventListener('click', (event) => {
-        if (event.target === searchModal) closeSearch()
-      })
-      window.addEventListener('open-search', openSearch)
-
-      const addCopyButtons = () => {
-        document.querySelectorAll('pre').forEach((block) => {
-          if (block.dataset.copyReady) return
-          block.dataset.copyReady = 'true'
-          const button = document.createElement('button')
-          button.textContent = 'Copy'
-          button.className = 'absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs text-white transition hover:bg-black/80'
-          button.addEventListener('click', async () => {
-            const code = block.querySelector('code')
-            if (!code) return
-            await navigator.clipboard.writeText(code.innerText)
-            button.textContent = 'Copied'
-            setTimeout(() => (button.textContent = 'Copy'), 1200)
+        const addCopyButtons = () => {
+          document.querySelectorAll('pre').forEach((block) => {
+            if (block.dataset.copyReady) return
+            block.dataset.copyReady = 'true'
+            const button = document.createElement('button')
+            button.textContent = 'Copy'
+            button.className = 'absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-xs text-white transition hover:bg-black/80'
+            button.addEventListener('click', async () => {
+              const code = block.querySelector('code')
+              if (!code) return
+              await navigator.clipboard.writeText(code.innerText)
+              button.textContent = 'Copied'
+              setTimeout(() => (button.textContent = 'Copy'), 1200)
+            })
+            block.appendChild(button)
           })
-          block.appendChild(button)
-        })
-      }
+        }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', addCopyButtons)
-      } else {
-        addCopyButtons()
-      }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initUi)
+          document.addEventListener('DOMContentLoaded', addCopyButtons)
+        } else {
+          initUi()
+          addCopyButtons()
+        }
+      })()
     </script>
   </body>
 </html>

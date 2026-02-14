@@ -110,7 +110,7 @@ Components include: DocsLayout, Sidebar, TableOfContents, CodeBlock, Callout, Ta
 
 ## Documentation
 
-See the [docs site](https://dewey.arach.io) for full documentation.
+See the [docs site](https://dewey.jdi.sh) for full documentation.
 
 ## License
 

@@ -44,7 +44,7 @@ Dewey is a **docs agent**, not a docs framework. It focuses on:
 - **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md
 - **Reviewing** - Skills that catch drift between docs and codebase
 
-Dewey prepares your docs for AI consumption. Rendering is left to frameworks like Fumadocs, Docusaurus, or your own setup.
+Dewey prepares your docs for AI consumption. Rendering is left to your framework of choice.
 
 ## Key Concepts
 

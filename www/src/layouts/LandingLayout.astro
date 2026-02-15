@@ -1,0 +1,44 @@
+---
+interface Props {
+  title?: string
+}
+
+const { title = 'Dewey' } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content="Documentation toolkit for AI-agent-ready docs" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content="Documentation toolkit for AI-agent-ready docs" />
+    <meta property="og:image" content="/og.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]" data-theme-root data-theme="dark">
+    <slot />
+    <script is:inline>
+      (() => {
+        try {
+          const themeRoot = document.querySelector('[data-theme-root]')
+          let savedTheme = null
+          try {
+            savedTheme = localStorage.getItem('theme')
+          } catch {}
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
+          if (themeRoot) {
+            themeRoot.setAttribute('data-theme', initialTheme)
+          }
+        } catch (e) {
+          console.error('Theme init failed', e)
+        }
+      })()
+    </script>
+  </body>
+</html>

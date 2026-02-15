@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
-import docsIndex from '../../../docs.json'
+import { homeGroups } from '../../lib/home'
 ---
 
 <BaseLayout title="Dewey Docs">
@@ -13,15 +13,23 @@ import docsIndex from '../../../docs.json'
       </p>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
-      {docsIndex.sections.map((section) => (
-        <a
-          class="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
-          href={`/docs/${section.id}`}
-        >
-          <h2 class="text-lg font-semibold">{section.title}</h2>
-          <p class="mt-2 text-sm text-[var(--color-text-muted)]">{section.description}</p>
-        </a>
+    <div class="space-y-10">
+      {homeGroups.map((group) => (
+        <div class="space-y-4">
+          <h2 class="text-lg font-semibold text-[var(--color-text)]">{group.title}</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            {group.cards.map((card) => (
+              <a
+                class="group rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-soft)] transition hover:border-[var(--color-accent)]"
+                href={card.href}
+              >
+                <h3 class="text-base font-semibold text-[var(--color-text)]">{card.title}</h3>
+                <p class="mt-2 text-sm text-[var(--color-text-muted)]">{card.description}</p>
+                <p class="mt-4 text-xs text-[var(--color-accent)]">Open →</p>
+              </a>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
 

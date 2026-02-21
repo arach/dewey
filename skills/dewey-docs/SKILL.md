@@ -1,11 +1,11 @@
 ---
 name: dewey-docs
-description: Generate AI-agent-ready documentation using Dewey. Use when asked to "set up docs", "create documentation", "make docs agent-friendly", "generate AGENTS.md", or "add llms.txt".
+description: Generate AI-agent-ready documentation and static doc sites using Dewey. Use when asked to "set up docs", "create documentation", "make docs agent-friendly", "generate AGENTS.md", "add llms.txt", or "create a doc site".
 ---
 
 # Dewey Documentation Toolkit
 
-Dewey generates AI-agent-ready documentation for software projects. It creates AGENTS.md, llms.txt, docs.json, and install.md files that AI coding agents can consume effectively.
+Dewey generates AI-agent-ready documentation for software projects. It creates AGENTS.md, llms.txt, docs.json, install.md files, and can scaffold complete static doc sites from markdown.
 
 ## When to Use
 
@@ -16,6 +16,8 @@ Activate this skill when the user asks to:
 - "Create an llms.txt file"
 - "Add agent-ready docs"
 - "Set up Dewey"
+- "Create a doc site"
+- "Generate a docs website from my markdown"
 
 ## Installation
 
@@ -32,6 +34,7 @@ npm install @arach/dewey
 | `dewey init` | Create docs/ folder and dewey.config.ts |
 | `dewey audit` | Check documentation completeness |
 | `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md |
+| `dewey create` | Scaffold a static Astro doc site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 scale) |
 
 ## Quick Setup
@@ -56,6 +59,21 @@ docs/
 └── llms.txt         # Plain text summary
 dewey.config.ts      # Configuration
 ```
+
+## Doc Site Generator
+
+`dewey create` scaffolds a complete static doc site from a folder of markdown:
+
+```bash
+npx dewey create my-docs --source ./docs --theme ocean
+cd my-docs && pnpm install && pnpm dev
+```
+
+- **Astro-based** static HTML output (no empty SPA shells)
+- **Pagefind** search built in
+- **8 themes** — neutral, ocean, emerald, purple, dusk, rose, github, warm
+- **Dark mode** with system preference detection
+- **Auto-navigation** from frontmatter ordering
 
 ## Configuration (dewey.config.ts)
 

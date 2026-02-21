@@ -50,7 +50,7 @@ program
   .description('Create a new docs site from markdown sources')
   .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
   .option('-n, --name <name>', 'Project name (defaults to directory name)')
-  .option('-t, --template <template>', 'Template to use (vite, nextjs)', 'vite')
+  .option('-t, --template <template>', 'Template to use (astro)', 'astro')
   .option('--theme <theme>', 'Color theme (neutral, ocean, emerald, purple, dusk, rose, github, warm)', 'neutral')
   .action(createCommand)
 

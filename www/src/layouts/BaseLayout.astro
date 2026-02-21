@@ -15,6 +15,15 @@ const { title = 'Dewey' } = Astro.props
       href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap"
     />
     <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <script is:inline>
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('theme')
+        } catch (e) {}
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
     <slot name="head" />
   </head>
   <body>
@@ -79,23 +88,12 @@ const { title = 'Dewey' } = Astro.props
       (() => {
         const initUi = () => {
           try {
-            const themeRoot = document.querySelector('[data-theme-root]')
             const themeToggle = document.querySelector('[data-theme-toggle]')
-            let savedTheme = null
-            try {
-              savedTheme = localStorage.getItem('theme')
-            } catch {}
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-            const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-
-            if (themeRoot) {
-              themeRoot.setAttribute('data-theme', initialTheme)
-            }
 
             themeToggle?.addEventListener('click', () => {
-              const current = themeRoot?.getAttribute('data-theme') || 'light'
+              const current = document.documentElement.getAttribute('data-theme') || 'light'
               const next = current === 'dark' ? 'light' : 'dark'
-              themeRoot?.setAttribute('data-theme', next)
+              document.documentElement.setAttribute('data-theme', next)
               try {
                 localStorage.setItem('theme', next)
               } catch {}

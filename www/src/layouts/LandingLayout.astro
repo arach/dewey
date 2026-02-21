@@ -18,27 +18,18 @@ const { title = 'Dewey' } = Astro.props
     <meta property="og:image" content="/og.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-    <slot name="head" />
-  </head>
-  <body class="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]" data-theme-root data-theme="dark">
-    <slot />
     <script is:inline>
-      (() => {
+      ;(function () {
         try {
-          const themeRoot = document.querySelector('[data-theme-root]')
-          let savedTheme = null
-          try {
-            savedTheme = localStorage.getItem('theme')
-          } catch {}
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-          const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light')
-          if (themeRoot) {
-            themeRoot.setAttribute('data-theme', initialTheme)
-          }
-        } catch (e) {
-          console.error('Theme init failed', e)
-        }
+          var saved = localStorage.getItem('theme')
+        } catch (e) {}
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', theme)
       })()
     </script>
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <slot />
   </body>
 </html>

@@ -1107,13 +1107,14 @@ import LandingLayout from '../layouts/LandingLayout.astro'
             </p>
             <div class="v3-hero-install">
               <div class="v3-pkg-tabs">
-                <button class="v3-pkg-tab active" data-pm="bun">bun</button>
+                <button class="v3-pkg-tab active" data-pm="curl">curl</button>
+                <button class="v3-pkg-tab" data-pm="bun">bun</button>
                 <button class="v3-pkg-tab" data-pm="npm">npm</button>
                 <button class="v3-pkg-tab" data-pm="pnpm">pnpm</button>
                 <button class="v3-pkg-tab" data-pm="yarn">yarn</button>
               </div>
               <div class="v3-pkg-cmd">
-                <code>$ <strong id="v3-install-text">bunx dewey init</strong></code>
+                <code>$ <strong id="v3-install-text">curl -fsSL dewey.arach.dev/install.sh | sh</strong></code>
                 <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
               </div>
             </div>
@@ -1447,6 +1448,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   <script is:inline>
     // Package manager tabs
     const pmCommands = {
+      curl: 'curl -fsSL dewey.arach.dev/install.sh | sh',
       bun: 'bunx dewey init',
       npm: 'npx dewey init',
       pnpm: 'pnpm dlx dewey init',

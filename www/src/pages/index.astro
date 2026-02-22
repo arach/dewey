@@ -191,7 +191,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         display: grid;
         grid-template-columns: 1.2fr 1fr;
         gap: 48px;
-        align-items: start;
+        align-items: center;
       }
 
       @media (max-width: 900px) {
@@ -539,6 +539,20 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         display: flex;
         flex-direction: column;
         min-height: 280px;
+        transition: background 0.3s ease;
+      }
+
+      .v3-feature:hover {
+        background: var(--s-surface);
+      }
+
+      .v3-feature:hover .v3-feature-icon {
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+      }
+
+      .v3-feature:hover .v3-feature-link {
+        color: var(--s-highlight);
       }
 
       .v3-feature:nth-child(odd) { padding-left: 0; }
@@ -603,26 +617,86 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         gap: 12px;
       }
 
-      /* ── Files grid ── */
+      /* ── Files grid (dashed periphery matching features) ── */
+      .v3-files-wrap {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .v3-files-lines {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .v3-files-hline {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: repeating-linear-gradient(
+          to right,
+          var(--s-border) 0, var(--s-border) 6px,
+          transparent 6px, transparent 12px
+        );
+      }
+
+      .v3-files-hline-top { top: 0; }
+      .v3-files-hline-bot { bottom: 0; }
+
+      .v3-files-vline {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 1px;
+        background: repeating-linear-gradient(
+          to bottom,
+          var(--s-border) 0, var(--s-border) 6px,
+          transparent 6px, transparent 12px
+        );
+      }
+
+      .v3-files-vline-left { left: max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)); }
+      .v3-files-vline-r1 { left: calc(max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)) + min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px) / 3); }
+      .v3-files-vline-r2 { left: calc(max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)) + min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px) * 2 / 3); }
+      .v3-files-vline-right { right: max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)); }
+
+      .v3-files-dots {
+        position: absolute;
+        pointer-events: none;
+        z-index: 3;
+        max-width: 1200px;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0;
+        bottom: 0;
+        width: min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px);
+      }
+
       .v3-files {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 4vw, 48px);
+        position: relative;
+        z-index: 1;
       }
 
       @media (max-width: 768px) {
         .v3-files { grid-template-columns: 1fr; }
+        .v3-files-vline-r1, .v3-files-vline-r2 { display: none; }
       }
 
       .v3-file {
-        padding: 28px;
-        border: 1px solid var(--s-border);
-        border-radius: var(--s-radius);
-        transition: border-color 0.2s, background 0.2s;
+        padding: clamp(28px, 3vw, 40px);
+        transition: background 0.3s ease;
       }
 
+      .v3-file:first-child { padding-left: 0; }
+      .v3-file:last-child { padding-right: 0; }
+
       .v3-file:hover {
-        border-color: var(--s-text-muted);
         background: var(--s-surface);
       }
 
@@ -1210,12 +1284,34 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     </div>
 
     <!-- Generated files -->
-    <section class="v3-section">
+    <section class="v3-section" style="padding-bottom: 0;">
       <div class="v3-section-header">
         <div>
           <p class="v3-section-label">Output</p>
           <h2 class="v3-section-title">Generated<br/>agent files.</h2>
         </div>
+      </div>
+    </section>
+
+    <div class="v3-files-wrap">
+      <div class="v3-files-lines">
+        <div class="v3-files-hline v3-files-hline-top"></div>
+        <div class="v3-files-hline v3-files-hline-bot"></div>
+        <div class="v3-files-vline v3-files-vline-left"></div>
+        <div class="v3-files-vline v3-files-vline-r1"></div>
+        <div class="v3-files-vline v3-files-vline-r2"></div>
+        <div class="v3-files-vline v3-files-vline-right"></div>
+      </div>
+
+      <div class="v3-files-dots">
+        <span class="v3-dot" style="top: -4px; left: -4px;"></span>
+        <span class="v3-dot" style="top: -4px; left: calc(100% / 3 - 4px);"></span>
+        <span class="v3-dot" style="top: -4px; left: calc(200% / 3 - 4px);"></span>
+        <span class="v3-dot" style="top: -4px; right: -4px;"></span>
+        <span class="v3-dot" style="bottom: -4px; left: -4px;"></span>
+        <span class="v3-dot" style="bottom: -4px; left: calc(100% / 3 - 4px);"></span>
+        <span class="v3-dot" style="bottom: -4px; left: calc(200% / 3 - 4px);"></span>
+        <span class="v3-dot" style="bottom: -4px; right: -4px;"></span>
       </div>
 
       <div class="v3-files">
@@ -1232,7 +1328,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
           <p class="v3-file-desc">LLM-executable installation guide following the installmd.org specification.</p>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- CTA -->
     <div style="padding-bottom: clamp(60px, 8vw, 100px);">

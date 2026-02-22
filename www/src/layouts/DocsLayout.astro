@@ -1,7 +1,5 @@
 ---
-import BaseLayout from './BaseLayout.astro'
-import Toc from '../components/Toc.astro'
-import { SidebarNav } from '../components/SidebarNav'
+import '../styles/global.css'
 import { navGroups } from '../lib/nav'
 
 const {
@@ -15,180 +13,575 @@ const {
 } = Astro.props
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
+const tocHeadings = headings.filter((h: any) => h.depth >= 2 && h.depth <= 3)
 ---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} - Dewey</title>
+    <link rel="icon" type="image/png" href="/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@100;200;300;400;600&family=Inter:wght@300;400;500&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <script is:inline>
+      ;(function () {
+        try { var saved = localStorage.getItem('theme') } catch (e) {}
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
+    <style is:inline>
+      .dl { display: flex; min-height: 100vh; background: var(--color-bg); color: var(--color-text); }
+      .dl * { box-sizing: border-box; }
 
-<BaseLayout title={title}>
-  <div class="grid gap-8 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)_var(--toc-width)]">
-    <aside class="hidden lg:block" data-pagefind-ignore>
-      <div class="sticky top-24">
-        <SidebarNav groups={navGroups} currentPath={currentPath} client:load />
-      </div>
-    </aside>
+      /* ── Sidebar ── */
+      .dl-sidebar {
+        width: 280px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 0;
+      }
 
-    <article class="min-w-0" data-pagefind-body>
-      <div class="mb-10 flex items-start justify-between gap-6">
-        <div class="flex-1">
-          {badge && (
-            <div class="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)]">
-              {badge}
-            </div>
-          )}
-          <h1 class="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">{title}</h1>
-          {description && (
-            <p class="mt-3 text-lg text-[var(--color-text-muted)]">{description}</p>
-          )}
+      @media (max-width: 1024px) {
+        .dl-sidebar { display: none; }
+      }
+
+      .dl-sidebar-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .dl-logo {
+        font-family: 'Noto Serif Display', serif;
+        font-size: 20px;
+        font-weight: 300;
+        color: var(--color-text);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
+
+      .dl-logo span {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        margin-left: 8px;
+      }
+
+      .dl-sidebar-body {
+        padding: 20px 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .dl-nav-group { display: flex; flex-direction: column; gap: 2px; }
+
+      .dl-nav-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--color-text-muted);
+        margin: 0 0 8px;
+        padding: 0 10px;
+      }
+
+      .dl-nav-item {
+        display: block;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+
+      .dl-nav-item:hover {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+      }
+
+      .dl-nav-item.active {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+        font-weight: 500;
+      }
+
+      .dl-sidebar-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .dl-sidebar-links {
+        display: flex;
+        gap: 12px;
+      }
+
+      .dl-sidebar-link {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+      }
+
+      .dl-sidebar-link:hover { color: var(--color-text); }
+
+      .dl-theme-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .dl-theme-btn:hover {
+        border-color: var(--color-text-muted);
+        color: var(--color-text);
+      }
+
+      /* ── Main ── */
+      .dl-main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dl-mobile-header {
+        display: none;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--color-border);
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      @media (max-width: 1024px) {
+        .dl-mobile-header { display: flex; }
+      }
+
+      .dl-content-wrap {
+        display: flex;
+        flex: 1;
+      }
+
+      .dl-content {
+        flex: 1;
+        max-width: 780px;
+        padding: 40px clamp(24px, 4vw, 56px) 80px;
+      }
+
+      /* ── TOC minimap ── */
+      .dl-toc {
+        width: 200px;
+        flex-shrink: 0;
+        padding: 40px 20px 40px 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      @media (max-width: 1280px) {
+        .dl-toc { display: none; }
+      }
+
+      .dl-toc-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--color-text-muted);
+        margin: 0 0 12px;
+      }
+
+      .dl-toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-left: 1px solid var(--color-border);
+      }
+
+      .dl-toc-link {
+        display: block;
+        padding: 2px 0 2px 14px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        margin-left: -1px;
+        border-left: 1px solid transparent;
+      }
+
+      .dl-toc-link:hover { color: var(--color-text); }
+
+      .dl-toc-link.is-active {
+        color: var(--color-text);
+        font-weight: 400;
+        border-left-color: var(--color-accent);
+      }
+
+      .dl-toc-link[data-level='3'] { padding-left: 26px; }
+
+      /* ── Page header ── */
+      .dl-page-header { margin-bottom: 36px; }
+
+      .dl-page-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 100px;
+        border: 1px solid var(--color-border);
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-accent);
+        margin-bottom: 12px;
+      }
+
+      .dl-page-title {
+        font-family: 'Noto Serif Display', serif;
+        font-size: clamp(28px, 3.5vw, 40px);
+        font-weight: 200;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin: 0 0 8px;
+        color: var(--color-text);
+      }
+
+      .dl-page-desc {
+        font-size: 15px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .dl-page-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 16px;
+      }
+
+      .dl-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: none;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .dl-action-btn:hover {
+        border-color: var(--color-text-muted);
+        color: var(--color-text);
+      }
+
+      .dl-action-btn.accent {
+        border-color: rgba(196, 101, 58, 0.3);
+        background: rgba(196, 101, 58, 0.06);
+        color: var(--color-accent);
+      }
+
+      /* ── Footer ── */
+      .dl-footer {
+        padding: 20px clamp(24px, 4vw, 56px);
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 780px;
+      }
+
+      .dl-footer-text {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+      }
+
+      .dl-footer-text a {
+        color: var(--color-text-muted);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .dl-footer-text a:hover { color: var(--color-text); }
+    </style>
+  </head>
+  <body>
+    <div class="dl">
+      <!-- Sidebar -->
+      <aside class="dl-sidebar" data-pagefind-ignore>
+        <div class="dl-sidebar-header">
+          <a href="/" class="dl-logo">dewey <span>/ docs</span></a>
         </div>
 
-        <div class="mt-2 flex items-center gap-2">
-          <button
-            class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
-            type="button"
-            data-copy-agent-button
-          >
-            Agent
-          </button>
+        <div class="dl-sidebar-body">
+          {navGroups.map((group) => (
+            <nav class="dl-nav-group">
+              <p class="dl-nav-label">{group.title}</p>
+              {group.items.map((item) => (
+                <a
+                  href={item.href}
+                  class={`dl-nav-item ${currentPath === item.href ? 'active' : ''}`}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </nav>
+          ))}
 
-          <div class="relative" data-copy-root>
-            <button
-              class="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-white/5 px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
-              type="button"
-              data-copy-toggle
-            >
-              Copy
-            </button>
-            <div
-              class="absolute right-0 mt-1 hidden w-44 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg"
-              data-copy-menu
-            >
-              <button class="w-full px-3 py-2 text-left text-xs hover:bg-[var(--color-surface-muted)]" data-copy-markdown>
-                Copy Markdown
-              </button>
-              <button class="w-full px-3 py-2 text-left text-xs hover:bg-[var(--color-surface-muted)]" data-copy-agent>
-                Copy for Agent
-              </button>
-            </div>
+          <nav class="dl-nav-group">
+            <p class="dl-nav-label">Agent files</p>
+            <a href="/view/agents-md" class="dl-nav-item">AGENTS.md</a>
+            <a href="/view/llms-txt" class="dl-nav-item">llms.txt</a>
+            <a href="/view/install-md" class="dl-nav-item">install.md</a>
+          </nav>
+        </div>
+
+        <div class="dl-sidebar-footer">
+          <div class="dl-sidebar-links">
+            <a href="https://github.com/arach/dewey" class="dl-sidebar-link" target="_blank" rel="noopener noreferrer" title="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.npmjs.com/package/@arach/dewey" class="dl-sidebar-link" target="_blank" rel="noopener noreferrer" title="npm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.331h-2.669zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z"/></svg>
+            </a>
           </div>
-
-          {prompt && (
-            <button
-              class="flex items-center gap-1.5 rounded-lg border border-[rgba(240,124,79,0.3)] bg-[rgba(240,124,79,0.12)] px-3 py-1.5 text-xs font-medium text-[var(--color-accent)]"
-              type="button"
-              data-prompt-toggle
-            >
-              AI Prompt
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div class="doc-content">
-        <slot />
-      </div>
-    </article>
-
-    <aside class="hidden lg:block" data-pagefind-ignore>
-      <div class="sticky top-24">
-        <Toc headings={headings} />
-      </div>
-    </aside>
-  </div>
-
-  {prompt && (
-    <div
-      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40"
-      data-prompt-modal
-    >
-      <div class="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-xl">
-        <div class="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4">
-          <div>
-            <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">AI Prompt</p>
-            <h2 class="text-lg font-semibold">{title}</h2>
-          </div>
-          <button class="text-sm text-[var(--color-text-muted)]" data-prompt-close>Close</button>
-        </div>
-        <div class="max-h-[70vh] overflow-y-auto px-6 py-4">
-          <pre class="whitespace-pre-wrap text-sm text-[var(--color-text)]" data-prompt-content></pre>
-        </div>
-        <div class="flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-6 py-4">
-          <button class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-xs" data-prompt-copy>
-            Copy Prompt
+          <button class="dl-theme-btn" id="dl-theme-toggle" title="Toggle theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </button>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="dl-main">
+        <!-- Mobile header -->
+        <div class="dl-mobile-header">
+          <a href="/" class="dl-logo" style="font-size: 18px;">dewey <span>/ docs</span></a>
+          <button class="dl-theme-btn" id="dl-theme-toggle-mobile" title="Toggle theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+        </div>
+
+        <div class="dl-content-wrap">
+          <article class="dl-content" data-pagefind-body>
+            <!-- Page header -->
+            <div class="dl-page-header">
+              {badge && <div class="dl-page-badge">{badge}</div>}
+              <h1 class="dl-page-title">{title}</h1>
+              {description && <p class="dl-page-desc">{description}</p>}
+
+              <div class="dl-page-actions">
+                <button class="dl-action-btn" data-copy-agent-button>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy for agent
+                </button>
+                <button class="dl-action-btn" data-copy-markdown-button>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Copy markdown
+                </button>
+                {prompt && (
+                  <button class="dl-action-btn accent" data-prompt-toggle>
+                    AI Prompt
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div class="doc-content">
+              <slot />
+            </div>
+
+            <!-- Footer -->
+            <footer class="dl-footer">
+              <span class="dl-footer-text">
+                <a href="/">dewey</a> &mdash; agent-ready documentation
+              </span>
+            </footer>
+          </article>
+
+          <!-- TOC minimap -->
+          {tocHeadings.length > 0 && (
+            <aside class="dl-toc" data-pagefind-ignore>
+              <p class="dl-toc-label">On this page</p>
+              <ul class="dl-toc-list">
+                {tocHeadings.map((heading: any) => (
+                  <li>
+                    <a
+                      class="dl-toc-link"
+                      data-toc-link
+                      data-level={heading.depth}
+                      href={`#${heading.slug}`}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
         </div>
       </div>
     </div>
-  )}
 
-  <script is:inline define:vars={{ rawMarkdown, agentMarkdown, prompt }}>
-    const copyRoot = document.querySelector('[data-copy-root]')
-    const toggle = document.querySelector('[data-copy-toggle]')
-    const menu = document.querySelector('[data-copy-menu]')
-    const copyMarkdown = document.querySelector('[data-copy-markdown]')
-    const copyAgent = document.querySelector('[data-copy-agent]')
-    const copyAgentButton = document.querySelector('[data-copy-agent-button]')
+    {prompt && (
+      <div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40" data-prompt-modal>
+        <div class="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] shadow-xl" style="font-family: 'Inter', sans-serif;">
+          <div class="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4">
+            <div>
+              <p style="font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.14em; color: var(--color-text-muted); margin: 0 0 4px;">AI Prompt</p>
+              <h2 style="font-family: 'Noto Serif Display', serif; font-size: 18px; font-weight: 300; margin: 0;">{title}</h2>
+            </div>
+            <button class="dl-action-btn" data-prompt-close>Close</button>
+          </div>
+          <div class="max-h-[70vh] overflow-y-auto px-6 py-4">
+            <pre style="white-space: pre-wrap; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 300; color: var(--color-text); line-height: 1.7;" data-prompt-content></pre>
+          </div>
+          <div class="flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-6 py-4">
+            <button class="dl-action-btn" data-prompt-copy>Copy Prompt</button>
+          </div>
+        </div>
+      </div>
+    )}
 
-    if (toggle && menu) {
-      toggle.addEventListener('click', () => {
-        menu.classList.toggle('hidden')
+    <script is:inline define:vars={{ rawMarkdown, agentMarkdown, prompt }}>
+      // Theme toggle
+      const themeHandler = (btn) => {
+        btn?.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'light'
+          const next = current === 'dark' ? 'light' : 'dark'
+          document.documentElement.setAttribute('data-theme', next)
+          try { localStorage.setItem('theme', next) } catch {}
+        })
+      }
+      themeHandler(document.getElementById('dl-theme-toggle'))
+      themeHandler(document.getElementById('dl-theme-toggle-mobile'))
+
+      // Copy buttons
+      const safeCopy = async (content, btn) => {
+        if (!content) return
+        try {
+          await navigator.clipboard.writeText(content)
+          if (btn) {
+            const orig = btn.textContent
+            btn.textContent = 'Copied!'
+            setTimeout(() => { btn.textContent = orig }, 2000)
+          }
+        } catch {}
+      }
+
+      document.querySelector('[data-copy-agent-button]')?.addEventListener('click', function() {
+        safeCopy(agentMarkdown || rawMarkdown, this)
       })
-      document.addEventListener('click', (event) => {
-        if (!copyRoot || copyRoot.contains(event.target)) return
-        menu.classList.add('hidden')
+
+      document.querySelector('[data-copy-markdown-button]')?.addEventListener('click', function() {
+        safeCopy(rawMarkdown, this)
       })
-    }
 
-    const safeCopy = async (content) => {
-      if (!content) return
-      try {
-        await navigator.clipboard.writeText(content)
-      } catch {}
-    }
+      // Prompt modal
+      const promptModal = document.querySelector('[data-prompt-modal]')
+      const promptContent = document.querySelector('[data-prompt-content]')
+      if (promptContent && prompt) promptContent.textContent = prompt
 
-    copyMarkdown?.addEventListener('click', async () => {
-      await safeCopy(rawMarkdown)
-      menu?.classList.add('hidden')
-    })
+      document.querySelector('[data-prompt-toggle]')?.addEventListener('click', () => {
+        promptModal?.classList.remove('hidden')
+        promptModal?.classList.add('flex')
+      })
+      document.querySelector('[data-prompt-close]')?.addEventListener('click', () => {
+        promptModal?.classList.add('hidden')
+        promptModal?.classList.remove('flex')
+      })
+      promptModal?.addEventListener('click', (e) => {
+        if (e.target === promptModal) {
+          promptModal.classList.add('hidden')
+          promptModal.classList.remove('flex')
+        }
+      })
+      document.querySelector('[data-prompt-copy]')?.addEventListener('click', function() {
+        safeCopy(prompt, this)
+      })
 
-    copyAgent?.addEventListener('click', async () => {
-      const agentContent = agentMarkdown || rawMarkdown
-      await safeCopy(agentContent)
-      menu?.classList.add('hidden')
-    })
+      // TOC active tracking
+      const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'))
+      const headingEls = tocLinks
+        .map(link => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean)
 
-    copyAgentButton?.addEventListener('click', async () => {
-      const agentContent = agentMarkdown || rawMarkdown
-      await safeCopy(agentContent)
-    })
+      if (headingEls.length) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return
+            tocLinks.forEach(l => l.classList.remove('is-active'))
+            const active = document.querySelector(`[data-toc-link][href="#${entry.target.id}"]`)
+            if (active) active.classList.add('is-active')
+          })
+        }, { rootMargin: '-80px 0px -66% 0px' })
+        headingEls.forEach(h => observer.observe(h))
+      }
 
-    const promptModal = document.querySelector('[data-prompt-modal]')
-    const promptToggle = document.querySelector('[data-prompt-toggle]')
-    const promptClose = document.querySelector('[data-prompt-close]')
-    const promptCopy = document.querySelector('[data-prompt-copy]')
-    const promptContent = document.querySelector('[data-prompt-content]')
-
-    if (promptContent && prompt) {
-      promptContent.textContent = prompt
-    }
-
-    const openPrompt = () => {
-      if (!promptModal) return
-      promptModal.classList.remove('hidden')
-      promptModal.classList.add('flex')
-    }
-
-    const closePrompt = () => {
-      if (!promptModal) return
-      promptModal.classList.add('hidden')
-      promptModal.classList.remove('flex')
-    }
-
-    promptToggle?.addEventListener('click', openPrompt)
-    promptClose?.addEventListener('click', closePrompt)
-    promptModal?.addEventListener('click', (event) => {
-      if (event.target === promptModal) closePrompt()
-    })
-
-    promptCopy?.addEventListener('click', async () => {
-      await safeCopy(prompt)
-    })
-  </script>
-</BaseLayout>
+      // Copy buttons on code blocks
+      document.querySelectorAll('.doc-content pre').forEach(block => {
+        if (block.dataset.copyReady) return
+        block.dataset.copyReady = 'true'
+        const btn = document.createElement('button')
+        btn.textContent = 'Copy'
+        btn.className = 'dl-action-btn'
+        btn.style.cssText = 'position:absolute;right:8px;top:8px;font-size:10px;padding:3px 8px;'
+        btn.addEventListener('click', async () => {
+          const code = block.querySelector('code')
+          if (!code) return
+          await navigator.clipboard.writeText(code.innerText)
+          btn.textContent = 'Copied!'
+          setTimeout(() => btn.textContent = 'Copy', 1200)
+        })
+        block.style.position = 'relative'
+        block.appendChild(btn)
+      })
+    </script>
+  </body>
+</html>

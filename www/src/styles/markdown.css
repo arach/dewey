@@ -1,6 +1,7 @@
 @layer base {
   .doc-content {
     font-size: 15px;
+    font-weight: 400;
     line-height: 1.75;
     color: var(--color-text);
     overflow-wrap: break-word;
@@ -9,13 +10,15 @@
 
   .doc-content h1 {
     font-size: 2.25rem;
+    font-weight: 300;
+    letter-spacing: -0.03em;
     margin: 0 0 1rem;
-    letter-spacing: -0.02em;
   }
 
   .doc-content h2 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 400;
+    letter-spacing: -0.02em;
     margin: 3rem 0 1.25rem;
     padding-top: 2rem;
     border-top: 1px solid var(--color-border);
@@ -30,7 +33,8 @@
 
   .doc-content h3 {
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: 400;
+    letter-spacing: -0.01em;
     margin: 2rem 0 1rem;
     scroll-margin-top: 100px;
   }
@@ -58,7 +62,7 @@
   .doc-content a {
     color: var(--color-accent);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 400;
   }
 
   .doc-content a:hover {
@@ -66,21 +70,26 @@
   }
 
   .doc-content strong {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-text);
   }
 
   .doc-content pre {
-    background: #1e1e1e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: 1rem 1.25rem;
     overflow-x: auto;
   }
 
+  [data-theme='dark'] .doc-content pre {
+    background: #1a1a18;
+    border-color: #333330;
+  }
+
   .doc-content code {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 0.15rem 0.4rem;
     font-size: 12px;
@@ -112,6 +121,11 @@
     border-bottom: 1px solid var(--color-border);
     padding: 0.6rem 0.8rem;
     text-align: left;
+    font-weight: 400;
+  }
+
+  .doc-content th {
+    font-weight: 400;
   }
 
   .doc-content tr:last-child td {

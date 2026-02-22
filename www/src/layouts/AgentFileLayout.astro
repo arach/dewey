@@ -1,0 +1,379 @@
+---
+import '../styles/global.css'
+import { navGroups } from '../lib/nav'
+
+const { title, fileName, content, rawPath } = Astro.props
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} - Dewey</title>
+    <link rel="icon" type="image/png" href="/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@100;200;300&family=Inter:wght@300;400;500&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+    <script is:inline>
+      ;(function () {
+        try { var saved = localStorage.getItem('theme') } catch (e) {}
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
+    <style is:inline>
+      .af { display: flex; min-height: 100vh; background: var(--color-bg); color: var(--color-text); }
+      .af * { box-sizing: border-box; }
+
+      /* ── Sidebar ── */
+      .af-sidebar {
+        width: 280px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      @media (max-width: 1024px) { .af-sidebar { display: none; } }
+
+      .af-sidebar-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .af-logo {
+        font-family: 'Noto Serif Display', serif;
+        font-size: 20px;
+        font-weight: 300;
+        color: var(--color-text);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
+
+      .af-logo span {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        margin-left: 8px;
+      }
+
+      .af-sidebar-body { padding: 20px 16px; flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+      .af-nav-group { display: flex; flex-direction: column; gap: 2px; }
+
+      .af-nav-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--color-text-muted);
+        margin: 0 0 8px;
+        padding: 0 10px;
+      }
+
+      .af-nav-item {
+        display: block;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+
+      .af-nav-item:hover { background: var(--color-surface-muted); color: var(--color-text); }
+      .af-nav-item.active { background: var(--color-surface-muted); color: var(--color-text); font-weight: 500; }
+
+      .af-sidebar-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .af-sidebar-links { display: flex; gap: 12px; }
+
+      .af-sidebar-link {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+      }
+
+      .af-sidebar-link:hover { color: var(--color-text); }
+
+      .af-theme-btn {
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        background: none;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .af-theme-btn:hover { border-color: var(--color-text-muted); color: var(--color-text); }
+
+      /* ── Main ── */
+      .af-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+      .af-mobile-header {
+        display: none;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--color-border);
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      @media (max-width: 1024px) { .af-mobile-header { display: flex; } }
+
+      .af-content { flex: 1; padding: 40px clamp(24px, 4vw, 56px) 80px; max-width: 900px; }
+
+      /* Page header */
+      .af-header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+      .af-title-area { display: flex; flex-direction: column; gap: 6px; }
+
+      .af-file-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+
+      .af-file-name {
+        font-family: 'Geist Mono', monospace;
+        font-size: 22px;
+        font-weight: 500;
+        color: var(--color-text);
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+
+      .af-actions { display: flex; gap: 6px; flex-shrink: 0; padding-top: 4px; }
+
+      .af-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 14px;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: none;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .af-btn:hover { border-color: var(--color-text-muted); color: var(--color-text); }
+
+      .af-btn-primary {
+        background: var(--color-text);
+        color: var(--color-bg);
+        border-color: var(--color-text);
+      }
+
+      .af-btn-primary:hover { opacity: 0.85; color: var(--color-bg); }
+
+      /* File content */
+      .af-file-content {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .af-file-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-surface-muted);
+      }
+
+      .af-file-bar-name {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--color-text-muted);
+      }
+
+      .af-file-bar-meta {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .af-pre {
+        margin: 0;
+        padding: 20px 24px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        font-weight: 300;
+        line-height: 1.7;
+        color: var(--color-text);
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-x: auto;
+        max-height: 75vh;
+        overflow-y: auto;
+      }
+
+      /* Footer */
+      .af-footer {
+        padding: 20px clamp(24px, 4vw, 56px);
+        border-top: 1px solid var(--color-border);
+        max-width: 900px;
+      }
+
+      .af-footer-text {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+      }
+
+      .af-footer-text a {
+        color: var(--color-text-muted);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .af-footer-text a:hover { color: var(--color-text); }
+    </style>
+  </head>
+  <body>
+    <div class="af">
+      <!-- Sidebar -->
+      <aside class="af-sidebar" data-pagefind-ignore>
+        <div class="af-sidebar-header">
+          <a href="/" class="af-logo">dewey <span>/ agent</span></a>
+        </div>
+        <div class="af-sidebar-body">
+          {navGroups.map((group) => (
+            <nav class="af-nav-group">
+              <p class="af-nav-label">{group.title}</p>
+              {group.items.map((item) => (
+                <a href={item.href} class="af-nav-item">{item.title}</a>
+              ))}
+            </nav>
+          ))}
+          <nav class="af-nav-group">
+            <p class="af-nav-label">Agent files</p>
+            <a href="/view/agents-md" class={`af-nav-item ${currentPath === '/view/agents-md' ? 'active' : ''}`}>AGENTS.md</a>
+            <a href="/view/llms-txt" class={`af-nav-item ${currentPath === '/view/llms-txt' ? 'active' : ''}`}>llms.txt</a>
+            <a href="/view/install-md" class={`af-nav-item ${currentPath === '/view/install-md' ? 'active' : ''}`}>install.md</a>
+          </nav>
+        </div>
+        <div class="af-sidebar-footer">
+          <div class="af-sidebar-links">
+            <a href="https://github.com/arach/dewey" class="af-sidebar-link" target="_blank" rel="noopener noreferrer" title="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://www.npmjs.com/package/@arach/dewey" class="af-sidebar-link" target="_blank" rel="noopener noreferrer" title="npm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.331h-2.669zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z"/></svg>
+            </a>
+          </div>
+          <button class="af-theme-btn" id="af-theme-toggle" title="Toggle theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+        </div>
+      </aside>
+
+      <div class="af-main">
+        <div class="af-mobile-header">
+          <a href="/" class="af-logo" style="font-size: 18px;">dewey <span>/ agent</span></a>
+          <button class="af-theme-btn" id="af-theme-toggle-m" title="Toggle theme">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+        </div>
+
+        <div class="af-content">
+          <div class="af-header">
+            <div class="af-title-area">
+              <p class="af-file-label">Agent file</p>
+              <h1 class="af-file-name">{fileName}</h1>
+            </div>
+            <div class="af-actions">
+              <button class="af-btn af-btn-primary" id="af-copy-all">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy all
+              </button>
+              <a class="af-btn" href={rawPath} target="_blank">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Raw
+              </a>
+            </div>
+          </div>
+
+          <div class="af-file-content">
+            <div class="af-file-bar">
+              <span class="af-file-bar-name">{fileName}</span>
+              <span class="af-file-bar-meta">
+                <span>{content.split('\n').length} lines</span>
+                <span>{(new TextEncoder().encode(content).length / 1024).toFixed(1)} KB</span>
+              </span>
+            </div>
+            <pre class="af-pre" id="af-content">{content}</pre>
+          </div>
+
+          <footer class="af-footer">
+            <span class="af-footer-text">
+              <a href="/">dewey</a> &mdash; agent-ready documentation
+            </span>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      // Theme
+      const th = (b) => b?.addEventListener('click', () => {
+        const c = document.documentElement.getAttribute('data-theme') || 'light'
+        const n = c === 'dark' ? 'light' : 'dark'
+        document.documentElement.setAttribute('data-theme', n)
+        try { localStorage.setItem('theme', n) } catch {}
+      })
+      th(document.getElementById('af-theme-toggle'))
+      th(document.getElementById('af-theme-toggle-m'))
+
+      // Copy all
+      document.getElementById('af-copy-all')?.addEventListener('click', async function() {
+        const content = document.getElementById('af-content')?.textContent
+        if (content) {
+          await navigator.clipboard.writeText(content)
+          this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!'
+          setTimeout(() => {
+            this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy all'
+          }, 2000)
+        }
+      })
+    </script>
+  </body>
+</html>

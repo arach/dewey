@@ -5,9 +5,11 @@
 
   html {
     color-scheme: light;
-    font-family: "Space Grotesk", "Inter", "SF Pro Text", system-ui, -apple-system, sans-serif;
+    font-family: "Inter", -apple-system, system-ui, sans-serif;
+    font-weight: 400;
     background: var(--color-bg);
     color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
@@ -28,7 +30,7 @@
   h4,
   h5,
   h6 {
-    font-family: "Fraunces", "Space Grotesk", serif;
+    font-family: "Noto Serif Display", "Georgia", serif;
     color: var(--color-text);
   }
 
@@ -51,7 +53,7 @@
   }
 
   code {
-    font-family: "JetBrains Mono", "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: "Geist Mono", "JetBrains Mono", "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
   .root {

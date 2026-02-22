@@ -245,6 +245,50 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         margin-top: 24px;
       }
 
+      .v3-hero-install {
+        margin-top: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        background: var(--s-terminal-bg);
+        border: 1px solid var(--s-terminal-border);
+        border-radius: 8px;
+        max-width: fit-content;
+      }
+
+      .v3-hero-install code {
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.4);
+      }
+
+      .v3-hero-install code strong {
+        color: rgba(255,255,255,0.85);
+        font-weight: 400;
+      }
+
+      .v3-hero-install-copy {
+        background: rgba(255,255,255,0.08);
+        border: none;
+        border-radius: 4px;
+        color: rgba(255,255,255,0.5);
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .v3-hero-install-copy:hover {
+        background: rgba(255,255,255,0.14);
+        color: rgba(255,255,255,0.8);
+      }
+
       .v3-btn-light {
         display: inline-flex;
         align-items: center;
@@ -1030,6 +1074,10 @@ import LandingLayout from '../layouts/LandingLayout.astro'
                 View Source
               </a>
             </div>
+            <div class="v3-hero-install">
+              <code>$ <strong>bun add -D @arach/dewey</strong></code>
+              <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
+            </div>
           </div>
           <div class="v3-hero-right">
             <div class="v3-install-terminal">
@@ -1042,22 +1090,24 @@ import LandingLayout from '../layouts/LandingLayout.astro'
               <div class="v3-terminal-lines">
                 <div class="v3-terminal-line">
                   <span class="v3-terminal-prompt">$</span>
-                  <span class="v3-terminal-text">bun add -D @arach/dewey</span>
-                </div>
-                <div class="v3-terminal-line v3-terminal-output">✓ installed @arach/dewey</div>
-                <div class="v3-terminal-line" style="margin-top: 8px;">
-                  <span class="v3-terminal-prompt">$</span>
-                  <span class="v3-terminal-text">npx dewey init</span>
+                  <span class="v3-terminal-text">bunx dewey init</span>
                 </div>
                 <div class="v3-terminal-line v3-terminal-output">→ Created docs/overview.md</div>
                 <div class="v3-terminal-line v3-terminal-output">→ Created dewey.config.ts</div>
                 <div class="v3-terminal-line" style="margin-top: 8px;">
                   <span class="v3-terminal-prompt">$</span>
-                  <span class="v3-terminal-text">npx dewey generate</span>
+                  <span class="v3-terminal-text">bunx dewey generate</span>
                 </div>
                 <div class="v3-terminal-line v3-terminal-output">→ AGENTS.md</div>
                 <div class="v3-terminal-line v3-terminal-output">→ llms.txt</div>
                 <div class="v3-terminal-line v3-terminal-output">→ install.md</div>
+                <div class="v3-terminal-line" style="margin-top: 8px;">
+                  <span class="v3-terminal-prompt">$</span>
+                  <span class="v3-terminal-text">bunx dewey audit</span>
+                </div>
+                <div class="v3-terminal-line v3-terminal-output">Score: 92/100 — Grade: A</div>
+                <div class="v3-terminal-line v3-terminal-output">✓ AGENTS.md present</div>
+                <div class="v3-terminal-line v3-terminal-output">✓ llms.txt present</div>
               </div>
             </div>
           </div>
@@ -1347,6 +1397,16 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   </div>
 
   <script is:inline>
+    // Copy install command
+    document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText('bun add -D @arach/dewey')
+      const textEl = document.getElementById('v3-copy-text')
+      if (textEl) {
+        textEl.textContent = 'Copied!'
+        setTimeout(() => { textEl.textContent = 'Copy' }, 2000)
+      }
+    })
+
     // Theme toggle
     document.getElementById('v3-theme-toggle')?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'light'

@@ -544,34 +544,47 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-feature::after {
         content: '';
         position: absolute;
-        inset: 10px;
-        border-radius: 12px;
+        inset: 0;
         border: 1px solid transparent;
-        box-shadow: 0 0 0 0 rgba(0,0,0,0);
+        border-radius: 0;
+        box-shadow: none;
         background: transparent;
-        transition: all 0.2s ease;
+        transition: inset 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    border-color 0.3s ease,
+                    border-radius 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    box-shadow 0.6s ease 0.2s,
+                    background 0.4s ease 0.1s;
         pointer-events: none;
         z-index: -1;
       }
 
       .v3-feature:hover::after {
+        inset: 6px;
         border-color: var(--s-border);
-        background: var(--s-surface);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.04), 0 0 0 1px var(--s-border);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.35);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.02);
       }
 
       [data-theme='dark'] .v3-feature:hover::after {
-        box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px var(--s-border);
+        background: rgba(255,255,255,0.02);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      }
+
+      .v3-feature .v3-feature-icon {
+        transition: opacity 0.4s ease;
       }
 
       .v3-feature:hover .v3-feature-icon {
         opacity: 0.7;
-        transition: opacity 0.2s ease;
+      }
+
+      .v3-feature .v3-feature-link {
+        transition: color 0.4s ease;
       }
 
       .v3-feature:hover .v3-feature-link {
         color: var(--s-highlight);
-        transition: color 0.2s ease;
       }
 
       .v3-feature:nth-child(odd) { padding-left: 0; }

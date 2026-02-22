@@ -539,20 +539,39 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         display: flex;
         flex-direction: column;
         min-height: 280px;
-        transition: background 0.3s ease;
       }
 
-      .v3-feature:hover {
+      .v3-feature::after {
+        content: '';
+        position: absolute;
+        inset: 10px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        box-shadow: 0 0 0 0 rgba(0,0,0,0);
+        background: transparent;
+        transition: all 0.2s ease;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .v3-feature:hover::after {
+        border-color: var(--s-border);
         background: var(--s-surface);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.04), 0 0 0 1px var(--s-border);
+      }
+
+      [data-theme='dark'] .v3-feature:hover::after {
+        box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px var(--s-border);
       }
 
       .v3-feature:hover .v3-feature-icon {
         opacity: 0.7;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.2s ease;
       }
 
       .v3-feature:hover .v3-feature-link {
         color: var(--s-highlight);
+        transition: color 0.2s ease;
       }
 
       .v3-feature:nth-child(odd) { padding-left: 0; }

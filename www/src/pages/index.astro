@@ -248,23 +248,63 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero-install {
         margin-top: 20px;
         display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
+        flex-direction: column;
         background: var(--s-terminal-bg);
         border: 1px solid var(--s-terminal-border);
         border-radius: 8px;
         max-width: fit-content;
+        overflow: hidden;
       }
 
-      .v3-hero-install code {
+      .v3-pkg-tabs {
+        display: flex;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .v3-pkg-tab {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.35);
+        background: none;
+        border: none;
+        padding: 8px 14px;
+        cursor: pointer;
+        transition: color 0.2s;
+        position: relative;
+      }
+
+      .v3-pkg-tab:hover { color: rgba(255,255,255,0.6); }
+
+      .v3-pkg-tab.active {
+        color: rgba(255,255,255,0.85);
+      }
+
+      .v3-pkg-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 14px;
+        right: 14px;
+        height: 1px;
+        background: rgba(255,255,255,0.3);
+      }
+
+      .v3-pkg-cmd {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+      }
+
+      .v3-pkg-cmd code {
         font-family: 'Geist Mono', monospace;
         font-size: 13px;
         font-weight: 400;
         color: rgba(255,255,255,0.4);
       }
 
-      .v3-hero-install code strong {
+      .v3-pkg-cmd code strong {
         color: rgba(255,255,255,0.85);
         font-weight: 400;
       }
@@ -1075,8 +1115,16 @@ import LandingLayout from '../layouts/LandingLayout.astro'
               </a>
             </div>
             <div class="v3-hero-install">
-              <code>$ <strong>bun add -D @arach/dewey</strong></code>
-              <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
+              <div class="v3-pkg-tabs">
+                <button class="v3-pkg-tab active" data-pm="bun">bun</button>
+                <button class="v3-pkg-tab" data-pm="npm">npm</button>
+                <button class="v3-pkg-tab" data-pm="pnpm">pnpm</button>
+                <button class="v3-pkg-tab" data-pm="yarn">yarn</button>
+              </div>
+              <div class="v3-pkg-cmd">
+                <code>$ <strong id="v3-install-text">bun add -D @arach/dewey</strong></code>
+                <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
+              </div>
             </div>
           </div>
           <div class="v3-hero-right">
@@ -1397,9 +1445,27 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   </div>
 
   <script is:inline>
+    // Package manager tabs
+    const pmCommands = {
+      bun: 'bun add -D @arach/dewey',
+      npm: 'npm install -D @arach/dewey',
+      pnpm: 'pnpm add -D @arach/dewey',
+      yarn: 'yarn add -D @arach/dewey'
+    }
+    const installText = document.getElementById('v3-install-text')
+    document.querySelectorAll('.v3-pkg-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.v3-pkg-tab').forEach(t => t.classList.remove('active'))
+        tab.classList.add('active')
+        const pm = tab.getAttribute('data-pm')
+        if (installText && pm) installText.textContent = pmCommands[pm]
+      })
+    })
+
     // Copy install command
     document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('bun add -D @arach/dewey')
+      const cmd = installText?.textContent || 'bun add -D @arach/dewey'
+      await navigator.clipboard.writeText(cmd)
       const textEl = document.getElementById('v3-copy-text')
       if (textEl) {
         textEl.textContent = 'Copied!'

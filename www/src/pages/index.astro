@@ -256,40 +256,6 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         overflow: hidden;
       }
 
-      .v3-pkg-tabs {
-        display: flex;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-      }
-
-      .v3-pkg-tab {
-        font-family: 'Geist Mono', monospace;
-        font-size: 11px;
-        font-weight: 400;
-        color: rgba(255,255,255,0.35);
-        background: none;
-        border: none;
-        padding: 8px 14px;
-        cursor: pointer;
-        transition: color 0.2s;
-        position: relative;
-      }
-
-      .v3-pkg-tab:hover { color: rgba(255,255,255,0.6); }
-
-      .v3-pkg-tab.active {
-        color: rgba(255,255,255,0.85);
-      }
-
-      .v3-pkg-tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 14px;
-        right: 14px;
-        height: 1px;
-        background: rgba(255,255,255,0.3);
-      }
-
       .v3-pkg-cmd {
         display: flex;
         align-items: center;
@@ -1106,15 +1072,8 @@ import LandingLayout from '../layouts/LandingLayout.astro'
               Audit, score, and generate agent-ready documentation.<br/>Scaffold complete static doc sites from your markdown.
             </p>
             <div class="v3-hero-install">
-              <div class="v3-pkg-tabs">
-                <button class="v3-pkg-tab active" data-pm="curl">curl</button>
-                <button class="v3-pkg-tab" data-pm="bun">bun</button>
-                <button class="v3-pkg-tab" data-pm="npm">npm</button>
-                <button class="v3-pkg-tab" data-pm="pnpm">pnpm</button>
-                <button class="v3-pkg-tab" data-pm="yarn">yarn</button>
-              </div>
               <div class="v3-pkg-cmd">
-                <code>$ <strong id="v3-install-text">curl -fsSL dewey.arach.dev/install.sh | sh</strong></code>
+                <code>$ <strong>curl -fsSL dewey.arach.dev/install.sh | sh</strong></code>
                 <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
               </div>
             </div>
@@ -1446,28 +1405,9 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   </div>
 
   <script is:inline>
-    // Package manager tabs
-    const pmCommands = {
-      curl: 'curl -fsSL dewey.arach.dev/install.sh | sh',
-      bun: 'bunx dewey init',
-      npm: 'npx dewey init',
-      pnpm: 'pnpm dlx dewey init',
-      yarn: 'yarn dlx dewey init'
-    }
-    const installText = document.getElementById('v3-install-text')
-    document.querySelectorAll('.v3-pkg-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.v3-pkg-tab').forEach(t => t.classList.remove('active'))
-        tab.classList.add('active')
-        const pm = tab.getAttribute('data-pm')
-        if (installText && pm) installText.textContent = pmCommands[pm]
-      })
-    })
-
     // Copy install command
     document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
-      const cmd = installText?.textContent || 'bun add -D @arach/dewey'
-      await navigator.clipboard.writeText(cmd)
+      await navigator.clipboard.writeText('curl -fsSL dewey.arach.dev/install.sh | sh')
       const textEl = document.getElementById('v3-copy-text')
       if (textEl) {
         textEl.textContent = 'Copied!'

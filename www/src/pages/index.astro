@@ -39,6 +39,14 @@ import LandingLayout from '../layouts/LandingLayout.astro'
           Docs
         </a>
         <a
+          href="https://www.npmjs.com/package/@arach/dewey"
+          class="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors px-3 py-1.5 rounded-lg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          npm
+        </a>
+        <a
           href="https://github.com/arach/dewey"
           class="flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-alt)] transition-colors"
           target="_blank"
@@ -67,7 +75,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       </h1>
 
       <p class="text-lg mb-10 max-w-xl mx-auto leading-relaxed text-[var(--color-text-muted)]">
-        A documentation toolkit that audits, scores, and generates agent-ready files like AGENTS.md and llms.txt.
+        A documentation toolkit that audits, scores, generates agent-ready files, and scaffolds static doc sites from your markdown.
       </p>
 
       <div class="flex items-center justify-center gap-3 mb-12">
@@ -122,7 +130,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
+      <div class="grid md:grid-cols-3 gap-6">
         <!-- CLI -->
         <div class="rounded-2xl p-7 transition-all hover:shadow-lg bg-[var(--color-surface)]/70 border border-[var(--color-border)] backdrop-blur-sm">
           <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5 bg-emerald-500/15">
@@ -130,7 +138,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
           </div>
           <h3 class="text-lg font-semibold mb-2 text-[var(--color-text)]">CLI Tools</h3>
           <p class="text-sm mb-5 leading-relaxed text-[var(--color-text-muted)]">
-            Scaffold, audit, and generate agent-ready documentation files from the command line.
+            Scaffold, audit, generate agent-ready files, and create static doc sites from the command line.
           </p>
           <ul class="space-y-2.5">
             <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
@@ -139,15 +147,15 @@ import LandingLayout from '../layouts/LandingLayout.astro'
             </li>
             <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
               <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              npx dewey audit → validate completeness
-            </li>
-            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
               npx dewey generate → create AGENTS.md
             </li>
             <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
               <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              Configurable via dewey.config.ts
+              npx dewey create → static Astro doc site
+            </li>
+            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              npx dewey audit → validate completeness
             </li>
           </ul>
         </div>
@@ -177,6 +185,35 @@ import LandingLayout from '../layouts/LandingLayout.astro'
             <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
               <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
               Copy for Agent feature
+            </li>
+          </ul>
+        </div>
+
+        <!-- Doc Site Generator -->
+        <div class="rounded-2xl p-7 transition-all hover:shadow-lg bg-[var(--color-surface)]/70 border border-[var(--color-border)] backdrop-blur-sm">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-5 bg-purple-500/15">
+            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2 text-[var(--color-text)]">Doc Site Generator</h3>
+          <p class="text-sm mb-5 leading-relaxed text-[var(--color-text-muted)]">
+            Turn a folder of markdown into a complete static doc site. One command, zero config.
+          </p>
+          <ul class="space-y-2.5">
+            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Astro-based static HTML output
+            </li>
+            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Pagefind search built in
+            </li>
+            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              8 color themes with dark mode
+            </li>
+            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <svg class="w-4 h-4 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Auto-nav from frontmatter
             </li>
           </ul>
         </div>
@@ -248,6 +285,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       </p>
       <div class="flex items-center gap-5">
         <a href="/docs" class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">Docs</a>
+        <a href="https://www.npmjs.com/package/@arach/dewey" class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </div>

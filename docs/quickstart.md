@@ -100,8 +100,21 @@ Categories:
 ...
 ```
 
+## Create a Doc Site
+
+Turn your markdown into a full static site:
+
+```bash
+npx dewey create my-docs --source ./docs --theme ocean
+cd my-docs
+pnpm install && pnpm dev
+```
+
+Features: Astro static HTML, Pagefind search, 8 color themes, dark mode, auto-navigation from frontmatter.
+
 ## Next Steps
 
 - Create `.agent.md` versions of your docs
 - Add skills to `.claude/skills/` for custom reviews
 - Run `dewey audit` to check completeness
+- Run `dewey create` to generate a doc site

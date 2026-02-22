@@ -15,9 +15,8 @@ Dewey is a **docs agent**, not a docs framework. It focuses on:
 - **Auditing** - Validates documentation completeness and quality
 - **Scoring** - Rates agent-readiness on a 0-100 scale
 - **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md
+- **Creating** - Scaffolds static Astro doc sites from your markdown
 - **Reviewing** - Skills that catch drift between docs and codebase
-
-Dewey prepares your docs for AI consumption. Rendering is left to your framework of choice.
 
 ## Key Concepts
 
@@ -52,6 +51,7 @@ curl https://your-project.com/install.md | claude
 dewey init      Create docs/ folder and dewey.config.ts
 dewey audit     Check documentation completeness
 dewey generate  Create agent-ready files
+dewey create    Scaffold a static Astro doc site from markdown
 dewey agent     Score agent-readiness (0-100)
 ```
 

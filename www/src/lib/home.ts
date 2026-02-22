@@ -28,6 +28,11 @@ export const homeGroups: HomeGroup[] = [
         description: 'LLM prompt templates for docs review.',
         href: '/docs/skills',
       },
+      {
+        title: 'Doc Site Generator',
+        description: 'Scaffold a static Astro site from markdown.',
+        href: '/docs/quickstart#create-a-doc-site',
+      },
     ],
   },
   {

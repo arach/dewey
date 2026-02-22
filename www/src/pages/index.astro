@@ -191,7 +191,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero-grid {
         display: grid;
         grid-template-columns: 1.2fr 1fr;
-        gap: 80px;
+        gap: 48px;
         align-items: end;
       }
 
@@ -218,11 +218,22 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         color: var(--s-text-muted-inv);
       }
 
+      /* ── Rotating word ── */
+      .v3-rotate {
+        display: inline-block;
+        transition: opacity 0.45s ease, transform 0.45s ease;
+      }
+
+      .v3-rotate.fading {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
       .v3-hero-right {
         display: flex;
         flex-direction: column;
-        gap: 28px;
-        padding-bottom: 6px;
+        gap: 20px;
+        padding-bottom: 4px;
       }
 
       .v3-hero-desc {
@@ -629,6 +640,11 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         position: relative;
       }
 
+      .v3-cta h2 em {
+        font-weight: 200;
+        color: var(--s-text-muted-inv);
+      }
+
       .v3-cta p {
         font-size: 15px;
         font-weight: 400;
@@ -1017,7 +1033,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       <div class="v3-hero-inner">
         <div class="v3-hero-grid">
           <div>
-            <h1>Curated docs<br/>for <em>agents.</em></h1>
+            <h1>Curated docs<br/>for <em class="v3-rotate" data-words="agents.,devs.">agents.</em></h1>
           </div>
           <div class="v3-hero-right">
             <p class="v3-hero-desc">
@@ -1166,7 +1182,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     <!-- CTA -->
     <div style="padding-bottom: clamp(60px, 8vw, 100px);">
       <section class="v3-cta">
-        <h2>Crafted docs<br/>for devs.</h2>
+        <h2>Crafted docs<br/>for <em class="v3-rotate" data-words="devs.,agents." style="font-style: italic;">devs.</em></h2>
         <p>Agent-ready documentation in minutes.</p>
         <a href="/docs/quickstart" class="v3-btn-light" style="position: relative;">
           Read the Quickstart
@@ -1373,6 +1389,21 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         btn.textContent = 'copied!'
         setTimeout(() => { btn.textContent = 'copy' }, 2000)
       }
+    })
+
+    // Rotating words
+    document.querySelectorAll('.v3-rotate').forEach(el => {
+      const words = el.getAttribute('data-words')?.split(',') || []
+      if (words.length < 2) return
+      let i = 0
+      setInterval(() => {
+        el.classList.add('fading')
+        setTimeout(() => {
+          i = (i + 1) % words.length
+          el.textContent = words[i]
+          el.classList.remove('fading')
+        }, 450)
+      }, 3500)
     })
 
     // Generic copy buttons (sidebar + cards)

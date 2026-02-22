@@ -166,7 +166,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero {
         background: var(--s-bg-inv);
         color: var(--s-text-inv);
-        padding: clamp(48px, 8vw, 100px) 0 clamp(40px, 5vw, 72px);
+        padding: clamp(36px, 5vw, 64px) clamp(20px, 4vw, 48px) clamp(36px, 5vw, 64px);
         position: relative;
         overflow: hidden;
       }
@@ -183,7 +183,6 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero-inner {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 clamp(20px, 4vw, 48px);
         position: relative;
         z-index: 1;
       }
@@ -192,7 +191,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         display: grid;
         grid-template-columns: 1.2fr 1fr;
         gap: 48px;
-        align-items: end;
+        align-items: start;
       }
 
       @media (max-width: 900px) {
@@ -229,20 +228,13 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         transform: translateY(6px);
       }
 
-      .v3-hero-right {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding-bottom: 4px;
-      }
-
       .v3-hero-desc {
         font-size: 15px;
         font-weight: 400;
         line-height: 1.75;
         color: var(--s-text-muted-inv);
-        margin: 0;
-        max-width: 400px;
+        margin: 20px 0 0;
+        max-width: 480px;
         letter-spacing: 0.005em;
       }
 
@@ -250,6 +242,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
+        margin-top: 24px;
       }
 
       .v3-btn-light {
@@ -297,16 +290,11 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         border-color: var(--s-text-muted);
       }
 
-      .v3-install-bar {
-        margin-top: 0;
-      }
-
       .v3-install-terminal {
         background: var(--s-terminal-bg);
         border: 1px solid var(--s-terminal-border);
         border-radius: 10px;
         overflow: hidden;
-        max-width: 480px;
       }
 
       .v3-terminal-bar {
@@ -324,48 +312,44 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         background: rgba(255,255,255,0.12);
       }
 
-      .v3-terminal-body {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 16px 20px;
+      .v3-terminal-title {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.3);
+        margin-left: auto;
       }
 
-      .v3-install-cmd {
-        font-family: 'JetBrains Mono', monospace;
+      .v3-terminal-lines {
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .v3-terminal-line {
+        font-family: 'Geist Mono', monospace;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(255,255,255,0.4);
-      }
-
-      .v3-install-cmd strong {
+        line-height: 1.6;
         color: rgba(255,255,255,0.85);
-        font-weight: 400;
+        display: flex;
+        gap: 8px;
       }
 
-      .v3-install-copy {
-        background: rgba(255,255,255,0.08);
-        border: none;
-        border-radius: 6px;
-        color: rgba(255,255,255,0.5);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        font-weight: 400;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        padding: 6px 14px;
-        cursor: pointer;
-        transition: all 0.2s;
+      .v3-terminal-prompt {
+        color: rgba(255,255,255,0.35);
+        user-select: none;
       }
 
-      .v3-install-copy:hover {
-        background: rgba(255,255,255,0.14);
-        color: rgba(255,255,255,0.8);
+      .v3-terminal-output {
+        color: rgba(255,255,255,0.4);
+        padding-left: 16px;
       }
 
       /* ── Sections ── */
       .v3-section {
-        padding: clamp(64px, 8vw, 100px) clamp(20px, 4vw, 48px);
+        padding: clamp(40px, 5vw, 64px) clamp(20px, 4vw, 48px);
         max-width: 1200px;
         margin: 0 auto;
       }
@@ -1034,26 +1018,9 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         <div class="v3-hero-grid">
           <div>
             <h1>Curated docs<br/>for <em class="v3-rotate" data-words="agents.,devs.">agents.</em></h1>
-          </div>
-          <div class="v3-hero-right">
             <p class="v3-hero-desc">
-              Audit, score, and generate agent-ready documentation. Scaffold complete static doc sites from your markdown.
+              Audit, score, and generate agent-ready documentation.<br/>Scaffold complete static doc sites from your markdown.
             </p>
-            <div class="v3-install-bar">
-              <div class="v3-install-terminal">
-                <div class="v3-terminal-bar">
-                  <span class="v3-terminal-dot"></span>
-                  <span class="v3-terminal-dot"></span>
-                  <span class="v3-terminal-dot"></span>
-                </div>
-                <div class="v3-terminal-body">
-                  <span class="v3-install-cmd">$ <strong>pnpm add -D @arach/dewey</strong></span>
-                  <button class="v3-install-copy" id="v3-copy-btn">
-                    <span id="v3-copy-text">Copy</span>
-                  </button>
-                </div>
-              </div>
-            </div>
             <div class="v3-hero-actions">
               <a href="/docs/quickstart" class="v3-btn-light">
                 Get Started
@@ -1062,6 +1029,36 @@ import LandingLayout from '../layouts/LandingLayout.astro'
               <a href="https://github.com/arach/dewey" class="v3-btn-ghost" target="_blank" rel="noopener noreferrer">
                 View Source
               </a>
+            </div>
+          </div>
+          <div class="v3-hero-right">
+            <div class="v3-install-terminal">
+              <div class="v3-terminal-bar">
+                <span class="v3-terminal-dot"></span>
+                <span class="v3-terminal-dot"></span>
+                <span class="v3-terminal-dot"></span>
+                <span class="v3-terminal-title">~/my-project</span>
+              </div>
+              <div class="v3-terminal-lines">
+                <div class="v3-terminal-line">
+                  <span class="v3-terminal-prompt">$</span>
+                  <span class="v3-terminal-text">pnpm add -D @arach/dewey</span>
+                </div>
+                <div class="v3-terminal-line v3-terminal-output">✓ installed @arach/dewey</div>
+                <div class="v3-terminal-line" style="margin-top: 8px;">
+                  <span class="v3-terminal-prompt">$</span>
+                  <span class="v3-terminal-text">npx dewey init</span>
+                </div>
+                <div class="v3-terminal-line v3-terminal-output">→ Created docs/overview.md</div>
+                <div class="v3-terminal-line v3-terminal-output">→ Created dewey.config.ts</div>
+                <div class="v3-terminal-line" style="margin-top: 8px;">
+                  <span class="v3-terminal-prompt">$</span>
+                  <span class="v3-terminal-text">npx dewey generate</span>
+                </div>
+                <div class="v3-terminal-line v3-terminal-output">→ AGENTS.md</div>
+                <div class="v3-terminal-line v3-terminal-output">→ llms.txt</div>
+                <div class="v3-terminal-line v3-terminal-output">→ install.md</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1350,16 +1347,6 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   </div>
 
   <script is:inline>
-    // Copy install command (human view)
-    document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('pnpm add -D @arach/dewey')
-      const textEl = document.getElementById('v3-copy-text')
-      if (textEl) {
-        textEl.textContent = 'Copied!'
-        setTimeout(() => { textEl.textContent = 'Copy' }, 2000)
-      }
-    })
-
     // Theme toggle
     document.getElementById('v3-theme-toggle')?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'light'

@@ -31,7 +31,7 @@
   }
   .pagefind-ui__result-excerpt mark,
   .pagefind-ui__result-title mark {
-    background: rgba(240, 124, 79, 0.25);
+    background: rgba(196, 101, 58, 0.25);
     color: var(--color-text);
     border-radius: 4px;
     padding: 0 2px;

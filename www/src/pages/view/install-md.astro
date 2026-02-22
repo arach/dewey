@@ -1,0 +1,12 @@
+---
+import AgentFileLayout from '../../layouts/AgentFileLayout.astro'
+
+const raw = await import('../../../install.md?raw')
+const content = raw.default
+---
+<AgentFileLayout
+  title="install.md"
+  fileName="install.md"
+  content={content}
+  rawPath="/install.md"
+/>

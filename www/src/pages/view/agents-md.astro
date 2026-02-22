@@ -1,0 +1,12 @@
+---
+import AgentFileLayout from '../../layouts/AgentFileLayout.astro'
+
+const raw = await import('../../../AGENTS.md?raw')
+const content = raw.default
+---
+<AgentFileLayout
+  title="AGENTS.md"
+  fileName="AGENTS.md"
+  content={content}
+  rawPath="/AGENTS.md"
+/>

@@ -1,0 +1,583 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro'
+---
+
+<LandingLayout title="Dewey - Agent-ready documentation">
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style is:inline>
+      :root {
+        --rm-bg: #F4E9E1;
+        --rm-black: #000000;
+        --rm-text: #1a1a1a;
+        --rm-text-muted: #666666;
+        --rm-red: #FF3D00;
+        --rm-purple: #5900CC;
+        --rm-surface: #FFFFFF;
+        --rm-border: #d4c9c1;
+        --rm-border-strong: #1a1a1a;
+        --rm-radius: 8px;
+      }
+
+      [data-theme='dark'] {
+        --rm-bg: #0e0e0e;
+        --rm-black: #ffffff;
+        --rm-text: #e8e8e8;
+        --rm-text-muted: #888888;
+        --rm-red: #FF5722;
+        --rm-purple: #9B6DFF;
+        --rm-surface: #1a1a1a;
+        --rm-border: #2a2a2a;
+        --rm-border-strong: #e8e8e8;
+      }
+
+      .v2 {
+        font-family: 'Inter Tight', -apple-system, sans-serif;
+        background: var(--rm-bg);
+        color: var(--rm-text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .v2 * { box-sizing: border-box; }
+
+      .v2-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--rm-bg);
+        border-bottom: 1px solid var(--rm-border);
+      }
+
+      .v2-logo {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--rm-text);
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .v2-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .v2-nav-link {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--rm-text-muted);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: color 0.2s;
+      }
+
+      .v2-nav-link:hover { color: var(--rm-text); }
+
+      /* Hero */
+      .v2-hero {
+        padding: clamp(80px, 12vw, 160px) 40px clamp(60px, 8vw, 100px);
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .v2-hero-label {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--rm-red);
+        margin-bottom: 24px;
+        padding: 6px 14px;
+        border: 1px solid var(--rm-red);
+        border-radius: 100px;
+      }
+
+      .v2-hero h1 {
+        font-size: clamp(42px, 6vw, 72px);
+        font-weight: 700;
+        line-height: 1.0;
+        letter-spacing: -0.03em;
+        color: var(--rm-text);
+        margin: 0 0 32px;
+        max-width: 800px;
+      }
+
+      .v2-hero h1 em {
+        font-style: normal;
+        color: var(--rm-red);
+      }
+
+      .v2-hero-sub {
+        font-size: clamp(16px, 1.8vw, 20px);
+        font-weight: 300;
+        line-height: 1.6;
+        color: var(--rm-text-muted);
+        max-width: 520px;
+        margin: 0 0 48px;
+      }
+
+      .v2-hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .v2-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: 'Inter Tight', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #fff;
+        background: var(--rm-text);
+        border: none;
+        border-radius: var(--rm-radius);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .v2-btn-primary:hover {
+        background: var(--rm-red);
+      }
+
+      .v2-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: 'Inter Tight', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--rm-text);
+        background: transparent;
+        border: 1px solid var(--rm-border-strong);
+        border-radius: var(--rm-radius);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .v2-btn-secondary:hover {
+        background: var(--rm-text);
+        color: var(--rm-bg);
+      }
+
+      /* Install */
+      .v2-install {
+        margin: 48px 0 0;
+        max-width: 460px;
+      }
+
+      .v2-install-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: var(--rm-surface);
+        border: 1px solid var(--rm-border);
+        border-radius: var(--rm-radius);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+      }
+
+      .v2-install-cmd { color: var(--rm-text-muted); }
+      .v2-install-cmd strong { color: var(--rm-text); font-weight: 500; }
+
+      .v2-copy-btn {
+        background: none;
+        border: none;
+        color: var(--rm-text-muted);
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'Inter Tight', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 8px;
+        transition: color 0.2s;
+      }
+
+      .v2-copy-btn:hover { color: var(--rm-text); }
+
+      /* Divider */
+      .v2-divider {
+        border: none;
+        border-top: 1px solid var(--rm-border);
+        margin: 0;
+      }
+
+      /* Features grid */
+      .v2-section {
+        padding: clamp(60px, 8vw, 100px) 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .v2-section-header {
+        margin-bottom: 48px;
+      }
+
+      .v2-section-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--rm-text-muted);
+        margin: 0 0 16px;
+      }
+
+      .v2-section-title {
+        font-size: clamp(28px, 3.5vw, 40px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        color: var(--rm-text);
+        margin: 0;
+      }
+
+      .v2-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--rm-border);
+        border: 1px solid var(--rm-border);
+        border-radius: var(--rm-radius);
+        overflow: hidden;
+      }
+
+      @media (max-width: 768px) {
+        .v2-grid { grid-template-columns: 1fr; }
+        .v2-nav { padding: 16px 20px; }
+        .v2-hero { padding: 60px 20px 40px; }
+        .v2-section { padding: 60px 20px; }
+        .v2-hero-actions { flex-direction: column; align-items: flex-start; }
+      }
+
+      .v2-card {
+        padding: 32px;
+        background: var(--rm-bg);
+        transition: background 0.2s;
+      }
+
+      .v2-card:hover {
+        background: var(--rm-surface);
+      }
+
+      .v2-card-number {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--rm-red);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 16px;
+      }
+
+      .v2-card h3 {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--rm-text);
+        margin: 0 0 10px;
+      }
+
+      .v2-card p {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.6;
+        color: var(--rm-text-muted);
+        margin: 0 0 20px;
+      }
+
+      .v2-card-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .v2-card-list li {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--rm-text-muted);
+        padding-left: 16px;
+        position: relative;
+      }
+
+      .v2-card-list li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--rm-red);
+      }
+
+      /* Files section */
+      .v2-files-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      @media (max-width: 768px) {
+        .v2-files-grid { grid-template-columns: 1fr; }
+      }
+
+      .v2-file-card {
+        padding: 28px;
+        border: 1px solid var(--rm-border);
+        border-radius: var(--rm-radius);
+        transition: border-color 0.2s;
+      }
+
+      .v2-file-card:hover {
+        border-color: var(--rm-border-strong);
+      }
+
+      .v2-file-name {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--rm-text);
+        margin: 0 0 10px;
+      }
+
+      .v2-file-desc {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.5;
+        color: var(--rm-text-muted);
+        margin: 0;
+      }
+
+      /* CTA */
+      .v2-cta {
+        padding: clamp(80px, 10vw, 120px) 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .v2-cta h2 {
+        font-size: clamp(32px, 4vw, 48px);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        color: var(--rm-text);
+        margin: 0 0 20px;
+      }
+
+      .v2-cta p {
+        font-size: 16px;
+        font-weight: 300;
+        color: var(--rm-text-muted);
+        margin: 0 0 40px;
+      }
+
+      /* Footer */
+      .v2-footer {
+        padding: 24px 40px;
+        border-top: 1px solid var(--rm-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .v2-footer-note {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--rm-text-muted);
+      }
+
+      .v2-footer-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      .v2-footer-links a {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--rm-text-muted);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: color 0.2s;
+      }
+
+      .v2-footer-links a:hover { color: var(--rm-text); }
+    </style>
+  </Fragment>
+
+  <div class="v2">
+    <!-- Nav -->
+    <nav class="v2-nav">
+      <a href="/v2" class="v2-logo">Dewey</a>
+      <div class="v2-nav-links">
+        <a href="/docs" class="v2-nav-link">Docs</a>
+        <a href="https://www.npmjs.com/package/@arach/dewey" class="v2-nav-link" target="_blank" rel="noopener noreferrer">npm</a>
+        <a href="https://github.com/arach/dewey" class="v2-nav-link" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="v2-hero">
+      <span class="v2-hero-label">v0.3.0</span>
+
+      <h1>
+        Docs for<br />
+        <em>humans</em> &amp; machines.
+      </h1>
+
+      <p class="v2-hero-sub">
+        Audit, score, generate agent-ready files, and scaffold static doc sites from your markdown.
+      </p>
+
+      <div class="v2-hero-actions">
+        <a href="/docs/quickstart" class="v2-btn-primary">
+          Get Started
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="https://github.com/arach/dewey" class="v2-btn-secondary" target="_blank" rel="noopener noreferrer">
+          View Source
+        </a>
+      </div>
+
+      <div class="v2-install">
+        <div class="v2-install-box">
+          <span class="v2-install-cmd">$ <strong>pnpm add -D @arach/dewey</strong></span>
+          <button class="v2-copy-btn" id="v2-copy-btn">
+            <span id="v2-copy-text">Copy</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <hr class="v2-divider" />
+
+    <!-- Features -->
+    <section class="v2-section">
+      <div class="v2-section-header">
+        <p class="v2-section-label">Capabilities</p>
+        <h2 class="v2-section-title">One package,<br />everything you need.</h2>
+      </div>
+
+      <div class="v2-grid">
+        <div class="v2-card">
+          <p class="v2-card-number">01</p>
+          <h3>CLI Tools</h3>
+          <p>Scaffold, audit, generate agent-ready files, and create static doc sites from the command line.</p>
+          <ul class="v2-card-list">
+            <li>dewey init &mdash; scaffold docs</li>
+            <li>dewey generate &mdash; create AGENTS.md</li>
+            <li>dewey create &mdash; static Astro site</li>
+            <li>dewey audit &mdash; validate completeness</li>
+          </ul>
+        </div>
+
+        <div class="v2-card">
+          <p class="v2-card-number">02</p>
+          <h3>React Components</h3>
+          <p>Beautiful docs components. Layouts, code blocks, callouts, tabs, and more.</p>
+          <ul class="v2-card-list">
+            <li>Dark mode &amp; responsive</li>
+            <li>Syntax highlighting</li>
+            <li>Auto table of contents</li>
+            <li>Copy for Agent feature</li>
+          </ul>
+        </div>
+
+        <div class="v2-card">
+          <p class="v2-card-number">03</p>
+          <h3>Doc Site Generator</h3>
+          <p>Turn a folder of markdown into a complete static doc site. One command, zero config.</p>
+          <ul class="v2-card-list">
+            <li>Astro static HTML output</li>
+            <li>Pagefind search built in</li>
+            <li>8 color themes with dark mode</li>
+            <li>Auto-nav from frontmatter</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="v2-divider" />
+
+    <!-- Generated files -->
+    <section class="v2-section">
+      <div class="v2-section-header">
+        <p class="v2-section-label">Output</p>
+        <h2 class="v2-section-title">Generated agent files.</h2>
+      </div>
+
+      <div class="v2-files-grid">
+        <div class="v2-file-card">
+          <p class="v2-file-name">AGENTS.md</p>
+          <p class="v2-file-desc">Combined docs with critical context, entry points, and navigation rules for AI coding assistants.</p>
+        </div>
+        <div class="v2-file-card">
+          <p class="v2-file-name">llms.txt</p>
+          <p class="v2-file-desc">Plain text format following the llms.txt convention for broad LLM compatibility.</p>
+        </div>
+        <div class="v2-file-card">
+          <p class="v2-file-name">install.md</p>
+          <p class="v2-file-desc">LLM-executable installation guide following the installmd.org specification.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="v2-divider" />
+
+    <!-- CTA -->
+    <section class="v2-cta">
+      <h2>Ready to ship<br />better docs?</h2>
+      <p>Agent-ready documentation in minutes.</p>
+      <a href="/docs/quickstart" class="v2-btn-primary">
+        Read the Quickstart
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="v2-footer">
+      <span class="v2-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System</span>
+      <div class="v2-footer-links">
+        <a href="/docs">Docs</a>
+        <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">npm</a>
+        <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </footer>
+  </div>
+
+  <script is:inline>
+    document.getElementById('v2-copy-btn')?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText('pnpm add -D @arach/dewey')
+      const textEl = document.getElementById('v2-copy-text')
+      if (textEl) {
+        textEl.textContent = 'Copied!'
+        setTimeout(() => { textEl.textContent = 'Copy' }, 2000)
+      }
+    })
+  </script>
+</LandingLayout>

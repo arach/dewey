@@ -73,13 +73,13 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
       .v3-nav-left {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         gap: 44px;
       }
 
       .v3-logo {
         font-family: 'Noto Serif Display', serif;
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 400;
         color: var(--s-text);
         text-decoration: none;
@@ -166,7 +166,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero {
         background: var(--s-bg-inv);
         color: var(--s-text-inv);
-        padding: clamp(80px, 12vw, 160px) clamp(20px, 4vw, 48px) clamp(60px, 8vw, 100px);
+        padding: clamp(48px, 8vw, 100px) 0 clamp(40px, 5vw, 72px);
         position: relative;
         overflow: hidden;
       }
@@ -183,6 +183,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero-inner {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 clamp(20px, 4vw, 48px);
         position: relative;
         z-index: 1;
       }

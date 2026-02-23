@@ -544,23 +544,39 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-feature::after {
         content: '';
         position: absolute;
-        inset: -1px;
-        border: 1px solid transparent;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: transparent;
+        box-shadow: none;
         pointer-events: none;
-        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        z-index: -1;
+        transition: background 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      /* Extend left-column cells to the dashed line on the left */
+      .v3-feature:nth-child(odd)::after {
+        left: calc(-1 * clamp(20px, 4vw, 48px));
+      }
+      /* Extend right-column cells to the dashed line on the right */
+      .v3-feature:nth-child(even)::after {
+        right: calc(-1 * clamp(20px, 4vw, 48px));
       }
 
       .v3-feature:hover::after {
-        border-color: var(--s-border);
-        box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+        background: #f3f2ef;
+        box-shadow: inset 0 0 0 1px var(--s-border), 0 1px 8px rgba(0,0,0,0.03);
       }
 
       [data-theme='dark'] .v3-feature:hover::after {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        background: #191918;
+        box-shadow: inset 0 0 0 1px var(--s-border), 0 2px 12px rgba(0,0,0,0.15);
       }
 
       .v3-feature:hover .v3-feature-icon {
-        opacity: 0.7;
+        color: var(--s-highlight);
+        opacity: 0.85;
       }
 
       .v3-feature:hover .v3-feature-link {
@@ -592,6 +608,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         color: var(--s-text);
         opacity: 0.45;
         flex-shrink: 0;
+        transition: color 0.35s ease, opacity 0.35s ease;
       }
 
       .v3-feature h3 {
@@ -630,59 +647,9 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       }
 
       /* ── Files grid (dashed periphery matching features) ── */
+      /* ── Files grid — cells own their borders ── */
       .v3-files-wrap {
         position: relative;
-        overflow: hidden;
-      }
-
-      .v3-files-lines {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-      }
-
-      .v3-files-hline {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: repeating-linear-gradient(
-          to right,
-          var(--s-border) 0, var(--s-border) 6px,
-          transparent 6px, transparent 12px
-        );
-      }
-
-      .v3-files-hline-top { top: 0; }
-      .v3-files-hline-bot { bottom: 0; }
-
-      .v3-files-vline {
-        position: absolute;
-        top: 0;
-        height: 100%;
-        width: 1px;
-        background: repeating-linear-gradient(
-          to bottom,
-          var(--s-border) 0, var(--s-border) 6px,
-          transparent 6px, transparent 12px
-        );
-      }
-
-      .v3-files-vline-left { left: max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)); }
-      .v3-files-vline-r1 { left: calc(max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)) + min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px) / 3); }
-      .v3-files-vline-r2 { left: calc(max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)) + min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px) * 2 / 3); }
-      .v3-files-vline-right { right: max(clamp(20px, 4vw, 48px), calc((100% - 1200px) / 2)); }
-
-      .v3-files-dots {
-        position: absolute;
-        pointer-events: none;
-        z-index: 3;
-        max-width: 1200px;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 0;
-        bottom: 0;
-        width: min(calc(100% - clamp(20px, 4vw, 48px) * 2), 1200px);
       }
 
       .v3-files {
@@ -697,19 +664,92 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
       @media (max-width: 768px) {
         .v3-files { grid-template-columns: 1fr; }
-        .v3-files-vline-r1, .v3-files-vline-r2 { display: none; }
       }
 
       .v3-file {
         padding: clamp(28px, 3vw, 40px);
-        transition: background 0.3s ease;
+        position: relative;
+        z-index: 1;
+        /* Dashed borders via background-image — matches 6px/6px pattern */
+        background-image:
+          /* left */
+          repeating-linear-gradient(to bottom, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px),
+          /* top */
+          repeating-linear-gradient(to right, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px),
+          /* bottom */
+          repeating-linear-gradient(to right, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px);
+        background-size: 1px 100%, 100% 1px, 100% 1px;
+        background-position: left top, left top, left bottom;
+        background-repeat: no-repeat;
       }
 
-      .v3-file:first-child { padding-left: 0; }
-      .v3-file:last-child { padding-right: 0; }
+      .v3-file:last-child {
+        /* Add right border too */
+        background-image:
+          repeating-linear-gradient(to bottom, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px),
+          repeating-linear-gradient(to right, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px),
+          repeating-linear-gradient(to right, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px),
+          repeating-linear-gradient(to bottom, var(--s-border) 0, var(--s-border) 6px, transparent 6px, transparent 12px);
+        background-size: 1px 100%, 100% 1px, 100% 1px, 1px 100%;
+        background-position: left top, left top, left bottom, right top;
+        background-repeat: no-repeat;
+      }
 
-      .v3-file:hover {
-        background: var(--s-surface);
+      /* Dots at corners — each cell places top-left + bottom-left */
+      .v3-file::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--s-border);
+        pointer-events: none;
+        z-index: 4;
+        box-shadow: 0 calc(100% + 0px) 0 var(--s-border);
+      }
+
+      /* Last cell also needs top-right + bottom-right dots */
+      .v3-file:last-child::before {
+        box-shadow:
+          0 calc(100% + 0px) 0 var(--s-border),
+          calc(100% + 0px) 0 0 var(--s-border),
+          calc(100% + 0px) calc(100% + 0px) 0 var(--s-border);
+      }
+
+      /* Hover overlay — covers the cell, masks gradient borders */
+      .v3-file::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: transparent;
+        box-shadow: none;
+        pointer-events: none;
+        z-index: 2;
+        transition: background 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      .v3-file:hover::after {
+        background: #f3f2ef;
+        box-shadow: inset 0 0 0 1px var(--s-border);
+      }
+
+      [data-theme='dark'] .v3-file:hover::after {
+        background: #191918;
+      }
+
+      .v3-file:hover .v3-file-name {
+        color: var(--s-highlight);
+      }
+
+      .v3-file-name,
+      .v3-file-desc {
+        position: relative;
+        z-index: 3;
       }
 
       .v3-file-name {
@@ -733,8 +773,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-cta {
         background: var(--s-bg-inv);
         color: var(--s-text-inv);
-        margin: 0 clamp(20px, 4vw, 48px);
-        border-radius: 10px;
+        margin: 0;
         padding: clamp(64px, 8vw, 100px) clamp(32px, 5vw, 80px);
         text-align: center;
         position: relative;
@@ -783,6 +822,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 16px;
+        border-top: 1px solid var(--s-border);
       }
 
       .v3-footer-note {
@@ -1303,26 +1343,6 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     </section>
 
     <div class="v3-files-wrap">
-      <div class="v3-files-lines">
-        <div class="v3-files-hline v3-files-hline-top"></div>
-        <div class="v3-files-hline v3-files-hline-bot"></div>
-        <div class="v3-files-vline v3-files-vline-left"></div>
-        <div class="v3-files-vline v3-files-vline-r1"></div>
-        <div class="v3-files-vline v3-files-vline-r2"></div>
-        <div class="v3-files-vline v3-files-vline-right"></div>
-      </div>
-
-      <div class="v3-files-dots">
-        <span class="v3-dot" style="top: -4px; left: -4px;"></span>
-        <span class="v3-dot" style="top: -4px; left: calc(100% / 3 - 4px);"></span>
-        <span class="v3-dot" style="top: -4px; left: calc(200% / 3 - 4px);"></span>
-        <span class="v3-dot" style="top: -4px; right: -4px;"></span>
-        <span class="v3-dot" style="bottom: -4px; left: -4px;"></span>
-        <span class="v3-dot" style="bottom: -4px; left: calc(100% / 3 - 4px);"></span>
-        <span class="v3-dot" style="bottom: -4px; left: calc(200% / 3 - 4px);"></span>
-        <span class="v3-dot" style="bottom: -4px; right: -4px;"></span>
-      </div>
-
       <div class="v3-files">
         <div class="v3-file">
           <p class="v3-file-name">AGENTS.md</p>
@@ -1340,19 +1360,16 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     </div>
 
     <!-- CTA -->
-    <div style="padding-bottom: clamp(60px, 8vw, 100px);">
-      <section class="v3-cta">
-        <h2>Crafted docs<br/>for <em class="v3-rotate" data-words="devs.,agents." style="font-style: italic;">devs.</em></h2>
-        <p>Agent-ready documentation in minutes.</p>
-        <a href="/docs/quickstart" class="v3-btn-light" style="position: relative;">
-          Read the Quickstart
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </section>
-    </div>
+    <section class="v3-cta">
+      <h2>Crafted docs<br/>for <em class="v3-rotate" data-words="devs.,agents." style="font-style: italic;">devs.</em></h2>
+      <p>Agent-ready documentation in minutes.</p>
+      <a href="/docs/quickstart" class="v3-btn-light" style="position: relative;">
+        Read the Quickstart
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </section>
 
     <!-- Footer -->
-    <hr class="v3-divider" />
     <footer class="v3-footer">
       <span class="v3-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System. Made with ❤️ by <a href="https://github.com/arach" target="_blank" rel="noopener noreferrer" style="color: var(--s-text-muted); text-decoration: underline; text-underline-offset: 2px;">arach</a></span>
       <div class="v3-footer-links">

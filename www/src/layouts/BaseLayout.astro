@@ -9,6 +9,11 @@ const { title = 'Dewey' } = Astro.props
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content="Documentation toolkit for AI-agent-ready docs" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content="Documentation toolkit for AI-agent-ready docs" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/og.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

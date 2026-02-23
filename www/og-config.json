@@ -1,0 +1,87 @@
+[
+  {
+    "template": "branded",
+    "title": "Dewey",
+    "subtitle": "Agent-ready documentation toolkit. Audit, score, and generate optimized docs.",
+    "tag": "Open Source",
+    "accent": "#c4653a",
+    "accentSecondary": "#8b5a3c",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:ital,wght@0,300;1,300",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og.png"
+  },
+  {
+    "template": "docs",
+    "title": "Documentation",
+    "subtitle": "Guides, references, and tutorials for the Dewey toolkit",
+    "tag": "Docs",
+    "accent": "#c4653a",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:wght@300;400",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og-docs.png"
+  },
+  {
+    "template": "docs",
+    "title": "Agent API",
+    "subtitle": "Machine-readable endpoints for AI coding assistants",
+    "tag": "Agents",
+    "accent": "#c4653a",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:wght@300;400",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og-agents.png"
+  },
+  {
+    "template": "docs",
+    "title": "AGENTS.md",
+    "subtitle": "Combined docs with critical context and navigation rules for AI assistants",
+    "tag": "Agent File",
+    "accent": "#c4653a",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:wght@300;400",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og-agents-md.png"
+  },
+  {
+    "template": "docs",
+    "title": "llms.txt",
+    "subtitle": "Plain text format following the llms.txt convention for broad LLM compatibility",
+    "tag": "Agent File",
+    "accent": "#c4653a",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:wght@300;400",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og-llms-txt.png"
+  },
+  {
+    "template": "docs",
+    "title": "install.md",
+    "subtitle": "LLM-executable installation guide following the installmd.org specification",
+    "tag": "Agent File",
+    "accent": "#c4653a",
+    "background": "#f6f5f2",
+    "textColor": "#2a2a28",
+    "fonts": [
+      "Noto Serif Display:wght@300;400",
+      "Inter:wght@400;500"
+    ],
+    "output": "public/og-install-md.png"
+  }
+]

@@ -21,6 +21,11 @@ const tocHeadings = headings.filter((h: any) => h.depth >= 2 && h.depth <= 3)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} - Dewey</title>
+    <meta name="description" content={description || 'Documentation for the Dewey agent-ready documentation toolkit'} />
+    <meta property="og:title" content={`${title} - Dewey`} />
+    <meta property="og:description" content={description || 'Documentation for the Dewey agent-ready documentation toolkit'} />
+    <meta property="og:image" content="/og-docs.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/og.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

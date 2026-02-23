@@ -2,7 +2,7 @@
 import '../styles/global.css'
 import { navGroups } from '../lib/nav'
 
-const { title, fileName, content, rawPath, ogImage } = Astro.props
+const { title, fileName, content, rawPath, ogImage, renderable = false } = Astro.props
 
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
 ---
@@ -271,6 +271,51 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       }
 
       .af-footer-text a:hover { color: var(--color-text); }
+
+      /* ── View toggle ── */
+      .af-view-toggle {
+        display: inline-flex;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .af-view-toggle button {
+        padding: 7px 14px;
+        background: none;
+        border: none;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .af-view-toggle button + button {
+        border-left: 1px solid var(--color-border);
+      }
+
+      .af-view-toggle button:hover { color: var(--color-text); }
+
+      .af-view-toggle button.active {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+        font-weight: 500;
+      }
+
+      /* ── Rendered markdown view ── */
+      .af-rendered {
+        padding: 20px 24px;
+        max-height: 75vh;
+        overflow-y: auto;
+      }
+
+      .af-rendered.hidden,
+      .af-pre.hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -326,6 +371,12 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
               <h1 class="af-file-name">{fileName}</h1>
             </div>
             <div class="af-actions">
+              {renderable && (
+                <div class="af-view-toggle" id="af-view-toggle">
+                  <button class="active" data-view="rendered">Rendered</button>
+                  <button data-view="source">Source</button>
+                </div>
+              )}
               <button class="af-btn af-btn-primary" id="af-copy-all">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 Copy all
@@ -345,7 +396,14 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
                 <span>{(new TextEncoder().encode(content).length / 1024).toFixed(1)} KB</span>
               </span>
             </div>
-            <pre class="af-pre" id="af-content">{content}</pre>
+            {renderable ? (
+              <Fragment>
+                <div class="af-rendered doc-content" id="af-rendered"><slot /></div>
+                <pre class="af-pre hidden" id="af-source">{content}</pre>
+              </Fragment>
+            ) : (
+              <pre class="af-pre" id="af-content">{content}</pre>
+            )}
           </div>
 
           <footer class="af-footer">
@@ -357,7 +415,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       </div>
     </div>
 
-    <script is:inline>
+    <script is:inline define:vars={{ content, renderable }}>
       // Theme
       const th = (b) => b?.addEventListener('click', () => {
         const c = document.documentElement.getAttribute('data-theme') || 'light'
@@ -368,11 +426,32 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
       th(document.getElementById('af-theme-toggle'))
       th(document.getElementById('af-theme-toggle-m'))
 
-      // Copy all
+      // View toggle
+      if (renderable) {
+        const toggle = document.getElementById('af-view-toggle')
+        const rendered = document.getElementById('af-rendered')
+        const source = document.getElementById('af-source')
+        toggle?.addEventListener('click', (e) => {
+          const btn = e.target.closest('button')
+          if (!btn) return
+          const view = btn.dataset.view
+          toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'))
+          btn.classList.add('active')
+          if (view === 'rendered') {
+            rendered?.classList.remove('hidden')
+            source?.classList.add('hidden')
+          } else {
+            rendered?.classList.add('hidden')
+            source?.classList.remove('hidden')
+          }
+        })
+      }
+
+      // Copy all — always copies raw markdown text
       document.getElementById('af-copy-all')?.addEventListener('click', async function() {
-        const content = document.getElementById('af-content')?.textContent
-        if (content) {
-          await navigator.clipboard.writeText(content)
+        const text = content
+        if (text) {
+          await navigator.clipboard.writeText(text)
           this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!'
           setTimeout(() => {
             this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy all'

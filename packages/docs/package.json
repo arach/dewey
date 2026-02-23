@@ -1,6 +1,6 @@
 {
   "name": "@arach/dewey",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Documentation toolkit with CLI and React components for agent-ready docs",
   "type": "module",
   "main": "./dist/index.js",
@@ -65,6 +65,18 @@
     "./css/colors/warm.css": {
       "style": "./dist/css/colors/warm.css",
       "default": "./dist/css/colors/warm.css"
+    },
+    "./css/colors/midnight.css": {
+      "style": "./dist/css/colors/midnight.css",
+      "default": "./dist/css/colors/midnight.css"
+    },
+    "./css/colors/editorial.css": {
+      "style": "./dist/css/colors/editorial.css",
+      "default": "./dist/css/colors/editorial.css"
+    },
+    "./css/colors/mono.css": {
+      "style": "./dist/css/colors/mono.css",
+      "default": "./dist/css/colors/mono.css"
     },
     "./styles": {
       "style": "./dist/css/index.css",

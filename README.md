@@ -124,6 +124,7 @@ Skills are LLM prompts that guide agents through specific tasks:
 | Skill | Purpose |
 |-------|---------|
 | `docsReviewAgent` | Review docs quality, catch drift from codebase |
+| `docsDesignCritic` | Critique page structure — heading hierarchy, component usage, visual rhythm |
 | `promptSlideoutGenerator` | Generate AI-consumable prompt configs |
 | `installMdGenerator` | Create LLM-executable installation |
 

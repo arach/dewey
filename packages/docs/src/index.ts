@@ -109,6 +109,13 @@ export { docsReviewAgent } from './skills/docs-review-agent'
 export type { DocsReviewResult } from './skills/docs-review-agent'
 
 // ============================================
+// Docs Design Critic
+// ============================================
+
+export { docsDesignCritic } from './skills/docs-design-critic'
+export type { DocsDesignCritiqueResult } from './skills/docs-design-critic'
+
+// ============================================
 // Install.md Generator (installmd.org standard)
 // ============================================
 

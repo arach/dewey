@@ -62,6 +62,7 @@ Each documentation page should have two versions:
 Skills are LLM prompts, not code. Built-in skills:
 
 - `docsReviewAgent` - Reviews docs quality page-by-page
+- `docsDesignCritic` - Critiques page structure and visual design
 - `promptSlideoutGenerator` - Generates AI-consumable prompt configs
 - `installMdGenerator` - Creates install.md following installmd.org
 

@@ -247,6 +247,16 @@ const prompt = docsReviewAgent.reviewPage
   .replace('{OUTPUT_FILE}', '.dewey/reviews/api.md')
 ```
 
+### docsDesignCritic
+Critiques page structure and visual design — heading hierarchy, information density, component usage, visual rhythm, reading flow:
+```typescript
+import { docsDesignCritic } from '@arach/dewey'
+
+const prompt = docsDesignCritic.critiquePage
+  .replace('{DOC_FILE}', 'docs/quickstart.md')
+  .replace('{OUTPUT_FILE}', '.dewey/reviews/quickstart-design.md')
+```
+
 ### installMdGenerator
 Generates install.md files following installmd.org standard.
 

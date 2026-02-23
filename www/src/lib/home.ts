@@ -25,7 +25,7 @@ export const homeGroups: HomeGroup[] = [
       },
       {
         title: 'Skills',
-        description: 'LLM prompt templates for docs review.',
+        description: 'LLM prompt templates for docs review and design critique.',
         href: '/docs/skills',
       },
       {

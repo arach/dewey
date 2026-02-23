@@ -29,6 +29,7 @@ Documentation toolkit that generates AI-agent-ready files (AGENTS.md, llms.txt, 
 | Skill | Purpose |
 |-------|---------|
 | docsReviewAgent | Review quality, catch drift |
+| docsDesignCritic | Critique page structure and visual design |
 | promptSlideoutGenerator | Generate prompt configs |
 | installMdGenerator | Create install.md |
 

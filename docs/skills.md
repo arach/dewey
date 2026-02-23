@@ -1,56 +1,35 @@
 ---
 title: Skills
-description: Built-in LLM prompt templates
+description: Expert instructions that guide AI agents through specific documentation tasks
 order: 4
 ---
 
-# Skills
-
-Skills are LLM prompts that guide AI agents through specific tasks. They're not code - they're expert instructions.
+Skills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.
 
 ## Built-in Skills
 
-### docsReviewAgent
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `docsReviewAgent` | Reviews doc quality page-by-page — catches stale content, missing sections, unclear explanations, broken links | `Use the docsReviewAgent skill to review docs/overview.md` |
+| `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |
+| `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |
+| `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |
 
-Reviews documentation quality page-by-page. Catches:
-- Stale content that doesn't match code
-- Missing sections
-- Unclear explanations
-- Broken links
-
-**Usage:**
-```
-Use the docsReviewAgent skill to review docs/overview.md
-```
-
-### promptSlideoutGenerator
-
-Generates AI-consumable prompt configurations for documentation pages.
-
-**Usage:**
-```
-Use promptSlideoutGenerator to create prompt config for the API page
-```
-
-### installMdGenerator
-
-Creates install.md files following the [installmd.org](https://installmd.org) specification.
-
-**Usage:**
-```
-Use installMdGenerator to create install.md from dewey.config.ts
-```
+---
 
 ## Creating Custom Skills
 
-Skills live in `.claude/skills/` as markdown files:
+Skills live as markdown files in your project:
 
 ```
 .claude/skills/
   my-skill.md
 ```
 
-### Skill Structure
+Each skill follows a consistent structure:
+
+<div class="doc-file-block">
+<div class="doc-file-bar">my-skill.md</div>
 
 ```markdown
 # Skill Name
@@ -75,7 +54,9 @@ Step-by-step guide for the AI agent:
 Show an example input and expected output.
 ```
 
-## Skill Best Practices
+</div>
+
+## Best Practices
 
 | Do | Don't |
 |----|-------|

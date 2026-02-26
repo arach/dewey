@@ -1,0 +1,54 @@
+/*
+ * Hudson — dark-only theme with emerald accent and monospace headings.
+ * Applied via data-theme="hudson" on <html>.
+ */
+
+:root[data-theme='hudson'] {
+  color-scheme: dark;
+
+  /* Colors */
+  --color-bg: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-muted: #1a1a1a;
+  --color-border: #262626;
+  --color-text: #e5e5e5;
+  --color-text-muted: #737373;
+  --color-accent: #34d399;
+  --color-accent-strong: #34d399;
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.4);
+
+  /* Typography */
+  --heading-font: 'Geist Mono', ui-monospace, monospace;
+  --heading-letter-spacing: 0.025em;
+  --prose-font-size: 15px;
+
+  /* h2: border-bottom instead of border-top */
+  --h2-border-top: none;
+  --h2-border-bottom: 1px solid var(--color-border);
+  --h2-padding-top: 0;
+  --h2-padding-bottom: 0.75rem;
+
+  /* h3: emerald accent */
+  --h3-color: #34d399;
+
+  /* Inline code: emerald tint */
+  --inline-code-bg: rgba(52, 211, 153, 0.08);
+  --inline-code-color: #34d399;
+
+  /* Code blocks */
+  --code-block-bg: #121212;
+  --code-block-bg-dark: #121212;
+
+  /* Layout */
+  --sidebar-width: 260px;
+}
+
+/* Hudson always uses dark Shiki colors */
+:root[data-theme='hudson'] .doc-content pre span[style] {
+  color: var(--shiki-dark) !important;
+}
+
+/* Hudson code block border override */
+:root[data-theme='hudson'] .doc-content pre {
+  border-color: #1e1e1e;
+}

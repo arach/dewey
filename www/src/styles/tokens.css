@@ -15,6 +15,25 @@
     --sidebar-width: 260px;
     --toc-width: 220px;
     --content-max: 760px;
+    --prose-font-size: 13px;
+    --prose-code-font-size: 13px;
+
+    /* Headings */
+    --heading-font: 'Noto Serif Display', Georgia, serif;
+    --heading-letter-spacing: -0.02em;
+    --h2-border-top: 1px solid var(--color-border);
+    --h2-border-bottom: none;
+    --h2-padding-top: 1.5rem;
+    --h2-padding-bottom: 0;
+    --h3-color: var(--color-text);
+
+    /* Inline code */
+    --inline-code-bg: var(--color-surface-muted);
+    --inline-code-color: inherit;
+
+    /* Code blocks */
+    --code-block-bg: #ffffff;
+    --code-block-bg-dark: #232321;
   }
 
   [data-theme='dark'] {

@@ -1,24 +1,34 @@
 /**
- * Dewey Emerald Color Preset
- * Green-accented theme for a fresh, natural feel
+ * Dewey Mono Color Preset
+ * Ultra-clean monochrome, Vercel-style
+ * True black & white with near-zero saturation
+ * Single accent color (#0070f3) — only color in the theme
+ * Inspiration: Vercel docs, Next.js docs
  */
 
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
 :root {
+  /* Fonts */
+  --font-dw-sans: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --font-dw-mono: 'Geist Mono', 'SF Mono', monospace;
+
   /* ─── Core Colors ────────────────────────────────────────────────────── */
-  --dw-background: hsl(150, 10%, 98%);
-  --dw-foreground: hsl(150, 20%, 10%);
-  --dw-primary: hsl(158, 64%, 42%);
-  --dw-primary-foreground: hsl(0, 0%, 100%);
-  --dw-secondary: hsl(150, 15%, 94%);
-  --dw-secondary-foreground: hsl(150, 20%, 10%);
-  --dw-muted: hsl(150, 10%, 94%);
-  --dw-muted-foreground: hsl(150, 10%, 45%);
-  --dw-accent: hsl(150, 20%, 92%);
-  --dw-accent-foreground: hsl(150, 20%, 10%);
+  --dw-background: #ffffff;
+  --dw-foreground: #000000;
+  --dw-primary: #0070f3;
+  --dw-primary-foreground: #ffffff;
+  --dw-secondary: #fafafa;
+  --dw-secondary-foreground: #171717;
+  --dw-muted: #fafafa;
+  --dw-muted-foreground: #666666;
+  --dw-accent: rgba(0, 112, 243, 0.06);
+  --dw-accent-foreground: #0070f3;
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
-  --dw-border: hsl(150, 10%, 88%);
-  --dw-ring: hsl(158, 64%, 42%);
+  --dw-border: #eaeaea;
+  --dw-ring: #0070f3;
 
   /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
   --color-dw-background: var(--dw-background);
@@ -32,17 +42,18 @@
   --color-dw-accent: var(--dw-accent);
   --color-dw-accent-foreground: var(--dw-accent-foreground);
   --color-dw-border: var(--dw-border);
+  --color-dw-border-subtle: rgba(0, 0, 0, 0.06);
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: oklch(62.3% 0.214 259.815);
-  --dw-info-foreground: hsl(0, 0%, 100%);
-  --dw-warning: oklch(76.9% 0.188 70.08);
-  --dw-warning-foreground: hsl(0, 0%, 9%);
-  --dw-error: oklch(63.7% 0.237 25.331);
-  --dw-error-foreground: hsl(0, 0%, 100%);
-  --dw-success: oklch(72.3% 0.219 149.579);
-  --dw-success-foreground: hsl(0, 0%, 100%);
+  --dw-info: #0070f3;
+  --dw-info-foreground: #ffffff;
+  --dw-warning: #f5a623;
+  --dw-warning-foreground: #000000;
+  --dw-error: #e00;
+  --dw-error-foreground: #ffffff;
+  --dw-success: #0070f3;
+  --dw-success-foreground: #ffffff;
 
   --color-dw-info: var(--dw-info);
   --color-dw-info-foreground: var(--dw-info-foreground);
@@ -54,51 +65,66 @@
   --color-dw-success-foreground: var(--dw-success-foreground);
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
-  --dw-code-bg: hsl(150, 15%, 96%);
-  --dw-code-border: hsl(150, 10%, 88%);
+  --dw-code-bg: #fafafa;
+  --dw-code-border: #eaeaea;
   --color-dw-code-bg: var(--dw-code-bg);
   --color-dw-code-border: var(--dw-code-border);
 
   /* ─── Sidebar ────────────────────────────────────────────────────────── */
-  --dw-sidebar-bg: hsl(150, 15%, 97%);
-  --dw-sidebar-border: hsl(150, 10%, 90%);
-  --dw-sidebar-active: hsl(158, 64%, 42%);
-  --dw-sidebar-active-bg: hsl(158, 64%, 95%);
+  --dw-sidebar-bg: #ffffff;
+  --dw-sidebar-border: #eaeaea;
+  --dw-sidebar-active: #000000;
+  --dw-sidebar-active-bg: #fafafa;
   --color-dw-sidebar-bg: var(--dw-sidebar-bg);
   --color-dw-sidebar-border: var(--dw-sidebar-border);
   --color-dw-sidebar-active: var(--dw-sidebar-active);
   --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
 
   /* ─── Header ─────────────────────────────────────────────────────────── */
-  --dw-header-bg: hsla(150, 10%, 98%, 0.95);
-  --dw-header-border: hsla(150, 20%, 10%, 0.06);
+  --dw-header-bg: rgba(255, 255, 255, 0.8);
+  --dw-header-border: #eaeaea;
+  --color-dw-header-bg: var(--dw-header-bg);
+  --color-dw-header-border: var(--dw-header-border);
+
+  /* Card */
+  --color-dw-card-bg: #ffffff;
+  --color-dw-card-border: #eaeaea;
+  --color-dw-card-shadow: none;
+  --color-dw-card-icon-bg: #fafafa;
 }
 
-/* ─── Dark Mode ────────────────────────────────────────────────────────── */
+/* ─── Dark Mode — true black, OLED-friendly ───────────────────────────── */
 .dark,
 [data-theme="dark"] {
-  --dw-background: hsl(155, 25%, 7%);
-  --dw-foreground: hsl(150, 15%, 93%);
-  --dw-primary: hsl(158, 64%, 52%);
-  --dw-primary-foreground: hsl(0, 0%, 100%);
-  --dw-secondary: hsl(155, 20%, 13%);
-  --dw-secondary-foreground: hsl(150, 15%, 93%);
-  --dw-muted: hsl(155, 15%, 15%);
-  --dw-muted-foreground: hsl(150, 10%, 60%);
-  --dw-accent: hsl(155, 20%, 17%);
-  --dw-accent-foreground: hsl(150, 15%, 93%);
+  --dw-background: #000000;
+  --dw-foreground: #ededed;
+  --dw-primary: #0070f3;
+  --dw-primary-foreground: #ffffff;
+  --dw-secondary: #111111;
+  --dw-secondary-foreground: #ededed;
+  --dw-muted: #111111;
+  --dw-muted-foreground: #888888;
+  --dw-accent: rgba(0, 112, 243, 0.1);
+  --dw-accent-foreground: #0070f3;
 
-  --dw-border: hsl(155, 15%, 20%);
-  --dw-ring: hsl(158, 64%, 42%);
+  --dw-border: #333333;
+  --dw-ring: #0070f3;
+  --color-dw-border-subtle: rgba(255, 255, 255, 0.06);
 
-  --dw-code-bg: hsl(155, 20%, 11%);
-  --dw-code-border: hsl(155, 15%, 18%);
+  --dw-code-bg: #111111;
+  --dw-code-border: #333333;
 
-  --dw-sidebar-bg: hsl(155, 25%, 9%);
-  --dw-sidebar-border: hsl(155, 15%, 15%);
-  --dw-sidebar-active: hsl(158, 64%, 52%);
-  --dw-sidebar-active-bg: hsl(158, 50%, 15%);
+  --dw-sidebar-bg: #000000;
+  --dw-sidebar-border: #333333;
+  --dw-sidebar-active: #ededed;
+  --dw-sidebar-active-bg: #111111;
 
-  --dw-header-bg: hsla(155, 25%, 7%, 0.9);
-  --dw-header-border: hsla(150, 15%, 93%, 0.08);
+  --dw-header-bg: rgba(0, 0, 0, 0.8);
+  --dw-header-border: #333333;
+
+  /* Card */
+  --color-dw-card-bg: #111111;
+  --color-dw-card-border: #333333;
+  --color-dw-card-shadow: none;
+  --color-dw-card-icon-bg: #111111;
 }

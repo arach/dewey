@@ -1,0 +1,325 @@
+---
+import '../../styles/global.css'
+import '../../styles/themes/splitpane.css'
+import { navGroups } from '../../lib/nav'
+import { highlight } from '../../lib/highlight'
+import { splitpaneSections } from '../../data/sample-snippets'
+import PreviewBanner from '../../components/PreviewBanner.astro'
+import PreviewScripts from '../../components/PreviewScripts.astro'
+
+const title = 'Getting Started'
+
+// Build highlighted HTML from plain-text snippets
+const sections = await Promise.all(
+  splitpaneSections.map(async (s) => ({
+    ...s,
+    highlightedCode: await Promise.all(
+      s.codeSnippets.map((c) => highlight(c.code, c.lang))
+    ),
+  }))
+)
+---
+<!doctype html>
+<html lang="en" data-theme="splitpane">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Split Pane Template - Dewey</title>
+    <meta name="description" content="Preview the Split Pane theme for Dewey documentation" />
+    <link rel="icon" type="image/png" href="/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body style="padding-top: var(--preview-bar-h, 36px);">
+    <PreviewBanner templateName="splitpane" displayName="Split Pane" />
+    <div class="sp-layout">
+      <!-- Narrow sidebar -->
+      <aside class="sp-sidebar" data-pagefind-ignore>
+        <div class="sp-sidebar-header">
+          <a href="/templates/splitpane" class="sp-logo">ACME</a>
+        </div>
+
+        <div class="sp-sidebar-body">
+          {navGroups.map((group) => (
+            <nav class="sp-nav-group">
+              <p class="sp-nav-label">{group.title}</p>
+              {group.items.map((item) => (
+                <a
+                  href="#"
+                  class={`sp-nav-item ${item.title === 'Getting Started' ? 'active' : ''}`}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </nav>
+          ))}
+        </div>
+      </aside>
+
+      <!-- Main content area -->
+      <main class="sp-main">
+        <!-- Page title row -->
+        <div class="sp-title-row">
+          <div class="sp-title-prose">
+            <h1 class="sp-page-title">{title}</h1>
+          </div>
+          <div class="sp-title-code"></div>
+        </div>
+
+        <!-- Section rows -->
+        {sections.map((section) => (
+          <div class="sp-section" id={section.id}>
+            <div class="sp-prose">
+              <h2 class="sp-heading">{section.heading}</h2>
+              <div set:html={section.prose} />
+            </div>
+            <div class="sp-code">
+              <div class="doc-content">
+                {section.highlightedCode.map((html) => (
+                  <Fragment set:html={html} />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <!-- Footer row -->
+        <div class="sp-footer-row">
+          <div class="sp-footer-prose">
+            <footer class="sp-footer">
+              <span class="sp-footer-text">
+                <a href="/">dewey</a> &mdash; agent-ready documentation
+              </span>
+            </footer>
+          </div>
+          <div class="sp-footer-code"></div>
+        </div>
+      </main>
+    </div>
+
+    <style is:inline>
+      body {
+        margin: 0;
+        background: var(--sp-prose-bg, #fafaf9);
+        color: var(--color-text);
+        font-family: var(--body-font, 'Source Sans 3', -apple-system, sans-serif);
+      }
+      * { box-sizing: border-box; }
+
+      .sp-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sp-sidebar {
+        width: var(--sp-sidebar-width, 240px);
+        flex-shrink: 0;
+        background: var(--color-surface);
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: var(--preview-bar-h, 36px);
+        height: calc(100vh - var(--preview-bar-h, 36px));
+        overflow-y: auto;
+      }
+      @media (max-width: 1024px) {
+        .sp-sidebar { display: none; }
+      }
+      .sp-sidebar-header {
+        padding: 20px 20px;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .sp-logo {
+        font-family: var(--heading-font);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--color-text);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+      }
+      .sp-sidebar-body {
+        padding: 16px 12px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .sp-nav-group { display: flex; flex-direction: column; gap: 1px; }
+      .sp-nav-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
+        margin: 0 0 6px;
+        padding: 0 8px;
+      }
+      .sp-nav-item {
+        display: block;
+        padding: 6px 8px;
+        border-radius: 5px;
+        font-size: 13.5px;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .sp-nav-item:hover {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+      }
+      .sp-nav-item.active {
+        background: rgba(139, 92, 246, 0.08);
+        color: var(--color-accent);
+        font-weight: 500;
+      }
+
+      /* Main */
+      .sp-main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* Title row */
+      .sp-title-row {
+        display: flex;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .sp-title-prose {
+        flex: 55%;
+        padding: 2.5rem 3rem 2rem;
+        background: var(--sp-prose-bg);
+      }
+      .sp-title-code {
+        flex: 45%;
+        background: var(--sp-code-bg, #1e1e2e);
+      }
+      .sp-page-title {
+        font-family: var(--heading-font);
+        font-size: clamp(24px, 3vw, 32px);
+        font-weight: 700;
+        letter-spacing: var(--heading-letter-spacing);
+        margin: 0;
+        color: var(--color-text);
+      }
+
+      /* Section rows */
+      .sp-section {
+        display: flex;
+        border-bottom: 1px solid var(--color-border);
+        min-height: 0;
+      }
+      .sp-prose {
+        flex: 55%;
+        padding: 2rem 3rem;
+        background: var(--sp-prose-bg);
+      }
+      .sp-prose p {
+        font-size: var(--prose-font-size, 15.5px);
+        line-height: 1.7;
+        color: var(--color-text);
+        margin: 0 0 1rem;
+      }
+      .sp-prose p:last-child { margin-bottom: 0; }
+      .sp-prose code {
+        font-family: var(--code-font, 'Fira Code', monospace);
+        font-size: 0.875em;
+        background: var(--inline-code-bg);
+        color: var(--inline-code-color);
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+      }
+      .sp-heading {
+        font-family: var(--heading-font);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: var(--heading-letter-spacing);
+        color: var(--color-text);
+        margin: 0 0 1rem;
+      }
+
+      /* Code pane */
+      .sp-code {
+        flex: 45%;
+        background: var(--sp-code-bg, #1e1e2e);
+        padding: 2rem 2rem;
+        display: flex;
+        align-items: flex-start;
+        overflow-x: auto;
+      }
+      .sp-code .doc-content {
+        width: 100%;
+      }
+      .sp-code .doc-content pre {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+      .sp-code .doc-content pre code {
+        font-family: var(--code-font, 'Fira Code', monospace);
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--sp-code-text, #cdd6f4);
+      }
+      /* Force dark Shiki colors in code pane */
+      .sp-code .doc-content pre span[style] {
+        color: var(--shiki-dark) !important;
+      }
+
+      /* Footer */
+      .sp-footer-row {
+        display: flex;
+      }
+      .sp-footer-prose {
+        flex: 55%;
+        padding: 1.5rem 3rem 3rem;
+        background: var(--sp-prose-bg);
+      }
+      .sp-footer-code {
+        flex: 45%;
+        background: var(--sp-code-bg, #1e1e2e);
+      }
+      .sp-footer {
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-border);
+      }
+      .sp-footer-text {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+      .sp-footer-text a {
+        color: var(--color-text-muted);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .sp-footer-text a:hover { color: var(--color-text); }
+
+      /* Responsive: stack on small screens */
+      @media (max-width: 768px) {
+        .sp-title-row,
+        .sp-section,
+        .sp-footer-row {
+          flex-direction: column;
+        }
+        .sp-title-prose,
+        .sp-prose,
+        .sp-footer-prose {
+          flex: none;
+          padding: 1.5rem;
+        }
+        .sp-title-code,
+        .sp-code,
+        .sp-footer-code {
+          flex: none;
+          padding: 1.5rem;
+        }
+      }
+    </style>
+
+    <PreviewScripts templateName="splitpane" enableTocTracking={false} />
+  </body>
+</html>

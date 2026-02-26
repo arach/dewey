@@ -1,8 +1,4 @@
-# Create Agent-Optimized Documentation
-
 Use this prompt to convert human documentation to agent-optimized format.
-
-## Prompt
 
 ```
 Convert this documentation to agent-optimized format (.agent.md):
@@ -23,16 +19,24 @@ Requirements for agent-optimized version:
 Output the .agent.md content.
 ```
 
-## Example Transformation
+---
 
-Human version:
+## Example
+
+<div class="doc-file-block">
+<div class="doc-file-bar">Human-readable docs</div>
+
 ```markdown
 The `init` command helps you get started with Dewey. It creates
 the necessary configuration files and folder structure. You'll
 want to run this first before using other commands.
 ```
 
-Agent version:
+</div>
+
+<div class="doc-file-block">
+<div class="doc-file-bar">Agent-optimized output</div>
+
 ```markdown
 ## init
 
@@ -43,3 +47,5 @@ Agent version:
 | Creates | dewey.config.ts, docs/ |
 | Prereqs | None |
 ```
+
+</div>

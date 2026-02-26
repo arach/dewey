@@ -1,0 +1,434 @@
+---
+import '../../styles/global.css'
+import '../../styles/themes/hudson.css'
+import { navGroups } from '../../lib/nav'
+import { highlight } from '../../lib/highlight'
+import { standardSections, tocHeadings } from '../../data/sample-snippets'
+import PreviewBanner from '../../components/PreviewBanner.astro'
+import PreviewScripts from '../../components/PreviewScripts.astro'
+
+const title = 'Getting Started'
+const description = 'Welcome to Acme SDK — the fastest way to build modern applications with type-safe APIs and real-time data.'
+
+// Build highlighted HTML from plain-text snippets
+const sections = await Promise.all(
+  standardSections.map(async (s) => ({
+    ...s,
+    highlightedCode: await Promise.all(
+      s.codeSnippets.map((c) => highlight(c.code, c.lang))
+    ),
+  }))
+)
+
+// Compose the full HTML from sections
+function buildSampleHtml(): string {
+  let html = ''
+  for (const s of sections) {
+    if (s.heading) {
+      const tag = tocHeadings.find((h) => h.slug === s.id)?.depth === 3 ? 'h3' : 'h2'
+      html += `<${tag} id="${s.id}">${s.heading}</${tag}>\n`
+    }
+    if (s.prose) html += s.prose + '\n'
+    for (const block of s.highlightedCode) {
+      html += block + '\n'
+    }
+    if (s.afterProse) html += s.afterProse + '\n'
+  }
+  // Add the blockquote after quick-setup
+  const qsIdx = sections.findIndex((sec) => sec.id === 'quick-setup')
+  if (qsIdx >= 0) {
+    const insertAfter = '</pre>'
+    const pos = html.indexOf(insertAfter, html.indexOf('id="quick-setup"'))
+    if (pos >= 0) {
+      const blockquote = `\n<blockquote style="border-left: 2px solid var(--color-accent); padding: 0.5rem 1rem; margin: 0 0 1.25rem; color: var(--color-text-muted);">
+  <p style="margin: 0;"><strong>Note:</strong> Never expose your API key in client-side code. Use environment variables or a server-side proxy.</p>
+</blockquote>\n`
+      // Find the right insertion point (after the first code block in quick-setup section)
+    }
+  }
+  return html
+}
+
+// Simpler approach: build HTML section by section with full control
+function buildHtml(): string {
+  const parts: string[] = []
+
+  for (const s of sections) {
+    // Skip the 'installation-alt' synthetic section — handle inline
+    if (s.id === 'installation-alt') continue
+
+    if (s.id === 'installation') {
+      parts.push(`<h2 id="installation">Installation</h2>`)
+      parts.push(s.prose)
+      for (const block of s.highlightedCode) parts.push(block)
+      // Get the alt install section
+      const alt = sections.find((x) => x.id === 'installation-alt')
+      if (alt) {
+        parts.push(s.afterProse || '')
+        for (const block of alt.highlightedCode) parts.push(block)
+      }
+      continue
+    }
+
+    if (s.id === 'quick-setup') {
+      parts.push(`<h2 id="quick-setup">Quick Setup</h2>`)
+      parts.push(s.prose)
+      for (const block of s.highlightedCode) parts.push(block)
+      parts.push(`<blockquote style="border-left: 2px solid var(--color-accent); padding: 0.5rem 1rem; margin: 0 0 1.25rem; color: var(--color-text-muted);">
+  <p style="margin: 0;"><strong>Note:</strong> Never expose your API key in client-side code. Use environment variables or a server-side proxy.</p>
+</blockquote>`)
+      continue
+    }
+
+    if (s.heading) {
+      const depth = tocHeadings.find((h) => h.slug === s.id)?.depth ?? 2
+      const tag = depth === 3 ? 'h3' : 'h2'
+      parts.push(`<${tag} id="${s.id}">${s.heading}</${tag}>`)
+    }
+    if (s.prose) parts.push(s.prose)
+    for (const block of s.highlightedCode) parts.push(block)
+  }
+
+  return parts.join('\n')
+}
+
+const sampleHtml = buildHtml()
+---
+<!doctype html>
+<html lang="en" data-theme="hudson">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hudson Template - Dewey</title>
+    <meta name="description" content="Preview the Hudson theme for Dewey documentation" />
+    <link rel="icon" type="image/png" href="/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
+  </head>
+  <body style="padding-top: var(--preview-bar-h, 36px);">
+    <PreviewBanner templateName="hudson" displayName="Hudson" />
+    <div class="dl">
+      <!-- Sidebar -->
+      <aside class="dl-sidebar" data-pagefind-ignore>
+        <div class="dl-sidebar-header">
+          <a href="/templates/hudson" class="dl-logo" style="font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase;">
+            HUDSON <span style="font-size: 11px; margin-left: 4px;">/ DOCS</span>
+          </a>
+        </div>
+
+        <div class="dl-sidebar-body">
+          {navGroups.map((group) => (
+            <nav class="dl-nav-group">
+              <p class="dl-nav-label">{group.title}</p>
+              {group.items.map((item) => (
+                <a
+                  href="#"
+                  class={`dl-nav-item ${item.title === 'Getting Started' ? 'active' : ''}`}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </nav>
+          ))}
+        </div>
+
+        <div class="dl-sidebar-footer">
+          <div class="dl-sidebar-links">
+            <a href="#" class="dl-sidebar-link" title="GitHub">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="#" class="dl-sidebar-link" title="npm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.331h-2.669zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z"/></svg>
+            </a>
+          </div>
+          <button class="dl-theme-btn" id="dl-theme-toggle" title="Theme (dark only)" disabled style="opacity: 0.3; cursor: default;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="dl-main">
+        <div class="dl-content-wrap">
+          <!-- Page header -->
+          <div class="dl-page-header">
+            <h1 class="dl-page-title" style="font-family: var(--heading-font); letter-spacing: var(--heading-letter-spacing);">{title}</h1>
+            <p class="dl-page-desc">{description}</p>
+          </div>
+
+          <!-- Content -->
+          <article class="dl-content">
+            <div class="doc-content" set:html={sampleHtml} />
+
+            <footer class="dl-footer">
+              <span class="dl-footer-text">
+                <a href="/">dewey</a> &mdash; agent-ready documentation
+              </span>
+            </footer>
+          </article>
+
+          <!-- TOC minimap -->
+          <aside class="dl-toc" data-pagefind-ignore>
+            <p class="dl-toc-label">On this page</p>
+            <ul class="dl-toc-list">
+              {tocHeadings.map((heading) => (
+                <li>
+                  <a
+                    class="dl-toc-link"
+                    data-toc-link
+                    data-level={heading.depth}
+                    href={`#${heading.slug}`}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <style is:inline>
+      .dl { display: flex; min-height: 100vh; background: var(--color-bg); color: var(--color-text); }
+      .dl * { box-sizing: border-box; }
+
+      .dl-sidebar {
+        width: var(--sidebar-width, 260px);
+        flex-shrink: 0;
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: var(--preview-bar-h, 36px);
+        height: calc(100vh - var(--preview-bar-h, 36px));
+        overflow-y: auto;
+      }
+
+      @media (max-width: 1024px) {
+        .dl-sidebar { display: none; }
+      }
+
+      .dl-sidebar-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .dl-logo {
+        color: var(--color-text);
+        text-decoration: none;
+      }
+
+      .dl-logo span {
+        color: var(--color-text-muted);
+      }
+
+      .dl-sidebar-body {
+        padding: 20px 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .dl-nav-group { display: flex; flex-direction: column; gap: 2px; }
+
+      .dl-nav-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--color-text-muted);
+        margin: 0 0 8px;
+        padding: 0 10px;
+      }
+
+      .dl-nav-item {
+        display: block;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+
+      .dl-nav-item:hover {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+      }
+
+      .dl-nav-item.active {
+        background: var(--color-surface-muted);
+        color: var(--color-accent);
+        font-weight: 500;
+      }
+
+      .dl-sidebar-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .dl-sidebar-links { display: flex; gap: 12px; }
+
+      .dl-sidebar-link {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+      }
+
+      .dl-sidebar-link:hover { color: var(--color-text); }
+
+      .dl-theme-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .dl-main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dl-content-wrap {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        grid-template-rows: auto 1fr;
+        flex: 1;
+      }
+
+      .dl-page-header {
+        grid-column: 1;
+        grid-row: 1;
+        padding: 40px clamp(24px, 4vw, 56px) 28px;
+      }
+
+      .dl-page-title {
+        font-size: clamp(24px, 3vw, 34px);
+        font-weight: 300;
+        line-height: 1.15;
+        margin: 0 0 6px;
+        color: var(--color-text);
+      }
+
+      .dl-page-desc {
+        font-size: 15px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .dl-content {
+        grid-column: 1;
+        grid-row: 2;
+        max-width: 780px;
+        padding: 0 clamp(24px, 4vw, 56px) 80px;
+      }
+
+      .dl-toc {
+        grid-column: 2;
+        grid-row: 2;
+        width: 200px;
+        padding: 0 20px 40px 0;
+        position: sticky;
+        top: var(--preview-bar-h, 36px);
+        height: calc(100vh - var(--preview-bar-h, 36px));
+        overflow-y: auto;
+      }
+
+      @media (max-width: 1280px) {
+        .dl-toc { display: none; }
+        .dl-content-wrap { grid-template-columns: 1fr; }
+      }
+
+      .dl-toc-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--color-text-muted);
+        margin: 0 0 12px;
+      }
+
+      .dl-toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-left: 1px solid var(--color-border);
+      }
+
+      .dl-toc-link {
+        display: block;
+        padding: 2px 0 2px 14px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        margin-left: -1px;
+        border-left: 1px solid transparent;
+      }
+
+      .dl-toc-link:hover { color: var(--color-text); }
+
+      .dl-toc-link.is-active {
+        color: var(--color-text);
+        font-weight: 400;
+        border-left-color: var(--color-accent);
+      }
+
+      .dl-toc-link[data-level='3'] { padding-left: 26px; }
+
+      .dl-footer {
+        padding: 20px 0;
+        border-top: 1px solid var(--color-border);
+        margin-top: 40px;
+      }
+
+      .dl-footer-text {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        color: var(--color-text-muted);
+      }
+
+      .dl-footer-text a {
+        color: var(--color-text-muted);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .dl-footer-text a:hover { color: var(--color-text); }
+    </style>
+
+    <PreviewScripts templateName="hudson" tocRootMargin="-80px 0px -66% 0px" />
+  </body>
+</html>

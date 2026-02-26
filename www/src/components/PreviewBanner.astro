@@ -1,0 +1,43 @@
+---
+import { templates } from '../data/templates'
+
+interface Props {
+  templateName: string
+  displayName: string
+}
+
+const { templateName, displayName } = Astro.props
+
+const idx = templates.findIndex((t) => t.name === templateName)
+const prev = idx > 0 ? templates[idx - 1] : null
+const next = idx < templates.length - 1 ? templates[idx + 1] : null
+---
+
+<div class="preview-banner">
+  <div class="preview-banner-inner">
+    <span class="preview-badge">Preview</span>
+    <nav class="preview-nav">
+      {prev ? <a href={`/templates/${prev.name}`} class="preview-nav-arrow" title={prev.displayName}>&lsaquo;</a> : <span class="preview-nav-arrow" style="opacity:0.15">&lsaquo;</span>}
+      <span class="preview-nav-sep"></span>
+      <a href="/templates" class="preview-gallery">All Templates</a>
+      <span class="preview-nav-sep"></span>
+      <span class="preview-name">{displayName}</span>
+      <span class="preview-nav-sep"></span>
+      {next ? <a href={`/templates/${next.name}`} class="preview-nav-arrow" title={next.displayName}>&rsaquo;</a> : <span class="preview-nav-arrow" style="opacity:0.15">&rsaquo;</span>}
+    </nav>
+  </div>
+</div>
+
+<style is:inline>
+  :root { --preview-bar-h: 36px; }
+  .preview-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 10000; height: var(--preview-bar-h, 36px); background: #1a1a1a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .preview-banner-inner { max-width: 100%; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: center; padding: 0 1rem; }
+  .preview-badge { position: absolute; left: 1rem; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); }
+  .preview-nav { display: flex; align-items: center; }
+  .preview-nav-arrow { display: flex; align-items: center; justify-content: center; width: 28px; height: 24px; color: rgba(255,255,255,0.45); text-decoration: none; font-size: 16px; line-height: 1; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+  .preview-nav-arrow:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .preview-nav-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.12); margin: 0 8px; }
+  .preview-gallery { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 12px; padding: 3px 8px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+  .preview-gallery:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .preview-name { font-weight: 500; color: rgba(255,255,255,0.85); font-size: 12px; padding: 0 4px; }
+</style>

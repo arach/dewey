@@ -16,7 +16,7 @@
 
 import type { Config } from 'tailwindcss'
 
-export type ColorPreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github'
+export type ColorPreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'midnight' | 'mono'
 
 export interface DeweyPresetOptions {
   /**

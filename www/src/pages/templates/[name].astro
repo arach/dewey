@@ -1,0 +1,66 @@
+---
+import { templates, templateLayoutToConfig } from '../../data/templates'
+import { TemplatePreview } from '../../components/TemplatePreview'
+import PreviewBanner from '../../components/PreviewBanner.astro'
+import PreviewScripts from '../../components/PreviewScripts.astro'
+
+export function getStaticPaths() {
+  const standalone = new Set(['hudson', 'topnav', 'splitpane'])
+  return templates
+    .filter((t) => !standalone.has(t.name))
+    .map((t) => ({ params: { name: t.name }, props: { template: t } }))
+}
+
+const { template } = Astro.props
+const { name, displayName, fontUrls = [] } = template
+
+// Get layout config for this template
+const { layoutConfig, cssOverrides } = templateLayoutToConfig(name)
+
+// Load CSS via ?raw imports
+const tokensCSSModules = import.meta.glob('../../../../packages/docs/src/css/tokens.css', { query: '?raw', import: 'default', eager: true })
+const baseCSSModules = import.meta.glob('../../../../packages/docs/src/css/base.css', { query: '?raw', import: 'default', eager: true })
+const themeCSSModules = import.meta.glob('../../../../packages/docs/src/css/colors/*.css', { query: '?raw', import: 'default', eager: true })
+
+const tokensCSS = Object.values(tokensCSSModules)[0] as string
+const baseCSS = Object.values(baseCSSModules)[0] as string
+
+const themeKey = Object.keys(themeCSSModules).find((k) => k.endsWith(`/${name}.css`))
+const themeCSS = themeKey ? (themeCSSModules[themeKey] as string) : ''
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{displayName} Template - Dewey</title>
+    <meta name="description" content={`Preview the ${displayName} theme for Dewey documentation`} />
+    <link rel="icon" type="image/png" href="/og.png" />
+    {fontUrls.map((url: string) => (
+      <link rel="stylesheet" href={url} />
+    ))}
+    <style set:html={tokensCSS + '\n' + themeCSS + '\n' + baseCSS + '\n' + cssOverrides}></style>
+    <style is:inline>
+      /* Reset for preview page */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      body { min-height: 100vh; padding-top: var(--preview-bar-h, 36px); }
+    </style>
+    <script is:inline define:vars={{ name }}>
+      document.documentElement.dataset.template = name
+      try {
+        var key = 'dewey-preview-' + name + '-dark'
+        var stored = localStorage.getItem(key)
+        if (stored === 'true') {
+          document.documentElement.classList.add('dark')
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body data-template={name}>
+    <PreviewBanner templateName={name} displayName={displayName} />
+    <TemplatePreview client:load template={name} layoutConfig={layoutConfig} />
+    <PreviewScripts templateName={name} />
+  </body>
+</html>

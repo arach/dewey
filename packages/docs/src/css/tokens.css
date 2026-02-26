@@ -26,6 +26,14 @@
   --dw-toc-width: 220px;
   --dw-content-max-width: 80ch;
 
+  /* ─── Density ──────────────────────────────────────────────────────── */
+  --dw-content-padding-y: 2rem;
+  --dw-content-padding-x: 3rem;
+  --dw-content-top-offset: 2.5rem;
+  --dw-prose-line-height: 1.75;
+  --dw-prose-paragraph-spacing: 1.25rem;
+  --dw-heading-margin-top: 2.5rem;
+
   /* ─── Typography ─────────────────────────────────────────────────────── */
   --dw-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --dw-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;

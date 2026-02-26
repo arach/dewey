@@ -33,6 +33,11 @@ export const homeGroups: HomeGroup[] = [
         description: 'Scaffold a static Astro site from markdown.',
         href: '/docs/quickstart#create-a-doc-site',
       },
+      {
+        title: 'Templates',
+        description: 'Browse layout and color themes for your doc site.',
+        href: '/templates',
+      },
     ],
   },
   {

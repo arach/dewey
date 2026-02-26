@@ -72,6 +72,13 @@
   /* ─── Header ─────────────────────────────────────────────────────────── */
   --dw-header-bg: hsla(0, 0%, 100%, 0.95);
   --dw-header-border: hsla(210, 12%, 16%, 0.06);
+
+  /* ─── Extended ─────────────────────────────────────────────────────────── */
+  --color-dw-border-subtle: hsla(210, 12%, 16%, 0.06);
+  --color-dw-card-bg: hsl(0, 0%, 100%);
+  --color-dw-card-border: hsl(210, 18%, 87%);
+  --color-dw-card-shadow: 0 1px 3px hsla(210, 12%, 16%, 0.08);
+  --color-dw-card-icon-bg: hsl(210, 17%, 97%);
 }
 
 /* ─── Dark Mode ────────────────────────────────────────────────────────── */
@@ -110,4 +117,10 @@
 
   --dw-header-bg: hsla(215, 21%, 11%, 0.9);
   --dw-header-border: hsla(210, 17%, 82%, 0.08);
+
+  --color-dw-border-subtle: hsla(210, 17%, 82%, 0.04);
+  --color-dw-card-bg: hsla(215, 19%, 16%, 0.8);
+  --color-dw-card-border: hsla(210, 17%, 82%, 0.06);
+  --color-dw-card-shadow: 0 8px 32px hsla(215, 21%, 4%, 0.4);
+  --color-dw-card-icon-bg: hsla(210, 17%, 82%, 0.06);
 }

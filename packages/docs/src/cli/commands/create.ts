@@ -43,8 +43,8 @@ interface NavSection {
 }
 
 function resolveTemplate(template?: string): 'astro' | 'nextjs' {
-  if (template === 'astro') return 'astro'
-  return 'nextjs'
+  if (template === 'nextjs') return 'nextjs'
+  return 'astro'
 }
 
 async function fileExists(path: string): Promise<boolean> {

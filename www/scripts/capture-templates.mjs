@@ -18,7 +18,7 @@ const DARK_ONLY = new Set(['hudson'])
 
 const templates = [
   // Templates (structurally unique)
-  'editorial', 'hudson', 'dashboard', 'topnav', 'splitpane',
+  'hudson', 'topnav', 'splitpane',
   // Themes (color/typography variations)
   'neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github',
   'warm', 'midnight', 'mono',

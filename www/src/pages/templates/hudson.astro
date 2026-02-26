@@ -20,36 +20,7 @@ const sections = await Promise.all(
   }))
 )
 
-// Compose the full HTML from sections
-function buildSampleHtml(): string {
-  let html = ''
-  for (const s of sections) {
-    if (s.heading) {
-      const tag = tocHeadings.find((h) => h.slug === s.id)?.depth === 3 ? 'h3' : 'h2'
-      html += `<${tag} id="${s.id}">${s.heading}</${tag}>\n`
-    }
-    if (s.prose) html += s.prose + '\n'
-    for (const block of s.highlightedCode) {
-      html += block + '\n'
-    }
-    if (s.afterProse) html += s.afterProse + '\n'
-  }
-  // Add the blockquote after quick-setup
-  const qsIdx = sections.findIndex((sec) => sec.id === 'quick-setup')
-  if (qsIdx >= 0) {
-    const insertAfter = '</pre>'
-    const pos = html.indexOf(insertAfter, html.indexOf('id="quick-setup"'))
-    if (pos >= 0) {
-      const blockquote = `\n<blockquote style="border-left: 2px solid var(--color-accent); padding: 0.5rem 1rem; margin: 0 0 1.25rem; color: var(--color-text-muted);">
-  <p style="margin: 0;"><strong>Note:</strong> Never expose your API key in client-side code. Use environment variables or a server-side proxy.</p>
-</blockquote>\n`
-      // Find the right insertion point (after the first code block in quick-setup section)
-    }
-  }
-  return html
-}
-
-// Simpler approach: build HTML section by section with full control
+// Build HTML section by section with full control
 function buildHtml(): string {
   const parts: string[] = []
 

@@ -4,67 +4,114 @@
  */
 
 :root {
-  /* Core colors */
-  --color-dw-background: hsl(30, 20%, 98%);
-  --color-dw-foreground: hsl(30, 15%, 12%);
-  --color-dw-primary: hsl(24, 95%, 53%);
-  --color-dw-primary-foreground: hsl(0, 0%, 100%);
-  --color-dw-secondary: hsl(30, 20%, 94%);
-  --color-dw-secondary-foreground: hsl(30, 15%, 12%);
-  --color-dw-muted: hsl(30, 15%, 94%);
-  --color-dw-muted-foreground: hsl(30, 10%, 45%);
-  --color-dw-accent: hsl(30, 25%, 92%);
-  --color-dw-accent-foreground: hsl(30, 15%, 12%);
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: hsl(30, 20%, 98%);
+  --dw-foreground: hsl(30, 15%, 12%);
+  --dw-primary: hsl(24, 95%, 53%);
+  --dw-primary-foreground: hsl(0, 0%, 100%);
+  --dw-secondary: hsl(30, 20%, 94%);
+  --dw-secondary-foreground: hsl(30, 15%, 12%);
+  --dw-muted: hsl(30, 15%, 94%);
+  --dw-muted-foreground: hsl(30, 10%, 45%);
+  --dw-accent: hsl(30, 25%, 92%);
+  --dw-accent-foreground: hsl(30, 15%, 12%);
 
-  /* Borders & rings */
-  --color-dw-border: hsl(30, 15%, 88%);
-  --color-dw-ring: hsl(24, 95%, 53%);
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: hsl(30, 15%, 88%);
+  --dw-ring: hsl(24, 95%, 53%);
 
-  /* Semantic colors */
-  --color-dw-info: oklch(62.3% 0.214 259.815);
-  --color-dw-info-foreground: hsl(0, 0%, 100%);
-  --color-dw-warning: oklch(76.9% 0.188 70.08);
-  --color-dw-warning-foreground: hsl(0, 0%, 9%);
-  --color-dw-error: oklch(63.7% 0.237 25.331);
-  --color-dw-error-foreground: hsl(0, 0%, 100%);
-  --color-dw-success: oklch(72.3% 0.219 149.579);
-  --color-dw-success-foreground: hsl(0, 0%, 100%);
+  /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
+  --color-dw-ring: var(--dw-ring);
 
-  /* Code blocks */
-  --color-dw-code-bg: hsl(30, 20%, 96%);
-  --color-dw-code-border: hsl(30, 15%, 88%);
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: oklch(62.3% 0.214 259.815);
+  --dw-info-foreground: hsl(0, 0%, 100%);
+  --dw-warning: oklch(76.9% 0.188 70.08);
+  --dw-warning-foreground: hsl(0, 0%, 9%);
+  --dw-error: oklch(63.7% 0.237 25.331);
+  --dw-error-foreground: hsl(0, 0%, 100%);
+  --dw-success: oklch(72.3% 0.219 149.579);
+  --dw-success-foreground: hsl(0, 0%, 100%);
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: hsl(30, 25%, 97%);
-  --color-dw-sidebar-border: hsl(30, 15%, 90%);
-  --color-dw-sidebar-active: hsl(24, 95%, 53%);
-  --color-dw-sidebar-active-bg: hsl(24, 95%, 95%);
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
+
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: hsl(30, 20%, 96%);
+  --dw-code-border: hsl(30, 15%, 88%);
+  --color-dw-code-bg: var(--dw-code-bg);
+  --color-dw-code-border: var(--dw-code-border);
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: hsl(30, 25%, 97%);
+  --dw-sidebar-border: hsl(30, 15%, 90%);
+  --dw-sidebar-active: hsl(24, 95%, 53%);
+  --dw-sidebar-active-bg: hsl(24, 95%, 95%);
+  --color-dw-sidebar-bg: var(--dw-sidebar-bg);
+  --color-dw-sidebar-border: var(--dw-sidebar-border);
+  --color-dw-sidebar-active: var(--dw-sidebar-active);
+  --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: hsla(30, 20%, 98%, 0.95);
+  --dw-header-border: hsla(30, 15%, 12%, 0.06);
+
+  /* ─── Extended ─────────────────────────────────────────────────────────── */
+  --color-dw-border-subtle: hsla(30, 15%, 12%, 0.06);
+  --color-dw-card-bg: hsl(0, 0%, 100%);
+  --color-dw-card-border: hsl(30, 15%, 88%);
+  --color-dw-card-shadow: 0 1px 3px hsla(30, 15%, 12%, 0.08);
+  --color-dw-card-icon-bg: hsl(30, 20%, 96%);
 }
 
-.dark {
-  /* Core colors - dark mode */
-  --color-dw-background: hsl(25, 20%, 7%);
-  --color-dw-foreground: hsl(30, 15%, 93%);
-  --color-dw-primary: hsl(24, 95%, 58%);
-  --color-dw-primary-foreground: hsl(0, 0%, 100%);
-  --color-dw-secondary: hsl(25, 18%, 12%);
-  --color-dw-secondary-foreground: hsl(30, 15%, 93%);
-  --color-dw-muted: hsl(25, 15%, 14%);
-  --color-dw-muted-foreground: hsl(30, 10%, 60%);
-  --color-dw-accent: hsl(25, 18%, 16%);
-  --color-dw-accent-foreground: hsl(30, 15%, 93%);
+/* ─── Dark Mode ────────────────────────────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: hsl(25, 20%, 7%);
+  --dw-foreground: hsl(30, 15%, 93%);
+  --dw-primary: hsl(24, 95%, 58%);
+  --dw-primary-foreground: hsl(0, 0%, 100%);
+  --dw-secondary: hsl(25, 18%, 12%);
+  --dw-secondary-foreground: hsl(30, 15%, 93%);
+  --dw-muted: hsl(25, 15%, 14%);
+  --dw-muted-foreground: hsl(30, 10%, 60%);
+  --dw-accent: hsl(25, 18%, 16%);
+  --dw-accent-foreground: hsl(30, 15%, 93%);
 
-  /* Borders & rings */
-  --color-dw-border: hsl(25, 15%, 20%);
-  --color-dw-ring: hsl(24, 95%, 53%);
+  --dw-border: hsl(25, 15%, 20%);
+  --dw-ring: hsl(24, 95%, 53%);
 
-  /* Code blocks */
-  --color-dw-code-bg: hsl(25, 18%, 10%);
-  --color-dw-code-border: hsl(25, 15%, 18%);
+  --dw-code-bg: hsl(25, 18%, 10%);
+  --dw-code-border: hsl(25, 15%, 18%);
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: hsl(25, 20%, 9%);
-  --color-dw-sidebar-border: hsl(25, 15%, 15%);
-  --color-dw-sidebar-active: hsl(24, 95%, 58%);
-  --color-dw-sidebar-active-bg: hsl(24, 70%, 15%);
+  --dw-sidebar-bg: hsl(25, 20%, 9%);
+  --dw-sidebar-border: hsl(25, 15%, 15%);
+  --dw-sidebar-active: hsl(24, 95%, 58%);
+  --dw-sidebar-active-bg: hsl(24, 70%, 15%);
+
+  --dw-header-bg: hsla(25, 20%, 7%, 0.9);
+  --dw-header-border: hsla(30, 15%, 93%, 0.08);
+
+  --color-dw-border-subtle: hsla(30, 15%, 93%, 0.04);
+  --color-dw-card-bg: hsla(25, 18%, 12%, 0.8);
+  --color-dw-card-border: hsla(30, 15%, 93%, 0.06);
+  --color-dw-card-shadow: 0 8px 32px hsla(25, 20%, 4%, 0.4);
+  --color-dw-card-icon-bg: hsla(30, 15%, 93%, 0.06);
 }

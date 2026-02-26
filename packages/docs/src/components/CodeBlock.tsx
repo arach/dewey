@@ -88,58 +88,38 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   return (
     <div className="relative group mb-4">
       <div
-        className="rounded-xl overflow-hidden"
+        className="rounded-lg overflow-hidden"
         style={{
           background: isDark ? '#1e2126' : '#faf8f5',
           border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,21,24,0.1)'}`,
         }}
       >
-        {/* Header with traffic lights, language and copy button */}
-        <div
-          className="flex items-center justify-between px-4 py-2"
-          style={{
-            background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(16,21,24,0.03)',
-            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(16,21,24,0.08)'}`,
-          }}
-        >
-          <div className="flex items-center gap-3">
-            {/* Traffic lights */}
-            <div className="flex items-center gap-1.5">
-              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#ff5f56' }} />
-              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#ffbd2e' }} />
-              <span className="w-[11px] h-[11px] rounded-full" style={{ background: '#27ca40' }} />
-            </div>
-            {/* Language label */}
+        {/* Code content */}
+        <div className="overflow-x-auto relative">
+          {/* Language label */}
+          {language !== 'text' && (
             <span
-              className="text-xs font-medium tracking-wide"
-              style={{ color: isDark ? '#6b7280' : '#5c676c' }}
+              className="absolute top-2 left-3 text-[10px] font-mono tracking-wider uppercase select-none pointer-events-none"
+              style={{
+                color: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+              }}
             >
-              {language === 'text' ? 'code' : language}
+              {language}
             </span>
-          </div>
+          )}
+          {/* Copy button - icon only, visible on hover */}
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors"
-            style={{ color: isDark ? '#9ca3af' : '#5c676c' }}
+            className="absolute top-2 right-2 flex items-center justify-center w-7 h-7 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{
+              background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+              color: isDark ? '#9ca3af' : '#5c676c',
+            }}
             title="Copy code"
           >
-            {copied ? (
-              <>
-                <Check className="w-3 h-3" />
-                Copied
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3" />
-                Copy
-              </>
-            )}
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
-        </div>
-
-        {/* Code content */}
-        <div className="overflow-x-auto">
-          <pre className="m-0 p-4">
+          <pre className="m-0 p-4 pt-8">
             <code
               className="font-mono text-[13px] leading-relaxed"
               style={{ color: isDark ? '#abb2bf' : '#383a42' }}

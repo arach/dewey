@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="About - Dewey" hideSearch>
+  <div class="about-page">
+    <header class="about-header">
+      <h1 class="about-title">About</h1>
+    </header>
+
+    <div class="about-body">
+      <section class="about-section">
+        <p>
+          Dewey is built by <a href="https://arach.io" target="_blank" rel="noopener noreferrer">Arach Tchoupani</a> &mdash;
+          a software engineer, 4x CTO, and founder based in Montreal.
+          15+ years building products, leading teams, and turning ideas into shipped software
+          across startups and companies like Meta.
+        </p>
+        <p>
+          Co-founded Breathe Life (acquired 2022). Previously engineering leadership at Meta
+          on Creators & Facebook, senior architect on Starbucks Global E-Commerce,
+          VP of Engineering at PhotoShelter, founding CTO at Primary.
+        </p>
+      </section>
+
+      <section class="about-section">
+        <h2>Background</h2>
+        <div class="about-timeline">
+          <div class="about-role">
+            <span class="about-role-org">Meta</span>
+            <span class="about-role-title">Engineering Leadership, FB Creators</span>
+            <span class="about-role-date">2022 &ndash; 2023</span>
+          </div>
+          <div class="about-role">
+            <span class="about-role-org">Breathe Life</span>
+            <span class="about-role-title">Co-Founder & CTO (acquired 2022)</span>
+            <span class="about-role-date">2018 &ndash; 2021</span>
+          </div>
+          <div class="about-role">
+            <span class="about-role-org">Starbucks</span>
+            <span class="about-role-title">Senior Consultant & Architect, Global E-Commerce</span>
+            <span class="about-role-date">2019 &ndash; 2020</span>
+          </div>
+          <div class="about-role">
+            <span class="about-role-org">PhotoShelter</span>
+            <span class="about-role-title">VP of Engineering</span>
+            <span class="about-role-date">2016 &ndash; 2017</span>
+          </div>
+          <div class="about-role">
+            <span class="about-role-org">Primary</span>
+            <span class="about-role-title">Founding CTO</span>
+            <span class="about-role-date">2014 &ndash; 2016</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section">
+        <h2>What I'm building</h2>
+        <p>
+          I build developer tools, AI-native interfaces, and things that bridge the gap between
+          how people think and how machines read. Dewey came out of watching coding assistants
+          struggle with real-world codebases &mdash; not because the models are bad, but because
+          the docs are.
+        </p>
+        <p>
+          I also make <a href="https://usetalkie.com" target="_blank" rel="noopener noreferrer">Talkie</a> (voice-first
+          capture for developers), and <a href="https://arach.dev" target="_blank" rel="noopener noreferrer">a lot of other things</a> &mdash;
+          declarative design systems, spatial note-taking agents, programmatic video tooling.
+          I believe typing is a bottleneck and that the best tools meet you where you are.
+        </p>
+      </section>
+
+      <section class="about-section">
+        <h2>Get in touch</h2>
+        <div class="about-links">
+          <a href="https://github.com/arach" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://x.com/arach" target="_blank" rel="noopener noreferrer">X</a>
+          <a href="https://arach.io" target="_blank" rel="noopener noreferrer">arach.io</a>
+          <a href="https://arach.dev" target="_blank" rel="noopener noreferrer">arach.dev</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <style is:inline>
+    .about-page {
+      max-width: 640px;
+    }
+
+    .about-header {
+      margin-bottom: 2rem;
+    }
+
+    .about-title {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    .about-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .about-section h2 {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: 1.125rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--color-text);
+      margin: 0 0 10px;
+    }
+
+    .about-section p {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--color-text-muted);
+      margin: 0 0 0.75rem;
+    }
+
+    .about-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .about-section a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    .about-section a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Timeline ── */
+    .about-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .about-role {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 12px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 13px;
+    }
+
+    .about-role:last-child {
+      border-bottom: none;
+    }
+
+    .about-role-org {
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .about-role-title {
+      font-weight: 300;
+      color: var(--color-text-muted);
+    }
+
+    .about-role-date {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .about-role {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+      .about-role-date {
+        order: -1;
+      }
+    }
+
+    /* ── Links ── */
+    .about-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .about-links a {
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .about-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

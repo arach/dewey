@@ -1,0 +1,48 @@
+/*
+ * Split Pane — Stripe-style prose + code side-by-side.
+ * Applied via data-theme="splitpane" on <html>.
+ */
+
+:root[data-theme='splitpane'] {
+  /* Colors — warm ivory prose, rich slate code */
+  --color-bg: #f9f8f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f2ef;
+  --color-border: #e4e2dd;
+  --color-text: #2c2a28;
+  --color-text-muted: #8a857d;
+  --color-accent: #7c5cfc;
+  --color-accent-strong: #6d4ae8;
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  /* Typography */
+  --heading-font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  --heading-letter-spacing: -0.02em;
+  --body-font: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  --prose-font-size: 15.5px;
+  --code-font: 'Fira Code', ui-monospace, monospace;
+
+  /* Inline code: violet tint */
+  --inline-code-bg: rgba(124, 92, 252, 0.07);
+  --inline-code-color: #6d4ae8;
+
+  /* Code blocks */
+  --code-block-bg: #252533;
+  --code-block-bg-dark: #252533;
+
+  /* Split pane specific */
+  --sp-sidebar-width: 240px;
+  --sp-prose-bg: #f9f8f6;
+  --sp-code-bg: #252533;
+  --sp-code-text: #d4d2e8;
+  --sp-code-muted: #7e7b96;
+}
+
+/* Split pane code blocks use dark Shiki */
+:root[data-theme='splitpane'] .doc-content pre span[style] {
+  color: var(--shiki-dark) !important;
+}
+
+:root[data-theme='splitpane'] .doc-content pre {
+  border-color: #363548;
+}

@@ -1,8 +1,4 @@
-# Audit Documentation
-
 Use this prompt to audit a project's documentation for agent-readiness.
-
-## Prompt
 
 ```
 Review the documentation in this project for AI-agent readiness:
@@ -26,6 +22,8 @@ Review the documentation in this project for AI-agent readiness:
 
 Output a score 0-100 and specific recommendations.
 ```
+
+---
 
 ## Expected Output
 

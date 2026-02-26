@@ -1,0 +1,68 @@
+---
+import { templates } from '../data/templates'
+
+interface Props {
+  templateName: string
+  enableTocTracking?: boolean
+  tocRootMargin?: string
+}
+
+const { templateName, enableTocTracking = true, tocRootMargin = '-80px 0px -66% 0px' } = Astro.props
+
+const idx = templates.findIndex((t) => t.name === templateName)
+const prev = idx > 0 ? templates[idx - 1] : null
+const next = idx < templates.length - 1 ? templates[idx + 1] : null
+---
+
+<script is:inline define:vars={{ prevName: prev?.name ?? '', nextName: next?.name ?? '' }}>
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+    if (e.key === 'ArrowLeft' && prevName) window.location.href = '/templates/' + prevName
+    if (e.key === 'ArrowRight' && nextName) window.location.href = '/templates/' + nextName
+  })
+</script>
+
+<script is:inline>
+  // Copy buttons on code blocks
+  var copySvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+  var checkSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  document.querySelectorAll('.doc-content pre').forEach(function(block) {
+    var btn = document.createElement('button')
+    btn.innerHTML = copySvg
+    btn.className = 'doc-copy-btn'
+    btn.title = 'Copy code'
+    btn.addEventListener('click', function() {
+      var code = block.querySelector('code')
+      if (!code) return
+      navigator.clipboard.writeText(code.innerText).then(function() {
+        btn.innerHTML = checkSvg
+        btn.classList.add('copied')
+        setTimeout(function() { btn.innerHTML = copySvg; btn.classList.remove('copied') }, 1500)
+      })
+    })
+    block.style.position = 'relative'
+    block.appendChild(btn)
+  })
+</script>
+
+{enableTocTracking && (
+  <script is:inline define:vars={{ tocRootMargin }}>
+    // TOC active tracking
+    var tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'))
+    var headingEls = tocLinks
+      .map(function(link) { return document.querySelector(link.getAttribute('href')) })
+      .filter(Boolean)
+
+    if (headingEls.length) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return
+          tocLinks.forEach(function(l) { l.classList.remove('is-active') })
+          var active = document.querySelector('[data-toc-link][href="#' + entry.target.id + '"]')
+          if (active) active.classList.add('is-active')
+        })
+      }, { rootMargin: tocRootMargin })
+      headingEls.forEach(function(h) { observer.observe(h) })
+    }
+  </script>
+)}

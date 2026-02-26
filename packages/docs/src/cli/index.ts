@@ -5,13 +5,16 @@ import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
 import { agentCoachCommand } from './commands/agent-coach.js'
 import { createCommand } from './commands/create.js'
+import { updateCommand } from './commands/update.js'
+import { ejectCommand } from './commands/eject.js'
+import { DEWEY_VERSION } from './version.js'
 
 const program = new Command()
 
 program
   .name('dewey')
   .description('Documentation scaffolding, auditing, and agent file generation')
-  .version('0.2.0')
+  .version(DEWEY_VERSION)
 
 program
   .command('init')
@@ -50,9 +53,24 @@ program
   .description('Create a new docs site from markdown sources')
   .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
   .option('-n, --name <name>', 'Project name (defaults to directory name)')
-  .option('-t, --template <template>', 'Template to use (astro)', 'astro')
+  .option('-t, --template <template>', 'Template to use (nextjs, astro)', 'nextjs')
   .option('--theme <theme>', 'Color theme (neutral, ocean, emerald, purple, dusk, rose, github, warm)', 'neutral')
   .action(createCommand)
+
+program
+  .command('update [dir]')
+  .description('Update Dewey-owned site files to the latest version')
+  .option('--dry-run', 'Preview changes without writing')
+  .option('--force', 'Overwrite user-modified files (creates backups)')
+  .option('--refresh-nav', 'Regenerate docs.json from current docs/')
+  .action(updateCommand)
+
+program
+  .command('eject <component>')
+  .description('Eject a component for customization (Header, Sidebar, TableOfContents, MarkdownContent)')
+  .argument('[dir]', 'Target Dewey site directory', '.')
+  .option('--full', 'Full eject (no default import, complete replacement)')
+  .action(ejectCommand)
 
 program.parse()
 

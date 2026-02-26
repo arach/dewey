@@ -1,0 +1,145 @@
+/**
+ * Dewey Midnight Color Preset
+ * Dark-first design with glass-morphism effects
+ * Deep navy base with electric blue accents
+ * Inspiration: Linear, Raycast
+ */
+
+:root {
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: #f8fafc;
+  --dw-foreground: #0f172a;
+  --dw-primary: #3b82f6;
+  --dw-primary-foreground: #ffffff;
+  --dw-secondary: #f1f5f9;
+  --dw-secondary-foreground: #1e293b;
+  --dw-muted: #f1f5f9;
+  --dw-muted-foreground: #64748b;
+  --dw-accent: rgba(59, 130, 246, 0.08);
+  --dw-accent-foreground: #2563eb;
+
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: #e2e8f0;
+  --dw-ring: #3b82f6;
+
+  /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+  --color-dw-primary-gradient: linear-gradient(135deg, #3b82f6, #60a5fa);
+  --color-dw-primary-shadow: 0 12px 24px rgba(59, 130, 246, 0.25);
+  --color-dw-primary-glow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
+  --color-dw-border-subtle: rgba(15, 23, 42, 0.06);
+  --color-dw-ring: var(--dw-ring);
+
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: #0ea5e9;
+  --dw-info-foreground: #ffffff;
+  --dw-warning: #f59e0b;
+  --dw-warning-foreground: #0f172a;
+  --dw-error: #ef4444;
+  --dw-error-foreground: #ffffff;
+  --dw-success: #22c55e;
+  --dw-success-foreground: #ffffff;
+
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
+
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: #f1f5f9;
+  --dw-code-border: #e2e8f0;
+  --color-dw-code-bg: var(--dw-code-bg);
+  --color-dw-code-border: var(--dw-code-border);
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: rgba(248, 250, 252, 0.9);
+  --dw-sidebar-border: #e2e8f0;
+  --dw-sidebar-active: #3b82f6;
+  --dw-sidebar-active-bg: rgba(59, 130, 246, 0.08);
+  --color-dw-sidebar-bg: var(--dw-sidebar-bg);
+  --color-dw-sidebar-border: var(--dw-sidebar-border);
+  --color-dw-sidebar-active: var(--dw-sidebar-active);
+  --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: rgba(248, 250, 252, 0.8);
+  --dw-header-border: rgba(15, 23, 42, 0.06);
+  --color-dw-header-bg: var(--dw-header-bg);
+  --color-dw-header-border: var(--dw-header-border);
+
+  /* Card */
+  --color-dw-card-bg: #ffffff;
+  --color-dw-card-border: #e2e8f0;
+  --color-dw-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --color-dw-card-icon-bg: #f1f5f9;
+}
+
+/* ─── Dark Mode — the hero experience ─────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: #0c0e14;
+  --dw-foreground: #e2e8f0;
+  --dw-primary: #60a5fa;
+  --dw-primary-foreground: #0c0e14;
+  --dw-secondary: rgba(255, 255, 255, 0.04);
+  --dw-secondary-foreground: #e2e8f0;
+  --dw-muted: rgba(255, 255, 255, 0.06);
+  --dw-muted-foreground: #64748b;
+  --dw-accent: rgba(96, 165, 250, 0.12);
+  --dw-accent-foreground: #60a5fa;
+
+  --dw-border: rgba(255, 255, 255, 0.08);
+  --dw-ring: #60a5fa;
+  --color-dw-primary-gradient: linear-gradient(135deg, #3b82f6, #818cf8);
+  --color-dw-primary-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
+  --color-dw-primary-glow: 0 0 0 4px rgba(96, 165, 250, 0.2);
+  --color-dw-border-subtle: rgba(255, 255, 255, 0.04);
+
+  --dw-info: #38bdf8;
+  --dw-info-foreground: #0c0e14;
+  --dw-warning: #fbbf24;
+  --dw-warning-foreground: #0c0e14;
+  --dw-error: #f87171;
+  --dw-error-foreground: #0c0e14;
+  --dw-success: #4ade80;
+  --dw-success-foreground: #0c0e14;
+
+  --dw-code-bg: rgba(255, 255, 255, 0.04);
+  --dw-code-border: rgba(255, 255, 255, 0.08);
+
+  /* Sidebar - glass morphism */
+  --dw-sidebar-bg: rgba(12, 14, 20, 0.85);
+  --dw-sidebar-border: rgba(255, 255, 255, 0.06);
+  --dw-sidebar-active: #60a5fa;
+  --dw-sidebar-active-bg: rgba(96, 165, 250, 0.12);
+  --color-dw-sidebar-backdrop: blur(16px);
+
+  /* Header - glass morphism */
+  --dw-header-bg: rgba(12, 14, 20, 0.7);
+  --dw-header-border: rgba(255, 255, 255, 0.06);
+  --color-dw-header-backdrop: blur(16px);
+
+  /* Card - glass effect */
+  --color-dw-card-bg: rgba(255, 255, 255, 0.03);
+  --color-dw-card-border: rgba(255, 255, 255, 0.06);
+  --color-dw-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --color-dw-card-icon-bg: rgba(255, 255, 255, 0.06);
+
+  /* Hero */
+  --color-dw-hero-icon-bg: rgba(96, 165, 250, 0.12);
+  --color-dw-hero-icon-border: rgba(96, 165, 250, 0.2);
+}

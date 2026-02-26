@@ -5,7 +5,7 @@
  */
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300..700&display=swap');
 
 :root {
   /* Fonts */
@@ -13,46 +13,78 @@
   --font-dw-serif: 'Fraunces', serif;
   --font-dw-mono: 'JetBrains Mono', 'SF Mono', monospace;
 
-  /* Core colors - exact Arc values */
-  --color-dw-background: #f7f3ec;
-  --color-dw-foreground: #101518;
-  --color-dw-primary: #f07c4f;
-  --color-dw-primary-foreground: #1c120a;
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: #f7f3ec;
+  --dw-foreground: #101518;
+  --dw-primary: #f07c4f;
+  --dw-primary-foreground: #1c120a;
+  --dw-secondary: rgba(255, 255, 255, 0.75);
+  --dw-secondary-foreground: #101518;
+  --dw-muted: rgba(16, 21, 24, 0.04);
+  --dw-muted-foreground: #5c676c;
+  --dw-accent: rgba(240, 124, 79, 0.12);
+  --dw-accent-foreground: #f07c4f;
+
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: rgba(16, 21, 24, 0.12);
+  --dw-ring: #f07c4f;
+
+  /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
   --color-dw-primary-gradient: linear-gradient(135deg, #f07c4f, #f2a071);
   --color-dw-primary-shadow: 0 12px 24px rgba(240, 124, 79, 0.28);
   --color-dw-primary-glow: 0 0 0 4px rgba(240, 124, 79, 0.2);
-
-  --color-dw-secondary: rgba(255, 255, 255, 0.75);
-  --color-dw-secondary-foreground: #101518;
-  --color-dw-muted: rgba(16, 21, 24, 0.04);
-  --color-dw-muted-foreground: #5c676c;
-  --color-dw-accent: rgba(240, 124, 79, 0.12);
-  --color-dw-accent-foreground: #f07c4f;
-
-  /* Borders & rings */
-  --color-dw-border: rgba(16, 21, 24, 0.12);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
   --color-dw-border-subtle: rgba(16, 21, 24, 0.08);
-  --color-dw-ring: #f07c4f;
+  --color-dw-ring: var(--dw-ring);
 
-  /* Semantic colors */
-  --color-dw-info: oklch(62.3% 0.214 259.815);
-  --color-dw-info-foreground: hsl(0, 0%, 100%);
-  --color-dw-warning: oklch(76.9% 0.188 70.08);
-  --color-dw-warning-foreground: hsl(0, 0%, 9%);
-  --color-dw-error: oklch(63.7% 0.237 25.331);
-  --color-dw-error-foreground: hsl(0, 0%, 100%);
-  --color-dw-success: oklch(72.3% 0.219 149.579);
-  --color-dw-success-foreground: hsl(0, 0%, 100%);
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: oklch(62.3% 0.214 259.815);
+  --dw-info-foreground: hsl(0, 0%, 100%);
+  --dw-warning: oklch(76.9% 0.188 70.08);
+  --dw-warning-foreground: hsl(0, 0%, 9%);
+  --dw-error: oklch(63.7% 0.237 25.331);
+  --dw-error-foreground: hsl(0, 0%, 100%);
+  --dw-success: oklch(72.3% 0.219 149.579);
+  --dw-success-foreground: hsl(0, 0%, 100%);
 
-  /* Code blocks */
-  --color-dw-code-bg: rgba(255, 255, 255, 0.75);
-  --color-dw-code-border: rgba(16, 21, 24, 0.12);
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: rgba(247, 243, 236, 0.95);
-  --color-dw-sidebar-border: rgba(16, 21, 24, 0.1);
-  --color-dw-sidebar-active: #f07c4f;
-  --color-dw-sidebar-active-bg: rgba(240, 124, 79, 0.1);
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: rgba(255, 255, 255, 0.75);
+  --dw-code-border: rgba(16, 21, 24, 0.12);
+  --color-dw-code-bg: var(--dw-code-bg);
+  --color-dw-code-border: var(--dw-code-border);
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: rgba(247, 243, 236, 0.95);
+  --dw-sidebar-border: rgba(16, 21, 24, 0.1);
+  --dw-sidebar-active: #f07c4f;
+  --dw-sidebar-active-bg: rgba(240, 124, 79, 0.1);
+  --color-dw-sidebar-bg: var(--dw-sidebar-bg);
+  --color-dw-sidebar-border: var(--dw-sidebar-border);
+  --color-dw-sidebar-active: var(--dw-sidebar-active);
+  --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: rgba(247, 243, 236, 0.95);
+  --dw-header-border: rgba(16, 21, 24, 0.06);
 
   /* Card specific - exact Arc values */
   --color-dw-card-bg: rgba(255, 255, 255, 0.75);
@@ -65,33 +97,34 @@
   --color-dw-hero-icon-border: rgba(240, 124, 79, 0.2);
 }
 
-.dark {
-  /* Core colors - dark mode */
-  --color-dw-background: #16181c;
-  --color-dw-foreground: #e5e7eb;
-  --color-dw-primary: #f07c4f;
-  --color-dw-primary-foreground: #1c120a;
-  --color-dw-secondary: rgba(255, 255, 255, 0.03);
-  --color-dw-secondary-foreground: #e5e7eb;
-  --color-dw-muted: rgba(255, 255, 255, 0.05);
-  --color-dw-muted-foreground: #6b7280;
-  --color-dw-accent: rgba(240, 124, 79, 0.15);
-  --color-dw-accent-foreground: #f07c4f;
+/* ─── Dark Mode ────────────────────────────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: #16181c;
+  --dw-foreground: #e5e7eb;
+  --dw-primary: #f07c4f;
+  --dw-primary-foreground: #1c120a;
+  --dw-secondary: rgba(255, 255, 255, 0.03);
+  --dw-secondary-foreground: #e5e7eb;
+  --dw-muted: rgba(255, 255, 255, 0.05);
+  --dw-muted-foreground: #6b7280;
+  --dw-accent: rgba(240, 124, 79, 0.15);
+  --dw-accent-foreground: #f07c4f;
 
-  /* Borders & rings */
-  --color-dw-border: rgba(255, 255, 255, 0.06);
+  --dw-border: rgba(255, 255, 255, 0.06);
+  --dw-ring: #f07c4f;
   --color-dw-border-subtle: rgba(255, 255, 255, 0.04);
-  --color-dw-ring: #f07c4f;
 
-  /* Code blocks */
-  --color-dw-code-bg: rgba(255, 255, 255, 0.03);
-  --color-dw-code-border: rgba(255, 255, 255, 0.06);
+  --dw-code-bg: rgba(255, 255, 255, 0.03);
+  --dw-code-border: rgba(255, 255, 255, 0.06);
 
-  /* Sidebar */
-  --color-dw-sidebar-bg: rgba(22, 24, 28, 0.95);
-  --color-dw-sidebar-border: rgba(255, 255, 255, 0.08);
-  --color-dw-sidebar-active: #f07c4f;
-  --color-dw-sidebar-active-bg: rgba(240, 124, 79, 0.15);
+  --dw-sidebar-bg: rgba(22, 24, 28, 0.95);
+  --dw-sidebar-border: rgba(255, 255, 255, 0.08);
+  --dw-sidebar-active: #f07c4f;
+  --dw-sidebar-active-bg: rgba(240, 124, 79, 0.15);
+
+  --dw-header-bg: rgba(22, 24, 28, 0.9);
+  --dw-header-border: rgba(255, 255, 255, 0.06);
 
   /* Card specific */
   --color-dw-card-bg: rgba(255, 255, 255, 0.03);

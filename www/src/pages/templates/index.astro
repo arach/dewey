@@ -1,0 +1,294 @@
+---
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { templates, getLayoutBadges } from '../../data/templates'
+
+// Check if screenshots exist (first template as canary)
+const publicDir = resolve(process.cwd(), 'public/templates')
+const hasScreenshots = existsSync(resolve(publicDir, `${templates[0].name}-light.webp`))
+
+const templateItems = templates.filter((t) => t.category === 'template')
+const themeItems = templates.filter((t) => t.category === 'theme')
+---
+
+<BaseLayout title="Templates & Themes - Dewey" hideSearch>
+  <div class="templates-page">
+    <div class="templates-header">
+      <h1 class="templates-title">Templates & Themes</h1>
+      <p class="templates-description">
+        Templates define structure — layout, navigation, and density.
+        Themes change colors and typography within a template.
+      </p>
+    </div>
+
+    <section class="templates-section">
+      <div class="section-header">
+        <h2 class="section-title">Templates</h2>
+        <p class="section-desc">Distinct layouts and navigation patterns</p>
+      </div>
+
+      <div class="templates-grid templates-grid--large">
+        {templateItems.map((t) => {
+          const badges = getLayoutBadges(t.name)
+          return (
+            <a href={`/templates/${t.name}`} class="template-card template-card--iframe">
+              <div class="template-iframe-wrap">
+                <iframe
+                  src={`/templates/${t.name}`}
+                  class="template-iframe"
+                  loading="lazy"
+                  tabindex="-1"
+                  title={`${t.displayName} template preview`}
+                />
+              </div>
+              <div class="template-info">
+                <h3 class="template-name">{t.displayName}</h3>
+                <p class="template-desc">{t.description}</p>
+                {badges.length > 0 && (
+                  <div class="template-badges">
+                    {badges.map((badge) => (
+                      <span class="template-badge">{badge}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+          )
+        })}
+      </div>
+    </section>
+
+    <section class="templates-section">
+      <div class="section-header">
+        <h2 class="section-title">Themes</h2>
+        <p class="section-desc">Color and typography variations</p>
+      </div>
+
+      <div class="templates-grid">
+        {themeItems.map((t) => {
+          const badges = getLayoutBadges(t.name)
+          const lightSrc = `/templates/${t.name}-light.webp`
+          const darkSrc = `/templates/${t.name}-dark.webp`
+          return (
+            <a href={`/templates/${t.name}`} class="template-card">
+              {hasScreenshots ? (
+                <div class="template-preview">
+                  <img src={lightSrc} alt={`${t.displayName} light mode`} class="template-preview-light" loading="lazy" />
+                  <img src={darkSrc} alt={`${t.displayName} dark mode`} class="template-preview-dark" loading="lazy" />
+                </div>
+              ) : (
+                <div class="template-swatch" style={`background: ${t.bgColor};`}>
+                  <div class="template-swatch-accent" style={`background: ${t.primaryColor};`} />
+                  <div class="template-swatch-dark" style={`background: ${t.darkBgColor};`}>
+                    <div class="template-swatch-accent dark-accent" style={`background: ${t.primaryColor};`} />
+                  </div>
+                </div>
+              )}
+              <div class="template-info">
+                <h3 class="template-name">{t.displayName}</h3>
+                <p class="template-desc">{t.description}</p>
+                {badges.length > 0 && (
+                  <div class="template-badges">
+                    {badges.map((badge) => (
+                      <span class="template-badge">{badge}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+          )
+        })}
+      </div>
+    </section>
+  </div>
+
+  <style is:inline>
+    /* Remove BaseLayout's default top padding for this page */
+    .templates-page {
+      max-width: 960px;
+      margin: -0.5rem auto 0;
+    }
+
+    .templates-header {
+      margin-bottom: 3rem;
+    }
+
+    .templates-title {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 300;
+      letter-spacing: var(--heading-letter-spacing, -0.02em);
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .templates-description {
+      font-size: 15px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      max-width: 48ch;
+    }
+
+    /* ── Sections ── */
+    .templates-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .section-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: 1.125rem;
+      font-weight: 400;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* ── Grid ── */
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .templates-grid--large {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ── Card ── */
+    .template-card {
+      display: block;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      background: var(--color-surface);
+    }
+
+    .template-card:hover {
+      border-color: var(--color-text-muted);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* ── Iframe-based preview for templates ── */
+    .template-iframe-wrap {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      background: var(--color-surface-muted);
+    }
+
+    .template-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1440px;
+      height: 900px;
+      transform: scale(0.22);
+      transform-origin: top left;
+      border: none;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Screenshot-based preview */
+    .template-preview {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+
+    .template-preview img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top left;
+    }
+
+    .template-preview-dark {
+      clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    }
+
+    /* Fallback color swatch */
+    .template-swatch {
+      position: relative;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .template-swatch-accent {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .template-swatch-dark {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      display: flex;
+      align-items: center;
+      padding-left: 1rem;
+      clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    }
+
+    .template-swatch-dark .dark-accent {
+      margin-left: auto;
+      margin-right: 1rem;
+    }
+
+    .template-info {
+      padding: 0.875rem 1.125rem 1rem;
+    }
+
+    .template-name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.125rem;
+    }
+
+    .template-desc {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    .template-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-top: 0.5rem;
+    }
+
+    .template-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      background: var(--color-border);
+      color: var(--color-text-muted);
+      letter-spacing: 0.01em;
+    }
+  </style>
+</BaseLayout>

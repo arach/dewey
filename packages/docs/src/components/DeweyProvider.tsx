@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode, type Co
 // Types
 // ============================================
 
-export type ThemePreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm'
+export type ThemePreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'mono'
 
 export interface ThemeConfig {
   preset?: ThemePreset

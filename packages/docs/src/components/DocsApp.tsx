@@ -26,7 +26,7 @@ export interface DocsAppConfig {
   layout?: {
     sidebar?: boolean
     toc?: boolean
-    header?: boolean
+    header?: boolean | 'minimal'
     footer?: boolean
     prevNext?: boolean
     breadcrumbs?: boolean
@@ -122,10 +122,13 @@ function DocsLayoutInternal({
   const {
     sidebar: showSidebar = true,
     toc: showToc = true,
-    header: showHeader = true,
+    header: headerOption = true,
     prevNext: showPrevNext = true,
     breadcrumbs: showBreadcrumbs = true,
   } = layout
+
+  const showHeader = headerOption !== false
+  const isMinimalHeader = headerOption === 'minimal'
 
   // Get current content
   const content = currentPage ? docs[currentPage] : null
@@ -190,7 +193,7 @@ function DocsLayoutInternal({
     <div className="dw-layout">
       {/* Header */}
       {showHeader && (
-        <header className="dw-header">
+        <header className={`dw-header${isMinimalHeader ? ' dw-header-minimal' : ''}`}>
           <div className="dw-header-inner">
             <div className="dw-header-left">
               {/* Mobile menu button */}

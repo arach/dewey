@@ -1,0 +1,130 @@
+/**
+ * Dewey Mono Color Preset
+ * Ultra-clean monochrome, Vercel-style
+ * True black & white with near-zero saturation
+ * Single accent color (#0070f3) — only color in the theme
+ * Inspiration: Vercel docs, Next.js docs
+ */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Fonts */
+  --font-dw-sans: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --font-dw-mono: 'Geist Mono', 'SF Mono', monospace;
+
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: #ffffff;
+  --dw-foreground: #000000;
+  --dw-primary: #0070f3;
+  --dw-primary-foreground: #ffffff;
+  --dw-secondary: #fafafa;
+  --dw-secondary-foreground: #171717;
+  --dw-muted: #fafafa;
+  --dw-muted-foreground: #666666;
+  --dw-accent: rgba(0, 112, 243, 0.06);
+  --dw-accent-foreground: #0070f3;
+
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: #eaeaea;
+  --dw-ring: #0070f3;
+
+  /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
+  --color-dw-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-dw-ring: var(--dw-ring);
+
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: #0070f3;
+  --dw-info-foreground: #ffffff;
+  --dw-warning: #f5a623;
+  --dw-warning-foreground: #000000;
+  --dw-error: #e00;
+  --dw-error-foreground: #ffffff;
+  --dw-success: #0070f3;
+  --dw-success-foreground: #ffffff;
+
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
+
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: #fafafa;
+  --dw-code-border: #eaeaea;
+  --color-dw-code-bg: var(--dw-code-bg);
+  --color-dw-code-border: var(--dw-code-border);
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: #ffffff;
+  --dw-sidebar-border: #eaeaea;
+  --dw-sidebar-active: #000000;
+  --dw-sidebar-active-bg: #fafafa;
+  --color-dw-sidebar-bg: var(--dw-sidebar-bg);
+  --color-dw-sidebar-border: var(--dw-sidebar-border);
+  --color-dw-sidebar-active: var(--dw-sidebar-active);
+  --color-dw-sidebar-active-bg: var(--dw-sidebar-active-bg);
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: rgba(255, 255, 255, 0.8);
+  --dw-header-border: #eaeaea;
+  --color-dw-header-bg: var(--dw-header-bg);
+  --color-dw-header-border: var(--dw-header-border);
+
+  /* Card */
+  --color-dw-card-bg: #ffffff;
+  --color-dw-card-border: #eaeaea;
+  --color-dw-card-shadow: none;
+  --color-dw-card-icon-bg: #fafafa;
+}
+
+/* ─── Dark Mode — true black, OLED-friendly ───────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: #000000;
+  --dw-foreground: #ededed;
+  --dw-primary: #0070f3;
+  --dw-primary-foreground: #ffffff;
+  --dw-secondary: #111111;
+  --dw-secondary-foreground: #ededed;
+  --dw-muted: #111111;
+  --dw-muted-foreground: #888888;
+  --dw-accent: rgba(0, 112, 243, 0.1);
+  --dw-accent-foreground: #0070f3;
+
+  --dw-border: #333333;
+  --dw-ring: #0070f3;
+  --color-dw-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --dw-code-bg: #111111;
+  --dw-code-border: #333333;
+
+  --dw-sidebar-bg: #000000;
+  --dw-sidebar-border: #333333;
+  --dw-sidebar-active: #ededed;
+  --dw-sidebar-active-bg: #111111;
+
+  --dw-header-bg: rgba(0, 0, 0, 0.8);
+  --dw-header-border: #333333;
+
+  /* Card */
+  --color-dw-card-bg: #111111;
+  --color-dw-card-border: #333333;
+  --color-dw-card-shadow: none;
+  --color-dw-card-icon-bg: #111111;
+}

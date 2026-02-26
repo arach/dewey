@@ -1,37 +1,29 @@
 ---
 title: Quickstart
-description: Get started with Dewey in 5 minutes
+description: Get your documentation agent-ready in under 5 minutes
 order: 2
 ---
 
-# Quickstart
+Requires Node.js 18+ and pnpm (recommended) or npm.
 
-Get your documentation agent-ready in under 5 minutes.
-
-## Prerequisites
-
-- Node.js >= 18
-- pnpm (recommended) or npm
-
-## Installation
+### 1. Install
 
 ```bash
 pnpm add -D @arach/dewey
 ```
 
-## Initialize
+### 2. Initialize
 
 ```bash
 npx dewey init
 ```
 
-This creates:
-- `docs/` folder with starter templates
-- `dewey.config.ts` configuration file
+Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
 
-## Configure
+### 3. Configure
 
-Edit `dewey.config.ts` with your project context:
+<div class="doc-file-block">
+<div class="doc-file-bar">dewey.config.ts</div>
 
 ```typescript
 export default {
@@ -60,35 +52,32 @@ export default {
 }
 ```
 
-## Write Documentation
+</div>
 
-Create docs in the `docs/` folder:
+### 4. Write docs
+
+Create pages in the `docs/` folder:
 
 ```
 docs/
-  overview.md      # Project introduction
-  quickstart.md    # Getting started guide
-  api.md           # API reference
-  overview.agent.md  # Agent-optimized version
+  overview.md          # Project introduction
+  quickstart.md        # Getting started guide
+  api.md               # API reference
+  overview.agent.md    # Agent-optimized version
 ```
 
-## Generate Agent Files
+### 5. Generate agent files
 
 ```bash
 npx dewey generate
 ```
 
-Outputs:
-- `AGENTS.md` - Combined context for AI agents
-- `llms.txt` - Plain text summary for LLMs
-- `docs.json` - Structured documentation
-- `install.md` - LLM-executable installation guide
+Outputs `AGENTS.md`, `llms.txt`, `docs.json`, and `install.md` — everything an AI agent needs to understand your project.
 
-## Check Your Score
+### 6. Check your score
 
-```bash
-npx dewey agent
-```
+<div class="doc-file-block">
+<div class="doc-file-bar">npx dewey agent</div>
 
 ```
 Agent Readiness Report
@@ -100,21 +89,22 @@ Categories:
 ...
 ```
 
-## Create a Doc Site
+</div>
 
-Turn your markdown into a full static site:
+### 7. Create a doc site
 
 ```bash
 npx dewey create my-docs --source ./docs --theme ocean
-cd my-docs
-pnpm install && pnpm dev
+cd my-docs && pnpm install && pnpm dev
 ```
 
-Features: Astro static HTML, Pagefind search, 8 color themes, dark mode, auto-navigation from frontmatter.
+Generates a full static site with Astro, Pagefind search, color themes, dark mode, and auto-navigation from frontmatter.
 
-## Next Steps
+---
 
-- Create `.agent.md` versions of your docs
-- Add skills to `.claude/skills/` for custom reviews
-- Run `dewey audit` to check completeness
-- Run `dewey create` to generate a doc site
+## Next steps
+
+- Create `.agent.md` versions of your docs for denser, structured content
+- Add skills to `.claude/skills/` for custom agent-guided reviews
+- Run `npx dewey audit` to check documentation completeness
+- Browse [templates](/templates) to pick a theme for your doc site

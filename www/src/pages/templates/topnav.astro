@@ -1,0 +1,462 @@
+---
+import '../../styles/global.css'
+import '../../styles/themes/topnav.css'
+import { navGroups } from '../../lib/nav'
+import { highlight } from '../../lib/highlight'
+import { standardSections, tocHeadings } from '../../data/sample-snippets'
+import PreviewBanner from '../../components/PreviewBanner.astro'
+import PreviewScripts from '../../components/PreviewScripts.astro'
+
+const title = 'Getting Started'
+const description = 'Welcome to Acme SDK — the fastest way to build modern applications with type-safe APIs and real-time data.'
+
+const breadcrumbs = [
+  { label: 'Docs', href: '#' },
+  { label: 'Getting Started', href: '#' },
+  { label: 'Introduction', href: '#' },
+]
+
+// Build highlighted HTML from plain-text snippets
+const sections = await Promise.all(
+  standardSections.map(async (s) => ({
+    ...s,
+    highlightedCode: await Promise.all(
+      s.codeSnippets.map((c) => highlight(c.code, c.lang))
+    ),
+  }))
+)
+
+function buildHtml(): string {
+  const parts: string[] = []
+
+  for (const s of sections) {
+    if (s.id === 'installation-alt') continue
+
+    if (s.id === 'installation') {
+      parts.push(`<h2 id="installation">Installation</h2>`)
+      parts.push(s.prose)
+      for (const block of s.highlightedCode) parts.push(block)
+      const alt = sections.find((x) => x.id === 'installation-alt')
+      if (alt) {
+        parts.push(s.afterProse || '')
+        for (const block of alt.highlightedCode) parts.push(block)
+      }
+      continue
+    }
+
+    if (s.id === 'quick-setup') {
+      parts.push(`<h2 id="quick-setup">Quick Setup</h2>`)
+      parts.push(s.prose)
+      for (const block of s.highlightedCode) parts.push(block)
+      parts.push(`<blockquote style="border-left: 3px solid var(--color-accent); padding: 0.5rem 1rem; margin: 0 0 1.25rem; background: rgba(8, 145, 178, 0.04); border-radius: 0 6px 6px 0;">
+  <p style="margin: 0; color: var(--color-text-muted);"><strong>Note:</strong> Never expose your API key in client-side code. Use environment variables or a server-side proxy.</p>
+</blockquote>`)
+      continue
+    }
+
+    if (s.heading) {
+      const depth = tocHeadings.find((h) => h.slug === s.id)?.depth ?? 2
+      const tag = depth === 3 ? 'h3' : 'h2'
+      parts.push(`<${tag} id="${s.id}">${s.heading}</${tag}>`)
+    }
+    if (s.prose) parts.push(s.prose)
+    for (const block of s.highlightedCode) parts.push(block)
+  }
+
+  return parts.join('\n')
+}
+
+const sampleHtml = buildHtml()
+---
+<!doctype html>
+<html lang="en" data-theme="topnav">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Top Nav Template - Dewey</title>
+    <meta name="description" content="Preview the Top Nav theme for Dewey documentation" />
+    <link rel="icon" type="image/png" href="/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body style="padding-top: var(--preview-bar-h, 36px);">
+    <PreviewBanner templateName="topnav" displayName="Top Nav" />
+    <!-- Fixed top nav -->
+    <nav class="tn-topnav">
+      <div class="tn-topnav-inner">
+        <a href="/templates/topnav" class="tn-logo">
+          <span class="tn-logo-mark">ACME</span><span class="tn-logo-sep">/</span><span class="tn-logo-label">docs</span>
+        </a>
+
+        <div class="tn-nav-links">
+          {navGroups.map((group) => (
+            <div class="tn-dropdown">
+              <button class="tn-nav-link">
+                {group.title}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="tn-dropdown-menu">
+                {group.items.map((item) => (
+                  <a href="#" class="tn-dropdown-item">{item.title}</a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="tn-nav-right">
+          <button class="tn-search-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <span>Search</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Breadcrumb bar -->
+    <div class="tn-breadcrumbs">
+      <div class="tn-breadcrumbs-inner">
+        {breadcrumbs.map((crumb, i) => (
+          <Fragment>
+            {i > 0 && <span class="tn-breadcrumb-sep">/</span>}
+            <a href={crumb.href} class={`tn-breadcrumb ${i === breadcrumbs.length - 1 ? 'current' : ''}`}>{crumb.label}</a>
+          </Fragment>
+        ))}
+      </div>
+    </div>
+
+    <!-- Content area -->
+    <div class="tn-layout">
+      <main class="tn-main">
+        <div class="tn-page-header">
+          <h1 class="tn-page-title">{title}</h1>
+          <p class="tn-page-desc">{description}</p>
+        </div>
+
+        <article class="doc-content" set:html={sampleHtml} />
+
+        <!-- Prev/Next -->
+        <div class="tn-prev-next">
+          <a href="#" class="tn-prev-next-link prev">
+            <span class="tn-prev-next-label">&larr; Previous</span>
+            <span class="tn-prev-next-title">Overview</span>
+          </a>
+          <a href="#" class="tn-prev-next-link next">
+            <span class="tn-prev-next-label">Next &rarr;</span>
+            <span class="tn-prev-next-title">Configuration</span>
+          </a>
+        </div>
+
+        <footer class="tn-footer">
+          <span class="tn-footer-text">
+            <a href="/">dewey</a> &mdash; agent-ready documentation
+          </span>
+        </footer>
+      </main>
+
+      <!-- TOC -->
+      <aside class="tn-toc" data-pagefind-ignore>
+        <p class="tn-toc-label">On this page</p>
+        <ul class="tn-toc-list">
+          {tocHeadings.map((heading) => (
+            <li>
+              <a
+                class="tn-toc-link"
+                data-toc-link
+                data-level={heading.depth}
+                href={`#${heading.slug}`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+
+    <style is:inline>
+      body {
+        background: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--body-font, -apple-system, BlinkMacSystemFont, sans-serif);
+        margin: 0;
+      }
+      * { box-sizing: border-box; }
+
+      /* Top nav */
+      .tn-topnav {
+        position: fixed;
+        top: var(--preview-bar-h, 36px);
+        left: 0;
+        right: 0;
+        z-index: 100;
+        height: var(--topnav-height, 60px);
+        background: var(--topnav-bg, rgba(255,255,255,0.85));
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--topnav-border, var(--color-border));
+      }
+      .tn-topnav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .tn-logo {
+        text-decoration: none;
+        color: var(--color-text);
+        font-family: var(--heading-font);
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: baseline;
+        gap: 0;
+        flex-shrink: 0;
+      }
+      .tn-logo-sep {
+        color: var(--color-border);
+        margin: 0 6px;
+        font-weight: 400;
+      }
+      .tn-logo-label {
+        font-weight: 500;
+        color: var(--color-text-muted);
+      }
+
+      .tn-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .tn-dropdown { position: relative; }
+      .tn-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--color-text-muted);
+        background: none;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: color 0.15s, background 0.15s;
+        font-family: inherit;
+      }
+      .tn-nav-link:hover {
+        color: var(--color-text);
+        background: var(--color-surface-muted);
+      }
+      .tn-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        min-width: 200px;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 4px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+      .tn-dropdown:hover .tn-dropdown-menu { display: block; }
+      .tn-dropdown-item {
+        display: block;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: var(--color-text);
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.15s;
+      }
+      .tn-dropdown-item:hover { background: var(--color-surface-muted); }
+
+      .tn-nav-right { margin-left: auto; }
+      .tn-search-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        font-size: 13px;
+        color: var(--color-text-muted);
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color 0.15s;
+      }
+      .tn-search-btn:hover { border-color: var(--color-accent); }
+
+      /* Breadcrumbs */
+      .tn-breadcrumbs {
+        position: fixed;
+        top: calc(var(--topnav-height, 60px) + var(--preview-bar-h, 36px));
+        left: 0;
+        right: 0;
+        z-index: 90;
+        background: var(--breadcrumb-bg, var(--color-surface));
+        border-bottom: 1px solid var(--color-border);
+      }
+      .tn-breadcrumbs-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 8px 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        font-size: 13px;
+      }
+      .tn-breadcrumb {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .tn-breadcrumb:hover { color: var(--color-text); }
+      .tn-breadcrumb.current { color: var(--color-text); font-weight: 500; }
+      .tn-breadcrumb-sep {
+        margin: 0 8px;
+        color: var(--color-border);
+        font-size: 12px;
+      }
+
+      /* Layout */
+      .tn-layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: calc(var(--topnav-height, 60px) + 40px + 1rem + var(--preview-bar-h, 36px)) 2rem 0;
+        display: grid;
+        grid-template-columns: 1fr 220px;
+        gap: 3rem;
+      }
+      @media (max-width: 1024px) {
+        .tn-layout { grid-template-columns: 1fr; }
+        .tn-toc { display: none; }
+      }
+
+      /* Main content */
+      .tn-main {
+        max-width: 780px;
+        min-width: 0;
+      }
+      .tn-page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .tn-page-title {
+        font-family: var(--heading-font);
+        font-size: clamp(26px, 3vw, 36px);
+        font-weight: 700;
+        letter-spacing: var(--heading-letter-spacing);
+        margin: 0 0 0.5rem;
+        color: var(--color-text);
+      }
+      .tn-page-desc {
+        font-size: 15px;
+        color: var(--color-text-muted);
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      /* Prev/Next */
+      .tn-prev-next {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--color-border);
+      }
+      .tn-prev-next-link {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        text-decoration: none;
+        padding: 12px 16px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        transition: border-color 0.15s;
+        min-width: 140px;
+      }
+      .tn-prev-next-link:hover { border-color: var(--color-accent); }
+      .tn-prev-next-link.next { text-align: right; margin-left: auto; }
+      .tn-prev-next-label {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+      .tn-prev-next-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-accent);
+      }
+
+      /* Footer */
+      .tn-footer {
+        padding: 1.5rem 0 3rem;
+        margin-top: 2rem;
+        border-top: 1px solid var(--color-border);
+      }
+      .tn-footer-text {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+      .tn-footer-text a {
+        color: var(--color-text-muted);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .tn-footer-text a:hover { color: var(--color-text); }
+
+      /* TOC */
+      .tn-toc {
+        position: sticky;
+        top: calc(var(--topnav-height, 60px) + 40px + 1rem + var(--preview-bar-h, 36px));
+        height: fit-content;
+        max-height: calc(100vh - var(--topnav-height, 60px) - 60px - var(--preview-bar-h, 36px));
+        overflow-y: auto;
+      }
+      .tn-toc-label {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-muted);
+        margin: 0 0 12px;
+      }
+      .tn-toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        border-left: 2px solid var(--color-border);
+      }
+      .tn-toc-link {
+        display: block;
+        padding: 3px 0 3px 14px;
+        font-size: 13px;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s, border-color 0.15s;
+        margin-left: -2px;
+        border-left: 2px solid transparent;
+      }
+      .tn-toc-link:hover { color: var(--color-text); }
+      .tn-toc-link.is-active {
+        color: var(--color-accent);
+        font-weight: 500;
+        border-left-color: var(--color-accent);
+      }
+      .tn-toc-link[data-level='3'] { padding-left: 26px; }
+    </style>
+
+    <PreviewScripts templateName="topnav" tocRootMargin="-120px 0px -66% 0px" />
+  </body>
+</html>

@@ -124,6 +124,18 @@
   text-transform: uppercase;
 }
 
+/* Minimal header variant — reduced chrome */
+.dw-header-minimal {
+  --dw-header-height: 2.75rem;
+}
+
+.dw-header-minimal .dw-header-back,
+.dw-header-minimal .dw-header-divider,
+.dw-header-minimal .dw-header-label,
+.dw-header-minimal .dw-header-menu-btn {
+  display: none;
+}
+
 /* ============================================
    Layout
    ============================================ */
@@ -147,8 +159,8 @@
   flex: 1;
   max-width: var(--dw-content-max-width, 80ch);
   margin: 0 auto;
-  padding: 2rem 3rem;
-  padding-top: calc(var(--dw-header-height, 3.5rem) + 2.5rem);
+  padding: var(--dw-content-padding-y, 2rem) var(--dw-content-padding-x, 3rem);
+  padding-top: calc(var(--dw-header-height, 3.5rem) + var(--dw-content-top-offset, 2.5rem));
   width: 100%;
 }
 
@@ -426,7 +438,7 @@
    ============================================ */
 
 .dw-prose {
-  line-height: 1.75;
+  line-height: var(--dw-prose-line-height, 1.75);
   color: var(--dw-foreground);
 }
 
@@ -450,7 +462,7 @@
 
 .dw-prose h2 {
   font-size: var(--dw-text-2xl, 1.5rem);
-  margin-top: 2.5rem;
+  margin-top: var(--dw-heading-margin-top, 2.5rem);
   margin-bottom: 1rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--dw-border);
@@ -475,7 +487,7 @@
 }
 
 .dw-prose p {
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--dw-prose-paragraph-spacing, 1.25rem);
 }
 
 .dw-prose a {

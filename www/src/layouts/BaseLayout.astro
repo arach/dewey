@@ -1,7 +1,13 @@
 ---
 import '../styles/global.css'
+import SiteHeader from '../components/SiteHeader.astro'
 
-const { title = 'Dewey' } = Astro.props
+interface Props {
+  title?: string
+  hideSearch?: boolean
+}
+
+const { title = 'Dewey', hideSearch = false } = Astro.props
 ---
 <!doctype html>
 <html lang="en">
@@ -35,47 +41,8 @@ const { title = 'Dewey' } = Astro.props
   </head>
   <body>
     <div class="root min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]" data-theme-root>
-      <header class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-bg)]" data-pagefind-ignore>
-        <div class="mx-auto flex w-full max-w-[1320px] items-center justify-between px-6" style="height: 60px;">
-          <div class="flex items-center gap-10">
-            <a class="text-[22px] font-light tracking-tight" style="font-family: 'Noto Serif Display', serif; letter-spacing: -0.01em;" href="/">dewey</a>
-            <nav class="flex items-center gap-6 text-[13px] font-light text-[var(--color-text-muted)]" data-pagefind-ignore>
-              <a class="hover:text-[var(--color-text)] transition-colors" href="/docs">Docs</a>
-              <a class="hover:text-[var(--color-text)] transition-colors" href="/agents">Agents</a>
-              <button class="hover:text-[var(--color-text)] transition-colors" type="button" data-search-toggle>Search</button>
-            </nav>
-          </div>
-          <div class="flex items-center gap-4 text-sm text-[var(--color-text-muted)]">
-            <button
-              class="hidden sm:flex items-center gap-2 rounded-full border border-[var(--color-border)] px-3 py-1.5 text-[11px] text-[var(--color-text-muted)] hover:border-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-all"
-              style="font-family: 'Geist Mono', monospace; letter-spacing: 0.04em;"
-              type="button"
-              data-search-toggle
-              data-pagefind-ignore
-            >
-              Search
-              <span class="text-[10px] uppercase tracking-[0.15em] opacity-50">⌘K</span>
-            </button>
-            <button
-              class="flex items-center justify-center w-8 h-8 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-all"
-              type="button"
-              data-theme-toggle
-              data-pagefind-ignore
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-            </button>
-            <a
-              class="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors text-[13px]"
-              href="https://github.com/arach/dewey"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-          </div>
-        </div>
-      </header>
-      <main class="mx-auto w-full max-w-[1320px] px-6 py-8" data-pagefind-body>
+      <SiteHeader showSearch={!hideSearch} />
+      <main class="mx-auto w-full max-w-[1200px] py-8" style="padding-left: clamp(20px, 4vw, 48px); padding-right: clamp(20px, 4vw, 48px);" data-pagefind-body>
         <slot />
       </main>
     </div>
@@ -182,25 +149,27 @@ const { title = 'Dewey' } = Astro.props
           }
         }
 
+        const copySvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+        const checkSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+
         const addCopyButtons = () => {
           document.querySelectorAll('pre').forEach((block) => {
             if (block.dataset.copyReady) return
             block.dataset.copyReady = 'true'
-            const button = document.createElement('button')
-            button.textContent = 'Copy'
-            button.className = 'absolute right-3 top-3 rounded border border-[var(--color-border)] px-2 py-1 text-xs text-[var(--color-text-muted)] transition hover:text-[var(--color-text)] hover:border-[var(--color-text-muted)]'
-            button.style.fontFamily = "'Geist Mono', monospace"
-            button.style.fontSize = '10px'
-            button.style.letterSpacing = '0.04em'
-            button.style.textTransform = 'uppercase'
-            button.addEventListener('click', async () => {
+            block.style.position = 'relative'
+            const btn = document.createElement('button')
+            btn.innerHTML = copySvg
+            btn.className = 'doc-copy-btn'
+            btn.title = 'Copy code'
+            btn.addEventListener('click', async () => {
               const code = block.querySelector('code')
               if (!code) return
               await navigator.clipboard.writeText(code.innerText)
-              button.textContent = 'Copied'
-              setTimeout(() => (button.textContent = 'Copy'), 1200)
+              btn.innerHTML = checkSvg
+              btn.classList.add('copied')
+              setTimeout(() => { btn.innerHTML = copySvg; btn.classList.remove('copied') }, 1500)
             })
-            block.appendChild(button)
+            block.appendChild(btn)
           })
         }
 

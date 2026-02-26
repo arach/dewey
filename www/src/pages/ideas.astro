@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title="Ideas - Dewey" hideSearch>
+  <div class="ideas-page">
+    <header class="ideas-header">
+      <h1 class="ideas-title">Why Dewey exists</h1>
+      <p class="ideas-subtitle">
+        Documentation is the interface between humans and machines.
+        Most of it is broken.
+      </p>
+    </header>
+
+    <div class="ideas-body">
+      <section class="ideas-section">
+        <h2>The problem</h2>
+        <p>
+          AI coding assistants read your docs before they write a single line of code.
+          If your documentation is scattered, outdated, or written only for humans skimming a README,
+          agents will hallucinate, guess, or silently get things wrong.
+        </p>
+        <p>
+          Most documentation tools optimize for presentation &mdash; typography, sidebars, search.
+          None of them ask: <em>can an LLM actually parse this?</em>
+        </p>
+      </section>
+
+      <section class="ideas-section">
+        <h2>Agent-ready docs</h2>
+        <p>
+          Dewey treats documentation as structured data, not just rendered pages.
+          Every doc page can have a human-readable version and a dense, machine-optimized
+          <code>.agent.md</code> counterpart &mdash; tables over prose, explicit entry points,
+          no ambiguity.
+        </p>
+        <p>
+          The output isn't just a website. It's <code>AGENTS.md</code>, <code>llms.txt</code>,
+          and <code>install.md</code> &mdash; files that coding assistants already know how to find and use.
+        </p>
+      </section>
+
+      <section class="ideas-section">
+        <h2>Preparation over presentation</h2>
+        <p>
+          Dewey is a docs <em>agent</em>, not a docs framework.
+          It audits your markdown against a 100-point rubric, scores it, and tells you exactly
+          what's missing. Then it generates the agent-facing files automatically.
+        </p>
+        <p>
+          The philosophy is simple: spend your energy on content quality, not on configuring
+          a static site generator. Dewey handles the scaffolding so you can focus on what you're documenting.
+        </p>
+      </section>
+
+      <section class="ideas-section">
+        <h2>Who's behind this</h2>
+        <p>
+          Dewey is built by <a href="https://arach.io" target="_blank" rel="noopener noreferrer">Arach</a>,
+          a software engineer and engineering leader who's spent the last decade building developer tools,
+          leading engineering teams at Meta, and co-founding startups as CTO.
+        </p>
+        <p>
+          After watching AI assistants struggle with real-world codebases &mdash; not because the models
+          are bad, but because the docs are &mdash; Dewey became the obvious thing to build.
+        </p>
+        <p class="ideas-sign-off">
+          Handcrafted in Montreal, NY, and SF.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <style is:inline>
+    .ideas-page {
+      max-width: 640px;
+    }
+
+    .ideas-header {
+      margin-bottom: 3rem;
+    }
+
+    .ideas-title {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      color: var(--color-text);
+      margin: 0 0 12px;
+    }
+
+    .ideas-subtitle {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .ideas-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .ideas-section h2 {
+      font-family: var(--heading-font, 'Noto Serif Display', serif);
+      font-size: 1.125rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--color-text);
+      margin: 0 0 10px;
+    }
+
+    .ideas-section p {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--color-text-muted);
+      margin: 0 0 0.75rem;
+    }
+
+    .ideas-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .ideas-section em {
+      font-style: italic;
+      color: var(--color-text);
+    }
+
+    .ideas-section a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    .ideas-section a:hover {
+      text-decoration: underline;
+    }
+
+    .ideas-section code {
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      background: var(--color-surface-muted);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .ideas-sign-off {
+      margin-top: 1rem;
+      font-style: italic;
+      font-size: 13px;
+    }
+  </style>
+</BaseLayout>

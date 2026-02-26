@@ -1,5 +1,6 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro'
+import SiteHeader from '../components/SiteHeader.astro'
 ---
 
 <LandingLayout title="Dewey - Agent-ready documentation">
@@ -52,121 +53,11 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
       .v3 * { box-sizing: border-box; }
 
-      /* ── Nav ── */
-      .v3-nav {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        padding: 0 clamp(20px, 4vw, 48px);
-        background: var(--s-bg);
-        border-bottom: 1px solid var(--s-border);
-      }
-
-      .v3-nav-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 60px;
-      }
-
-      .v3-nav-left {
-        display: flex;
-        align-items: baseline;
-        gap: 44px;
-      }
-
-      .v3-logo {
-        font-family: 'Noto Serif Display', serif;
-        font-size: 26px;
-        font-weight: 400;
-        color: var(--s-text);
-        text-decoration: none;
-        letter-spacing: -0.01em;
-      }
-
-      .v3-nav-links {
-        display: flex;
-        align-items: center;
-        gap: 28px;
-      }
-
-      .v3-nav-link {
-        font-size: 13px;
-        font-weight: 400;
-        letter-spacing: 0.03em;
-        color: var(--s-text-muted);
-        text-decoration: none;
-        transition: color 0.2s;
-      }
-
-      .v3-nav-link:hover { color: var(--s-text); }
-
-      .v3-nav-right {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-
-      .v3-nav-btn {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--s-bg);
-        background: var(--s-text);
-        border: none;
-        border-radius: 100px;
-        padding: 9px 20px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: opacity 0.2s;
-      }
-
-      .v3-nav-btn:hover { opacity: 0.8; }
-
-      .v3-nav-gh {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        color: var(--s-text-muted);
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 400;
-        letter-spacing: 0.03em;
-        transition: color 0.2s;
-      }
-
-      .v3-nav-gh:hover { color: var(--s-text); }
-
-      .v3-nav-gh svg { flex-shrink: 0; }
-
-      .v3-theme-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: 1px solid var(--s-border);
-        border-radius: 50%;
-        color: var(--s-text-muted);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .v3-theme-btn:hover {
-        border-color: var(--s-text-muted);
-        color: var(--s-text);
-      }
-
       /* ── Hero ── */
       .v3-hero {
         background: var(--s-bg-inv);
         color: var(--s-text-inv);
-        padding: clamp(36px, 5vw, 64px) clamp(20px, 4vw, 48px) clamp(36px, 5vw, 64px);
+        padding: clamp(36px, 5vw, 64px) 0;
         position: relative;
         overflow: hidden;
       }
@@ -183,6 +74,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       .v3-hero-inner {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 clamp(20px, 4vw, 48px);
         position: relative;
         z-index: 1;
       }
@@ -1162,29 +1054,9 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     </style>
   </Fragment>
 
-  <div class="v3">
-    <!-- Nav -->
-    <nav class="v3-nav">
-      <div class="v3-nav-inner">
-        <div class="v3-nav-left">
-          <a href="/" class="v3-logo">dewey</a>
-          <div class="v3-nav-links">
-            <a href="/docs" class="v3-nav-link">Docs</a>
-            <a href="https://www.npmjs.com/package/@arach/dewey" class="v3-nav-link" target="_blank" rel="noopener noreferrer">npm</a>
-          </div>
-        </div>
-        <div class="v3-nav-right">
-          <a href="https://github.com/arach/dewey" class="v3-nav-gh" target="_blank" rel="noopener noreferrer" title="GitHub">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          </a>
-          <button class="v3-theme-btn" id="v3-theme-toggle" title="Toggle theme">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-          </button>
-          <a href="/docs/quickstart" class="v3-nav-btn">Get Started</a>
-        </div>
-      </div>
-    </nav>
+  <SiteHeader showSearch={false} />
 
+  <div class="v3">
     <!-- Hero -->
     <section class="v3-hero">
       <div class="v3-hero-inner">
@@ -1374,6 +1246,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       <span class="v3-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System. Made with ❤️ by <a href="https://github.com/arach" target="_blank" rel="noopener noreferrer" style="color: var(--s-text-muted); text-decoration: underline; text-underline-offset: 2px;">arach</a></span>
       <div class="v3-footer-links">
         <a href="/docs">Docs</a>
+        <a href="/templates">Templates</a>
         <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
@@ -1538,7 +1411,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
     })
 
     // Theme toggle
-    document.getElementById('v3-theme-toggle')?.addEventListener('click', () => {
+    document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'light'
       const next = current === 'dark' ? 'light' : 'dark'
       document.documentElement.setAttribute('data-theme', next)

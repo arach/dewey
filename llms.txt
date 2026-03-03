@@ -14,8 +14,8 @@ Dewey is a documentation toolkit that makes your docs AI-agent-ready. It audits,
 
 ## Quickstart
 
-Get your documentation agent-ready in under 5 minutes.
+Requires Node.js 18+ and pnpm (recommended) or npm.
 
 ## Skills
 
-Skills are LLM prompts that guide AI agents through specific tasks. They're not code - they're expert instructions.
+Skills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.

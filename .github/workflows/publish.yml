@@ -69,14 +69,3 @@ jobs:
           else
             npm publish --access public
           fi
-
-      - name: Sync GitHub repo metadata
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(node -p "require('./packages/docs/package.json').version")
-          DESCRIPTION=$(node -p "require('./packages/docs/package.json').description")
-          gh repo edit ${{ github.repository }} \
-            --description "${DESCRIPTION}" \
-            --homepage "https://www.npmjs.com/package/@arach/dewey"

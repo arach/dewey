@@ -34,6 +34,7 @@ coverage/
 # Misc
 *.tgz
 .turbo/
+tmp/
 
 # Claude Code local settings
 .claude/

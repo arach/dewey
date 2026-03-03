@@ -3,7 +3,10 @@
 Documentation toolkit for AI-agent-ready docs. Audits, scores, generates optimized documentation, and scaffolds static doc sites.
 
 [![npm](https://img.shields.io/npm/v/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
+[![npm downloads](https://img.shields.io/npm/dm/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
 [![license](https://img.shields.io/npm/l/@arach/dewey)](LICENSE)
+
+**[npm](https://www.npmjs.com/package/@arach/dewey)** · **[docs](https://dewey.arach.dev)** · **[github](https://github.com/arach/dewey)**
 
 ## What It Does
 

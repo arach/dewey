@@ -83,7 +83,7 @@ import SiteHeader from '../components/SiteHeader.astro'
         display: grid;
         grid-template-columns: 1.2fr 1fr;
         gap: 48px;
-        align-items: center;
+        align-items: start;
       }
 
       @media (max-width: 900px) {
@@ -138,53 +138,99 @@ import SiteHeader from '../components/SiteHeader.astro'
       }
 
       .v3-hero-install {
-        margin-top: 20px;
+        margin-top: 24px;
         display: inline-flex;
         flex-direction: column;
-        background: var(--s-terminal-bg);
-        border: 1px solid var(--s-terminal-border);
-        border-radius: 8px;
         max-width: fit-content;
+        border-radius: 12px;
         overflow: hidden;
+        border: 1px solid var(--s-terminal-border);
+      }
+
+      .v3-pkg-tabs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.04);
+        padding: 0;
+        gap: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        background: var(--s-terminal-bg);
+      }
+
+      .v3-pkg-tab {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.4);
+        background: none;
+        border: none;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        position: relative;
+      }
+
+      .v3-pkg-tab:hover {
+        color: rgba(255,255,255,0.7);
+      }
+
+      .v3-pkg-tab.active {
+        color: rgba(255,255,255,0.95);
+      }
+
+      .v3-pkg-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 2px;
+        background: var(--s-highlight);
+        border-radius: 2px;
       }
 
       .v3-pkg-cmd {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
+        gap: 16px;
+        padding: 14px 20px;
+        background: color-mix(in srgb, var(--s-terminal-bg), black 15%);
+        min-width: 380px;
+        justify-content: space-between;
       }
 
       .v3-pkg-cmd code {
         font-family: 'Geist Mono', monospace;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(255,255,255,0.4);
+        color: rgba(255,255,255,0.55);
       }
 
       .v3-pkg-cmd code strong {
-        color: rgba(255,255,255,0.85);
+        color: #fff;
         font-weight: 400;
       }
 
       .v3-hero-install-copy {
         background: rgba(255,255,255,0.08);
         border: none;
-        border-radius: 4px;
-        color: rgba(255,255,255,0.5);
+        border-radius: 6px;
+        color: rgba(255,255,255,0.45);
         font-family: 'Geist Mono', monospace;
         font-size: 10px;
         font-weight: 400;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        padding: 4px 10px;
+        padding: 5px 12px;
         cursor: pointer;
         transition: all 0.2s;
       }
 
       .v3-hero-install-copy:hover {
         background: rgba(255,255,255,0.14);
-        color: rgba(255,255,255,0.8);
+        color: rgba(255,255,255,0.9);
       }
 
       .v3-btn-light {
@@ -232,6 +278,10 @@ import SiteHeader from '../components/SiteHeader.astro'
         border-color: var(--s-text-muted);
       }
 
+      .v3-hero-right {
+        margin-top: 18px;
+      }
+
       .v3-install-terminal {
         background: var(--s-terminal-bg);
         border: 1px solid var(--s-terminal-border);
@@ -244,21 +294,21 @@ import SiteHeader from '../components/SiteHeader.astro'
         align-items: center;
         gap: 6px;
         padding: 12px 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
       }
 
       .v3-terminal-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.15);
       }
 
       .v3-terminal-title {
         font-family: 'Geist Mono', monospace;
         font-size: 11px;
         font-weight: 400;
-        color: rgba(255,255,255,0.3);
+        color: rgba(255,255,255,0.4);
         margin-left: auto;
       }
 
@@ -274,18 +324,18 @@ import SiteHeader from '../components/SiteHeader.astro'
         font-size: 13px;
         font-weight: 400;
         line-height: 1.6;
-        color: rgba(255,255,255,0.85);
+        color: #fff;
         display: flex;
         gap: 8px;
       }
 
       .v3-terminal-prompt {
-        color: rgba(255,255,255,0.35);
+        color: rgba(255,255,255,0.5);
         user-select: none;
       }
 
       .v3-terminal-output {
-        color: rgba(255,255,255,0.4);
+        color: rgba(255,255,255,0.6);
         padding-left: 16px;
       }
 
@@ -1024,7 +1074,7 @@ import SiteHeader from '../components/SiteHeader.astro'
         font-family: 'Geist Mono', monospace;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(255,255,255,0.7);
+        color: rgba(255,255,255,0.55);
       }
 
       .v3-agent-install code strong {
@@ -1066,9 +1116,16 @@ import SiteHeader from '../components/SiteHeader.astro'
             <p class="v3-hero-desc">
               Audit, score, and generate agent-ready documentation.<br/>Scaffold complete static doc sites from your markdown.
             </p>
-            <div class="v3-hero-install">
+            <div class="v3-hero-install" id="v3-install">
+              <div class="v3-pkg-tabs">
+                <button class="v3-pkg-tab active" data-pkg="bun">bun</button>
+                <button class="v3-pkg-tab" data-pkg="npm">npm</button>
+                <button class="v3-pkg-tab" data-pkg="pnpm">pnpm</button>
+                <button class="v3-pkg-tab" data-pkg="yarn">yarn</button>
+                <button class="v3-pkg-tab" data-pkg="npx">npx</button>
+              </div>
               <div class="v3-pkg-cmd">
-                <code>$ <strong>curl -fsSL dewey.arach.dev/install.sh | sh</strong></code>
+                <code id="v3-install-cmd">$ <strong>bun add @arach/dewey</strong></code>
                 <button class="v3-hero-install-copy" id="v3-copy-btn"><span id="v3-copy-text">Copy</span></button>
               </div>
             </div>
@@ -1392,7 +1449,7 @@ import SiteHeader from '../components/SiteHeader.astro'
         </div>
 
         <div class="v3-agent-install">
-          <code>$ <strong>bun add -D @arach/dewey</strong></code>
+          <code id="v3-agent-install-cmd">$ <strong>bun add @arach/dewey</strong></code>
           <button id="v3-agent-copy-install">copy</button>
         </div>
       </main>
@@ -1400,9 +1457,33 @@ import SiteHeader from '../components/SiteHeader.astro'
   </div>
 
   <script is:inline>
+    // Package manager install tabs
+    const pkgCommands = {
+      bun: 'bun add @arach/dewey',
+      npm: 'npm install @arach/dewey',
+      pnpm: 'pnpm add @arach/dewey',
+      yarn: 'yarn add @arach/dewey',
+      npx: 'npx dewey init',
+    }
+    let activePkg = 'bun'
+
+    document.querySelectorAll('.v3-pkg-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const pkg = tab.dataset.pkg
+        if (!pkg) return
+        activePkg = pkg
+        document.querySelectorAll('.v3-pkg-tab').forEach(t => t.classList.remove('active'))
+        tab.classList.add('active')
+        const cmdEl = document.getElementById('v3-install-cmd')
+        if (cmdEl) cmdEl.innerHTML = '$ <strong>' + pkgCommands[pkg] + '</strong>'
+        const agentCmdEl = document.getElementById('v3-agent-install-cmd')
+        if (agentCmdEl) agentCmdEl.innerHTML = '$ <strong>' + pkgCommands[pkg] + '</strong>'
+      })
+    })
+
     // Copy install command
     document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('curl -fsSL dewey.arach.dev/install.sh | sh')
+      await navigator.clipboard.writeText(pkgCommands[activePkg])
       const textEl = document.getElementById('v3-copy-text')
       if (textEl) {
         textEl.textContent = 'Copied!'
@@ -1433,7 +1514,7 @@ import SiteHeader from '../components/SiteHeader.astro'
 
     // Copy install command (agent view)
     document.getElementById('v3-agent-copy-install')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('bun add -D @arach/dewey')
+      await navigator.clipboard.writeText(pkgCommands[activePkg])
       const btn = document.getElementById('v3-agent-copy-install')
       if (btn) {
         btn.textContent = 'copied!'

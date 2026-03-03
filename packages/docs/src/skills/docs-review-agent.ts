@@ -147,7 +147,17 @@ _To be filled after reviews complete._
    - **Examples** - Copy-pasteable code that works?
    - **Agent-Friendliness** - Can an AI use this effectively?
 
-5. Write the review to {OUTPUT_FILE} with this format:
+5. Additionally, check for these specific issues (flag in Issues Found, affects Completeness and Examples scores):
+
+   - **Duplicate h1** — If frontmatter has \`title:\`, the site layout renders it as h1. Flag any markdown \`# Heading\` at the start of the body as a duplicate that will render as two stacked identical titles.
+   - **Import path validity** — For every \`import { x } from 'pkg/path'\` in examples, check that the package's \`package.json\` has a matching \`exports\` entry or that the file path exists. Flag imports that won't resolve.
+   - **Error handling coverage** — API reference pages must include at least one error-path example (try/catch, error response shape, or what happens on failure). Happy-path-only docs leave agents unable to handle failures.
+   - **Operational lifecycle** — For APIs with persistent connections (WebSocket, SSE, long-polling): document what happens on disconnect, restart, and reconnect. For stateless APIs: document connection-per-call vs pooling behavior.
+   - **Event timing** — For event/callback docs: document debounce intervals, polling rates, batching behavior, or "fires immediately" — agents need this to know whether to throttle reactions.
+   - **Cross-page duplication** — Flag code blocks or multi-paragraph sections that appear verbatim on another page. Prefer a single source of truth with a link.
+   - **Install instruction currency** — Does the install command match how the package is actually distributed? Check \`package.json\` name, \`bin\` field, and whether the package is published to npm vs installed from source.
+
+6. Write the review to {OUTPUT_FILE} with this format:
 
 \`\`\`markdown
 # [Page Name] Review
@@ -171,6 +181,10 @@ _To be filled after reviews complete._
 ## Drift from Codebase
 
 [List any documented values that don't match source code]
+
+## Structural Issues
+
+[Flag any duplicate h1s, unresolvable imports, missing error examples, missing lifecycle/timing docs, cross-page duplication, or stale install instructions found in step 5]
 
 ## Recommendations
 
@@ -215,7 +229,16 @@ PASS = 18+/25, NEEDS_WORK = below 18
 - Enums and valid values (colors, sizes, types)
 - Function signatures and parameters
 - Configuration options
-- State shapes and data structures`,
+- State shapes and data structures
+
+**Also check across all pages:**
+- Duplicate h1s (frontmatter title + markdown # heading)
+- Import paths that don't resolve against package.json exports
+- API docs missing error handling examples
+- Missing operational lifecycle docs (connection behavior, reconnect, restart)
+- Missing event timing details (debounce, polling rate, batching)
+- Code blocks or sections duplicated verbatim across pages
+- Install instructions that don't match current distribution method`,
 
   /**
    * Quick drift check - just validate values against source

@@ -18,8 +18,6 @@ description: Introduction to the project
 order: 1
 ---
 
-# Overview
-
 Welcome to **{{PROJECT_NAME}}**.
 
 {{PROJECT_TAGLINE}}
@@ -48,8 +46,6 @@ title: Quickstart
 description: Get started in 5 minutes
 order: 2
 ---
-
-# Quickstart
 
 Get up and running with **{{PROJECT_NAME}}** in under 5 minutes.
 
@@ -94,8 +90,6 @@ description: Full API documentation
 order: 3
 ---
 
-# API Reference
-
 Complete API documentation for **{{PROJECT_NAME}}**.
 
 ## Functions
@@ -139,8 +133,6 @@ description: Setup and configuration options
 order: 4
 ---
 
-# Configuration
-
 Configure **{{PROJECT_NAME}}** to fit your needs.
 
 ## Configuration File
@@ -176,8 +168,6 @@ title: Troubleshooting
 description: Common issues and solutions
 order: 5
 ---
-
-# Troubleshooting
 
 Solutions to common issues with **{{PROJECT_NAME}}**.
 

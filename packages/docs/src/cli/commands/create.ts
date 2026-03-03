@@ -173,8 +173,8 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
       id: 'overview',
       title: 'Overview',
       description: 'Welcome to the documentation',
-      content: `# Welcome to ${projectName}\n\nThis is your documentation site. Add markdown files to your docs directory to get started.`,
-      rawContent: `---\ntitle: Overview\ndescription: Welcome to the documentation\norder: 1\n---\n\n# Welcome to ${projectName}\n\nThis is your documentation site. Add markdown files to your docs directory to get started.\n`,
+      content: `Welcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.`,
+      rawContent: `---\ntitle: Overview\ndescription: Welcome to the documentation\norder: 1\n---\n\nWelcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.\n`,
       order: 1,
     })
   }

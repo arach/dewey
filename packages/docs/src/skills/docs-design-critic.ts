@@ -114,6 +114,7 @@ export const docsDesignCritic = {
    - Check for duplicate or near-duplicate headings
    - Check if heading depth is proportionate to content volume
    - Flag h2s that contain only 1-2 sentences (over-fragmentation)
+   - **Frontmatter/layout conflict**: Dewey-generated doc sites render the frontmatter \`title:\` field as an \`<h1>\`. If the markdown body also starts with \`# Title\`, the page will render two identical h1 headings stacked on top of each other. Flag this as a critical heading hierarchy issue — the markdown \`# Title\` line should be removed.
 
 3. Check for component opportunities:
    - Repeated patterns with same fields → should be a table
@@ -212,7 +213,10 @@ PASS = 18+/25, NEEDS_WORK = below 18
 
 **Scoring thresholds:**
 - PASS: 18+/25 (72%)
-- NEEDS_WORK: below 18/25`,
+- NEEDS_WORK: below 18/25
+
+**Cross-cutting checks to apply on every page:**
+- Frontmatter/layout h1 conflict: flag markdown \`# Title\` when frontmatter \`title:\` exists (Dewey layouts render frontmatter title as h1)`,
 
   /**
    * Fix documentation based on design critique

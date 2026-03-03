@@ -32,6 +32,12 @@ const SECTION_CHECKS = {
   hasHeadings: { points: 5, check: (content: string) => /^##\s+.+$/m.test(content) },
   minWordCount: { points: 10, check: (content: string) => content.split(/\s+/).length >= 100 },
   hasLinks: { points: 5, check: (content: string) => /\[.+\]\(.+\)/.test(content) },
+  noDuplicateH1: { points: -5, check: (content: string, fm: Record<string, unknown>) => !(!!fm.title && /^#\s+.+$/m.test(content)) },
+  hasErrorExample: { points: 5, check: (content: string, fm: Record<string, unknown>) => {
+    const isApiDoc = /api/i.test(String(fm.title || ''))
+    if (!isApiDoc) return true // only applies to API docs
+    return /try\s*\{|catch\s*\(|\.catch\(|error|reject|throw/im.test(content)
+  }},
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -87,6 +93,8 @@ function formatIssue(checkName: string): string {
     hasHeadings: 'No section headings (## headers)',
     minWordCount: 'Content too short (aim for 100+ words)',
     hasLinks: 'No links to other docs or resources',
+    noDuplicateH1: 'Duplicate h1: frontmatter title and markdown # heading both present (layout renders frontmatter title as h1)',
+    hasErrorExample: 'API doc missing error handling example (add a try/catch or error response example)',
   }
   return messages[checkName] || checkName
 }

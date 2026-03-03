@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { readdir, readFile, writeFile, access, mkdir } from 'fs/promises'
 import { join } from 'path'
+import ora from 'ora'
 import { loadConfig, configExists } from '../config.js'
 import type { DeweyConfig } from '../schema.js'
 
@@ -9,6 +10,7 @@ interface CoachOptions {
   json?: boolean
   fix?: boolean
   interactive?: boolean
+  strict?: boolean
 }
 
 interface AgentReadinessReport {
@@ -542,29 +544,25 @@ function printReport(report: AgentReadinessReport, verbose: boolean) {
 async function applyFixes(cwd: string, config: DeweyConfig | null) {
   const docsPath = config?.docs.path ? join(cwd, config.docs.path) : join(cwd, 'docs')
 
-  console.log(chalk.blue('\n🔧 Applying fixes...\n'))
+  const fixSpinner = ora('Applying fixes...').start()
 
-  // Create docs folder if missing
   if (!await fileExists(docsPath)) {
     await mkdir(docsPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${docsPath}`)
+    fixSpinner.text = `Created ${docsPath}`
   }
 
-  // Create agent folder
   const agentPath = join(docsPath, 'agent')
   if (!await fileExists(agentPath)) {
     await mkdir(agentPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${agentPath}`)
+    fixSpinner.text = `Created ${agentPath}`
   }
 
-  // Create prompts folder
   const promptsPath = join(docsPath, 'prompts')
   if (!await fileExists(promptsPath)) {
     await mkdir(promptsPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${promptsPath}`)
+    fixSpinner.text = `Created ${promptsPath}`
   }
 
-  // Create starter skill.md
   const skillPath = join(docsPath, 'skill.md')
   if (!await fileExists(skillPath)) {
     const skillContent = `# Skills
@@ -608,10 +606,9 @@ Key files: [LIST FILES]
 \`\`\`
 `
     await writeFile(skillPath, skillContent)
-    console.log(chalk.green('✓') + ` Created ${skillPath}`)
+    fixSpinner.text = `Created ${skillPath}`
   }
 
-  // Create starter prompt template
   const promptPath = join(promptsPath, 'general.md')
   if (!await fileExists(promptPath)) {
     const promptContent = `# General Task
@@ -639,10 +636,9 @@ Context:
 \`\`\`
 `
     await writeFile(promptPath, promptContent)
-    console.log(chalk.green('✓') + ` Created ${promptPath}`)
   }
 
-  console.log(chalk.green('\n✨ Fixes applied! Run `dewey agent-coach` again to see your new score.\n'))
+  fixSpinner.succeed('Fixes applied! Run `dewey agent-coach` again to see your new score.')
 }
 
 // ============================================
@@ -651,21 +647,20 @@ Context:
 
 export async function agentCoachCommand(options: CoachOptions) {
   const cwd = process.cwd()
-  const config = await loadConfig(cwd)
 
   console.log(chalk.blue('\n🤖 dewey agent'))
-  console.log(chalk.gray('   Checking agent-readiness...\n'))
 
-  // Perform all checks
+  const configSpinner = ora('Loading configuration...').start()
+  const config = await loadConfig(cwd)
+  configSpinner.succeed('Configuration loaded')
+
+  const checkSpinner = ora('Analyzing agent-readiness...').start()
   const categories = await performChecks(cwd, config)
-
-  // Calculate totals
   const totalScore = categories.reduce((s, c) => s + c.score, 0)
   const maxScore = categories.reduce((s, c) => s + c.maxScore, 0)
-
-  // Generate recommendations
   const recommendations = generateRecommendations(categories)
   const quickWins = getQuickWins(recommendations)
+  checkSpinner.succeed(`Analyzed ${categories.length} categories (${totalScore}/${maxScore} points)`)
 
   const report: AgentReadinessReport = {
     score: totalScore,
@@ -689,5 +684,14 @@ export async function agentCoachCommand(options: CoachOptions) {
     await applyFixes(cwd, config)
   } else if (report.score < maxScore) {
     console.log(chalk.gray(`  Tip: Run ${chalk.cyan('dewey agent-coach --fix')} to auto-create missing files\n`))
+  }
+
+  // Strict mode: fail if score below 80
+  if (options.strict) {
+    const percentage = Math.round((report.score / report.maxScore) * 100)
+    if (percentage < 80) {
+      console.error(chalk.red(`\n✗ Strict mode: agent-readiness score ${percentage}/100 is below the required threshold of 80.\n`))
+      process.exit(1)
+    }
   }
 }

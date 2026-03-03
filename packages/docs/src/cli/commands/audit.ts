@@ -2,11 +2,13 @@ import chalk from 'chalk'
 import { readdir, readFile, access } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
+import ora from 'ora'
 import { loadConfig } from '../config.js'
 
 interface AuditOptions {
   verbose?: boolean
   json?: boolean
+  strict?: boolean
 }
 
 interface AuditResult {
@@ -101,26 +103,27 @@ function formatIssue(checkName: string): string {
 
 export async function auditCommand(options: AuditOptions) {
   const cwd = process.cwd()
+
+  const configSpinner = ora('Loading configuration...').start()
   const config = await loadConfig(cwd)
 
   if (!config) {
-    console.log(chalk.red('\n❌ No dewey.config.ts found. Run') + chalk.cyan(' dewey init ') + chalk.red('first.\n'))
+    configSpinner.fail('No dewey.config.ts found. Run `dewey init` first.')
     process.exit(1)
   }
 
   const docsPath = join(cwd, config.docs.path)
   if (!await fileExists(docsPath)) {
-    console.log(chalk.red(`\n❌ Docs directory not found: ${config.docs.path}\n`))
+    configSpinner.fail(`Docs directory not found: ${config.docs.path}`)
     process.exit(1)
   }
+  configSpinner.succeed('Configuration loaded')
 
-  console.log(chalk.blue(`\n📋 Auditing ${config.project.name} documentation...\n`))
+  const auditSpinner = ora(`Auditing ${config.project.name} documentation...`).start()
 
-  // Get all markdown files
   const files = await readdir(docsPath)
   const mdFiles = files.filter(f => f.endsWith('.md'))
 
-  // Audit each section
   const requiredSections = config.docs.required
   const optionalSections = ['api', 'configuration', 'architecture', 'troubleshooting', 'changelog']
     .filter(s => !requiredSections.includes(s))
@@ -128,8 +131,8 @@ export async function auditCommand(options: AuditOptions) {
   const results: SectionResult[] = []
   const recommendations: string[] = []
 
-  // Check required sections
   for (const section of requiredSections) {
+    auditSpinner.text = `Auditing ${section}.md...`
     const filePath = join(docsPath, `${section}.md`)
     const result = await auditSection(section, filePath)
     results.push(result)
@@ -139,36 +142,36 @@ export async function auditCommand(options: AuditOptions) {
     }
   }
 
-  // Check optional sections (if they exist)
   for (const section of optionalSections) {
     const filePath = join(docsPath, `${section}.md`)
     if (await fileExists(filePath)) {
+      auditSpinner.text = `Auditing ${section}.md...`
       const result = await auditSection(section, filePath)
       results.push(result)
     }
   }
 
-  // Check for unknown docs
   for (const file of mdFiles) {
     const sectionName = file.replace('.md', '')
     if (!results.find(r => r.name === sectionName)) {
+      auditSpinner.text = `Auditing ${file}...`
       const result = await auditSection(sectionName, join(docsPath, file))
       results.push(result)
     }
   }
 
-  // Calculate total score
   const totalScore = results.reduce((sum, r) => sum + r.score, 0)
   const maxScore = results.reduce((sum, r) => sum + r.maxScore, 0)
   const percentage = Math.round((totalScore / maxScore) * 100)
 
-  // Check agent config
   if (config.agent.criticalContext.length === 0) {
     recommendations.push('Add criticalContext rules in dewey.config.ts for better agent documentation')
   }
   if (Object.keys(config.agent.entryPoints).length === 0) {
     recommendations.push('Add entryPoints in dewey.config.ts to help agents navigate the codebase')
   }
+
+  auditSpinner.succeed(`Audited ${results.length} sections (${percentage}/100)`)
 
   const auditResult: AuditResult = {
     score: totalScore,
@@ -178,13 +181,11 @@ export async function auditCommand(options: AuditOptions) {
     recommendations,
   }
 
-  // Output
   if (options.json) {
     console.log(JSON.stringify(auditResult, null, 2))
     return
   }
 
-  // Print results
   for (const result of results) {
     const icon = result.status === 'complete' ? chalk.green('✓')
       : result.status === 'incomplete' ? chalk.yellow('⚠')
@@ -216,4 +217,25 @@ export async function auditCommand(options: AuditOptions) {
   }
 
   console.log()
+
+  if (options.strict) {
+    const hasErrors = results.some(r => r.status === 'missing')
+    const hasMissingRequired = results
+      .filter(r => requiredSections.includes(r.name))
+      .some(r => r.status === 'missing' || r.issues.length > 0)
+
+    if (hasErrors || hasMissingRequired) {
+      const missing = results.filter(r => r.status === 'missing').map(r => r.name)
+      const withIssues = results
+        .filter(r => requiredSections.includes(r.name) && r.issues.length > 0 && r.status !== 'missing')
+        .map(r => r.name)
+
+      const parts: string[] = []
+      if (missing.length > 0) parts.push(`missing sections: ${missing.join(', ')}`)
+      if (withIssues.length > 0) parts.push(`sections with issues: ${withIssues.join(', ')}`)
+
+      console.error(chalk.red(`✗ Strict mode: audit failed — ${parts.join('; ')}.\n`))
+      process.exit(1)
+    }
+  }
 }

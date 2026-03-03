@@ -1,4 +1,6 @@
+import chalk from 'chalk'
 import { cosmiconfig } from 'cosmiconfig'
+import { ZodError } from 'zod'
 import { DeweyConfig } from './schema.js'
 
 const explorer = cosmiconfig('dewey', {
@@ -12,6 +14,21 @@ const explorer = cosmiconfig('dewey', {
   ],
 })
 
+function formatZodError(error: ZodError): string {
+  const header = chalk.red.bold('✖ Invalid dewey config\n')
+
+  const issues = error.issues.map((issue) => {
+    const path = issue.path.length > 0
+      ? chalk.yellow(issue.path.join('.'))
+      : chalk.yellow('(root)')
+    return `  ${chalk.red('→')} ${path}${chalk.dim(':')} ${issue.message}`
+  })
+
+  const hint = chalk.dim('\n  See https://github.com/arach/dewey#configuration for the expected schema.')
+
+  return `${header}${issues.join('\n')}${hint}`
+}
+
 /**
  * Load dewey configuration from the current directory
  */
@@ -24,6 +41,10 @@ export async function loadConfig(cwd: string = process.cwd()): Promise<DeweyConf
 
     return DeweyConfig.parse(result.config)
   } catch (error) {
+    if (error instanceof ZodError) {
+      console.error(formatZodError(error))
+      process.exit(1)
+    }
     if (error instanceof Error) {
       throw new Error(`Failed to load dewey config: ${error.message}`)
     }

@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { readdir, readFile, writeFile, access } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
+import ora from 'ora'
 import { loadConfig } from '../config.js'
 
 interface GenerateOptions {
@@ -350,10 +351,12 @@ function generateInstallMd(config: Awaited<ReturnType<typeof loadConfig>>, docs:
 
 export async function generateCommand(options: GenerateOptions) {
   const cwd = process.cwd()
+
+  const configSpinner = ora('Loading configuration...').start()
   const config = await loadConfig(cwd)
 
   if (!config) {
-    console.log(chalk.red('\n❌ No dewey.config.ts found. Run') + chalk.cyan(' dewey init ') + chalk.red('first.\n'))
+    configSpinner.fail('No dewey.config.ts found. Run `dewey init` first.')
     process.exit(1)
   }
 
@@ -361,26 +364,24 @@ export async function generateCommand(options: GenerateOptions) {
   const outputPath = options.output || join(cwd, config.docs.output)
 
   if (!await fileExists(docsPath)) {
-    console.log(chalk.red(`\n❌ Docs directory not found: ${config.docs.path}\n`))
+    configSpinner.fail(`Docs directory not found: ${config.docs.path}`)
     process.exit(1)
   }
+  configSpinner.succeed('Configuration loaded')
 
-  console.log(chalk.blue(`\n🔄 Generating agent files for ${config.project.name}...\n`))
-
-  // Get all available sections
+  const loadSpinner = ora('Loading documentation sections...').start()
   const files = await readdir(docsPath)
   const availableSections = files
     .filter(f => f.endsWith('.md'))
     .map(f => f.replace('.md', ''))
 
-  // Filter to configured sections (or use all if not specified)
   const sectionsToInclude = config.agent.sections.length > 0
     ? config.agent.sections.filter(s => availableSections.includes(s))
     : availableSections
 
   const docs = await loadDocs(docsPath, sectionsToInclude)
+  loadSpinner.succeed(`Loaded ${docs.length} documentation sections`)
 
-  // Determine which files to generate
   const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd
   const filesToGenerate = {
     agentsMd: generateAll || options.agentsMd,
@@ -389,8 +390,11 @@ export async function generateCommand(options: GenerateOptions) {
     installMd: generateAll || options.installMd,
   }
 
-  // Generate AGENTS.md
+  const genSpinner = ora('Generating agent files...').start()
+  const generated: string[] = []
+
   if (filesToGenerate.agentsMd) {
+    genSpinner.text = 'Generating AGENTS.md...'
     const content = generateAgentsMd(
       config.project.name,
       config.project.tagline,
@@ -399,11 +403,11 @@ export async function generateCommand(options: GenerateOptions) {
     )
     const filePath = join(outputPath, 'AGENTS.md')
     await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('AGENTS.md')}`)
+    generated.push('AGENTS.md')
   }
 
-  // Generate llms.txt
   if (filesToGenerate.llmsTxt) {
+    genSpinner.text = 'Generating llms.txt...'
     const content = generateLlmsTxt(
       config.project.name,
       config.project.tagline,
@@ -411,11 +415,11 @@ export async function generateCommand(options: GenerateOptions) {
     )
     const filePath = join(outputPath, 'llms.txt')
     await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('llms.txt')}`)
+    generated.push('llms.txt')
   }
 
-  // Generate docs.json
   if (filesToGenerate.docsJson) {
+    genSpinner.text = 'Generating docs.json...'
     const content = generateDocsJson(
       config.project.name,
       config.project.version,
@@ -423,19 +427,20 @@ export async function generateCommand(options: GenerateOptions) {
     )
     const filePath = join(outputPath, 'docs.json')
     await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('docs.json')}`)
+    generated.push('docs.json')
   }
 
-  // Generate install.md (installmd.org standard)
   if (filesToGenerate.installMd) {
+    genSpinner.text = 'Generating install.md...'
     const content = generateInstallMd(config, docs)
     const filePath = join(outputPath, 'install.md')
     await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('install.md')} (installmd.org standard)`)
+    generated.push('install.md')
   }
 
-  console.log(chalk.blue('\n✨ Agent files generated!\n'))
-  console.log(`Output directory: ${chalk.gray(outputPath)}`)
+  genSpinner.succeed(`Generated ${generated.join(', ')}`)
+
+  console.log(`\nOutput directory: ${chalk.gray(outputPath)}`)
   console.log(`Included sections: ${chalk.gray(sectionsToInclude.join(', '))}`)
   console.log()
 }

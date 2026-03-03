@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
+import chalk from 'chalk'
+import { ZodError } from 'zod'
+// @ts-ignore - omelette doesn't have type definitions
+import omelette from 'omelette'
 import { initCommand } from './commands/init.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
@@ -10,6 +14,16 @@ import { ejectCommand } from './commands/eject.js'
 import { DEWEY_VERSION } from './version.js'
 
 const program = new Command()
+
+// Configure shell autocompletion
+const completion = omelette('dewey|dewey-cli')
+completion.on('complete', function(this: any, _fragment: any, data: any) {
+  const commands = ['init', 'audit', 'generate', 'agent', 'create', 'update', 'eject', 'completion']
+  if (data.fragment === 1) {
+    this.reply(commands)
+  }
+})
+completion.init()
 
 program
   .name('dewey')
@@ -28,6 +42,7 @@ program
   .description('Validate documentation completeness')
   .option('-v, --verbose', 'Show detailed output')
   .option('--json', 'Output as JSON')
+  .option('--strict', 'Exit with code 1 if any errors or missing required sections')
   .action(auditCommand)
 
 program
@@ -46,6 +61,7 @@ program
   .option('-v, --verbose', 'Show detailed check results')
   .option('--json', 'Output as JSON')
   .option('--fix', 'Auto-create missing files and folders')
+  .option('--strict', 'Exit with code 1 if agent-readiness score is below 80')
   .action(agentCoachCommand)
 
 program
@@ -72,7 +88,46 @@ program
   .option('--full', 'Full eject (no default import, complete replacement)')
   .action(ejectCommand)
 
-program.parse()
+program
+  .command('completion')
+  .description('Generate shell autocompletion script')
+  .action(() => {
+    completion.setupShellInitFile()
+    console.log('Autocompletion installed. Please restart your shell or run: source ~/.zshrc (or ~/.bashrc)')
+  })
+
+async function main() {
+  try {
+    await program.parseAsync()
+  } catch (error) {
+    // Config schema validation errors (Zod)
+    if (error instanceof ZodError) {
+      console.error(chalk.red('\n✗ Invalid dewey configuration\n'))
+      for (const issue of error.issues) {
+        const path = issue.path.length > 0 ? chalk.cyan(issue.path.join('.')) + ': ' : ''
+        console.error(chalk.gray(`  • ${path}${issue.message}`))
+      }
+      console.error(chalk.gray('\n  Check your dewey.config.ts and fix the issues above.\n'))
+      process.exit(1)
+    }
+
+    // Known errors (config loading, missing files, etc.)
+    if (error instanceof Error) {
+      console.error(chalk.red(`\n✗ ${error.message}\n`))
+      if (process.env.DEBUG) {
+        console.error(chalk.gray(error.stack ?? ''))
+      }
+      process.exit(1)
+    }
+
+    // Unknown / non-Error throws
+    console.error(chalk.red('\n✗ An unexpected error occurred\n'))
+    console.error(chalk.gray(`  ${String(error)}\n`))
+    process.exit(1)
+  }
+}
+
+main()
 
 // Export for programmatic use
 export { defineConfig } from './schema.js'

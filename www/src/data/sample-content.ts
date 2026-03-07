@@ -3,108 +3,108 @@ import type { NavigationConfig } from '../../../packages/docs/src/types/page-tre
 export const sampleDocs: Record<string, string> = {
   'getting-started': `# Getting Started
 
-Welcome to **Acme SDK** — the fastest way to build modern applications with type-safe APIs and real-time data.
+Welcome to **Dewey** — a documentation toolkit that makes your docs AI-agent-ready. Audit, score, and generate optimized documentation for LLM consumption.
 
 ## Installation
 
 Install the package using your preferred package manager:
 
 \`\`\`bash
-npm install @acme/sdk
+npm install -D @arach/dewey
 \`\`\`
 
 Or with pnpm:
 
 \`\`\`bash
-pnpm add @acme/sdk
+pnpm add -D @arach/dewey
 \`\`\`
 
 ## Quick Setup
 
-Initialize the client with your API key:
+Initialize your documentation structure:
+
+\`\`\`bash
+npx dewey init
+\`\`\`
+
+This creates a \`docs/\` folder and a \`dewey.config.ts\` file:
 
 \`\`\`typescript
-import { createClient } from '@acme/sdk'
+import { defineConfig } from '@arach/dewey'
 
-const client = createClient({
-  apiKey: process.env.ACME_API_KEY,
-  region: 'us-east-1',
-})
-
-// Fetch data with full type safety
-const users = await client.users.list({
-  limit: 10,
-  orderBy: 'createdAt',
+export default defineConfig({
+  name: 'my-project',
+  docs: './docs',
+  output: {
+    agentsMd: true,
+    llmsTxt: true,
+    installMd: true,
+  },
 })
 \`\`\`
 
-> **Note:** Never expose your API key in client-side code. Use environment variables or a server-side proxy.
+> **Note:** Run \`dewey generate\` after writing your docs to create agent-ready output files.
 
 ## Core Concepts
 
-The SDK is built around three key ideas:
+Dewey is built around three key ideas:
 
-1. **Type Safety** — Every API response is fully typed with TypeScript generics
-2. **Real-time Sync** — Subscribe to changes with \`client.subscribe()\`
-3. **Optimistic Updates** — Mutations resolve instantly with automatic rollback on failure
+1. **Agent Content Pattern** — Each page has human (\`.md\`) and agent (\`.agent.md\`) versions
+2. **Skills System** — LLM prompts that guide AI agents through specific tasks
+3. **install.md Standard** — LLM-executable install instructions following the installmd.org spec
 
-### Authentication
+### CLI Commands
 
-Authentication supports multiple strategies:
+Dewey provides these commands:
 
-| Strategy | Use Case | Setup |
-|----------|----------|-------|
-| API Key | Server-to-server | Set \`apiKey\` in config |
-| OAuth 2.0 | User-facing apps | Configure \`oauth\` provider |
-| JWT | Custom auth | Pass \`token\` function |
+| Command | Description |
+|---------|-------------|
+| \`dewey init\` | Create docs/ folder and config |
+| \`dewey audit\` | Check documentation completeness |
+| \`dewey generate\` | Create agent-ready files |
+| \`dewey agent\` | Score agent-readiness (0-100) |
 
-### Error Handling
+### Agent Readiness
 
-All errors follow a consistent pattern:
+Check how well your docs serve AI agents:
 
-\`\`\`typescript
-try {
-  const result = await client.users.create({
-    email: 'dev@acme.com',
-    role: 'admin',
-  })
-} catch (error) {
-  if (error instanceof AcmeError) {
-    console.log(error.code)    // 'VALIDATION_ERROR'
-    console.log(error.message) // Human-readable message
-    console.log(error.details) // Field-level errors
-  }
-}
+\`\`\`bash
+npx dewey agent
 \`\`\`
+
+This scores your documentation from 0-100 and provides actionable recommendations to improve agent compatibility.
 
 ## What's Next
 
 - Read the [Configuration](configuration) guide for advanced setup
-- Explore the API reference for all available methods
-- Join the community Discord for help and discussion
+- Explore the built-in skills for docs review and improvement
+- Check the components library for building doc sites
 
 ---
 
-*Built with care by the Acme team.*
+*Built with care by the Dewey team.*
 `,
 
   'configuration': `# Configuration
 
-Fine-tune the SDK behavior for your application's needs.
+Fine-tune Dewey's behavior for your project's needs.
 
-## Client Options
+## Config File
 
-The \`createClient\` function accepts a configuration object:
+The \`dewey.config.ts\` file controls all generation options:
 
 \`\`\`typescript
-import { createClient } from '@acme/sdk'
+import { defineConfig } from '@arach/dewey'
 
-const client = createClient({
-  apiKey: process.env.ACME_API_KEY,
-  region: 'us-east-1',
-  timeout: 30_000,
-  retries: 3,
-  debug: process.env.NODE_ENV === 'development',
+export default defineConfig({
+  name: 'my-project',
+  docs: './docs',
+  output: {
+    agentsMd: true,
+    llmsTxt: true,
+    installMd: true,
+    docsJson: true,
+  },
 })
 \`\`\`
 
@@ -112,40 +112,40 @@ const client = createClient({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| \`apiKey\` | \`string\` | — | Your API key (required) |
-| \`region\` | \`string\` | \`'us-east-1'\` | Data center region |
-| \`timeout\` | \`number\` | \`30000\` | Request timeout in ms |
-| \`retries\` | \`number\` | \`3\` | Max retry attempts |
-| \`debug\` | \`boolean\` | \`false\` | Enable debug logging |
+| \`name\` | \`string\` | — | Your project name (required) |
+| \`docs\` | \`string\` | \`'./docs'\` | Path to markdown docs directory |
+| \`output.agentsMd\` | \`boolean\` | \`true\` | Generate AGENTS.md |
+| \`output.llmsTxt\` | \`boolean\` | \`true\` | Generate llms.txt |
+| \`output.installMd\` | \`boolean\` | \`true\` | Generate install.md |
 
-## Environment Variables
+## Project Types
 
-The SDK automatically reads these environment variables:
+Dewey supports different project type presets:
 
 \`\`\`bash
-ACME_API_KEY=your-api-key
-ACME_REGION=us-east-1
-ACME_DEBUG=true
+npx dewey init --type npm-package
+npx dewey init --type cli-tool
+npx dewey init --type react-library
 \`\`\`
 
-> **Tip:** Use a \`.env.local\` file for local development and add it to \`.gitignore\`.
+> **Tip:** Use \`--type\` to get project-specific documentation templates and audit rules.
 
-## Middleware
+## Skills
 
-Add custom middleware to intercept requests and responses:
+Skills are LLM prompts that guide AI agents through specific tasks. Built-in skills include:
 
 \`\`\`typescript
-client.use(async (ctx, next) => {
-  console.log(\`Request: \${ctx.method} \${ctx.path}\`)
-  const start = Date.now()
-  await next()
-  console.log(\`Response: \${Date.now() - start}ms\`)
-})
+// Available skills
+docsReviewAgent          // Review docs for completeness
+promptSlideoutGenerator  // Generate prompt slideout UI
+installMdGenerator       // Generate install.md files
+docsDesignCritic         // Critique docs site design
+improveAiPrompts         // Improve AI prompt quality
 \`\`\`
 
 ## TypeScript Support
 
-The SDK ships with full TypeScript declarations. Enable strict mode for the best experience:
+Dewey ships with full TypeScript declarations. The config file uses \`defineConfig\` for type-safe configuration:
 
 \`\`\`json
 {
@@ -159,8 +159,8 @@ The SDK ships with full TypeScript declarations. Enable strict mode for the best
 }
 
 export const sampleConfig = {
-  name: 'Acme SDK',
-  tagline: 'Build modern apps with type-safe APIs',
+  name: 'Dewey',
+  tagline: 'Documentation toolkit for AI-agent-ready docs',
   basePath: '/docs',
   homeUrl: '/',
   navigation: [

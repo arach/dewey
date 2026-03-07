@@ -27,8 +27,8 @@ export const tocHeadings = [
   { depth: 2, slug: 'installation', text: 'Installation' },
   { depth: 2, slug: 'quick-setup', text: 'Quick Setup' },
   { depth: 2, slug: 'core-concepts', text: 'Core Concepts' },
-  { depth: 3, slug: 'authentication', text: 'Authentication' },
-  { depth: 3, slug: 'error-handling', text: 'Error Handling' },
+  { depth: 3, slug: 'cli-commands', text: 'CLI Commands' },
+  { depth: 3, slug: 'agent-readiness', text: 'Agent Readiness' },
   { depth: 2, slug: 'whats-next', text: "What's Next" },
 ]
 
@@ -38,7 +38,7 @@ export const standardSections: StandardSection[] = [
     heading: 'Installation',
     prose: '<p>Install the package using your preferred package manager:</p>',
     codeSnippets: [
-      { code: 'npm install @acme/sdk', lang: 'bash' },
+      { code: 'npm install -D @arach/dewey', lang: 'bash' },
     ],
     afterProse: '<p>Or with pnpm:</p>',
   },
@@ -47,26 +47,25 @@ export const standardSections: StandardSection[] = [
     heading: '',
     prose: '',
     codeSnippets: [
-      { code: 'pnpm add @acme/sdk', lang: 'bash' },
+      { code: 'pnpm add -D @arach/dewey', lang: 'bash' },
     ],
   },
   {
     id: 'quick-setup',
     heading: 'Quick Setup',
-    prose: '<p>Initialize the client with your API key:</p>',
+    prose: '<p>Initialize your documentation structure:</p>',
     codeSnippets: [
       {
-        code: `import { createClient } from '@acme/sdk'
+        code: `npx dewey init
 
-const client = createClient({
-  apiKey: process.env.ACME_API_KEY,
-  region: 'us-east-1',
-})
+# This creates docs/ and dewey.config.ts
+# Edit the config with your project context:
 
-// Fetch data with full type safety
-const users = await client.users.list({
-  limit: 10,
-  orderBy: 'createdAt',
+import { defineConfig } from '@arach/dewey'
+
+export default defineConfig({
+  name: 'my-project',
+  docs: './docs',
 })`,
         lang: 'typescript',
       },
@@ -75,49 +74,47 @@ const users = await client.users.list({
   {
     id: 'core-concepts',
     heading: 'Core Concepts',
-    prose: `<p>The SDK is built around three key ideas:</p>
+    prose: `<p>Dewey is built around three key ideas:</p>
 <ol>
-  <li><strong>Type Safety</strong> — Every API response is fully typed with TypeScript generics</li>
-  <li><strong>Real-time Sync</strong> — Subscribe to changes with <code>client.subscribe()</code></li>
-  <li><strong>Optimistic Updates</strong> — Mutations resolve instantly with automatic rollback on failure</li>
+  <li><strong>Agent Content Pattern</strong> — Each page has human (<code>.md</code>) and agent (<code>.agent.md</code>) versions</li>
+  <li><strong>Skills System</strong> — LLM prompts that guide AI agents through specific tasks</li>
+  <li><strong>install.md Standard</strong> — LLM-executable install instructions following installmd.org</li>
 </ol>`,
     codeSnippets: [],
   },
   {
-    id: 'authentication',
-    heading: 'Authentication',
-    prose: `<p>Authentication supports multiple strategies:</p>
+    id: 'cli-commands',
+    heading: 'CLI Commands',
+    prose: `<p>Dewey provides these commands:</p>
 <table>
   <thead>
-    <tr><th>Strategy</th><th>Use Case</th><th>Setup</th></tr>
+    <tr><th>Command</th><th>Description</th></tr>
   </thead>
   <tbody>
-    <tr><td>API Key</td><td>Server-to-server</td><td>Set <code>apiKey</code> in config</td></tr>
-    <tr><td>OAuth 2.0</td><td>User-facing apps</td><td>Configure <code>oauth</code> provider</td></tr>
-    <tr><td>JWT</td><td>Custom auth</td><td>Pass <code>token</code> function</td></tr>
+    <tr><td><code>dewey init</code></td><td>Create docs/ folder and config</td></tr>
+    <tr><td><code>dewey audit</code></td><td>Check documentation completeness</td></tr>
+    <tr><td><code>dewey generate</code></td><td>Create agent-ready files</td></tr>
+    <tr><td><code>dewey agent</code></td><td>Score agent-readiness (0-100)</td></tr>
   </tbody>
 </table>`,
     codeSnippets: [],
   },
   {
-    id: 'error-handling',
-    heading: 'Error Handling',
-    prose: '<p>All errors follow a consistent pattern:</p>',
+    id: 'agent-readiness',
+    heading: 'Agent Readiness',
+    prose: '<p>Check how well your docs serve AI agents:</p>',
     codeSnippets: [
       {
-        code: `try {
-  const result = await client.users.create({
-    email: 'dev@acme.com',
-    role: 'admin',
-  })
-} catch (error) {
-  if (error instanceof AcmeError) {
-    console.log(error.code)    // 'VALIDATION_ERROR'
-    console.log(error.message) // Human-readable message
-    console.log(error.details) // Field-level errors
-  }
-}`,
-        lang: 'typescript',
+        code: `npx dewey agent
+
+# Agent Readiness Report
+# Score: 82/100
+#
+# ✓ AGENTS.md found
+# ✓ llms.txt found
+# ✓ install.md found
+# ✗ Missing .agent.md variants for 3 pages`,
+        lang: 'bash',
       },
     ],
   },
@@ -126,11 +123,11 @@ const users = await client.users.list({
     heading: "What's Next",
     prose: `<ul>
   <li>Read the <a href="#">Configuration</a> guide for advanced setup</li>
-  <li>Explore the API reference for all available methods</li>
-  <li>Join the community Discord for help and discussion</li>
+  <li>Explore the built-in skills for docs review and improvement</li>
+  <li>Check the components library for building doc sites</li>
 </ul>
 <hr />
-<p><em>Built with care by the Acme team.</em></p>`,
+<p><em>Built with care by the Dewey team.</em></p>`,
     codeSnippets: [],
   },
 ]
@@ -139,18 +136,18 @@ export const splitpaneSections: SplitpaneSection[] = [
   {
     id: 'installation',
     heading: 'Installation',
-    prose: `<p>Install the Acme SDK using your preferred package manager. The SDK requires Node.js 18 or later.</p>
+    prose: `<p>Install Dewey using your preferred package manager. Requires Node.js 18 or later.</p>
 <p>The package includes TypeScript definitions out of the box — no need to install separate <code>@types</code> packages.</p>`,
     codeSnippets: [
       {
         code: `# npm
-npm install @acme/sdk
+npm install -D @arach/dewey
 
 # pnpm
-pnpm add @acme/sdk
+pnpm add -D @arach/dewey
 
 # yarn
-yarn add @acme/sdk`,
+yarn add -D @arach/dewey`,
         lang: 'bash',
       },
     ],
@@ -158,84 +155,72 @@ yarn add @acme/sdk`,
   {
     id: 'quick-setup',
     heading: 'Quick Setup',
-    prose: `<p>Initialize the client with your API key. The client is the main entry point for all SDK operations.</p>
-<p>We recommend storing your API key in an environment variable. Never commit secrets to source control.</p>`,
+    prose: `<p>Initialize your docs structure with <code>dewey init</code>. This creates the docs folder and config file.</p>
+<p>Edit <code>dewey.config.ts</code> with your project context to customize output generation.</p>`,
     codeSnippets: [
       {
-        code: `import { createClient } from '@acme/sdk'
+        code: `import { defineConfig } from '@arach/dewey'
 
-const client = createClient({
-  apiKey: process.env.ACME_API_KEY,
-  region: 'us-east-1',
+export default defineConfig({
+  name: 'my-project',
+  docs: './docs',
+  output: {
+    agentsMd: true,
+    llmsTxt: true,
+    installMd: true,
+  },
 })`,
         lang: 'typescript',
       },
     ],
   },
   {
-    id: 'fetching-data',
-    heading: 'Fetching Data',
-    prose: `<p>Query your data with full type safety. Every method returns typed results with autocomplete support in your editor.</p>
-<p>Pagination, filtering, and sorting are all built in. Use <code>limit</code> and <code>offset</code> for cursor-based pagination.</p>`,
+    id: 'generating-files',
+    heading: 'Generating Files',
+    prose: `<p>Generate agent-ready output files from your documentation. Dewey creates AGENTS.md, llms.txt, docs.json, and install.md.</p>
+<p>Use <code>--agents-md</code>, <code>--llms-txt</code>, or <code>--install-md</code> flags to generate specific files only.</p>`,
     codeSnippets: [
       {
-        code: `const users = await client.users.list({
-  limit: 10,
-  orderBy: 'createdAt',
-  filter: {
-    role: 'admin',
-  },
-})
+        code: `# Generate all agent-ready files
+npx dewey generate
 
-// users.data is fully typed
-users.data.forEach(user => {
-  console.log(user.email)
-})`,
-        lang: 'typescript',
+# Generate specific files
+npx dewey generate --agents-md
+npx dewey generate --llms-txt
+npx dewey generate --install-md`,
+        lang: 'bash',
       },
     ],
   },
   {
-    id: 'error-handling',
-    heading: 'Error Handling',
-    prose: `<p>All errors follow a consistent pattern. The SDK throws typed <code>AcmeError</code> instances with structured error codes, human-readable messages, and field-level details.</p>
-<p>Use the <code>code</code> property to programmatically handle specific error types.</p>`,
+    id: 'auditing',
+    heading: 'Auditing Docs',
+    prose: `<p>Audit your documentation for completeness and agent-readiness. The audit checks for missing sections, broken links, and structural issues.</p>
+<p>Use <code>--json</code> for machine-readable output or <code>--verbose</code> for detailed results.</p>`,
     codeSnippets: [
       {
-        code: `try {
-  const result = await client.users.create({
-    email: 'dev@acme.com',
-    role: 'admin',
-  })
-} catch (error) {
-  if (error instanceof AcmeError) {
-    console.log(error.code)
-    console.log(error.message)
-  }
-}`,
-        lang: 'typescript',
+        code: `# Run audit
+npx dewey audit --verbose
+
+# Output as JSON
+npx dewey audit --json`,
+        lang: 'bash',
       },
     ],
   },
   {
-    id: 'real-time',
-    heading: 'Real-time Subscriptions',
-    prose: `<p>Subscribe to changes in real time. The SDK uses WebSockets under the hood with automatic reconnection and exponential backoff.</p>
-<p>Subscriptions are lightweight and share a single connection per client instance.</p>`,
+    id: 'agent-score',
+    heading: 'Agent Readiness Score',
+    prose: `<p>Score your documentation's agent-readiness from 0 to 100. The score measures how well your docs can be consumed by AI agents and LLMs.</p>
+<p>Use <code>--fix</code> to auto-create missing files and folders.</p>`,
     codeSnippets: [
       {
-        code: `const unsub = client.subscribe(
-  'users',
-  (event) => {
-    if (event.type === 'created') {
-      console.log('New:', event.data)
-    }
-  }
-)
+        code: `# Check score
+npx dewey agent
 
-// Clean up when done
-unsub()`,
-        lang: 'typescript',
+# Auto-fix missing files
+npx dewey agent --fix`,
+        lang: 'bash',
       },
     ],
   },

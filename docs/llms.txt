@@ -7,7 +7,7 @@ Use `/dewey` to apply these patterns when writing or reviewing documentation.
 ## What it does
 
 - Generates AGENTS.md, llms.txt, docs.json, install.md
-- 22 React components for docs sites
+- 20 React components for docs sites
 - Skills for reviewing and improving docs
 - Validates docs against source code
 
@@ -17,10 +17,13 @@ pnpm add @arach/dewey
 
 ## CLI
 
-dewey init      - Create docs/ folder and config
-dewey audit     - Check completeness
-dewey generate  - Create agent-ready files
-dewey agent     - Score agent-readiness (0-100)
+dewey init              - Create docs/ folder and config
+dewey audit             - Check completeness
+dewey generate          - Create agent-ready files
+dewey agent             - Score agent-readiness (0-100)
+dewey create <dir>      - Create a new docs site from markdown sources
+dewey update [dir]      - Update Dewey-owned site files to latest version
+dewey eject <component> - Eject a component for customization
 
 ## Key Concepts
 
@@ -31,7 +34,7 @@ dewey agent     - Score agent-readiness (0-100)
 
 2. Skills System
    - Skills are LLM prompts, not code
-   - Built-in: docsReviewAgent, promptSlideoutGenerator, installMdGenerator
+   - Built-in: docsReviewAgent, promptSlideoutGenerator, installMdGenerator, docsDesignCritic, improveAiPrompts
 
 3. install.md Standard
    - Follows installmd.org specification
@@ -41,8 +44,7 @@ dewey agent     - Score agent-readiness (0-100)
 
 - Overview: /docs/overview
 - Quickstart: /docs/quickstart
-- Components: /docs/components
-- Configuration: /docs/configuration
+- Skills: /docs/skills
 
 ## Links
 

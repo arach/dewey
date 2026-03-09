@@ -107,28 +107,50 @@ const sampleHtml = buildHtml()
       <div class="dl-body">
         <!-- Sidebar -->
         <nav class="dl-sidebar" data-pagefind-ignore>
-          {navGroups.map((group, i) => (
-            <div class={`dl-nav-section ${i > 0 ? 'dl-nav-section--bordered' : ''}`}>
-              <button class="dl-nav-label" data-nav-toggle aria-expanded="true">
-                {group.title}
-                <svg class="dl-nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div data-nav-list>
-                <ul class="dl-nav-list">
-                  {group.items.map((item) => (
-                    <li>
-                      <a
-                        href="#"
-                        class={`dl-nav-item ${item.title === 'Getting Started' ? 'active' : ''}`}
-                      >
-                        {item.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+          {navGroups.map((group, i) => {
+            // Group items by subsection
+            const subsections: { label: string | null; items: typeof group.items }[] = []
+            let currentSub: typeof subsections[0] | null = null
+
+            for (const item of group.items) {
+              const sub = (item as any).subsection ?? null
+              if (!currentSub || currentSub.label !== sub) {
+                currentSub = { label: sub, items: [] }
+                subsections.push(currentSub)
+              }
+              currentSub.items.push(item)
+            }
+
+            return (
+              <div class={`dl-nav-section ${i > 0 ? 'dl-nav-section--bordered' : ''}`}>
+                <button class="dl-nav-label" data-nav-toggle aria-expanded="true">
+                  {group.title}
+                  <svg class="dl-nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div data-nav-list>
+                {subsections.map((sub) => (
+                  <div>
+                    {sub.label && (
+                      <div class="dl-nav-subsection" set:html={sub.label.replace(/\/([\w-]+)$/i, '/<strong>$1</strong>')} />
+                    )}
+                    <ul class="dl-nav-list">
+                      {sub.items.map((item) => (
+                        <li>
+                          <a
+                            href="#"
+                            class={`dl-nav-item ${sub.label ? 'dl-nav-item--indented' : ''} ${item.title === 'Getting Started' ? 'active' : ''}`}
+                          >
+                            {item.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
 
           <div class="dl-nav-section dl-nav-section--bordered">
             <div class="dl-nav-label dl-nav-label--static">For AI Agents</div>
@@ -383,6 +405,22 @@ const sampleHtml = buildHtml()
         display: none;
       }
 
+      .dl-nav-subsection {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        padding: 0 0 0 8px;
+        margin-top: 12px;
+        margin-bottom: 6px;
+      }
+
+      .dl-nav-subsection strong {
+        font-weight: 700;
+      }
+
       .dl-nav-list {
         list-style: none;
         padding: 0;
@@ -398,6 +436,10 @@ const sampleHtml = buildHtml()
         color: color-mix(in srgb, var(--color-text) 55%, transparent);
         text-decoration: none;
         transition: all 0.15s;
+      }
+
+      .dl-nav-item--indented {
+        padding-left: 16px;
       }
 
       .dl-nav-item:hover {

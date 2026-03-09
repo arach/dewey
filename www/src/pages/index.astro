@@ -497,19 +497,23 @@ import SiteHeader from '../components/SiteHeader.astro'
         transition: background 0.4s ease, box-shadow 0.4s ease;
       }
 
-      /* Extend left-column cells past dashed lines on all sides */
+      /* Extend left-column cells past dashed lines */
       .v3-feature:nth-child(odd)::after {
-        top: -1px;
-        bottom: -1px;
         left: calc(-1 * clamp(20px, 4vw, 48px) - 1px);
         right: -1px;
       }
-      /* Extend right-column cells past dashed lines on all sides */
+      /* Extend right-column cells past dashed lines */
       .v3-feature:nth-child(even)::after {
-        top: -1px;
-        bottom: -1px;
         left: -1px;
         right: calc(-1 * clamp(20px, 4vw, 48px) - 1px);
+      }
+      /* Bottom row extends up to cover mid-line */
+      .v3-feature:nth-child(n+3)::after {
+        top: -2px;
+      }
+      /* Top row extends down to cover mid-line */
+      .v3-feature:nth-child(-n+2)::after {
+        bottom: -2px;
       }
 
       .v3-feature:hover::after {

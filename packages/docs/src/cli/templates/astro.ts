@@ -3,7 +3,7 @@
 // Extracted from create.ts so both `create` and `update` can use them.
 // ---------------------------------------------------------------------------
 
-export const VALID_THEMES = ['neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github', 'warm'] as const
+export const VALID_THEMES = ['neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github', 'warm', 'hudson'] as const
 export type ThemeName = typeof VALID_THEMES[number]
 
 export function resolveTheme(theme?: string): ThemeName {
@@ -190,6 +190,26 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
     --color-text-muted: #8b949e;
     --color-accent: #58a6ff;
     --color-accent-strong: #58a6ff;`,
+  ),
+
+  hudson: buildTokens(
+    // Hudson is dark-only, so light vars are the same dark palette
+    `    --color-bg: #0a0a0a;
+    --color-surface: #141414;
+    --color-surface-muted: #1a1a1a;
+    --color-border: #262626;
+    --color-text: #e5e5e5;
+    --color-text-muted: #737373;
+    --color-accent: #34d399;
+    --color-accent-strong: #34d399;`,
+    `    --color-bg: #0a0a0a;
+    --color-surface: #141414;
+    --color-surface-muted: #1a1a1a;
+    --color-border: #262626;
+    --color-text: #e5e5e5;
+    --color-text-muted: #737373;
+    --color-accent: #34d399;
+    --color-accent-strong: #34d399;`,
   ),
 }
 
@@ -494,6 +514,7 @@ const { title = 'Docs' } = Astro.props
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Dewey" />
     <title>{title} - ${args.projectName}</title>
     <link
       rel="stylesheet"
@@ -678,7 +699,14 @@ import BaseLayout from './BaseLayout.astro'
 import SidebarNav from '../components/SidebarNav.astro'
 import Toc from '../components/Toc.astro'
 
-const { title = 'Docs', headings = [], description } = Astro.props
+const {
+  title = 'Docs',
+  headings = [],
+  description,
+  badge,
+  rawMarkdown = '',
+  agentMarkdown = '',
+} = Astro.props
 ---
 
 <BaseLayout title={title}>
@@ -690,13 +718,38 @@ const { title = 'Docs', headings = [], description } = Astro.props
     </aside>
 
     <article class="min-w-0">
-      <div class="mb-10">
-        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">{title}</h1>
-        {description && (
-          <p class="mt-3 text-lg text-[var(--color-text-muted)]">{description}</p>
+      <div class="mb-10 flex flex-wrap items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          {badge && (
+            <span class="inline-block mb-3 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest rounded-full border border-[var(--color-border)] text-[var(--color-accent)]">
+              {badge}
+            </span>
+          )}
+          <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">{title}</h1>
+          {description && (
+            <p class="mt-3 text-lg text-[var(--color-text-muted)]">{description}</p>
+          )}
+        </div>
+        {rawMarkdown && (
+          <div class="flex items-center gap-2 flex-shrink-0 pt-1">
+            <button
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--color-border)] text-[var(--color-text-muted)] bg-[var(--color-surface)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+              data-copy-agent-button
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+              Copy for agent
+            </button>
+            <button
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--color-border)] text-[var(--color-text-muted)] bg-[var(--color-surface)] transition hover:border-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              data-copy-markdown-button
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy markdown
+            </button>
+          </div>
         )}
       </div>
-      <div class="doc-content">
+      <div class="doc-content" data-pagefind-body>
         <slot />
       </div>
     </article>
@@ -707,6 +760,28 @@ const { title = 'Docs', headings = [], description } = Astro.props
       </div>
     </aside>
   </div>
+
+  <script is:inline define:vars={{ rawMarkdown, agentMarkdown }}>
+    const safeCopy = async (content, btn) => {
+      if (!content) return
+      try {
+        await navigator.clipboard.writeText(content)
+        if (btn) {
+          const orig = btn.textContent
+          btn.textContent = ' Copied!'
+          setTimeout(() => { btn.textContent = orig }, 2000)
+        }
+      } catch {}
+    }
+
+    document.querySelector('[data-copy-agent-button]')?.addEventListener('click', function() {
+      safeCopy(agentMarkdown || rawMarkdown, this)
+    })
+
+    document.querySelector('[data-copy-markdown-button]')?.addEventListener('click', function() {
+      safeCopy(rawMarkdown, this)
+    })
+  </script>
 </BaseLayout>
 `,
 
@@ -862,17 +937,34 @@ export const navGroups: NavGroup[] = (docsJson as any).groups.map((group: any) =
 }))
 `,
 
-  'src/pages/index.astro': (args) => `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0;url=/docs/${args.defaultPage}" />
-    <title>Redirecting\u2026</title>
-  </head>
-  <body>
-    <p>Redirecting to <a href="/docs/${args.defaultPage}">documentation</a>\u2026</p>
-  </body>
-</html>
+  'src/pages/index.astro': () => `---
+import DocsLayout from '../layouts/DocsLayout.astro'
+import { navGroups } from '../lib/nav'
+---
+
+<DocsLayout title="Documentation" headings={[]} rawMarkdown="" agentMarkdown="">
+  <div class="space-y-10">
+    {navGroups.map((group) => (
+      <div>
+        <h2 id={group.id} class="text-xl font-semibold tracking-tight mb-4" style="border: none; margin-top: 0; padding-top: 0;">{group.title}</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+          {group.items.map((item) => (
+            <a
+              href={item.href}
+              class="group block rounded-lg border border-[var(--color-border)] p-5 text-sm no-underline transition hover:border-[var(--color-text-muted)] hover:bg-[var(--color-surface)]"
+            >
+              <span class="font-medium text-[var(--color-text)]">{item.title}</span>
+              <span class="mt-2 flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
+                Read more
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</DocsLayout>
 `,
 
   'src/pages/docs/[...slug].astro': (args) => `---
@@ -881,20 +973,25 @@ import DocsLayout from '../../layouts/DocsLayout.astro'
 export async function getStaticPaths() {
   const markdownFiles = import.meta.glob('../../../docs/**/*.md')
 
+  const entries = Object.entries(markdownFiles).filter(([filePath]) => {
+    if (filePath.endsWith('.agent.md')) return false
+    return true
+  })
+
   return Promise.all(
-    Object.entries(markdownFiles).map(async ([filePath, loader]) => {
+    entries.map(async ([filePath, loader]) => {
       const page = await loader()
       const slug = filePath.split('/docs/')[1].replace(/\\.md$/, '')
 
       return {
         params: { slug },
-        props: { page },
+        props: { page, filePath },
       }
     }),
   )
 }
 
-const { page } = Astro.props
+const { page, filePath } = Astro.props
 const { Content, frontmatter } = page
 const headings = (await page.getHeadings?.()) ?? page.headings ?? []
 const slug = Astro.params.slug || '${args.defaultPage}'
@@ -905,9 +1002,25 @@ const fallbackTitle = fileName
   .join(' ')
 const title = frontmatter?.title ?? fallbackTitle
 const description = frontmatter?.description
+
+const rawMarkdownFiles = import.meta.glob('../../../docs/**/*.md', {
+  query: '?raw',
+  import: 'default',
+})
+const agentMarkdownFiles = import.meta.glob('../../../docs/**/*.agent.md', {
+  query: '?raw',
+  import: 'default',
+})
+
+const rawLoader = rawMarkdownFiles[filePath]
+const rawMarkdown = rawLoader ? await rawLoader() : ''
+
+const agentFilePath = filePath.replace(/\\.md$/, '.agent.md')
+const agentLoader = agentMarkdownFiles[agentFilePath]
+const agentMarkdown = agentLoader ? await agentLoader() : ''
 ---
 
-<DocsLayout title={title} headings={headings} description={description}>
+<DocsLayout title={title} headings={headings} description={description} rawMarkdown={rawMarkdown} agentMarkdown={agentMarkdown}>
   <Content />
 </DocsLayout>
 `,

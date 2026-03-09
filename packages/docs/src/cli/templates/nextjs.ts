@@ -4,6 +4,7 @@
 // ---------------------------------------------------------------------------
 
 import { VALID_THEMES, resolveTheme, type ThemeName } from './astro.js'
+import { DEWEY_VERSION } from '../version.js'
 
 export { VALID_THEMES, resolveTheme }
 export type { ThemeName }
@@ -104,6 +105,8 @@ import { Providers } from './providers'
 export const metadata: Metadata = {
   title: '${args.projectName}',
   description: '${args.projectName} Documentation',
+  generator: 'Dewey',
+  other: { 'dewey-version': '${DEWEY_VERSION}' },
 }
 
 export default function RootLayout({
@@ -184,6 +187,58 @@ a {
 
 .docs-article-header {
   margin-bottom: 2.5rem;
+}
+
+.docs-article-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.docs-article-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+}
+
+.docs-agent-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 150ms;
+  color: var(--color-dw-muted-foreground, #5c676c);
+  border: 1px solid var(--color-dw-border, rgba(16, 21, 24, 0.12));
+  background: var(--color-dw-card, rgba(255,255,255,0.5));
+}
+
+.docs-agent-toggle:hover {
+  border-color: var(--color-dw-primary, #3b82f6);
+  color: var(--color-dw-primary, #3b82f6);
+}
+
+.docs-agent-toggle.active {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.docs-agent-banner {
+  margin-bottom: 1.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
 }
 
 .docs-article-title {
@@ -316,26 +371,58 @@ export default async function DocPage({ params }: PageProps) {
 
   'src/app/docs/[...slug]/content.tsx': () => `'use client'
 
+import { useState } from 'react'
 import { components } from '@/lib/dewey'
+import { CopyButtons } from '@arach/dewey'
 import type { DocData } from '@/lib/docs'
 
 const { MarkdownContent, TableOfContents } = components
 
 export function DocContent({ doc }: { doc: DocData }) {
+  const [viewAgent, setViewAgent] = useState(false)
+  const activeContent = viewAgent && doc.agentContent ? doc.agentContent : doc.content
+
   return (
     <div className="docs-content-grid">
       <article className="docs-article">
         <div className="docs-article-header">
-          <h1 className="docs-article-title">{doc.title}</h1>
-          {doc.description && (
-            <p className="docs-article-description">{doc.description}</p>
-          )}
+          <div className="docs-article-header-top">
+            <div>
+              <h1 className="docs-article-title">{doc.title}</h1>
+              {doc.description && (
+                <p className="docs-article-description">{doc.description}</p>
+              )}
+            </div>
+            <div className="docs-article-actions">
+              {doc.agentContent && (
+                <button
+                  onClick={() => setViewAgent(!viewAgent)}
+                  className={\\\`docs-agent-toggle\\\${viewAgent ? ' active' : ''}\\\`}
+                  title={viewAgent ? 'Switch to human view' : 'View agent-optimized version'}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" />
+                  </svg>
+                  <span>{viewAgent ? 'Human view' : 'Agent view'}</span>
+                </button>
+              )}
+              <CopyButtons
+                markdownContent={doc.content}
+                agentContent={doc.agentContent}
+              />
+            </div>
+          </div>
         </div>
-        <MarkdownContent content={doc.content} />
+        {viewAgent && (
+          <div className="docs-agent-banner">
+            Viewing agent-optimized content — dense, structured, designed for LLMs
+          </div>
+        )}
+        <MarkdownContent content={activeContent} />
       </article>
       <aside className="docs-toc">
         <div className="docs-toc-sticky">
-          <TableOfContents markdown={doc.content} />
+          <TableOfContents markdown={activeContent} />
         </div>
       </aside>
     </div>
@@ -352,6 +439,7 @@ export interface DocData {
   title: string
   description?: string
   content: string
+  agentContent?: string
   order: number
 }
 
@@ -363,11 +451,23 @@ export function getDocBySlug(slug: string): DocData | null {
     const fileContents = fs.readFileSync(fullPath, 'utf-8')
     const { data, content } = matter(fileContents)
 
+    // Look for a sibling .agent.md file
+    let agentContent: string | undefined
+    try {
+      const agentPath = path.join(docsDirectory, \`\${slug}.agent.md\`)
+      const agentFile = fs.readFileSync(agentPath, 'utf-8')
+      const { content: agentBody } = matter(agentFile)
+      agentContent = agentBody.trim() || undefined
+    } catch {
+      // No agent file — that's fine
+    }
+
     return {
       slug,
       title: (data.title as string) || slug.charAt(0).toUpperCase() + slug.slice(1),
       description: data.description as string | undefined,
       content: content.trim(),
+      agentContent,
       order: (data.order as number) || 999,
     }
   } catch {
@@ -379,7 +479,7 @@ export function getAllDocSlugs(): string[] {
   try {
     const files = fs.readdirSync(docsDirectory)
     return files
-      .filter((file) => file.endsWith('.md'))
+      .filter((file) => file.endsWith('.md') && !file.endsWith('.agent.md'))
       .map((file) => file.replace(/\\.md$/, ''))
   } catch {
     return []

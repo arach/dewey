@@ -193,15 +193,14 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
   ),
 
   hudson: buildTokens(
-    // Hudson is dark-only, so light vars are the same dark palette
-    `    --color-bg: #0a0a0a;
-    --color-surface: #141414;
-    --color-surface-muted: #1a1a1a;
-    --color-border: #262626;
-    --color-text: #e5e5e5;
+    `    --color-bg: #fafafa;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f5f5f5;
+    --color-border: #e5e5e5;
+    --color-text: #171717;
     --color-text-muted: #737373;
-    --color-accent: #34d399;
-    --color-accent-strong: #34d399;`,
+    --color-accent: #059669;
+    --color-accent-strong: #059669;`,
     `    --color-bg: #0a0a0a;
     --color-surface: #141414;
     --color-surface-muted: #1a1a1a;

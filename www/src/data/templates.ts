@@ -24,9 +24,9 @@ export const templates: TemplateMeta[] = [
   {
     name: 'hudson',
     displayName: 'Hudson',
-    description: 'Dark-only with emerald accent and monospace headings',
-    primaryColor: '#34d399',
-    bgColor: '#0a0a0a',
+    description: 'Emerald accent with monospace headings, light/dark',
+    primaryColor: '#059669',
+    bgColor: '#fafafa',
     darkBgColor: '#0a0a0a',
     fontUrls: [
       'https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap',

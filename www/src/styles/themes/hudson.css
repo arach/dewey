@@ -1,21 +1,22 @@
 /*
- * Hudson — dark-only theme with emerald accent and monospace headings.
+ * Hudson — emerald accent, monospace headings, light/dark support.
  * Applied via data-theme="hudson" on <html>.
+ * Synced from hudsonos/hudson-docs (source of truth).
  */
 
 :root[data-theme='hudson'] {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Colors */
-  --color-bg: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-muted: #1a1a1a;
-  --color-border: #262626;
-  --color-text: #e5e5e5;
+  /* Colors – light */
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5f5;
+  --color-border: #e5e5e5;
+  --color-text: #171717;
   --color-text-muted: #737373;
-  --color-accent: #34d399;
-  --color-accent-strong: #34d399;
-  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --color-accent: #059669;
+  --color-accent-strong: #059669;
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.08);
 
   /* Typography */
   --heading-font: 'Geist Mono', ui-monospace, monospace;
@@ -26,21 +27,33 @@
   --h2-border-top: none;
   --h2-border-bottom: 1px solid var(--color-border);
   --h2-padding-top: 0;
-  --h2-padding-bottom: 0.75rem;
+  --h2-padding-bottom: 0.375rem;
 
-  /* h3: emerald accent */
-  --h3-color: #34d399;
-
-  /* Inline code: emerald tint */
-  --inline-code-bg: rgba(52, 211, 153, 0.08);
-  --inline-code-color: #34d399;
+  /* Inline code: accent tint */
+  --inline-code-bg: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --inline-code-color: var(--color-accent);
 
   /* Code blocks */
-  --code-block-bg: #121212;
-  --code-block-bg-dark: #121212;
+  --code-block-bg: #111111;
+  --code-block-bg-dark: #111111;
 
   /* Layout */
   --sidebar-width: 260px;
+}
+
+/* Dark mode */
+:root[data-theme='hudson'][data-mode='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-muted: #1a1a1a;
+  --color-border: #262626;
+  --color-text: #e5e5e5;
+  --color-text-muted: #737373;
+  --color-accent: #34d399;
+  --color-accent-strong: #34d399;
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Hudson always uses dark Shiki colors */
@@ -50,5 +63,5 @@
 
 /* Hudson code block border override */
 :root[data-theme='hudson'] .doc-content pre {
-  border-color: #1e1e1e;
+  border-color: var(--color-border);
 }

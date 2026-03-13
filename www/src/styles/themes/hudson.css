@@ -1,13 +1,13 @@
 /*
  * Hudson — emerald accent, monospace headings, light/dark support.
  * Applied via data-theme="hudson" on <html>.
- * Synced from hudsonos/hudson-docs (source of truth).
+ * Synced from fabric/fabric-docs (source of truth).
  */
 
 :root[data-theme='hudson'] {
   color-scheme: light;
 
-  /* Colors – light */
+  /* Colors – light (synced with Fabric tokens.css) */
   --color-bg: #fafafa;
   --color-surface: #ffffff;
   --color-surface-muted: #f5f5f5;
@@ -16,7 +16,7 @@
   --color-text-muted: #737373;
   --color-accent: #059669;
   --color-accent-strong: #059669;
-  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.08);
+  --shadow-soft: 0 12px 30px rgba(16, 21, 24, 0.08);
 
   /* Typography */
   --heading-font: 'Geist Mono', ui-monospace, monospace;
@@ -39,10 +39,16 @@
 
   /* Layout */
   --sidebar-width: 260px;
+  --toc-width: 220px;
+  --content-max: 760px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 }
 
-/* Dark mode */
-:root[data-theme='hudson'][data-mode='dark'] {
+/* Dark mode (supports both data-mode and data-theme='dark' patterns) */
+:root[data-theme='hudson'][data-mode='dark'],
+:root[data-theme='hudson'][data-theme='dark'] {
   color-scheme: dark;
 
   --color-bg: #0a0a0a;
@@ -53,7 +59,7 @@
   --color-text-muted: #737373;
   --color-accent: #34d399;
   --color-accent-strong: #34d399;
-  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 /* Hudson always uses dark Shiki colors */

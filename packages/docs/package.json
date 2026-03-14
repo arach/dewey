@@ -1,6 +1,6 @@
 {
   "name": "@arach/dewey",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Documentation toolkit with CLI and React components for agent-ready docs",
   "type": "module",
   "main": "./dist/index.js",

@@ -245,13 +245,13 @@ export const ASTRO_TEMPLATES: Record<string, (args: AstroTemplateArgs) => string
     },
   }, null, 2),
 
-  'astro.config.mjs': () => `import { defineConfig } from 'astro/config'
+  'astro.config.mjs': (args) => `import { defineConfig } from 'astro/config'
 import tailwind from '@tailwindcss/vite'
 
 export default defineConfig({
   markdown: {
     shikiConfig: {
-      theme: 'github-dark',
+      theme: '${args.theme === 'hudson' ? 'vitesse-dark' : 'github-dark'}',
     },
   },
   vite: {
@@ -319,7 +319,70 @@ export default defineConfig({
 
   'src/styles/tokens.css': (args) => THEME_TOKENS[args.theme],
 
-  'src/styles/base.css': () => `@layer base {
+  'src/styles/base.css': (args) => args.theme === 'hudson' ? `@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light;
+    font-family: "Geist", system-ui, -apple-system, sans-serif;
+    font-weight: 300;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    position: relative;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+    color: var(--color-text);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-accent-strong);
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  pre {
+    position: relative;
+  }
+
+  code {
+    font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .root {
+    isolation: isolate;
+  }
+}
+` : `@layer base {
   * {
     box-sizing: border-box;
   }
@@ -381,7 +444,197 @@ export default defineConfig({
 }
 `,
 
-  'src/styles/markdown.css': () => `@layer base {
+  'src/styles/markdown.css': (args) => args.theme === 'hudson' ? `@layer base {
+  .doc-content {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--color-text);
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .doc-content h1[id] {
+    display: none;
+  }
+
+  .doc-content h1 {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .doc-content h2 {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid var(--color-border);
+    line-height: 1.3;
+    scroll-margin-top: 100px;
+  }
+
+  .doc-content h2:first-child {
+    margin-top: 0;
+  }
+
+  .doc-content h3 {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+    font-size: 1.0625rem;
+    color: var(--color-text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.375rem;
+    line-height: 1.4;
+    scroll-margin-top: 100px;
+  }
+
+  .doc-content h4 {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    margin-top: 1.25rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .doc-content p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .doc-content ul,
+  .doc-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .doc-content ul {
+    list-style-type: disc;
+  }
+
+  .doc-content ol {
+    list-style-type: decimal;
+  }
+
+  .doc-content li {
+    margin-bottom: 0.25rem;
+  }
+
+  .doc-content li > ul,
+  .doc-content li > ol {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .doc-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 400;
+  }
+
+  .doc-content a:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .doc-content strong {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .doc-content :not(pre) > code {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.8125rem;
+    font-family: 'Geist Mono', monospace;
+    color: var(--color-accent);
+  }
+
+  .doc-content pre {
+    background: #111111 !important;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1.25rem;
+    font-size: 0.8125rem;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 300;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .doc-content pre code {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+  }
+
+  .doc-content blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1rem;
+    margin-left: 0;
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .doc-content hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+  }
+
+  .doc-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.25rem;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8125rem;
+  }
+
+  .doc-content thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-text);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .doc-content tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .doc-content tbody tr:hover {
+    background: color-mix(in srgb, var(--color-border) 40%, transparent);
+  }
+
+  .doc-content img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+  }
+}
+` : `@layer base {
   .doc-content {
     font-size: 15px;
     line-height: 1.75;
@@ -503,7 +756,381 @@ export default defineConfig({
 }
 `,
 
-  'src/layouts/BaseLayout.astro': (args) => `---
+  'src/layouts/BaseLayout.astro': (args) => args.theme === 'hudson' ? `---
+import '../styles/global.css'
+
+const { title = 'Docs', description } = Astro.props
+const pageTitle = \`\${title} - ${args.projectName}\`
+const pageDescription = description || '${args.projectName} documentation'
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Dewey" />
+    <meta name="description" content={pageDescription} />
+    <title>{pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <script is:inline>
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('theme')
+        } catch (e) {}
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
+  </head>
+  <body>
+    <div class="dl" data-theme-root>
+      <header class="dl-header" data-pagefind-ignore>
+        <div class="dl-header-left">
+          <a href="/" class="dl-header-brand">${args.projectName}</a>
+          <span class="dl-header-sep">/</span>
+          <a href="/" class="dl-header-brand dl-header-brand--active">Docs</a>
+        </div>
+        <div class="dl-header-right">
+          <a href="/llms.txt" class="dl-header-link">llms.txt</a>
+          <button class="dl-search-btn" type="button" data-search-toggle data-pagefind-ignore>
+            Search\u2026
+            <span class="dl-search-key">\u2318K</span>
+          </button>
+          <button class="dl-theme-btn" type="button" data-theme-toggle data-pagefind-ignore title="Toggle theme">
+            <svg class="dl-theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <svg class="dl-theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="dl-body">
+        <slot />
+      </div>
+    </div>
+    <div class="dl-search-overlay" data-search-modal data-pagefind-ignore>
+      <div class="dl-search-dialog">
+        <div class="dl-search-dialog-header">
+          <div>
+            <p class="dl-search-dialog-label">Search</p>
+            <h2 class="dl-search-dialog-title">Find docs fast</h2>
+          </div>
+          <button class="dl-search-dialog-close" data-search-close>Close</button>
+        </div>
+        <div id="search-modal" class="dl-search-dialog-body"></div>
+        <p id="search-modal-fallback" class="dl-search-dialog-fallback" style="display:none;">
+          Search index is generated on build. Run <code>pnpm build</code> to enable Pagefind locally.
+        </p>
+      </div>
+    </div>
+
+    <style is:inline>
+      .dl {
+        min-height: 100vh;
+        background: var(--color-bg);
+        color: var(--color-text);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dl-body {
+        display: flex;
+        flex: 1;
+      }
+
+      /* Header */
+      .dl-header {
+        height: 48px;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--color-bg);
+        backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      .dl-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .dl-header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .dl-header-brand {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+
+      .dl-header-brand:hover { color: var(--color-text); }
+      .dl-header-brand--active { color: var(--color-text); }
+
+      .dl-header-sep {
+        color: var(--color-border);
+        font-size: 14px;
+      }
+
+      .dl-header-link {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: var(--color-text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+
+      .dl-header-link:hover { color: var(--color-accent); }
+
+      .dl-search-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-text-muted);
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        font-weight: 300;
+        cursor: pointer;
+        transition: all 0.15s;
+        height: 28px;
+      }
+
+      .dl-search-btn:hover {
+        border-color: var(--color-text-muted);
+        color: var(--color-text);
+      }
+
+      .dl-search-key {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        opacity: 0.6;
+      }
+
+      .dl-theme-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 4px;
+        transition: color 0.15s;
+      }
+
+      .dl-theme-btn:hover { color: var(--color-text); }
+
+      /* Sun/moon icon toggling */
+      .dl-theme-icon-dark { display: none; }
+      [data-theme='dark'] .dl-theme-icon-light { display: none; }
+      [data-theme='dark'] .dl-theme-icon-dark { display: block; }
+
+      @media (max-width: 640px) {
+        .dl-search-btn { display: none; }
+      }
+
+      /* Search modal */
+      .dl-search-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 24px;
+      }
+
+      .dl-search-overlay.is-open {
+        display: flex;
+      }
+
+      .dl-search-dialog {
+        width: 100%;
+        max-width: 640px;
+        border-radius: 16px;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        padding: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      }
+
+      .dl-search-dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .dl-search-dialog-label {
+        font-family: 'Geist Mono', monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+
+      .dl-search-dialog-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 4px 0 0;
+      }
+
+      .dl-search-dialog-close {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: var(--color-text-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .dl-search-dialog-close:hover { color: var(--color-text); }
+
+      .dl-search-dialog-body {
+        margin-top: 16px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border);
+        background: var(--color-surface-muted);
+        padding: 16px;
+      }
+
+      .dl-search-dialog-fallback {
+        margin-top: 12px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: var(--color-text-muted);
+      }
+    </style>
+    <script is:inline>
+      (() => {
+        const initUi = () => {
+          try {
+            var themeToggle = document.querySelector('[data-theme-toggle]')
+            themeToggle && themeToggle.addEventListener('click', function () {
+              var current = document.documentElement.getAttribute('data-theme') || 'light'
+              var next = current === 'dark' ? 'light' : 'dark'
+              document.documentElement.setAttribute('data-theme', next)
+              try { localStorage.setItem('theme', next) } catch (e) {}
+            })
+
+            window.addEventListener('keydown', function (event) {
+              var isMac = navigator.platform && navigator.platform.toUpperCase().indexOf('MAC') >= 0
+              var isCmdK = isMac ? event.metaKey && event.key.toLowerCase() === 'k' : event.ctrlKey && event.key.toLowerCase() === 'k'
+              if (isCmdK) {
+                event.preventDefault()
+                window.dispatchEvent(new CustomEvent('open-search'))
+              }
+            })
+
+            var searchModal = document.querySelector('[data-search-modal]')
+            var searchClose = document.querySelector('[data-search-close]')
+            var searchToggles = document.querySelectorAll('[data-search-toggle]')
+
+            var loadPagefind = function () {
+              return new Promise(function (resolve) {
+                if (window.PagefindUI) return resolve(true)
+                var existing = document.querySelector('script[data-pagefind]')
+                if (existing) {
+                  existing.addEventListener('load', function () { resolve(true) })
+                  existing.addEventListener('error', function () { resolve(false) })
+                  return
+                }
+                var script = document.createElement('script')
+                script.src = '/pagefind/pagefind-ui.js'
+                script.async = true
+                script.dataset.pagefind = 'true'
+                script.addEventListener('load', function () { resolve(true) })
+                script.addEventListener('error', function () { resolve(false) })
+                document.head.appendChild(script)
+              })
+            }
+
+            var initPagefind = function () {
+              loadPagefind().then(function (ok) {
+                if (ok && window.PagefindUI) {
+                  new window.PagefindUI({ element: '#search-modal', showSubResults: true })
+                } else {
+                  var fb = document.getElementById('search-modal-fallback')
+                  if (fb) fb.style.display = 'block'
+                }
+              })
+            }
+
+            var openSearch = function () {
+              if (!searchModal) return
+              searchModal.classList.add('is-open')
+              initPagefind()
+            }
+
+            var closeSearch = function () {
+              if (!searchModal) return
+              searchModal.classList.remove('is-open')
+            }
+
+            searchToggles.forEach(function (btn) { btn.addEventListener('click', openSearch) })
+            searchClose && searchClose.addEventListener('click', closeSearch)
+            searchModal && searchModal.addEventListener('click', function (event) {
+              if (event.target === searchModal) closeSearch()
+            })
+            window.addEventListener('open-search', openSearch)
+          } catch (error) {
+            console.error('UI init failed', error)
+          }
+        }
+
+        var addCopyButtons = function () {
+          document.querySelectorAll('pre').forEach(function (block) {
+            if (block.dataset.copyReady) return
+            block.dataset.copyReady = 'true'
+            var button = document.createElement('button')
+            button.textContent = 'Copy'
+            button.style.cssText = 'position:absolute;right:12px;top:12px;border-radius:4px;background:rgba(0,0,0,0.6);padding:4px 8px;font-size:11px;font-family:Geist Mono,monospace;color:#fff;border:none;cursor:pointer;transition:background 0.15s;'
+            button.addEventListener('mouseenter', function () { button.style.background = 'rgba(0,0,0,0.8)' })
+            button.addEventListener('mouseleave', function () { button.style.background = 'rgba(0,0,0,0.6)' })
+            button.addEventListener('click', function () {
+              var code = block.querySelector('code')
+              if (!code) return
+              navigator.clipboard.writeText(code.innerText).then(function () {
+                button.textContent = 'Copied'
+                setTimeout(function () { button.textContent = 'Copy' }, 1200)
+              })
+            })
+            block.appendChild(button)
+          })
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initUi)
+          document.addEventListener('DOMContentLoaded', addCopyButtons)
+        } else {
+          initUi()
+          addCopyButtons()
+        }
+      })()
+    </script>
+  </body>
+</html>
+` : `---
 import '../styles/global.css'
 
 const { title = 'Docs' } = Astro.props
@@ -693,7 +1320,218 @@ const { title = 'Docs' } = Astro.props
 </html>
 `,
 
-  'src/layouts/DocsLayout.astro': () => `---
+  'src/layouts/DocsLayout.astro': (args) => args.theme === 'hudson' ? `---
+import BaseLayout from './BaseLayout.astro'
+import SidebarNav from '../components/SidebarNav.astro'
+import Toc from '../components/Toc.astro'
+
+const {
+  title = 'Docs',
+  headings = [],
+  description,
+  badge,
+  rawMarkdown = '',
+  agentMarkdown = '',
+} = Astro.props
+---
+
+<BaseLayout title={title} description={description}>
+  <nav class="dl-sidebar" data-pagefind-ignore>
+    <SidebarNav />
+  </nav>
+
+  <main class="dl-main">
+    <div class="dl-content-area">
+      <div class="dl-page-actions">
+        {rawMarkdown && (
+          <button class="dl-copy-btn" data-copy-agent-button>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy for agent
+          </button>
+        )}
+        {rawMarkdown && (
+          <button class="dl-copy-btn" data-copy-markdown-button>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy markdown
+          </button>
+        )}
+      </div>
+
+      <article class="doc-content" data-pagefind-body>
+        {badge && (
+          <span class="dl-badge">{badge}</span>
+        )}
+        <h1>{title}</h1>
+        {description && (
+          <p style="color: var(--color-text-muted); font-size: 15px;">{description}</p>
+        )}
+        <slot />
+      </article>
+
+      <div class="dl-agent-footer">
+        <span class="dl-agent-footer-label">For AI agents</span>
+        <div class="dl-agent-footer-links">
+          <a href="/llms.txt">llms.txt</a>
+          <span class="dl-agent-footer-sep">|</span>
+          <a href="/llms-full.txt">llms-full.txt</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="dl-toc" data-pagefind-ignore>
+    <Toc headings={headings} />
+  </aside>
+
+  <style is:inline>
+    .dl-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: 16px 12px 20px 20px;
+      position: sticky;
+      top: 48px;
+      height: calc(100vh - 48px);
+      align-self: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .dl-sidebar { display: none; }
+    }
+
+    .dl-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dl-content-area {
+      max-width: 768px;
+      margin: 0 auto;
+      padding: 16px 24px 80px;
+      position: relative;
+    }
+
+    .dl-page-actions {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .dl-copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: none;
+      color: var(--color-text-muted);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .dl-copy-btn:hover {
+      color: var(--color-text);
+      border-color: var(--color-text-muted);
+    }
+
+    .dl-badge {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 4px 10px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      color: var(--color-accent);
+    }
+
+    .dl-agent-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dl-agent-footer-label {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+
+    .dl-agent-footer-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dl-agent-footer-links a {
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .dl-agent-footer-links a:hover { color: var(--color-accent); }
+
+    .dl-agent-footer-sep {
+      color: var(--color-border);
+      font-size: 11px;
+    }
+
+    .dl-toc {
+      width: 268px;
+      flex-shrink: 0;
+      padding: 16px 20px 40px 16px;
+      position: sticky;
+      top: 48px;
+      height: calc(100vh - 48px);
+      overflow-y: auto;
+      align-self: flex-start;
+    }
+
+    @media (max-width: 1280px) {
+      .dl-toc { display: none; }
+    }
+  </style>
+
+  <script is:inline define:vars={{ rawMarkdown, agentMarkdown }}>
+    const safeCopy = async (content, btn) => {
+      if (!content) return
+      try {
+        await navigator.clipboard.writeText(content)
+        if (btn) {
+          const orig = btn.textContent
+          btn.textContent = ' Copied!'
+          setTimeout(() => { btn.textContent = orig }, 2000)
+        }
+      } catch {}
+    }
+
+    document.querySelector('[data-copy-agent-button]')?.addEventListener('click', function() {
+      safeCopy(agentMarkdown || rawMarkdown, this)
+    })
+
+    document.querySelector('[data-copy-markdown-button]')?.addEventListener('click', function() {
+      safeCopy(rawMarkdown, this)
+    })
+  </script>
+</BaseLayout>
+` : `---
 import BaseLayout from './BaseLayout.astro'
 import SidebarNav from '../components/SidebarNav.astro'
 import Toc from '../components/Toc.astro'
@@ -784,7 +1622,147 @@ const {
 </BaseLayout>
 `,
 
-  'src/components/SidebarNav.astro': () => `---
+  'src/components/SidebarNav.astro': (args) => args.theme === 'hudson' ? `---
+import { navGroups } from '../lib/nav'
+
+const currentPath = Astro.url.pathname.replace(/\\/$/, '') || '/'
+---
+
+<nav>
+  {navGroups.map((group, i) => (
+    <div class={\`dl-nav-section \${i > 0 ? 'dl-nav-section--bordered' : ''}\`}>
+      <button class="dl-nav-label" data-nav-toggle aria-expanded="true">
+        {group.title}
+        <svg class="dl-nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div data-nav-list>
+        <ul class="dl-nav-list">
+          {group.items.map((item) => {
+            const isActive = currentPath === item.href
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  class={\`dl-nav-item \${isActive ? 'active' : ''}\`}
+                >
+                  {item.title}
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </div>
+  ))}
+
+  <div class="dl-nav-section dl-nav-section--bordered">
+    <div class="dl-nav-label dl-nav-label--static">For AI Agents</div>
+    <ul class="dl-nav-list">
+      <li><a href="/llms.txt" class="dl-nav-item dl-nav-item--muted">llms.txt</a></li>
+      <li><a href="/llms-full.txt" class="dl-nav-item dl-nav-item--muted">llms-full.txt</a></li>
+    </ul>
+  </div>
+</nav>
+
+<style is:inline>
+  .dl-nav-section { margin-bottom: 4px; }
+
+  .dl-nav-section--bordered {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .dl-nav-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 8px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .dl-nav-label:hover { color: var(--color-text); }
+
+  .dl-nav-label--static {
+    cursor: default;
+  }
+
+  .dl-nav-label--static:hover { color: var(--color-text-muted); }
+
+  .dl-nav-chevron {
+    transition: transform 0.2s;
+    opacity: 0.5;
+  }
+
+  .dl-nav-label[aria-expanded='false'] .dl-nav-chevron {
+    transform: rotate(-90deg);
+  }
+
+  [data-nav-list][data-collapsed='true'] {
+    display: none;
+  }
+
+  .dl-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2px;
+  }
+
+  .dl-nav-item {
+    display: block;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 300;
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .dl-nav-item:hover {
+    color: var(--color-text);
+    background: color-mix(in srgb, var(--color-border) 40%, transparent);
+  }
+
+  .dl-nav-item.active {
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+
+  .dl-nav-item--muted {
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .dl-nav-item--muted:hover {
+    color: var(--color-text);
+  }
+</style>
+
+<script is:inline>
+  document.querySelectorAll('[data-nav-toggle]').forEach(function (btn) {
+    var list = btn.parentElement.querySelector('[data-nav-list]')
+    if (!list) return
+    btn.addEventListener('click', function () {
+      var expanded = btn.getAttribute('aria-expanded') === 'true'
+      btn.setAttribute('aria-expanded', String(!expanded))
+      list.dataset.collapsed = String(expanded)
+    })
+  })
+</script>
+` : `---
 import { navGroups } from '../lib/nav'
 
 const currentPath = Astro.url.pathname.replace(/\\/$/, '') || '/'
@@ -823,7 +1801,130 @@ const currentPath = Astro.url.pathname.replace(/\\/$/, '') || '/'
 </nav>
 `,
 
-  'src/components/Toc.astro': () => `---
+  'src/components/Toc.astro': (args) => args.theme === 'hudson' ? `---
+const { headings = [] } = Astro.props
+const filtered = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
+---
+
+<div data-toc>
+  <p class="dl-toc-label">On this page</p>
+  <ul class="dl-toc-list">
+    {filtered.map((heading) => (
+      <li>
+        <a
+          class="dl-toc-link"
+          data-toc-link
+          data-level={heading.depth}
+          href={'#' + heading.slug}
+        >
+          {heading.text}
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script is:inline>
+  var initToc = function () {
+    var tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'))
+    var headings = tocLinks
+      .map(function (link) { return document.querySelector(link.getAttribute('href')) })
+      .filter(Boolean)
+
+    if (!headings.length) return
+    var activeId = null
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return
+          activeId = entry.target.id
+          tocLinks.forEach(function (link) { link.classList.remove('is-active') })
+          var activeLink = document.querySelector('[data-toc-link][href="#' + entry.target.id + '"]')
+          if (activeLink) activeLink.classList.add('is-active')
+        })
+      },
+      { rootMargin: '-80px 0px -66% 0px' },
+    )
+
+    headings.forEach(function (heading) { observer.observe(heading) })
+
+    window.addEventListener('mousemove', function (event) {
+      var atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
+      if (!atBottom) return
+
+      var closest = null
+      var closestDistance = Infinity
+      headings.forEach(function (heading) {
+        var rect = heading.getBoundingClientRect()
+        var distance = Math.abs(rect.top - event.clientY)
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closest = heading
+        }
+      })
+
+      if (closest && closest.id !== activeId) {
+        activeId = closest.id
+        tocLinks.forEach(function (link) { link.classList.remove('is-active') })
+        var activeLink = document.querySelector('[data-toc-link][href="#' + closest.id + '"]')
+        if (activeLink) activeLink.classList.add('is-active')
+      }
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initToc)
+  } else {
+    initToc()
+  }
+</script>
+
+<style is:inline>
+  .dl-toc-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    margin: 0 0 16px;
+  }
+
+  .dl-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .dl-toc-link {
+    display: block;
+    padding: 2px 0 2px 14px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+  }
+
+  .dl-toc-link:hover { color: var(--color-text); }
+
+  .dl-toc-link.is-active {
+    color: var(--color-text);
+    font-weight: 400;
+    border-left-color: var(--color-accent);
+  }
+
+  .dl-toc-link[data-level='3'] { padding-left: 26px; }
+</style>
+` : `---
 const { headings = [] } = Astro.props
 const filtered = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
 ---

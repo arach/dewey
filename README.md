@@ -92,6 +92,16 @@ Each doc page can have two versions:
 | `page.md` | Humans | Narrative, explanatory |
 | `page.agent.md` | AI agents | Dense, structured, self-contained |
 
+Dewey recognizes both colocated agent docs like `docs/overview.agent.md` and nested agent docs like `docs/agent/overview.agent.md`.
+
+`docs.json` is also now a richer manifest, not just a nav blob. It includes:
+
+- `groups` for navigation
+- `pages` for page-level metadata and source paths
+- `generators.dewey` for explicit ownership, lifecycle, and generated outputs
+
+That makes it safe for downstream tooling like OG generators to consume the docs graph declaratively.
+
 ## Configuration
 
 Create `dewey.config.ts`:

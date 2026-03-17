@@ -1,7 +1,8 @@
 import chalk from 'chalk'
 import { mkdir, writeFile, readFile, readdir, access } from 'fs/promises'
-import { join, basename, relative } from 'path'
+import { dirname, join, basename, relative } from 'path'
 import matter from 'gray-matter'
+import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
 import {
   ASTRO_TEMPLATES,
   DEWEY_OWNED_FILES,
@@ -35,11 +36,12 @@ interface DocFile {
   content: string
   rawContent: string
   order: number
-}
-
-interface NavSection {
-  title: string
-  items: { id: string; title: string; description?: string }[]
+  groupId?: string
+  groupTitle?: string
+  sourcePath: string
+  absoluteSourcePath: string
+  agentSourcePath?: string
+  absoluteAgentSourcePath?: string
 }
 
 function resolveTemplate(template?: string): 'astro' | 'nextjs' {
@@ -66,12 +68,13 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
   const files = await readdir(docsPath)
 
   for (const file of files) {
-    if (!file.endsWith('.md')) continue
+    if (!file.endsWith('.md') || file.endsWith('.agent.md')) continue
 
     const filePath = join(docsPath, file)
     const rawContent = await readFile(filePath, 'utf-8')
     const { data: frontmatter, content: body } = matter(rawContent)
     const id = file.replace('.md', '')
+    const agentSourcePath = await resolveAgentDocPath(docsPath, id)
 
     docs.push({
       id,
@@ -80,6 +83,12 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
       content: body.trim(),
       rawContent,
       order: (frontmatter.order as number) || 999,
+      groupId: frontmatter.groupId as string | undefined,
+      groupTitle: frontmatter.group as string | undefined,
+      sourcePath: file.replace(/\\/g, '/'),
+      absoluteSourcePath: filePath,
+      agentSourcePath: agentSourcePath ? relative(docsPath, agentSourcePath).replace(/\\/g, '/') : undefined,
+      absoluteAgentSourcePath: agentSourcePath,
     })
   }
 
@@ -87,59 +96,6 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
 
   return docs
 }
-
-function generateNavigation(docs: DocFile[]): NavSection[] {
-  const gettingStarted = docs.filter(d => d.order <= 10)
-  const features = docs.filter(d => d.order > 10 && d.order <= 50)
-  const reference = docs.filter(d => d.order > 50)
-
-  const sections: NavSection[] = []
-
-  if (gettingStarted.length > 0) {
-    sections.push({
-      title: 'Getting Started',
-      items: gettingStarted.map(d => ({ id: d.id, title: d.title, description: d.description })),
-    })
-  }
-
-  if (features.length > 0) {
-    sections.push({
-      title: 'Features',
-      items: features.map(d => ({ id: d.id, title: d.title, description: d.description })),
-    })
-  }
-
-  if (reference.length > 0) {
-    sections.push({
-      title: 'Reference',
-      items: reference.map(d => ({ id: d.id, title: d.title, description: d.description })),
-    })
-  }
-
-  if (sections.length === 0 && docs.length > 0) {
-    sections.push({
-      title: 'Documentation',
-      items: docs.map(d => ({ id: d.id, title: d.title, description: d.description })),
-    })
-  }
-
-  return sections
-}
-
-function generateDocsJson(projectName: string, navigation: NavSection[]): string {
-  const groups = navigation.map(section => ({
-    id: section.title.toLowerCase().replace(/\s+/g, '-'),
-    title: section.title,
-    items: section.items.map(item => ({
-      id: item.id,
-      title: item.title,
-      ...(item.description ? { description: item.description } : {}),
-    })),
-  }))
-
-  return JSON.stringify({ name: projectName, groups }, null, 2)
-}
-
 // ---------------------------------------------------------------------------
 // Create command
 // ---------------------------------------------------------------------------
@@ -176,13 +132,13 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
       content: `Welcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.`,
       rawContent: `---\ntitle: Overview\ndescription: Welcome to the documentation\norder: 1\n---\n\nWelcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.\n`,
       order: 1,
+      sourcePath: 'overview.md',
+      absoluteSourcePath: join(sourcePath, 'overview.md'),
     })
   }
 
   console.log(chalk.green(`✓ Found ${docs.length} doc${docs.length === 1 ? '' : 's'}`))
 
-  // Generate navigation from docs
-  const navigation = generateNavigation(docs)
   const defaultPage = docs[0]?.id || 'overview'
 
   // Create directory structure
@@ -266,7 +222,22 @@ dist
   }
 
   // Generate and write docs.json
-  const docsJsonContent = generateDocsJson(projectName, navigation)
+  const docsJsonContent = JSON.stringify(buildDocsManifest(
+    projectName,
+    undefined,
+    undefined,
+    docs.map((doc) => ({
+      id: doc.id,
+      title: doc.title,
+      description: doc.description,
+      content: doc.content,
+      order: doc.order,
+      groupId: doc.groupId,
+      groupTitle: doc.groupTitle,
+      sourcePath: `docs/${doc.sourcePath}`,
+      agentSourcePath: doc.agentSourcePath ? `docs/${doc.agentSourcePath}` : undefined,
+    })),
+  ), null, 2)
   await writeFile(join(targetDir, 'docs.json'), docsJsonContent)
   console.log(chalk.green('✓') + ' docs.json')
 
@@ -275,9 +246,18 @@ dist
   await mkdir(docsDir, { recursive: true })
 
   for (const doc of docs) {
-    const docPath = join(docsDir, `${doc.id}.md`)
+    const docPath = join(docsDir, doc.sourcePath)
+    await mkdir(dirname(docPath), { recursive: true })
     await writeFile(docPath, doc.rawContent)
-    console.log(chalk.green('✓') + ` docs/${doc.id}.md`)
+    console.log(chalk.green('✓') + ` docs/${doc.sourcePath}`)
+
+    if (doc.agentSourcePath && doc.absoluteAgentSourcePath) {
+      const agentPath = join(docsDir, doc.agentSourcePath)
+      const agentContent = await readFile(doc.absoluteAgentSourcePath, 'utf-8')
+      await mkdir(dirname(agentPath), { recursive: true })
+      await writeFile(agentPath, agentContent)
+      console.log(chalk.green('✓') + ` docs/${doc.agentSourcePath}`)
+    }
   }
 
   // Create .gitignore

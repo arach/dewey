@@ -451,10 +451,17 @@ export function getDocBySlug(slug: string): DocData | null {
     const fileContents = fs.readFileSync(fullPath, 'utf-8')
     const { data, content } = matter(fileContents)
 
-    // Look for a sibling .agent.md file
+    // Look for a sibling .agent.md file, then docs/agent/*.agent.md
     let agentContent: string | undefined
     try {
-      const agentPath = path.join(docsDirectory, \`\${slug}.agent.md\`)
+      const candidatePaths = [
+        path.join(docsDirectory, \`\${slug}.agent.md\`),
+        path.join(docsDirectory, 'agent', \`\${slug}.agent.md\`),
+      ]
+      const agentPath = candidatePaths.find((candidate) => fs.existsSync(candidate))
+      if (!agentPath) {
+        throw new Error('missing agent doc')
+      }
       const agentFile = fs.readFileSync(agentPath, 'utf-8')
       const { content: agentBody } = matter(agentFile)
       agentContent = agentBody.trim() || undefined

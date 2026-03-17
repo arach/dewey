@@ -1,8 +1,9 @@
 import chalk from 'chalk'
 import { readdir, readFile, writeFile, access } from 'fs/promises'
-import { join } from 'path'
+import { join, relative } from 'path'
 import matter from 'gray-matter'
 import { loadConfig } from '../config.js'
+import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
 import { DEWEY_VERSION } from '../version.js'
 
 interface GenerateOptions {
@@ -19,6 +20,10 @@ interface DocSection {
   description?: string
   content: string
   order: number
+  groupId?: string
+  groupTitle?: string
+  sourcePath: string
+  agentSourcePath?: string
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -30,7 +35,12 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function loadDocs(docsPath: string, sections: string[]): Promise<DocSection[]> {
+async function loadDocs(
+  cwd: string,
+  docsPath: string,
+  docsRelativePath: string,
+  sections: string[],
+): Promise<DocSection[]> {
   const docs: DocSection[] = []
 
   for (const section of sections) {
@@ -39,6 +49,7 @@ async function loadDocs(docsPath: string, sections: string[]): Promise<DocSectio
 
     const content = await readFile(filePath, 'utf-8')
     const { data: frontmatter, content: body } = matter(content)
+    const agentSourcePath = await resolveAgentDocPath(docsPath, section)
 
     docs.push({
       id: section,
@@ -46,6 +57,10 @@ async function loadDocs(docsPath: string, sections: string[]): Promise<DocSectio
       description: frontmatter.description as string | undefined,
       content: body.trim(),
       order: (frontmatter.order as number) || 999,
+      groupId: frontmatter.groupId as string | undefined,
+      groupTitle: frontmatter.group as string | undefined,
+      sourcePath: `${docsRelativePath.replace(/\\/g, '/')}/${section}.md`,
+      agentSourcePath: agentSourcePath ? relative(cwd, agentSourcePath).replace(/\\/g, '/') : undefined,
     })
   }
 
@@ -163,19 +178,13 @@ function generateLlmsTxt(projectName: string, tagline: string | undefined, docs:
   return lines.join('\n')
 }
 
-function generateDocsJson(projectName: string, version: string | undefined, docs: DocSection[]): string {
-  const data = {
-    project: projectName,
-    version: version || '0.0.0',
-    generatedBy: `Dewey ${DEWEY_VERSION}`,
-    generatedAt: new Date().toISOString(),
-    sections: docs.map(doc => ({
-      id: doc.id,
-      title: doc.title,
-      description: doc.description,
-      content: doc.content,
-    })),
-  }
+function generateDocsJson(
+  projectName: string,
+  version: string | undefined,
+  tagline: string | undefined,
+  docs: DocSection[],
+): string {
+  const data = buildDocsManifest(projectName, version, tagline, docs)
 
   return JSON.stringify(data, null, 2)
 }
@@ -364,6 +373,7 @@ export async function generateCommand(options: GenerateOptions) {
   }
 
   const docsPath = join(cwd, config.docs.path)
+  const docsRelativePath = relative(cwd, docsPath) || config.docs.path
   const outputPath = options.output || join(cwd, config.docs.output)
 
   if (!await fileExists(docsPath)) {
@@ -376,7 +386,7 @@ export async function generateCommand(options: GenerateOptions) {
   // Get all available sections
   const files = await readdir(docsPath)
   const availableSections = files
-    .filter(f => f.endsWith('.md'))
+    .filter(f => f.endsWith('.md') && !f.endsWith('.agent.md'))
     .map(f => f.replace('.md', ''))
 
   // Filter to configured sections (or use all if not specified)
@@ -384,7 +394,7 @@ export async function generateCommand(options: GenerateOptions) {
     ? config.agent.sections.filter(s => availableSections.includes(s))
     : availableSections
 
-  const docs = await loadDocs(docsPath, sectionsToInclude)
+  const docs = await loadDocs(cwd, docsPath, docsRelativePath, sectionsToInclude)
 
   // Determine which files to generate
   const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd
@@ -425,6 +435,7 @@ export async function generateCommand(options: GenerateOptions) {
     const content = generateDocsJson(
       config.project.name,
       config.project.version,
+      config.project.tagline,
       docs
     )
     const filePath = join(outputPath, 'docs.json')

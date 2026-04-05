@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { mkdir, writeFile, readFile, readdir, access } from 'fs/promises'
-import { join, basename, relative } from 'path'
+import { join, dirname, basename, relative } from 'path'
 import matter from 'gray-matter'
 import {
   ASTRO_TEMPLATES,
@@ -43,8 +43,8 @@ interface NavSection {
 }
 
 function resolveTemplate(template?: string): 'astro' | 'nextjs' {
-  if (template === 'nextjs') return 'nextjs'
-  return 'astro'
+  if (template === 'astro') return 'astro'
+  return 'nextjs'
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -63,15 +63,15 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
     return docs
   }
 
-  const files = await readdir(docsPath)
+  const files = await readdir(docsPath, { recursive: true })
 
   for (const file of files) {
     if (!file.endsWith('.md')) continue
 
-    const filePath = join(docsPath, file)
+    const filePath = join(docsPath, String(file))
     const rawContent = await readFile(filePath, 'utf-8')
     const { data: frontmatter, content: body } = matter(rawContent)
-    const id = file.replace('.md', '')
+    const id = String(file).replace(/\.md$/, '')
 
     docs.push({
       id,
@@ -276,6 +276,7 @@ dist
 
   for (const doc of docs) {
     const docPath = join(docsDir, `${doc.id}.md`)
+    await mkdir(dirname(docPath), { recursive: true })
     await writeFile(docPath, doc.rawContent)
     console.log(chalk.green('✓') + ` docs/${doc.id}.md`)
   }

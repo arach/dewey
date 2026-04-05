@@ -95,7 +95,12 @@ module.exports = nextConfig
     exclude: ['node_modules'],
   }, null, 2) + '\n',
 
-  'src/app/layout.tsx': (args) => `import type { Metadata } from 'next'
+  'src/app/layout.tsx': (args) => {
+    const isHudson = args.theme === 'hudson'
+    const fontLink = isHudson
+      ? 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap'
+      : 'https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap'
+    return `import type { Metadata } from 'next'
 import '@arach/dewey/css/base.css'
 import '@arach/dewey/css/tokens'
 import '@arach/dewey/css/colors/${args.theme}.css'
@@ -119,7 +124,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap"
+          href="${fontLink}"
         />
       </head>
       <body>
@@ -128,9 +133,27 @@ export default function RootLayout({
     </html>
   )
 }
-`,
+`
+  },
 
-  'src/app/globals.css': () => `/* ─── Global Reset ─────────────────────────────────────────── */
+  'src/app/globals.css': (args) => {
+    const isHudson = args.theme === 'hudson'
+    const fontOverrides = isHudson
+      ? `
+/* ─── Hudson Font Overrides ───────────────────────────────── */
+:root {
+  --dw-font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --dw-font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--dw-font-mono);
+  letter-spacing: 0.025em;
+}
+`
+      : ''
+
+    return `/* ─── Global Reset ─────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -142,14 +165,14 @@ body {
   min-height: 100vh;
   background: var(--dw-background);
   color: var(--dw-foreground);
-  font-family: var(--dw-font-sans);
+  font-family: var(--dw-font-sans);${isHudson ? '\n  font-weight: 300;' : ''}
 }
 
 a {
   color: inherit;
   text-decoration: none;
 }
-
+${fontOverrides}
 /* ─── Docs Layout ─────────────────────────────────────────── */
 .docs-layout {
   display: flex;
@@ -265,6 +288,99 @@ a {
   top: calc(var(--dw-header-height, 3.5rem) + 1.5rem);
 }
 
+/* ─── Search Modal ────────────────────────────────────────── */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.search-modal {
+  background: var(--dw-background);
+  border: 1px solid var(--dw-border);
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 560px;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── Pagefind UI Overrides ───────────────────────────────── */
+.pagefind-ui {
+  color: var(--dw-foreground);
+}
+
+.pagefind-ui__form input {
+  background: var(--dw-secondary) !important;
+  color: var(--dw-foreground) !important;
+  border: 1px solid var(--dw-border) !important;
+}
+
+.pagefind-ui__result {
+  background: var(--dw-muted);
+  color: var(--dw-foreground);
+  border: 1px solid var(--dw-border);
+  border-radius: 0.5rem;
+  padding: 12px 14px;
+}
+
+.pagefind-ui__result-link {
+  color: var(--dw-foreground) !important;
+  font-weight: 600;
+}
+
+.pagefind-ui__result-link:hover {
+  color: var(--dw-primary) !important;
+}
+
+.pagefind-ui__result-excerpt {
+  color: var(--dw-muted-foreground) !important;
+}
+
+.pagefind-ui__result-excerpt mark,
+.pagefind-ui__result-title mark {
+  background: color-mix(in srgb, var(--dw-primary) 25%, transparent);
+  color: var(--dw-foreground);
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.pagefind-ui__message {
+  color: var(--dw-muted-foreground) !important;
+}
+
+.pagefind-ui__button {
+  background: var(--dw-muted) !important;
+  color: var(--dw-foreground) !important;
+  border: 1px solid var(--dw-border) !important;
+}
+
+/* ─── Agent Footer ────────────────────────────────────────── */
+.docs-agent-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--dw-border);
+  font-size: 0.8125rem;
+  color: var(--dw-muted-foreground);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.docs-agent-footer a {
+  color: var(--dw-primary);
+}
+
+.docs-agent-footer a:hover {
+  text-decoration: underline;
+}
+
 /* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .docs-sidebar {
@@ -277,7 +393,8 @@ a {
     display: none;
   }
 }
-`,
+`
+  },
 
   'src/app/providers.tsx': () => `'use client'
 
@@ -300,11 +417,108 @@ export default function Home() {
 }
 `,
 
+  'src/components/Search.tsx': () => `'use client'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+export function Search() {
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const loadedRef = useRef(false)
+
+  const loadPagefind = useCallback(async () => {
+    if (loadedRef.current || !containerRef.current) return
+    loadedRef.current = true
+
+    try {
+      // Load Pagefind UI CSS
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = '/pagefind/pagefind-ui.css'
+      document.head.appendChild(link)
+
+      // Load and initialize Pagefind UI
+      const mod = await import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')
+      const PagefindUI = mod.PagefindUI || mod.default
+      new PagefindUI({
+        element: containerRef.current,
+        showSubResults: true,
+        showImages: false,
+      })
+
+      // Focus the search input
+      setTimeout(() => {
+        const input = containerRef.current?.querySelector<HTMLInputElement>('input')
+        input?.focus()
+      }, 100)
+    } catch {
+      // Pagefind not built yet — show hint
+      if (containerRef.current) {
+        containerRef.current.innerHTML =
+          '<p style="padding:1rem;color:var(--dw-muted-foreground);font-size:0.875rem;">Search index not found. Run <code>npm run build</code> to generate it.</p>'
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (open) loadPagefind()
+  }, [open, loadPagefind])
+
+  // Cmd+K / Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setOpen((prev) => !prev)
+      }
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [])
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.375rem 0.75rem',
+          borderRadius: '0.5rem',
+          fontSize: '0.8125rem',
+          color: 'var(--dw-muted-foreground)',
+          background: 'var(--dw-muted)',
+          border: '1px solid var(--dw-border)',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+        </svg>
+        Search\u2026
+        <kbd style={{ fontSize: '0.6875rem', opacity: 0.6, marginLeft: '0.25rem' }}>\u2318K</kbd>
+      </button>
+      {open && (
+        <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}>
+          <div className="search-modal">
+            <div ref={containerRef} />
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+`,
+
   'src/app/docs/layout.tsx': () => `'use client'
 
 import { usePathname } from 'next/navigation'
 import { components, siteConfig } from '@/lib/dewey'
 import { getNavTree } from '@/lib/navigation'
+import { Search } from '@/components/Search'
 
 const { Header, Sidebar } = components
 
@@ -323,6 +537,7 @@ export default function DocsLayout({
         projectName={siteConfig.name}
         homeUrl={siteConfig.basePath}
         showThemeToggle
+        actions={<Search />}
       />
       <div className="docs-layout">
         <aside className="docs-sidebar">
@@ -419,6 +634,11 @@ export function DocContent({ doc }: { doc: DocData }) {
           </div>
         )}
         <MarkdownContent content={activeContent} />
+        <footer className="docs-agent-footer">
+          <span>AI-ready docs</span>
+          <a href="/llms.txt" target="_blank" rel="noopener">llms.txt</a>
+          <a href="/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a>
+        </footer>
       </article>
       <aside className="docs-toc">
         <div className="docs-toc-sticky">
@@ -475,15 +695,29 @@ export function getDocBySlug(slug: string): DocData | null {
   }
 }
 
-export function getAllDocSlugs(): string[] {
+function walkDir(dir: string, base: string = ''): string[] {
+  const results: string[] = []
   try {
-    const files = fs.readdirSync(docsDirectory)
-    return files
-      .filter((file) => file.endsWith('.md') && !file.endsWith('.agent.md'))
-      .map((file) => file.replace(/\\.md$/, ''))
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const rel = base ? base + '/' + entry.name : entry.name
+      if (entry.isDirectory()) {
+        results.push(...walkDir(path.join(dir, entry.name), rel))
+      } else {
+        results.push(rel)
+      }
+    }
   } catch {
-    return []
+    // directory doesn't exist
   }
+  return results
+}
+
+export function getAllDocSlugs(): string[] {
+  const files = walkDir(docsDirectory)
+  return files
+    .filter((file) => file.endsWith('.md') && !file.endsWith('.agent.md'))
+    .map((file) => file.replace(/\\.md$/, ''))
 }
 `,
 
@@ -532,6 +766,7 @@ export const NEXTJS_OWNED_FILES = [
   'src/app/docs/layout.tsx',
   'src/app/docs/[...slug]/page.tsx',
   'src/app/docs/[...slug]/content.tsx',
+  'src/components/Search.tsx',
   'src/lib/docs.ts',
   'src/lib/navigation.ts',
 ] as const
@@ -595,6 +830,7 @@ export function generateNextjsPackageJson(args: NextjsTemplateArgs): string {
     scripts: {
       dev: 'next dev',
       build: 'next build',
+      postbuild: 'npx -y pagefind --site out',
       start: 'next start',
       lint: 'next lint',
     },

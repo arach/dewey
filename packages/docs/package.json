@@ -78,6 +78,10 @@
       "style": "./dist/css/colors/mono.css",
       "default": "./dist/css/colors/mono.css"
     },
+    "./css/colors/hudson.css": {
+      "style": "./dist/css/colors/hudson.css",
+      "default": "./dist/css/colors/hudson.css"
+    },
     "./styles": {
       "style": "./dist/css/index.css",
       "default": "./dist/css/index.css"

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { readdir, readFile, writeFile, access } from 'fs/promises'
+import { mkdir, readdir, readFile, writeFile, access } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
 import { loadConfig } from '../config.js'
@@ -394,6 +394,9 @@ export async function generateCommand(options: GenerateOptions) {
     docsJson: generateAll || options.docsJson,
     installMd: generateAll || options.installMd,
   }
+
+  // Ensure output directory exists
+  await mkdir(outputPath, { recursive: true })
 
   // Generate AGENTS.md
   if (filesToGenerate.agentsMd) {

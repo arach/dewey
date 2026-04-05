@@ -12,7 +12,7 @@ export interface DeweyManifest {
   deweyVersion: string
   createdAt: string
   updatedAt: string
-  template: 'astro' | 'nextjs'
+  template: 'nextjs'
   theme: string
   projectName: string
   defaultPage: string

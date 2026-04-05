@@ -3,13 +3,7 @@ import { mkdir, writeFile, readFile, readdir, access } from 'fs/promises'
 import { dirname, join, basename, relative } from 'path'
 import matter from 'gray-matter'
 import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
-import {
-  ASTRO_TEMPLATES,
-  DEWEY_OWNED_FILES,
-  CONSUMER_OWNED_FILES,
-  resolveTheme,
-  type AstroTemplateArgs,
-} from '../templates/astro.js'
+import { resolveTheme } from '../templates/themes.js'
 import {
   NEXTJS_TEMPLATES,
   NEXTJS_OWNED_FILES,
@@ -24,7 +18,6 @@ import { DEWEY_VERSION } from '../version.js'
 
 interface CreateOptions {
   source?: string
-  template?: 'astro' | 'nextjs'
   theme?: string
   name?: string
 }
@@ -42,11 +35,6 @@ interface DocFile {
   absoluteSourcePath: string
   agentSourcePath?: string
   absoluteAgentSourcePath?: string
-}
-
-function resolveTemplate(template?: string): 'astro' | 'nextjs' {
-  if (template === 'astro') return 'astro'
-  return 'nextjs'
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -105,7 +93,6 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
   const targetDir = join(cwd, projectDir)
   const sourcePath = options.source ? join(cwd, options.source) : join(cwd, 'docs')
   const projectName = options.name || basename(projectDir)
-  const template = resolveTemplate(options.template)
   const theme = resolveTheme(options.theme)
 
   console.log(chalk.blue(`\n🚀 Creating Dewey docs site: ${projectName}\n`))
@@ -146,67 +133,19 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
 
   await mkdir(targetDir, { recursive: true })
 
-  // Template args for all templates
-  const templateArgs: AstroTemplateArgs & NextjsTemplateArgs = { projectName, theme, defaultPage }
+  const templateArgs: NextjsTemplateArgs = { projectName, theme, defaultPage }
 
-  // Assemble template files based on chosen template
-  let files: [string, string][]
-  let ownedFiles: readonly string[]
-  let consumerFiles: readonly string[]
-  let gitignoreContent: string
-  let packageJsonContent: string
-  let devUrl: string
+  // Generate all template files
+  const files: [string, string][] = Object.keys(NEXTJS_TEMPLATES).map((filePath) => [
+    filePath,
+    NEXTJS_TEMPLATES[filePath](templateArgs),
+  ])
 
-  if (template === 'nextjs') {
-    // Next.js template
-    files = Object.keys(NEXTJS_TEMPLATES).map((filePath) => [
-      filePath,
-      NEXTJS_TEMPLATES[filePath](templateArgs),
-    ])
+  // Add consumer-owned files that are generated once
+  files.push(['src/lib/dewey.tsx', generateDeweyTsx(templateArgs)])
 
-    // Add consumer-owned files that are generated once
-    files.push(['src/lib/dewey.tsx', generateDeweyTsx(templateArgs)])
-
-    ownedFiles = NEXTJS_OWNED_FILES
-    consumerFiles = NEXTJS_CONSUMER_OWNED_FILES
-    packageJsonContent = generateNextjsPackageJson(templateArgs)
-    gitignoreContent = generateNextjsGitignore()
-    devUrl = 'http://localhost:3000/docs/'
-  } else {
-    // Astro template (backward compat)
-    files = [
-      ['astro.config.mjs', ASTRO_TEMPLATES['astro.config.mjs'](templateArgs)],
-      ['tsconfig.json', ASTRO_TEMPLATES['tsconfig.json'](templateArgs)],
-      ['src/styles/global.css', ASTRO_TEMPLATES['src/styles/global.css'](templateArgs)],
-      ['src/styles/tokens.css', ASTRO_TEMPLATES['src/styles/tokens.css'](templateArgs)],
-      ['src/styles/base.css', ASTRO_TEMPLATES['src/styles/base.css'](templateArgs)],
-      ['src/styles/markdown.css', ASTRO_TEMPLATES['src/styles/markdown.css'](templateArgs)],
-      ['src/layouts/BaseLayout.astro', ASTRO_TEMPLATES['src/layouts/BaseLayout.astro'](templateArgs)],
-      ['src/layouts/DocsLayout.astro', ASTRO_TEMPLATES['src/layouts/DocsLayout.astro'](templateArgs)],
-      ['src/components/SidebarNav.astro', ASTRO_TEMPLATES['src/components/SidebarNav.astro'](templateArgs)],
-      ['src/components/Toc.astro', ASTRO_TEMPLATES['src/components/Toc.astro'](templateArgs)],
-      ['src/lib/nav.ts', ASTRO_TEMPLATES['src/lib/nav.ts'](templateArgs)],
-      ['src/pages/index.astro', ASTRO_TEMPLATES['src/pages/index.astro'](templateArgs)],
-      ['src/pages/docs/[...slug].astro', ASTRO_TEMPLATES['src/pages/docs/[...slug].astro'](templateArgs)],
-    ]
-
-    ownedFiles = DEWEY_OWNED_FILES
-    consumerFiles = CONSUMER_OWNED_FILES
-    packageJsonContent = ASTRO_TEMPLATES['package.json'](templateArgs)
-    gitignoreContent = `# Dependencies
-node_modules
-.pnpm-store
-
-# Astro
-dist
-.astro
-
-# Misc
-.DS_Store
-*.log
-`
-    devUrl = 'http://localhost:4321/docs/'
-  }
+  const packageJsonContent = generateNextjsPackageJson(templateArgs)
+  const gitignoreContent = generateNextjsGitignore()
 
   // Write package.json
   await writeFile(join(targetDir, 'package.json'), packageJsonContent)
@@ -270,7 +209,7 @@ dist
 
   // Hash dewey-owned files
   for (const [filePath, content] of files) {
-    const isDeweyOwned = (ownedFiles as readonly string[]).includes(filePath)
+    const isDeweyOwned = (NEXTJS_OWNED_FILES as readonly string[]).includes(filePath)
     manifestFiles[filePath] = {
       owner: isDeweyOwned ? 'dewey' : 'consumer',
       ...(isDeweyOwned ? { hash: hashContent(content), version: DEWEY_VERSION } : {}),
@@ -278,7 +217,7 @@ dist
   }
 
   // Mark consumer-owned files
-  for (const filePath of consumerFiles) {
+  for (const filePath of NEXTJS_CONSUMER_OWNED_FILES) {
     manifestFiles[filePath] = { owner: 'consumer' }
   }
 
@@ -286,7 +225,7 @@ dist
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
-    template,
+    template: 'nextjs',
     theme,
     projectName,
     defaultPage,
@@ -304,7 +243,7 @@ dist
   console.log(chalk.gray('  pnpm dev'))
   console.log('')
   console.log('Your docs will be available at:')
-  console.log(chalk.cyan(`  ${devUrl}`))
+  console.log(chalk.cyan('  http://localhost:3000/docs/'))
   console.log('')
 
   if (docs.length > 0) {
@@ -315,9 +254,7 @@ dist
     console.log('')
   }
 
-  if (template === 'nextjs') {
-    console.log(chalk.gray('To customize components:'))
-    console.log(chalk.cyan('  dewey eject <Header|Sidebar|TableOfContents|MarkdownContent>'))
-    console.log('')
-  }
+  console.log(chalk.gray('To customize components:'))
+  console.log(chalk.cyan('  dewey eject <Header|Sidebar|TableOfContents|MarkdownContent>'))
+  console.log('')
 }

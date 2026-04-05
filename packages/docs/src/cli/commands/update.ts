@@ -2,11 +2,7 @@ import chalk from 'chalk'
 import { readFile, writeFile, mkdir, access } from 'fs/promises'
 import { join, dirname, resolve } from 'path'
 import { execSync } from 'child_process'
-import {
-  ASTRO_TEMPLATES,
-  DEWEY_OWNED_FILES,
-  resolveTheme,
-} from '../templates/astro.js'
+import { resolveTheme } from '../templates/themes.js'
 import {
   NEXTJS_TEMPLATES,
   NEXTJS_OWNED_FILES,
@@ -66,16 +62,13 @@ function isGitDirty(dir: string): boolean {
   }
 }
 
-async function detectSiteTemplate(dir: string): Promise<'astro' | 'nextjs' | null> {
-  const [hasAstroConfig, hasBaseLayout, hasNextConfig, hasDeweyTsx] = await Promise.all([
-    fileExists(join(dir, 'astro.config.mjs')),
-    fileExists(join(dir, 'src/layouts/BaseLayout.astro')),
+async function detectSiteTemplate(dir: string): Promise<'nextjs' | null> {
+  const [hasNextConfig, hasDeweyTsx] = await Promise.all([
     fileExists(join(dir, 'next.config.js')),
     fileExists(join(dir, 'src/lib/dewey.tsx')),
   ])
 
   if (hasNextConfig && hasDeweyTsx) return 'nextjs'
-  if (hasAstroConfig && hasBaseLayout) return 'astro'
   return null
 }
 
@@ -83,38 +76,27 @@ async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
   const now = new Date().toISOString()
   const manifestFiles: DeweyManifest['files'] = {}
 
-  // Try to detect theme from tokens.css
-  let theme = 'neutral'
-  const tokensPath = join(dir, 'src/styles/tokens.css')
-  const tokensContent = await safeReadFile(tokensPath)
-  if (tokensContent) {
-    // Detect theme by checking accent color
-    if (tokensContent.includes('#3b82f6') || tokensContent.includes('#60a5fa')) theme = 'ocean'
-    else if (tokensContent.includes('#10b981') || tokensContent.includes('#34d399')) theme = 'emerald'
-    else if (tokensContent.includes('#8b5cf6') || tokensContent.includes('#a78bfa')) theme = 'purple'
-    else if (tokensContent.includes('#d97706') || tokensContent.includes('#fbbf24')) theme = 'dusk'
-    else if (tokensContent.includes('#f43f5e') || tokensContent.includes('#fb7185')) theme = 'rose'
-    else if (tokensContent.includes('#0969da') || tokensContent.includes('#58a6ff')) theme = 'github'
-  }
-
-  // Try to detect projectName from BaseLayout
+  // Try to detect projectName and theme from dewey.tsx
   let projectName = 'docs'
-  const baseLayoutContent = await safeReadFile(join(dir, 'src/layouts/BaseLayout.astro'))
-  if (baseLayoutContent) {
-    const match = baseLayoutContent.match(/<a class="text-lg font-semibold" href="\/">(.*?)<\/a>/)
-    if (match) projectName = match[1]
+  let theme = 'neutral'
+  const deweyTsxContent = await safeReadFile(join(dir, 'src/lib/dewey.tsx'))
+  if (deweyTsxContent) {
+    const nameMatch = deweyTsxContent.match(/name:\s*'([^']+)'/)
+    if (nameMatch) projectName = nameMatch[1]
+    const themeMatch = deweyTsxContent.match(/theme:\s*'([^']+)'/)
+    if (themeMatch) theme = themeMatch[1]
   }
 
-  // Try to detect defaultPage from index.astro
+  // Try to detect defaultPage from page.tsx
   let defaultPage = 'overview'
-  const indexContent = await safeReadFile(join(dir, 'src/pages/index.astro'))
-  if (indexContent) {
-    const match = indexContent.match(/url=\/docs\/([^"]+)/)
+  const pageContent = await safeReadFile(join(dir, 'src/app/page.tsx'))
+  if (pageContent) {
+    const match = pageContent.match(/redirect\(['"]\/docs\/([^'"]+)['"]/)
     if (match) defaultPage = match[1]
   }
 
   // Hash all existing dewey-owned files
-  for (const filePath of DEWEY_OWNED_FILES) {
+  for (const filePath of NEXTJS_OWNED_FILES) {
     const content = await safeReadFile(join(dir, filePath))
     if (content !== null) {
       manifestFiles[filePath] = {
@@ -128,12 +110,14 @@ async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
   // Mark consumer files
   manifestFiles['package.json'] = { owner: 'consumer' }
   manifestFiles['.gitignore'] = { owner: 'consumer' }
+  manifestFiles['docs.json'] = { owner: 'consumer' }
+  manifestFiles['src/lib/dewey.tsx'] = { owner: 'consumer' }
 
   return {
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
-    template: 'astro',
+    template: 'nextjs',
     theme: resolveTheme(theme),
     projectName,
     defaultPage,
@@ -154,8 +138,7 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
 
   if (!manifest) {
     const detected = await detectSiteTemplate(targetDir)
-    if (detected === 'astro') {
-      // Adoption flow for Astro sites
+    if (detected === 'nextjs') {
       console.log(chalk.blue('\n📋 No manifest found, but this looks like a Dewey site.'))
       console.log(chalk.gray('   Creating .dewey-manifest.json from current file state...\n'))
 
@@ -187,15 +170,10 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     defaultPage: manifest.defaultPage,
   }
 
-  // Select template set based on manifest
-  const isNextjs = manifest.template === 'nextjs'
-  const templates = isNextjs ? NEXTJS_TEMPLATES : ASTRO_TEMPLATES
-  const ownedFiles: readonly string[] = isNextjs ? NEXTJS_OWNED_FILES : DEWEY_OWNED_FILES
-
   const classifications: FileClassification[] = []
 
-  for (const filePath of ownedFiles) {
-    const templateFn = templates[filePath]
+  for (const filePath of NEXTJS_OWNED_FILES) {
+    const templateFn = NEXTJS_TEMPLATES[filePath]
     if (!templateFn) continue
 
     const newContent = templateFn(templateArgs)
@@ -203,7 +181,6 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     const manifestEntry = manifest.files[filePath]
 
     if (diskContent === null) {
-      // File missing from disk
       classifications.push({ filePath, status: 'MISSING', newContent })
       continue
     }
@@ -211,14 +188,12 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     const diskHash = hashContent(diskContent)
     const newHash = hashContent(newContent)
 
-    // If new content is same as disk → already current
     if (diskHash === newHash) {
       classifications.push({ filePath, status: 'ALREADY_CURRENT', diskHash, newContent })
       continue
     }
 
     if (!manifestEntry) {
-      // File exists on disk but not in manifest (new template file)
       classifications.push({ filePath, status: 'NEW', diskHash, newContent })
       continue
     }
@@ -226,19 +201,17 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     const manifestHash = manifestEntry.hash
 
     if (manifestHash && diskHash === manifestHash) {
-      // Disk matches what Dewey last wrote → safe to overwrite
       classifications.push({ filePath, status: 'UNCHANGED', diskHash, manifestHash, newContent })
     } else {
-      // User modified the file
       classifications.push({ filePath, status: 'MODIFIED', diskHash, manifestHash, newContent })
     }
   }
 
-  // Check for files in manifest but no longer in current templates (removed templates)
+  // Check for files in manifest but no longer in current templates
   const removedFiles: string[] = []
   for (const filePath of Object.keys(manifest.files)) {
     if (manifest.files[filePath].owner !== 'dewey') continue
-    if (ownedFiles.includes(filePath)) continue
+    if ((NEXTJS_OWNED_FILES as readonly string[]).includes(filePath)) continue
     removedFiles.push(filePath)
   }
 
@@ -320,7 +293,6 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     updatedAt: now,
   }
 
-  // Update hashes for all files we wrote
   for (const classification of allToWrite) {
     updatedManifest.files[classification.filePath] = {
       owner: 'dewey',
@@ -329,7 +301,6 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     }
   }
 
-  // Also update hashes for ALREADY_CURRENT files (they're at the right version)
   for (const classification of current) {
     updatedManifest.files[classification.filePath] = {
       owner: 'dewey',
@@ -338,8 +309,7 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     }
   }
 
-  // Ensure all dewey-owned files are in the manifest
-  for (const filePath of ownedFiles) {
+  for (const filePath of NEXTJS_OWNED_FILES) {
     if (!updatedManifest.files[filePath]) {
       const diskContent = await safeReadFile(join(targetDir, filePath))
       if (diskContent !== null) {

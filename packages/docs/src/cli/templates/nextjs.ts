@@ -3,7 +3,7 @@
 // Used by `dewey create` and `dewey update` for Next.js doc sites.
 // ---------------------------------------------------------------------------
 
-import { VALID_THEMES, resolveTheme, type ThemeName } from './astro.js'
+import { VALID_THEMES, resolveTheme, type ThemeName } from './themes.js'
 import { DEWEY_VERSION } from '../version.js'
 
 export { VALID_THEMES, resolveTheme }

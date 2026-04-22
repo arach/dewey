@@ -820,7 +820,7 @@ const pageDescription = description || '${args.projectName} documentation'
         </div>
         <div id="search-modal" class="dl-search-dialog-body"></div>
         <p id="search-modal-fallback" class="dl-search-dialog-fallback" style="display:none;">
-          Search index is generated on build. Run <code>pnpm build</code> to enable Pagefind locally.
+          Search index is generated on build. Run <code>npm run build</code> to enable Pagefind locally.
         </p>
       </div>
     </div>
@@ -1205,7 +1205,7 @@ const { title = 'Docs' } = Astro.props
         </div>
         <div id="search-modal" class="mt-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] p-4"></div>
         <p id="search-modal-fallback" class="mt-3 hidden text-xs text-[var(--color-text-muted)]">
-          Search index is generated on build. Run <code>pnpm build</code> to enable Pagefind locally.
+          Search index is generated on build. Run <code>npm run build</code> to enable Pagefind locally.
         </p>
       </div>
     </div>
@@ -2115,8 +2115,9 @@ const agentMarkdownFiles = import.meta.glob('../../../docs/**/*.agent.md', {
 const rawLoader = rawMarkdownFiles[filePath]
 const rawMarkdown = rawLoader ? await rawLoader() : ''
 
-const agentFilePath = filePath.replace(/\\.md$/, '.agent.md')
-const agentLoader = agentMarkdownFiles[agentFilePath]
+const siblingAgentFilePath = filePath.replace(/\\.md$/, '.agent.md')
+const nestedAgentFilePath = filePath.replace('/docs/', '/docs/agent/').replace(/\\.md$/, '.agent.md')
+const agentLoader = agentMarkdownFiles[siblingAgentFilePath] ?? agentMarkdownFiles[nestedAgentFilePath]
 const agentMarkdown = agentLoader ? await agentLoader() : ''
 ---
 

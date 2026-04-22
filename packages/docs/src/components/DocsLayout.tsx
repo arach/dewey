@@ -221,7 +221,7 @@ export interface DocsLayoutProps {
   nextPage?: { id: string; title: string }
 }
 
-export default function DocsLayout({
+export function DocsLayout({
   children,
   title,
   description,

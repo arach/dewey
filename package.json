@@ -18,5 +18,9 @@
     "llm"
   ],
   "author": "Arach Tchoupani",
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "www"
+  ]
 }

@@ -45,8 +45,8 @@ interface DocFile {
 }
 
 function resolveTemplate(template?: string): 'astro' | 'nextjs' {
-  if (template === 'nextjs') return 'nextjs'
-  return 'astro'
+  if (template === 'astro') return 'astro'
+  return 'nextjs'
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -65,12 +65,12 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
     return docs
   }
 
-  const files = await readdir(docsPath)
+  const files = await readdir(docsPath, { recursive: true })
 
   for (const file of files) {
     if (!file.endsWith('.md') || file.endsWith('.agent.md')) continue
 
-    const filePath = join(docsPath, file)
+    const filePath = join(docsPath, String(file))
     const rawContent = await readFile(filePath, 'utf-8')
     const { data: frontmatter, content: body } = matter(rawContent)
     const id = file.replace('.md', '')
@@ -246,7 +246,7 @@ dist
   await mkdir(docsDir, { recursive: true })
 
   for (const doc of docs) {
-    const docPath = join(docsDir, doc.sourcePath)
+    const docPath = join(docsDir, `${doc.id}.md`)
     await mkdir(dirname(docPath), { recursive: true })
     await writeFile(docPath, doc.rawContent)
     console.log(chalk.green('✓') + ` docs/${doc.sourcePath}`)

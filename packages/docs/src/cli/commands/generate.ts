@@ -405,6 +405,9 @@ export async function generateCommand(options: GenerateOptions) {
     installMd: generateAll || options.installMd,
   }
 
+  // Ensure output directory exists
+  await mkdir(outputPath, { recursive: true })
+
   // Generate AGENTS.md
   if (filesToGenerate.agentsMd) {
     const content = generateAgentsMd(

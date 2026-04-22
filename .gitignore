@@ -45,3 +45,5 @@ tmp/
 # Lock files (use pnpm-lock.yaml)
 www/bun.lock
 .superset/
+# OpenScout local state
+.openscout/project.json

@@ -37,10 +37,10 @@ export type {
 export { Header } from './components/Header'
 export type { HeaderProps } from './components/Header'
 
-export { default as DocsLayout } from './components/DocsLayout'
-export { default as MarkdownContent } from './components/MarkdownContent'
-export { default as CodeBlock } from './components/CodeBlock'
-export { default as HeadingLink } from './components/HeadingLink'
+export { DocsLayout } from './components/DocsLayout'
+export { MarkdownContent } from './components/MarkdownContent'
+export { CodeBlock } from './components/CodeBlock'
+export { HeadingLink } from './components/HeadingLink'
 
 // Sidebar - Left navigation
 export { Sidebar } from './components/Sidebar'

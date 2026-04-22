@@ -1,0 +1,101 @@
+/**
+ * Dewey Hudson Color Preset
+ * Minimal, monospace-forward theme with emerald accent.
+ * Clean grays (zinc scale) with high contrast.
+ */
+
+:root {
+  /* ─── Core Colors ────────────────────────────────────────────────────── */
+  --dw-background: #fafafa;
+  --dw-foreground: #171717;
+
+  --dw-primary: #059669;
+  --dw-primary-foreground: #ffffff;
+
+  --dw-secondary: #ffffff;
+  --dw-secondary-foreground: #171717;
+
+  --dw-muted: #f5f5f5;
+  --dw-muted-foreground: #737373;
+
+  --dw-accent: #ecfdf5;
+  --dw-accent-foreground: #065f46;
+
+  /* ─── Borders & Rings ────────────────────────────────────────────────── */
+  --dw-border: #e5e5e5;
+  --dw-ring: #059669;
+
+  /* ─── Tailwind-compatible aliases (for arbitrary value classes) ─────── */
+  --color-dw-background: var(--dw-background);
+  --color-dw-foreground: var(--dw-foreground);
+  --color-dw-primary: var(--dw-primary);
+  --color-dw-primary-foreground: var(--dw-primary-foreground);
+  --color-dw-secondary: var(--dw-secondary);
+  --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+  --color-dw-muted: var(--dw-muted);
+  --color-dw-muted-foreground: var(--dw-muted-foreground);
+  --color-dw-accent: var(--dw-accent);
+  --color-dw-accent-foreground: var(--dw-accent-foreground);
+  --color-dw-border: var(--dw-border);
+  --color-dw-ring: var(--dw-ring);
+
+  /* ─── Semantic Colors ────────────────────────────────────────────────── */
+  --dw-info: #0284c7;
+  --dw-info-foreground: #ffffff;
+
+  --dw-warning: #d97706;
+  --dw-warning-foreground: #171717;
+
+  --dw-error: #dc2626;
+  --dw-error-foreground: #ffffff;
+
+  --dw-success: #059669;
+  --dw-success-foreground: #ffffff;
+
+  /* ─── Code Blocks ────────────────────────────────────────────────────── */
+  --dw-code-bg: #f5f5f5;
+  --dw-code-border: #e5e5e5;
+
+  /* ─── Sidebar ────────────────────────────────────────────────────────── */
+  --dw-sidebar-bg: #fafafa;
+  --dw-sidebar-border: #f0f0f0;
+  --dw-sidebar-active: #171717;
+  --dw-sidebar-active-bg: #ecfdf5;
+
+  /* ─── Header ─────────────────────────────────────────────────────────── */
+  --dw-header-bg: rgba(250, 250, 250, 0.95);
+  --dw-header-border: rgba(23, 23, 23, 0.06);
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-background: #0a0a0a;
+  --dw-foreground: #e5e5e5;
+
+  --dw-primary: #34d399;
+  --dw-primary-foreground: #0a0a0a;
+
+  --dw-secondary: #141414;
+  --dw-secondary-foreground: #e5e5e5;
+
+  --dw-muted: #1a1a1a;
+  --dw-muted-foreground: #737373;
+
+  --dw-accent: #1a1a1a;
+  --dw-accent-foreground: #34d399;
+
+  --dw-border: #262626;
+  --dw-ring: #34d399;
+
+  --dw-code-bg: #141414;
+  --dw-code-border: #262626;
+
+  --dw-sidebar-bg: #0a0a0a;
+  --dw-sidebar-border: #1a1a1a;
+  --dw-sidebar-active: #e5e5e5;
+  --dw-sidebar-active-bg: #1a1a1a;
+
+  --dw-header-bg: rgba(10, 10, 10, 0.9);
+  --dw-header-border: rgba(229, 229, 229, 0.08);
+}

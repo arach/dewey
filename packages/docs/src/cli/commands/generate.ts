@@ -1,10 +1,11 @@
 import chalk from 'chalk'
-import { readdir, readFile, writeFile, access } from 'fs/promises'
+import { readdir, readFile, writeFile, access, mkdir } from 'fs/promises'
 import { join, relative } from 'path'
 import matter from 'gray-matter'
 import { loadConfig } from '../config.js'
 import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
 import { DEWEY_VERSION } from '../version.js'
+import { writeAgentArtifacts } from '../agent-artifacts.js'
 
 interface GenerateOptions {
   output?: string
@@ -12,6 +13,7 @@ interface GenerateOptions {
   llmsTxt?: boolean
   docsJson?: boolean
   installMd?: boolean
+  agentArtifacts?: boolean
 }
 
 interface DocSection {
@@ -137,7 +139,7 @@ function generateAgentsMd(projectName: string, tagline: string | undefined, conf
   return lines.join('\n')
 }
 
-function generateLlmsTxt(projectName: string, tagline: string | undefined, docs: DocSection[]): string {
+function generateLlmsTxt(projectName: string, tagline: string | undefined, docs: DocSection[], includeAgentArtifacts = false): string {
   const lines: string[] = []
 
   lines.push(`# ${projectName}`)
@@ -153,6 +155,19 @@ function generateLlmsTxt(projectName: string, tagline: string | undefined, docs:
     lines.push(`- ${doc.title}: /docs/${doc.id}`)
   }
   lines.push('')
+
+  if (includeAgentArtifacts) {
+    lines.push('## Agent Retrieval Artifacts')
+    lines.push('')
+    lines.push('- Discovery manifest: /agent/manifest.json')
+    lines.push('- Full docs with markdown: /agent/docs.json')
+    lines.push('- Prompt registry: /agent/prompts.json')
+    lines.push('- Combined context: /agent/context.md')
+    lines.push('- Raw markdown base: /agent/raw/docs/')
+    lines.push('- Core bundle: /agent/bundles/core.md')
+    lines.push('- Prompt bundle: /agent/bundles/prompts.md')
+    lines.push('')
+  }
 
   // Summary of each section
   for (const doc of docs) {
@@ -397,12 +412,13 @@ export async function generateCommand(options: GenerateOptions) {
   const docs = await loadDocs(cwd, docsPath, docsRelativePath, sectionsToInclude)
 
   // Determine which files to generate
-  const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd
+  const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd && !options.agentArtifacts
   const filesToGenerate = {
     agentsMd: generateAll || options.agentsMd,
     llmsTxt: generateAll || options.llmsTxt,
     docsJson: generateAll || options.docsJson,
     installMd: generateAll || options.installMd,
+    agentArtifacts: generateAll || options.agentArtifacts,
   }
 
   // Ensure output directory exists
@@ -426,7 +442,8 @@ export async function generateCommand(options: GenerateOptions) {
     const content = generateLlmsTxt(
       config.project.name,
       config.project.tagline,
-      docs
+      docs,
+      filesToGenerate.agentArtifacts,
     )
     const filePath = join(outputPath, 'llms.txt')
     await writeFile(filePath, content)
@@ -454,8 +471,26 @@ export async function generateCommand(options: GenerateOptions) {
     console.log(chalk.green('✓') + ` Generated ${chalk.cyan('install.md')} (installmd.org standard)`)
   }
 
+  if (filesToGenerate.agentArtifacts) {
+    const result = await writeAgentArtifacts({
+      rootDir: cwd,
+      docsDir: docsPath,
+      outputDir: outputPath,
+      project: {
+        name: config.project.name,
+        version: config.project.version,
+        tagline: config.project.tagline,
+      },
+    })
+    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('agent/')} retrieval artifacts (${result.docs} docs, ${result.prompts} prompts)`)
+  }
+
+  const generatedSectionFiles = filesToGenerate.agentsMd || filesToGenerate.llmsTxt || filesToGenerate.docsJson || filesToGenerate.installMd
+
   console.log(chalk.blue('\n✨ Agent files generated!\n'))
   console.log(`Output directory: ${chalk.gray(outputPath)}`)
-  console.log(`Included sections: ${chalk.gray(sectionsToInclude.join(', '))}`)
+  if (generatedSectionFiles) {
+    console.log(`Included sections: ${chalk.gray(sectionsToInclude.join(', '))}`)
+  }
   console.log()
 }

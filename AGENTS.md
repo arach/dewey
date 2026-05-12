@@ -26,6 +26,7 @@
 - Working with **component**? → Check packages/docs/src/components/ for React components
 - Working with **skill**? → Check .claude/skills/ for LLM prompt templates
 - Working with **config**? → Check dewey.config.ts for project configuration
+- Working with **agent artifacts**? → Check packages/docs/src/cli/agent-artifacts.ts and `dewey generate --agent-artifacts`
 
 ## Overview
 
@@ -33,7 +34,7 @@
 
 # Dewey
 
-Dewey is a documentation toolkit that makes your docs AI-agent-ready. It audits, scores, and generates optimized documentation for LLM consumption.
+Dewey is a documentation toolkit that prepares your docs for AI agents. It audits, scores, and exports structured documentation artifacts without requiring a specific rendering framework.
 
 ## What Dewey Does
 
@@ -41,7 +42,9 @@ Dewey is a **docs agent**, not a docs framework. It focuses on:
 
 - **Auditing** - Validates documentation completeness and quality
 - **Scoring** - Rates agent-readiness on a 0-100 scale
-- **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md
+- **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md, and the `agent/` retrieval surface
+- **Exporting** - Publishes recursive raw markdown, manifests, prompt registries, and context bundles
+- **Publishing** - Optionally scaffolds a static doc site from your markdown
 - **Reviewing** - Skills that catch drift between docs and codebase
 
 Dewey prepares your docs for AI consumption. Rendering is left to your framework of choice.
@@ -79,7 +82,8 @@ curl https://your-project.com/install.md | claude
 ```
 dewey init      Create docs/ folder and dewey.config.ts
 dewey audit     Check documentation completeness
-dewey generate  Create agent-ready files
+dewey generate  Create agent-ready files and retrieval artifacts
+dewey create    Optional static docs site from markdown
 dewey agent     Score agent-readiness (0-100)
 ```
 

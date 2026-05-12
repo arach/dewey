@@ -1,6 +1,6 @@
 # Dewey
 
-Documentation toolkit for AI-agent-ready docs. Audits, scores, generates optimized documentation, and scaffolds static doc sites.
+Documentation toolkit for AI-agent-ready docs. Audits, scores, generates retrieval artifacts, and can publish a static docs site when useful.
 
 [![npm](https://img.shields.io/npm/v/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
 [![npm downloads](https://img.shields.io/npm/dm/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
@@ -14,8 +14,8 @@ Dewey is a **docs agent**, not a docs framework. It focuses on preparation and j
 
 - **Audit** — Validate documentation completeness and quality
 - **Score** — Rate agent-readiness on a 0-100 scale
-- **Generate** — Create AGENTS.md, llms.txt, docs.json, install.md
-- **Create** — Scaffold a full static doc site from your markdown (Astro + Pagefind)
+- **Generate** — Create AGENTS.md, llms.txt, docs.json, install.md, and agent retrieval artifacts
+- **Create** — Optionally scaffold a static doc site from your markdown
 - **Review** — Skills that catch drift between docs and codebase
 
 ## Installation
@@ -39,7 +39,7 @@ npx dewey init
 # Generate agent-ready files
 npx dewey generate
 
-# Create a static doc site from your markdown
+# Optional: create a static doc site from your markdown
 npx dewey create my-docs --source ./docs --theme ocean
 
 # Check your agent-readiness score
@@ -52,13 +52,13 @@ npx dewey agent
 |---------|---------|
 | `dewey init` | Scaffold docs structure + dewey.config.ts |
 | `dewey audit` | Validate documentation completeness |
-| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md |
-| `dewey create` | Scaffold a static Astro doc site from markdown |
+| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |
+| `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 scale) |
 
-## Doc Site Generator
+## Optional Site Generator
 
-`dewey create` turns a folder of markdown files into a complete static doc site:
+`dewey create` turns a folder of markdown files into a static doc site when you want a human-facing website alongside the agent artifacts:
 
 ```bash
 dewey create my-project-docs --source ./docs --theme purple
@@ -66,13 +66,7 @@ cd my-project-docs
 pnpm install && pnpm dev
 ```
 
-Features:
-- **Astro-based** static output — real HTML, no empty SPA shells
-- **Pagefind** search built in
-- **8 themes** — neutral, ocean, emerald, purple, dusk, rose, github, warm
-- **Dark mode** with system preference detection
-- **Auto-navigation** from frontmatter ordering
-- **Zero config** — just point it at your markdown
+It is a publishing path, not the core contract. The core contract is the generated markdown and JSON artifacts.
 
 ## Generated Files
 
@@ -82,6 +76,40 @@ Features:
 | `llms.txt` | Plain text summary for LLMs |
 | `docs.json` | Structured documentation metadata |
 | `install.md` | LLM-executable installation guide ([installmd.org](https://installmd.org)) |
+
+Plain `dewey generate` also emits an `agent/` retrieval surface inspired by
+the Lattices docs migration:
+
+| File | Purpose |
+|------|---------|
+| `agent/manifest.json` | Discovery index for docs, prompts, bundles, and raw markdown |
+| `agent/docs.json` | Full structured manifest with markdown bodies |
+| `agent/prompts.json` | Prompt registry from `docs/prompts/*.md` |
+| `agent/context.md` | Compact agent context with retrieval map and bundled docs |
+| `agent/context.json` | JSON equivalent for tooling |
+| `agent/raw/docs/**.md` | Raw markdown mirror, preserving nested paths |
+| `agent/bundles/core.md` | Overview/quickstart/core docs bundle when present |
+| `agent/bundles/prompts.md` | Combined prompt bundle |
+
+Generate only this surface with:
+
+```bash
+dewey generate --agent-artifacts
+```
+
+Node agents and site build scripts can reuse the collector directly:
+
+```ts
+import {
+  collectMarkdownArtifacts,
+  getMarkdownArtifact,
+  getPromptArtifact,
+  buildAgentManifest,
+  buildPromptRegistry,
+  buildContextBundle,
+  writeAgentArtifacts,
+} from '@arach/dewey/agent-artifacts'
+```
 
 ## Agent Content Pattern
 

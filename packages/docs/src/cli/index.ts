@@ -38,6 +38,7 @@ program
   .option('--llms-txt', 'Generate only llms.txt')
   .option('--docs-json', 'Generate only docs.json')
   .option('--install-md', 'Generate only install.md (installmd.org standard)')
+  .option('--agent-artifacts', 'Generate agent retrieval artifacts under agent/')
   .action(generateCommand)
 
 program

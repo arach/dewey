@@ -29,14 +29,9 @@ export const homeGroups: HomeGroup[] = [
         href: '/docs/skills',
       },
       {
-        title: 'Doc Site Generator',
-        description: 'Scaffold a static Astro site from markdown.',
-        href: '/docs/quickstart#create-a-doc-site',
-      },
-      {
-        title: 'Templates',
-        description: 'Browse layout and color themes for your doc site.',
-        href: '/templates',
+        title: 'Agent artifacts',
+        description: 'Manifest, raw markdown, prompt registry, and context bundles.',
+        href: '/agents',
       },
     ],
   },
@@ -45,8 +40,13 @@ export const homeGroups: HomeGroup[] = [
     cards: [
       {
         title: 'Agent Entry',
-        description: 'Raw markdown endpoints for LLMs.',
+        description: 'Stable retrieval URLs for LLMs and tools.',
         href: '/agents',
+      },
+      {
+        title: 'manifest.json',
+        description: 'Discovery index for docs and prompts.',
+        href: '/agent/manifest.json',
       },
       {
         title: 'AGENTS.md',
@@ -77,6 +77,11 @@ export const homeGroups: HomeGroup[] = [
         title: 'Prompt: create-agent-md',
         description: 'Generate agent-optimized versions.',
         href: '/docs/prompts/create-agent-md',
+      },
+      {
+        title: 'Optional site generator',
+        description: 'Publish the same docs as a static site when useful.',
+        href: '/docs/quickstart#create-a-doc-site',
       },
     ],
   },

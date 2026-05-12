@@ -335,6 +335,9 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
           ))}
           <nav class="af-nav-group">
             <p class="af-nav-label">Agent files</p>
+            <a href="/agents" class={`af-nav-item ${currentPath === '/agents' ? 'active' : ''}`}>Agent entry</a>
+            <a href="/agent/manifest.json" class="af-nav-item">manifest.json</a>
+            <a href="/agent/context.md" class="af-nav-item">context.md</a>
             <a href="/view/agents-md" class={`af-nav-item ${currentPath === '/view/agents-md' ? 'active' : ''}`}>AGENTS.md</a>
             <a href="/view/llms-txt" class={`af-nav-item ${currentPath === '/view/llms-txt' ? 'active' : ''}`}>llms.txt</a>
             <a href="/view/install-md" class={`af-nav-item ${currentPath === '/view/install-md' ? 'active' : ''}`}>install.md</a>

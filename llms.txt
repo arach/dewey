@@ -8,9 +8,19 @@
 - Quickstart: /docs/quickstart
 - Skills: /docs/skills
 
+## Agent Retrieval Artifacts
+
+- Discovery manifest: /agent/manifest.json
+- Full docs with markdown: /agent/docs.json
+- Prompt registry: /agent/prompts.json
+- Combined context: /agent/context.md
+- Raw markdown base: /agent/raw/docs/
+- Core bundle: /agent/bundles/core.md
+- Prompt bundle: /agent/bundles/prompts.md
+
 ## Overview
 
-Dewey is a documentation toolkit that makes your docs AI-agent-ready. It audits, scores, and generates optimized documentation for LLM consumption.
+Dewey prepares docs for AI agents by generating standard files, retrieval manifests, raw markdown mirrors, prompt registries, and context bundles without requiring a specific rendering framework.
 
 ## Quickstart
 

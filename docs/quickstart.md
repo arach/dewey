@@ -72,7 +72,7 @@ docs/
 npx dewey generate
 ```
 
-Outputs `AGENTS.md`, `llms.txt`, `docs.json`, and `install.md` — everything an AI agent needs to understand your project.
+Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
 ### 6. Check your score
 
@@ -91,14 +91,14 @@ Categories:
 
 </div>
 
-### 7. Create a doc site
+### 7. Optional: create a doc site
 
 ```bash
 npx dewey create my-docs --source ./docs --theme ocean
 cd my-docs && pnpm install && pnpm dev
 ```
 
-Generates a full static site with Astro, Pagefind search, color themes, dark mode, and auto-navigation from frontmatter.
+Generates a static docs site from the same markdown when you want a human-facing site alongside the agent artifacts.
 
 ---
 
@@ -107,4 +107,4 @@ Generates a full static site with Astro, Pagefind search, color themes, dark mod
 - Create `.agent.md` versions of your docs for denser, structured content
 - Add skills to `.claude/skills/` for custom agent-guided reviews
 - Run `npx dewey audit` to check documentation completeness
-- Browse [templates](/templates) to pick a theme for your doc site
+- Use `dewey create` when you want to publish the same docs as a static site

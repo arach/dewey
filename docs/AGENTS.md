@@ -1,12 +1,12 @@
 # dewey
 
-> Documentation toolkit for AI-agent-ready docs - generates AGENTS.md, llms.txt, install.md
+> Documentation toolkit for AI-agent-ready docs and retrieval artifacts
 
 ## Critical Context
 
 **IMPORTANT:** Read these rules before making any changes:
 
-- Dewey generates 4 agent files: AGENTS.md, llms.txt, docs.json, install.md
+- Dewey generates standard files plus the `agent/` retrieval surface: manifests, raw markdown, prompts, and bundles
 - Skills are LLM prompts, NOT deterministic code - they guide agents
 - Each doc page should have TWO versions: human (.md) and agent (.agent.md)
 - The `.dewey/` folder contains generated artifacts (reviews, prompts, drift reports)
@@ -16,7 +16,7 @@
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| React Components | `packages/docs/src/components/` | 22 UI components |
+| React Components | `packages/docs/src/components/` | Optional docs UI components |
 | CLI Commands | `packages/docs/src/cli/commands/` | init, audit, generate, agent |
 | Skills | `packages/docs/src/skills/` | LLM prompt templates |
 | Documentation Site | `www/src/pages/` | Live docs at dewey site |
@@ -34,7 +34,8 @@
 |---------|---------|
 | `dewey init` | Scaffold docs structure + dewey.config.ts |
 | `dewey audit` | Validate documentation completeness |
-| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md |
+| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |
+| `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (100 pts scale) |
 
 ## Skills System

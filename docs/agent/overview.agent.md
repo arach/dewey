@@ -4,7 +4,7 @@
 @arach/dewey
 
 ## Purpose
-Documentation toolkit that generates AI-agent-ready files (AGENTS.md, llms.txt, install.md) and provides React components for docs sites.
+Documentation toolkit that prepares docs for AI agents. Generates standard agent files, recursive retrieval artifacts, and optional static docs sites.
 
 ## CLI Commands
 
@@ -12,7 +12,8 @@ Documentation toolkit that generates AI-agent-ready files (AGENTS.md, llms.txt, 
 |---------|--------|
 | `dewey init` | Create docs/ + dewey.config.ts |
 | `dewey audit` | Validate completeness |
-| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md |
+| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, agent/ artifacts |
+| `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 pts) |
 
 ## Generated Files
@@ -23,6 +24,17 @@ Documentation toolkit that generates AI-agent-ready files (AGENTS.md, llms.txt, 
 | llms.txt | Plain text for LLMs |
 | docs.json | Structured JSON |
 | install.md | LLM-executable installation (installmd.org) |
+
+## Retrieval Artifacts
+
+| File | Purpose |
+|------|---------|
+| agent/manifest.json | Discovery index |
+| agent/docs.json | Full docs manifest with markdown |
+| agent/prompts.json | Prompt registry |
+| agent/context.md | Compact markdown bundle |
+| agent/context.json | JSON context bundle |
+| agent/raw/docs/ | Raw markdown mirror |
 
 ## Skills (LLM Prompts)
 

@@ -3,7 +3,7 @@ import AgentFileLayout from '../../layouts/AgentFileLayout.astro'
 
 const overview = `# Agent Entry Points
 
-Dewey serves raw text at these URLs for AI agents and tooling:
+Dewey serves raw text, JSON, and markdown at stable URLs for AI agents and tooling:
 
 ## Primary Files
 - /AGENTS.md    — Combined context for AI coding assistants
@@ -11,21 +11,27 @@ Dewey serves raw text at these URLs for AI agents and tooling:
 - /install.md   — LLM-executable installation guide
 - /lm.txt       — Short alias for llms.txt
 
-## Raw Documentation
-- /docs/overview.md     — Project introduction
-- /docs/quickstart.md   — Getting started guide
-- /docs/skills.md       — Skills reference
+## Retrieval Surface
+- /agent/manifest.json       — Discovery index for docs, prompts, raw markdown, and bundles
+- /agent/docs.json           — Structured docs manifest with markdown bodies
+- /agent/prompts.json        — Prompt registry from docs/prompts/*.md
+- /agent/context.md          — Compact context bundle for agent ingestion
+- /agent/context.json        — JSON context bundle for tools
+- /agent/bundles/core.md     — Recommended core reading bundle
+- /agent/bundles/prompts.md  — Combined prompt bundle
+- /agent/raw/docs/           — Raw markdown mirror preserving nested paths
 
 ## Agent-Optimized Docs
 - /agents/overview.md   — Agent-optimized overview
 
-All files serve plain text/markdown with no HTML wrapper.
-Human docs live at /docs/*. Styled views at /view/*.`
+Human docs live at /docs/*.
+Styled views live at /view/*.
+The generator can publish a static site, but these files are the agent contract.`
 ---
 <AgentFileLayout
   title="Agent Entry"
   fileName="agents/"
   content={overview}
-  rawPath="/llms.txt"
+  rawPath="/agent/manifest.json"
   ogImage="/og-agents.png"
 />

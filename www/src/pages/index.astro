@@ -1122,9 +1122,9 @@ import SiteHeader from '../components/SiteHeader.astro'
       <div class="v3-hero-inner">
         <div class="v3-hero-grid">
           <div>
-            <h1>Curated docs<br/>for <em class="v3-rotate" data-words="agents.,devs.">agents.</em></h1>
+            <h1>Docs prepared<br/>for <em class="v3-rotate" data-words="agents.,people.">agents.</em></h1>
             <p class="v3-hero-desc">
-              Audit, score, and generate agent-ready documentation.<br/>Scaffold complete static doc sites from your markdown.
+              Dewey audits your docs, generates agent-readable artifacts, and can publish the same source as a static site when that helps.
             </p>
             <div class="v3-hero-install" id="v3-install">
               <div class="v3-pkg-tabs">
@@ -1170,7 +1170,8 @@ import SiteHeader from '../components/SiteHeader.astro'
                 </div>
                 <div class="v3-terminal-line v3-terminal-output">→ AGENTS.md</div>
                 <div class="v3-terminal-line v3-terminal-output">→ llms.txt</div>
-                <div class="v3-terminal-line v3-terminal-output">→ install.md</div>
+                <div class="v3-terminal-line v3-terminal-output">→ agent/manifest.json</div>
+                <div class="v3-terminal-line v3-terminal-output">→ agent/context.md</div>
                 <div class="v3-terminal-line" style="margin-top: 8px;">
                   <span class="v3-terminal-prompt">$</span>
                   <span class="v3-terminal-text">bunx dewey audit</span>
@@ -1189,8 +1190,8 @@ import SiteHeader from '../components/SiteHeader.astro'
     <section class="v3-section" style="padding-bottom: 0;">
       <div class="v3-section-header">
         <div>
-          <p class="v3-section-label">Capabilities</p>
-          <h2 class="v3-section-title">One package,<br/>everything you need.</h2>
+          <p class="v3-section-label">Core</p>
+          <h2 class="v3-section-title">Prepare docs once.<br/>Expose them everywhere.</h2>
         </div>
       </div>
     </section>
@@ -1224,9 +1225,9 @@ import SiteHeader from '../components/SiteHeader.astro'
         <div class="v3-feature">
           <div class="v3-feature-top">
             <svg class="v3-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-            <h3>CLI Toolkit</h3>
+            <h3>Docs Agent</h3>
           </div>
-          <p>Scaffold, audit, and generate agent-ready files from the command line</p>
+          <p>Use Dewey to inspect project docs, encode rules, and keep agent-facing context close to the code.</p>
           <a href="/docs/quickstart" class="v3-feature-link">
             Learn more
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1236,10 +1237,10 @@ import SiteHeader from '../components/SiteHeader.astro'
         <div class="v3-feature">
           <div class="v3-feature-top">
             <svg class="v3-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            <h3>Doc Site Generator</h3>
+            <h3>Retrieval Surface</h3>
           </div>
-          <p>Turn markdown into a complete static site with search, themes, and dark mode</p>
-          <a href="/docs/quickstart#create-a-doc-site" class="v3-feature-link">
+          <p>Export manifests, raw markdown, prompt registries, and context bundles under stable /agent/ URLs.</p>
+          <a href="/agents" class="v3-feature-link">
             Learn more
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -1248,9 +1249,9 @@ import SiteHeader from '../components/SiteHeader.astro'
         <div class="v3-feature">
           <div class="v3-feature-top">
             <svg class="v3-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <h3>Agent-Ready Files</h3>
+            <h3>Standard Files</h3>
           </div>
-          <p>Generate AGENTS.md, llms.txt, and install.md for AI coding assistants</p>
+          <p>Generate AGENTS.md, llms.txt, docs.json, and install.md without committing to a presentation framework.</p>
           <a href="/docs/overview" class="v3-feature-link">
             Learn more
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1260,10 +1261,10 @@ import SiteHeader from '../components/SiteHeader.astro'
         <div class="v3-feature">
           <div class="v3-feature-top">
             <svg class="v3-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <h3>Readiness Scoring</h3>
+            <h3>Optional Publishing</h3>
           </div>
-          <p>Audit docs against a 100-point rubric with grades and recommendations</p>
-          <a href="/docs/skills" class="v3-feature-link">
+          <p>When you do want a human site, Dewey can scaffold one from the same markdown source.</p>
+          <a href="/docs/quickstart#create-a-doc-site" class="v3-feature-link">
             Learn more
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -1276,7 +1277,7 @@ import SiteHeader from '../components/SiteHeader.astro'
       <div class="v3-section-header">
         <div>
           <p class="v3-section-label">Output</p>
-          <h2 class="v3-section-title">Generated<br/>agent files.</h2>
+          <h2 class="v3-section-title">Agent retrieval<br/>surface.</h2>
         </div>
       </div>
     </section>
@@ -1284,24 +1285,24 @@ import SiteHeader from '../components/SiteHeader.astro'
     <div class="v3-files-wrap">
       <div class="v3-files">
         <div class="v3-file">
-          <p class="v3-file-name">AGENTS.md</p>
-          <p class="v3-file-desc">Combined docs with critical context, entry points, and navigation rules for AI coding assistants.</p>
+          <p class="v3-file-name">agent/manifest.json</p>
+          <p class="v3-file-desc">Discovery index for docs, prompts, bundles, and raw markdown endpoints.</p>
         </div>
         <div class="v3-file">
-          <p class="v3-file-name">llms.txt</p>
-          <p class="v3-file-desc">Plain text format following the llms.txt convention for broad LLM compatibility.</p>
+          <p class="v3-file-name">agent/docs.json</p>
+          <p class="v3-file-desc">Structured manifest with markdown bodies for tools that want one JSON payload.</p>
         </div>
         <div class="v3-file">
-          <p class="v3-file-name">install.md</p>
-          <p class="v3-file-desc">LLM-executable installation guide following the installmd.org specification.</p>
+          <p class="v3-file-name">agent/context.md</p>
+          <p class="v3-file-desc">Compact markdown bundle for agents that want the useful context immediately.</p>
         </div>
       </div>
     </div>
 
     <!-- CTA -->
     <section class="v3-cta">
-      <h2>Crafted docs<br/>for <em class="v3-rotate" data-words="devs.,agents." style="font-style: italic;">devs.</em></h2>
-      <p>Agent-ready documentation in minutes.</p>
+      <h2>Same docs.<br/>Better surfaces.</h2>
+      <p>Markdown for people, dense artifacts for agents, an optional site when you need one.</p>
       <a href="/docs/quickstart" class="v3-btn-light" style="position: relative;">
         Read the Quickstart
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1313,7 +1314,7 @@ import SiteHeader from '../components/SiteHeader.astro'
       <span class="v3-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System. Made with ❤️ by <a href="https://github.com/arach" target="_blank" rel="noopener noreferrer" style="color: var(--s-text-muted); text-decoration: underline; text-underline-offset: 2px;">arach</a></span>
       <div class="v3-footer-links">
         <a href="/docs">Docs</a>
-        <a href="/templates">Templates</a>
+        <a href="/agents">Agent files</a>
         <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
@@ -1355,6 +1356,14 @@ import SiteHeader from '../components/SiteHeader.astro'
 
         <nav class="v3-agent-nav-group">
           <p class="v3-agent-nav-label">Agent files</p>
+          <a href="/agent/manifest.json" class="v3-agent-nav-item">
+            <span>manifest.json</span>
+            <button class="v3-agent-copy-btn" data-copy="https://dewey.arach.dev/agent/manifest.json" onclick="event.preventDefault()">copy</button>
+          </a>
+          <a href="/agent/context.md" class="v3-agent-nav-item">
+            <span>context.md</span>
+            <button class="v3-agent-copy-btn" data-copy="https://dewey.arach.dev/agent/context.md" onclick="event.preventDefault()">copy</button>
+          </a>
           <a href="/view/agents-md" class="v3-agent-nav-item">
             <span>AGENTS.md</span>
             <button class="v3-agent-copy-btn" data-copy="https://dewey.arach.dev/AGENTS.md" onclick="event.preventDefault()">copy</button>
@@ -1382,10 +1391,44 @@ import SiteHeader from '../components/SiteHeader.astro'
 
       <main class="v3-agent-main">
         <h1>dewey</h1>
-        <p class="v3-agent-tagline">Documentation toolkit for AI-agent-ready docs. Audit, score, and generate optimized documentation.</p>
+        <p class="v3-agent-tagline">Documentation toolkit for preparing agent-ready docs, retrieval artifacts, and optional static sites.</p>
 
         <div class="v3-agent-section">
-          <h2>Generated files</h2>
+          <h2>Retrieval artifacts</h2>
+          <div class="v3-agent-card">
+            <div class="v3-agent-card-info">
+              <h3>agent/manifest.json</h3>
+              <p>Discovery index for docs, prompts, bundles, and raw markdown endpoints.</p>
+            </div>
+            <div class="v3-agent-card-actions">
+              <a href="/agent/manifest.json" class="v3-agent-card-btn">raw</a>
+              <button class="v3-agent-card-btn" data-copy="https://dewey.arach.dev/agent/manifest.json">copy link</button>
+            </div>
+          </div>
+          <div class="v3-agent-card">
+            <div class="v3-agent-card-info">
+              <h3>agent/docs.json</h3>
+              <p>Full structured docs manifest with markdown bodies.</p>
+            </div>
+            <div class="v3-agent-card-actions">
+              <a href="/agent/docs.json" class="v3-agent-card-btn">raw</a>
+              <button class="v3-agent-card-btn" data-copy="https://dewey.arach.dev/agent/docs.json">copy link</button>
+            </div>
+          </div>
+          <div class="v3-agent-card">
+            <div class="v3-agent-card-info">
+              <h3>agent/context.md</h3>
+              <p>Compact markdown context bundle for quick ingestion.</p>
+            </div>
+            <div class="v3-agent-card-actions">
+              <a href="/agent/context.md" class="v3-agent-card-btn">raw</a>
+              <button class="v3-agent-card-btn" data-copy="https://dewey.arach.dev/agent/context.md">copy link</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="v3-agent-section">
+          <h2>Standard files</h2>
           <div class="v3-agent-card">
             <div class="v3-agent-card-info">
               <h3>AGENTS.md</h3>
@@ -1432,7 +1475,7 @@ import SiteHeader from '../components/SiteHeader.astro'
           <div class="v3-agent-card">
             <div class="v3-agent-card-info">
               <h3>dewey generate</h3>
-              <p>Generate AGENTS.md, llms.txt, docs.json, and install.md from your docs.</p>
+              <p>Generate standard files and the /agent/ retrieval surface from your docs.</p>
             </div>
             <div class="v3-agent-card-actions">
               <button class="v3-agent-card-btn" data-copy="npx dewey generate">copy</button>
@@ -1441,7 +1484,7 @@ import SiteHeader from '../components/SiteHeader.astro'
           <div class="v3-agent-card">
             <div class="v3-agent-card-info">
               <h3>dewey create</h3>
-              <p>Scaffold a complete Astro doc site from a markdown folder.</p>
+              <p>Optional: publish the same markdown as a static docs site.</p>
             </div>
             <div class="v3-agent-card-actions">
               <button class="v3-agent-card-btn" data-copy="npx dewey create my-docs --source ./docs">copy</button>

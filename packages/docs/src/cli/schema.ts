@@ -96,8 +96,17 @@ export const InstallConfig = z.object({
  */
 export const DeweyConfig = z.object({
   project: ProjectConfig,
-  agent: AgentConfig.default({}),
-  docs: DocsConfig.default({}),
+  agent: AgentConfig.default({
+    criticalContext: [],
+    entryPoints: {},
+    rules: [],
+    sections: ['overview', 'quickstart'],
+  }),
+  docs: DocsConfig.default({
+    path: './docs',
+    output: './',
+    required: ['overview', 'quickstart'],
+  }),
   install: InstallConfig.optional(),
 })
 export type DeweyConfig = z.infer<typeof DeweyConfig>

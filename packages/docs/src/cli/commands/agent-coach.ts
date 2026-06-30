@@ -642,7 +642,7 @@ Context:
     console.log(chalk.green('✓') + ` Created ${promptPath}`)
   }
 
-  console.log(chalk.green('\n✨ Fixes applied! Run `dewey agent-coach` again to see your new score.\n'))
+  console.log(chalk.green('\n✨ Fixes applied! Run `dewey agent` again to see your new score.\n'))
 }
 
 // ============================================
@@ -688,6 +688,6 @@ export async function agentCoachCommand(options: CoachOptions) {
   if (options.fix) {
     await applyFixes(cwd, config)
   } else if (report.score < maxScore) {
-    console.log(chalk.gray(`  Tip: Run ${chalk.cyan('dewey agent-coach --fix')} to auto-create missing files\n`))
+    console.log(chalk.gray(`  Tip: Run ${chalk.cyan('dewey agent --fix')} to auto-create missing files\n`))
   }
 }

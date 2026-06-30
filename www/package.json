@@ -13,14 +13,14 @@
     "capture-templates": "node scripts/capture-templates.mjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.0.8",
-    "@astrojs/react": "^4.2.0",
-    "@base-ui/react": "^1.1.0",
-    "@tailwindcss/vite": "^4.1.0",
-    "astro": "^5.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "shiki": "^3.0.0",
-    "tailwindcss": "^4.1.0"
+    "@astrojs/mdx": "^7.0.0",
+    "@astrojs/react": "^6.0.0",
+    "@base-ui/react": "^1.6.0",
+    "@tailwindcss/vite": "^4.3.2",
+    "astro": "^7.0.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "shiki": "^4.3.0",
+    "tailwindcss": "^4.3.2"
   }
 }

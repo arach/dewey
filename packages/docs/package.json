@@ -1,7 +1,11 @@
 {
   "name": "@arach/dewey",
-  "version": "0.3.4",
-  "description": "Documentation toolkit with CLI and React components for agent-ready docs",
+  "version": "0.3.5",
+  "description": "Documentation toolkit for AI-agent-ready docs — audit, score, generate AGENTS.md/llms.txt/docs.json, and optionally publish a static site",
+  "homepage": "https://dewey.arach.dev",
+  "bugs": {
+    "url": "https://github.com/arach/dewey/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -96,7 +100,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "dev": "vite build --watch",
@@ -116,30 +121,30 @@
     }
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "class-variance-authority": "^0.7.0",
-    "commander": "^12.0.0",
-    "cosmiconfig": "^9.0.0",
+    "chalk": "^5.6.2",
+    "class-variance-authority": "^0.7.1",
+    "commander": "^15.0.0",
+    "cosmiconfig": "^9.0.2",
     "gray-matter": "^4.0.3",
-    "highlight.js": "^11.9.0",
-    "lucide-react": "^0.400.0",
-    "react-markdown": "^9.0.0",
+    "highlight.js": "^11.11.1",
+    "lucide-react": "^1.22.0",
+    "react-markdown": "^10.1.0",
     "rehype-slug": "^6.0.0",
-    "remark-gfm": "^4.0.0",
-    "zod": "^3.23.0"
+    "remark-gfm": "^4.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^4.3.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.0",
-    "tailwindcss": "^4.1.18",
-    "tsup": "^8.0.0",
-    "typescript": "^5.5.0",
-    "vite": "^6.0.0",
-    "vite-plugin-dts": "^4.0.0"
+    "@types/node": "^26.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.2",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.0",
+    "vite-plugin-dts": "^5.0.3"
   },
   "keywords": [
     "documentation",

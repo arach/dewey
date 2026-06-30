@@ -1,6 +1,6 @@
 {
   "name": "@arach/dewey",
-  "version": "0.3.5",
+  "version": "0.3.7",
   "description": "Documentation toolkit for AI-agent-ready docs — audit, score, generate AGENTS.md/llms.txt/docs.json, and optionally publish a static site",
   "homepage": "https://dewey.arach.dev",
   "bugs": {

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import { navGroups } from '../lib/nav'
 
 const {
@@ -31,6 +32,7 @@ const tocHeadings = headings.filter((h: any) => h.depth >= 2 && h.depth <= 3)
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@100..600&family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <GoogleAnalytics />
     <script is:inline>
       ;(function () {
         try { var saved = localStorage.getItem('theme') } catch (e) {}

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import { navGroups } from '../lib/nav'
 
 const { title, fileName, content, rawPath, ogImage, renderable = false } = Astro.props
@@ -21,6 +22,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/'
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@100;200;300&family=Inter:wght@300;400;500&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+    <GoogleAnalytics />
     <script is:inline>
       ;(function () {
         try { var saved = localStorage.getItem('theme') } catch (e) {}

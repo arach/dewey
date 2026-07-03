@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import SiteHeader from '../components/SiteHeader.astro'
 
 interface Props {
@@ -28,6 +29,7 @@ const { title = 'Dewey', hideSearch = false } = Astro.props
       href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@100;200;300;400;600&family=Inter:wght@300;400;500&family=Geist+Mono:wght@300;400;500&display=swap"
     />
     <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <GoogleAnalytics />
     <script is:inline>
       ;(function () {
         try {

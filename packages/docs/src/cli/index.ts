@@ -7,6 +7,7 @@ import { agentCoachCommand } from './commands/agent-coach.js'
 import { createCommand } from './commands/create.js'
 import { updateCommand } from './commands/update.js'
 import { ejectCommand } from './commands/eject.js'
+import { siteInitCommand } from './commands/site-init.js'
 import { DEWEY_VERSION } from './version.js'
 
 const program = new Command()
@@ -54,7 +55,8 @@ program
   .description('Create a new docs site from markdown sources')
   .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
   .option('-n, --name <name>', 'Project name (defaults to directory name)')
-  .option('--theme <theme>', 'Color theme (neutral, ocean, emerald, purple, dusk, rose, github, warm, hudson)', 'neutral')
+  .option('--template <template>', 'Structural template (hudson, rail, centered, command)', 'hudson')
+  .option('--theme <theme>', 'Color theme (neutral, ocean, emerald, purple, dusk, rose, github, warm, midnight, mono)', 'neutral')
   .action(createCommand)
 
 program
@@ -64,6 +66,22 @@ program
   .option('--force', 'Overwrite user-modified files (creates backups)')
   .option('--refresh-nav', 'Regenerate docs.json from current docs/')
   .action(updateCommand)
+
+// ── Site subcommands (subpath mode — adds /docs into existing apps) ──
+
+const site = program
+  .command('site')
+  .description('Manage docs as a subpath in an existing Next.js app')
+
+site
+  .command('init')
+  .description('Add /docs route to an existing Next.js App Router project')
+  .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
+  .option('-n, --name <name>', 'Project name (defaults to package.json name)')
+  .option('-b, --base-path <path>', 'Base URL path for docs', '/docs')
+  .action(siteInitCommand)
+
+// ── Legacy commands ──
 
 program
   .command('eject <component>')

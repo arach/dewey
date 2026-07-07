@@ -81,6 +81,9 @@ export type { ApiTableProps, ApiProperty } from './components/ApiTable'
 export { Badge } from './components/Badge'
 export type { BadgeProps, BadgeVariant } from './components/Badge'
 
+export { StateFlow } from './components/StateFlow'
+export type { StateFlowProps } from './components/StateFlow'
+
 // ============================================
 // Agent-Friendly Components
 // ============================================
@@ -174,6 +177,27 @@ export type {
   NavigationGroup,
   NavigationItem,
 } from './types/page-tree'
+
+// Template + theme registry (gallery, create CLI)
+export {
+  VALID_TEMPLATE_IDS,
+  VALID_THEME_IDS,
+  CREATE_THEME_SPECS,
+  CREATE_TEMPLATE_SPECS,
+  resolveCreateOptions,
+  resolveTheme,
+  toDocsAppLayout,
+  layoutBadges,
+  layoutCssOverrides,
+  DEFAULT_DOCS_LAYOUT,
+  DEPRECATED_TEMPLATE_ALIASES,
+  type TemplateId,
+  type ThemeId,
+  type TemplateLayoutSpec,
+  type DocsAppLayoutConfig,
+  type CreateThemeSpec,
+  type CreateTemplateSpec,
+} from './templates/registry'
 
 // Legacy types (backward compatibility)
 export type {

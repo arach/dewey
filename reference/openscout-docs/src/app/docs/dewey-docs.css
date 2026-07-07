@@ -1,0 +1,363 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Dewey Docs Styles — openscout reference implementation
+   Override --dewey-* vars in globals.css to match your brand.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --dewey-bg: #fafafa;
+  --dewey-fg: #111110;
+  --dewey-muted: #8b8579;
+  --dewey-secondary: #5e5a52;
+  --dewey-nav-text: #4c4841;
+  --dewey-border: rgba(0, 0, 0, 0.08);
+  --dewey-border-hover: rgba(0, 0, 0, 0.15);
+  --dewey-active-bg: #111110;
+  --dewey-active-fg: #ffffff;
+  --dewey-hover-bg: rgba(0, 0, 0, 0.04);
+  --dewey-code-bg: #f4f6f8;
+  --dewey-code-border: rgba(0, 0, 0, 0.08);
+  --dewey-progress-color: rgba(17, 17, 16, 0.2);
+  --dewey-surface: transparent;
+  --dewey-font-display: var(--font-display, var(--font-newsreader, Georgia, serif));
+  --dewey-font-body: var(--font-geist-sans, system-ui, sans-serif);
+  --dewey-font-mono: var(--font-geist-mono, ui-monospace, monospace);
+}
+
+/* ── Docs landing page ───────────────────────────────────────────────── */
+
+.dewey-landing-brand {
+  font-family: var(--dewey-font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dewey-fg);
+  text-decoration: none;
+  transition: opacity 150ms;
+}
+
+.dewey-landing-brand:hover {
+  opacity: 0.75;
+}
+
+.dewey-landing-meta {
+  font-family: var(--dewey-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dewey-muted);
+}
+
+.dewey-landing-hero {
+  padding: 4rem 0 3rem;
+}
+
+.dewey-landing-eyebrow {
+  font-family: var(--dewey-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dewey-muted);
+  margin: 0;
+}
+
+.dewey-landing-title {
+  font-family: var(--dewey-font-display);
+  font-size: clamp(2.75rem, 6vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0.75rem 0 0;
+  color: var(--dewey-fg);
+}
+
+.dewey-landing-lead {
+  margin: 1.25rem 0 0;
+  max-width: 28rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--dewey-secondary);
+}
+
+.dewey-landing-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.75rem;
+  background: var(--dewey-active-bg);
+  color: var(--dewey-active-fg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 150ms, transform 150ms;
+}
+
+.dewey-landing-cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.dewey-landing-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.dewey-section-label {
+  font-family: var(--dewey-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dewey-muted);
+  margin: 0 0 1rem;
+}
+
+.dewey-card-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.dewey-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.375rem;
+  border: 1px solid var(--dewey-border);
+  border-radius: 0.875rem;
+  background: var(--dewey-surface, transparent);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 150ms, background 150ms, transform 150ms;
+}
+
+.dewey-card:hover {
+  border-color: var(--dewey-border-hover);
+  background: var(--dewey-hover-bg);
+  transform: translateY(-1px);
+}
+
+.dewey-card-title {
+  font-family: var(--dewey-font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--dewey-fg);
+}
+
+.dewey-card-desc {
+  margin: 0.375rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--dewey-muted);
+}
+
+.dewey-card-arrow {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.25rem;
+  color: var(--dewey-muted);
+  transition: color 150ms, transform 150ms;
+}
+
+.dewey-card:hover .dewey-card-arrow {
+  color: var(--dewey-fg);
+  transform: translate(2px, -2px);
+}
+
+/* ── Content typography ──────────────────────────────────────────────── */
+
+.dewey-content {
+  font-family: var(--dewey-font-body);
+  line-height: 1.65;
+}
+
+.dewey-content p {
+  margin-bottom: 0.6em;
+}
+
+.dewey-content h2 {
+  font-family: var(--dewey-font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--dewey-border);
+}
+
+.dewey-content h2:first-child {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.dewey-content h3 {
+  font-family: var(--dewey-font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dewey-content h4 {
+  font-family: var(--dewey-font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.dewey-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.dewey-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.dewey-content li {
+  margin-bottom: 0.3rem;
+}
+
+.dewey-content li::marker {
+  color: #b0aaa0;
+}
+
+.dewey-content :is(h1, h2, h3, h4) {
+  scroll-margin-top: 6rem;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.dewey-content :is(h3, h4) {
+  gap: 0.375rem;
+}
+
+/* ── Code blocks ─────────────────────────────────────────────────────── */
+
+.dewey-content .rounded-lg.overflow-hidden:has(pre) {
+  background: var(--dewey-code-bg) !important;
+  border-color: var(--dewey-code-border) !important;
+}
+
+.dewey-content .rounded-lg.overflow-hidden:has(pre) span[class*="uppercase"] {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Heading anchor links ────────────────────────────────────────────── */
+
+.dewey-content :is(h1, h2, h3, h4) > a[title="Link to this section"] {
+  flex-shrink: 0;
+}
+
+/* ── Syntax highlighting (warm-neutral) ──────────────────────────────── */
+
+.dewey-content .hljs-keyword { color: #9a6e4a; font-weight: 500; }
+.dewey-content .hljs-string { color: #5a8a6a; }
+.dewey-content .hljs-number { color: #6a8caa; }
+.dewey-content .hljs-property { color: #8a7a9a; }
+.dewey-content .hljs-comment { color: #8a9090; font-style: italic; }
+.dewey-content .hljs-type,
+.dewey-content .hljs-title { color: #8a7a9a; }
+.dewey-content .hljs-title.function_,
+.dewey-content .hljs-function { color: #7a7a9a; }
+.dewey-content .hljs-punctuation { color: #5c5c5c; }
+.dewey-content .hljs-attr { color: #7a8a7a; }
+.dewey-content .hljs-built_in { color: #aa8a6a; }
+.dewey-content .hljs-literal { color: #6a8caa; }
+.dewey-content .hljs-variable { color: #aa8a6a; }
+.dewey-content .hljs-params { color: #4a4a4a; }
+.dewey-content .hljs-meta { color: #8a9090; }
+.dewey-content .hljs-name,
+.dewey-content .hljs-tag,
+.dewey-content .hljs-selector-tag { color: #5a8a6a; }
+.dewey-content .hljs-selector-class { color: #8a7a9a; }
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.dewey-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.dewey-content th {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--dewey-border);
+  color: var(--dewey-fg);
+}
+
+.dewey-content td {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--dewey-border);
+  color: var(--dewey-secondary);
+}
+
+/* ── Blockquotes ─────────────────────────────────────────────────────── */
+
+.dewey-content blockquote {
+  border-left: 3px solid var(--dewey-border);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--dewey-muted);
+  font-style: italic;
+}
+
+/* ── Inline code ─────────────────────────────────────────────────────── */
+
+.dewey-content :not(pre) > code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  font-family: var(--dewey-font-mono);
+}
+
+/* ── Horizontal rule ─────────────────────────────────────────────────── */
+
+.dewey-content hr {
+  border: none;
+  border-top: 1px solid var(--dewey-border);
+  margin: 2rem 0;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────── */
+
+.dewey-content a {
+  color: var(--dewey-fg);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--dewey-border-hover);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 150ms;
+}
+
+.dewey-content a:hover {
+  text-decoration-color: var(--dewey-fg);
+}
+
+/* ── Images ──────────────────────────────────────────────────────────── */
+
+.dewey-content img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}

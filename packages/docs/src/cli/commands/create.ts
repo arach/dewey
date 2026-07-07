@@ -3,7 +3,7 @@ import { mkdir, writeFile, readFile, readdir, access } from 'fs/promises'
 import { dirname, join, basename, relative } from 'path'
 import matter from 'gray-matter'
 import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
-import { resolveTheme } from '../templates/themes.js'
+import { resolveCreateOptions } from '../templates/themes.js'
 import {
   NEXTJS_TEMPLATES,
   NEXTJS_OWNED_FILES,
@@ -19,6 +19,7 @@ import { DEWEY_VERSION } from '../version.js'
 interface CreateOptions {
   source?: string
   theme?: string
+  template?: string
   name?: string
 }
 
@@ -93,9 +94,15 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
   const targetDir = join(cwd, projectDir)
   const sourcePath = options.source ? join(cwd, options.source) : join(cwd, 'docs')
   const projectName = options.name || basename(projectDir)
-  const theme = resolveTheme(options.theme)
+  const { templateId, themeId, warnings } = resolveCreateOptions({
+    template: options.template,
+    theme: options.theme,
+  })
 
   console.log(chalk.blue(`\n🚀 Creating Dewey docs site: ${projectName}\n`))
+  for (const warning of warnings) {
+    console.log(chalk.yellow(`⚠️  ${warning}`))
+  }
 
   // Check if target directory exists
   if (await fileExists(targetDir)) {
@@ -133,7 +140,7 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
 
   await mkdir(targetDir, { recursive: true })
 
-  const templateArgs: NextjsTemplateArgs = { projectName, theme, defaultPage }
+  const templateArgs: NextjsTemplateArgs = { projectName, theme: themeId, templateId, defaultPage }
 
   // Generate all template files
   const files: [string, string][] = Object.keys(NEXTJS_TEMPLATES).map((filePath) => [
@@ -225,8 +232,11 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
+    scaffold: 'nextjs',
+    templateId,
+    themeId,
     template: 'nextjs',
-    theme,
+    theme: themeId,
     projectName,
     defaultPage,
     files: manifestFiles,

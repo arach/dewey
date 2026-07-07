@@ -97,6 +97,10 @@
     "./agent-artifacts": {
       "import": "./dist/cli/agent-artifacts.js",
       "types": "./dist/cli/agent-artifacts.d.ts"
+    },
+    "./registry": {
+      "import": "./dist/registry.js",
+      "types": "./dist/registry.d.ts"
     }
   },
   "files": [
@@ -105,7 +109,7 @@
   ],
   "scripts": {
     "dev": "vite build --watch",
-    "build": "tsc && vite build && tsup src/cli/index.ts src/cli/agent-artifacts.ts --format esm --dts --out-dir dist/cli && tsup src/tailwind/preset.ts --format esm --dts --out-dir dist/tailwind",
+    "build": "tsc && vite build && tsup src/registry.ts --format esm --dts --out-dir dist && tsup src/cli/index.ts src/cli/agent-artifacts.ts --format esm --dts --out-dir dist/cli && tsup src/tailwind/preset.ts --format esm --dts --out-dir dist/tailwind",
     "clean": "rm -rf dist",
     "lint": "eslint src"
   },

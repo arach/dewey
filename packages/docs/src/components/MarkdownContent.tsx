@@ -30,47 +30,47 @@ export function MarkdownContent({ content, isDark = false }: MarkdownContentProp
         h1: ({ children, id, ...props }) => (
           <h1
             id={id}
-            className="group flex items-center text-3xl font-semibold mb-4 mt-8 first:mt-0"
+            className="group flex items-baseline gap-2 text-3xl font-semibold mb-4 mt-8 first:mt-0"
             style={{ color: isDark ? '#f3f4f6' : '#101518' }}
             {...props}
           >
-            {children}
+            <span>{children}</span>
             {id && <HeadingLink id={id} size="lg" />}
           </h1>
         ),
         h2: ({ children, id, ...props }) => (
           <h2
             id={id}
-            className="group flex items-center text-2xl font-semibold mb-4 mt-12 pt-8 first:mt-0 first:pt-0"
+            className="group flex items-baseline gap-2 text-2xl font-semibold mb-4 mt-12 pt-8 first:mt-0 first:pt-0"
             style={{
               color: isDark ? '#f3f4f6' : '#101518',
               borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'}`,
             }}
             {...props}
           >
-            {children}
-            {id && <HeadingLink id={id} size="lg" />}
+            <span>{children}</span>
+            {id && <HeadingLink id={id} size="md" />}
           </h2>
         ),
         h3: ({ children, id, ...props }) => (
           <h3
             id={id}
-            className="group flex items-center text-xl font-semibold mb-3 mt-8"
+            className="group flex items-baseline gap-1.5 text-xl font-semibold mb-3 mt-8"
             style={{ color: isDark ? '#f3f4f6' : '#101518' }}
             {...props}
           >
-            {children}
-            {id && <HeadingLink id={id} size="md" />}
+            <span>{children}</span>
+            {id && <HeadingLink id={id} size="sm" />}
           </h3>
         ),
         h4: ({ children, id, ...props }) => (
           <h4
             id={id}
-            className="group flex items-center text-lg font-semibold mb-2 mt-6"
+            className="group flex items-baseline gap-1.5 text-lg font-semibold mb-2 mt-6"
             style={{ color: isDark ? '#f3f4f6' : '#101518' }}
             {...props}
           >
-            {children}
+            <span>{children}</span>
             {id && <HeadingLink id={id} size="sm" />}
           </h4>
         ),

@@ -1,13 +1,19 @@
 // ---------------------------------------------------------------------------
-// Shared theme definitions
-// Used by templates, create, and update commands.
+// Theme + template resolution for create/update commands.
 // ---------------------------------------------------------------------------
 
-export const VALID_THEMES = ['neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github', 'warm', 'hudson'] as const
-export type ThemeName = typeof VALID_THEMES[number]
+export {
+  VALID_THEME_IDS as VALID_THEMES,
+  VALID_TEMPLATE_IDS as VALID_TEMPLATES,
+  CREATE_THEME_SPECS,
+  CREATE_TEMPLATE_SPECS,
+  resolveTheme,
+  resolveCreateOptions,
+  type ThemeId,
+  type TemplateId,
+} from '../../templates/registry.js'
 
-export function resolveTheme(theme?: string): ThemeName {
-  if (!theme) return 'neutral'
-  if (VALID_THEMES.includes(theme as ThemeName)) return theme as ThemeName
-  return 'neutral'
-}
+import type { ThemeId } from '../../templates/registry.js'
+
+/** @deprecated use ThemeId */
+export type ThemeName = ThemeId

@@ -1,0 +1,38 @@
+/* DocsApp theme preview chrome */
+
+.theme-docs-app-preview {
+  min-height: 100vh;
+  padding-top: 36px;
+}
+
+.theme-preview-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dw-border, #e5e5e5);
+  background: var(--dw-background, #fafafa);
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+}
+
+.theme-preview-back {
+  color: var(--dw-muted-foreground, #737373);
+  text-decoration: none;
+}
+
+.theme-preview-back:hover {
+  color: var(--dw-primary, #059669);
+}
+
+.theme-preview-name {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dw-muted-foreground, #737373);
+}

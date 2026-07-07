@@ -398,16 +398,25 @@ export async function generateCommand(options: GenerateOptions) {
 
   console.log(chalk.blue(`\n🔄 Generating agent files for ${config.project.name}...\n`))
 
-  // Get all available sections
+  // Discover all .md files on disk
   const files = await readdir(docsPath)
   const availableSections = files
     .filter(f => f.endsWith('.md') && !f.endsWith('.agent.md'))
     .map(f => f.replace('.md', ''))
 
-  // Filter to configured sections (or use all if not specified)
-  const sectionsToInclude = config.agent.sections.length > 0
-    ? config.agent.sections.filter(s => availableSections.includes(s))
-    : availableSections
+  // Use config sections for ordering, then append any untracked docs
+  let sectionsToInclude: string[]
+  if (config.agent.sections.length > 0) {
+    const configured = config.agent.sections.filter(s => availableSections.includes(s))
+    const untracked = availableSections.filter(s => !config.agent.sections.includes(s))
+    if (untracked.length > 0) {
+      console.log(chalk.yellow(`⚠ Found ${untracked.length} doc(s) not in config sections: ${untracked.join(', ')}`))
+      console.log(chalk.gray('  Add them to agent.sections in dewey.config.ts to control ordering.\n'))
+    }
+    sectionsToInclude = [...configured, ...untracked]
+  } else {
+    sectionsToInclude = availableSections
+  }
 
   const docs = await loadDocs(cwd, docsPath, docsRelativePath, sectionsToInclude)
 

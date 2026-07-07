@@ -1,0 +1,473 @@
+{
+  "version": 1,
+  "project": {
+    "name": "dewey",
+    "version": null,
+    "tagline": "Documentation toolkit for AI-agent-ready docs",
+    "repository": null
+  },
+  "generatedAt": "2026-07-07T18:17:27.416Z",
+  "artifacts": {
+    "manifest": "/agent/manifest.json",
+    "docs": "/agent/docs.json",
+    "prompts": "/agent/prompts.json",
+    "context": "/agent/context.md",
+    "contextJson": "/agent/context.json",
+    "allMarkdown": "/agent/bundles/all.md",
+    "promptBundle": "/agent/bundles/prompts.md",
+    "rawMarkdownBase": "/agent/raw/docs/",
+    "bundles": {
+      "core": "/agent/bundles/core.md",
+      "prompts": "/agent/bundles/prompts.md",
+      "all": "/agent/bundles/all.md"
+    }
+  },
+  "recommendedReadOrder": [
+    "overview",
+    "quickstart"
+  ],
+  "docs": [
+    {
+      "id": "AGENTS",
+      "slug": "AGENTS",
+      "kind": "doc",
+      "title": "dewey",
+      "description": "Documentation toolkit for AI-agent-ready docs and retrieval artifacts",
+      "sourcePath": "docs/AGENTS.md",
+      "url": "/docs/AGENTS",
+      "rawUrl": "/agent/raw/docs/AGENTS.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey",
+          "anchor": "dewey"
+        },
+        {
+          "depth": 2,
+          "text": "Critical Context",
+          "anchor": "critical-context"
+        },
+        {
+          "depth": 2,
+          "text": "Project Structure",
+          "anchor": "project-structure"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Navigation",
+          "anchor": "quick-navigation"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "Using Skills",
+          "anchor": "using-skills"
+        },
+        {
+          "depth": 2,
+          "text": "React Components (22 total)",
+          "anchor": "react-components-22-total"
+        },
+        {
+          "depth": 3,
+          "text": "Entry Points",
+          "anchor": "entry-points"
+        },
+        {
+          "depth": 3,
+          "text": "Layout",
+          "anchor": "layout"
+        },
+        {
+          "depth": 3,
+          "text": "Content",
+          "anchor": "content"
+        },
+        {
+          "depth": 3,
+          "text": "Agent-Friendly",
+          "anchor": "agent-friendly"
+        },
+        {
+          "depth": 3,
+          "text": "Provider",
+          "anchor": "provider"
+        },
+        {
+          "depth": 2,
+          "text": "Configuration (dewey.config.ts)",
+          "anchor": "configuration-dewey-config-ts"
+        },
+        {
+          "depth": 2,
+          "text": "Type Reference",
+          "anchor": "type-reference"
+        },
+        {
+          "depth": 3,
+          "text": "CalloutType",
+          "anchor": "callouttype"
+        },
+        {
+          "depth": 3,
+          "text": "BadgeVariant",
+          "anchor": "badgevariant"
+        },
+        {
+          "depth": 3,
+          "text": "ThemePreset",
+          "anchor": "themepreset"
+        },
+        {
+          "depth": 2,
+          "text": "File Generation",
+          "anchor": "file-generation"
+        },
+        {
+          "depth": 2,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        }
+      ],
+      "tokensEstimate": 953,
+      "frontmatter": {}
+    },
+    {
+      "id": "overview",
+      "slug": "overview",
+      "kind": "doc",
+      "title": "Overview",
+      "description": "Documentation toolkit for AI-agent-ready docs",
+      "sourcePath": "docs/overview.md",
+      "url": "/docs/overview",
+      "rawUrl": "/agent/raw/docs/overview.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey",
+          "anchor": "dewey"
+        },
+        {
+          "depth": 2,
+          "text": "What Dewey Does",
+          "anchor": "what-dewey-does"
+        },
+        {
+          "depth": 2,
+          "text": "Key Concepts",
+          "anchor": "key-concepts"
+        },
+        {
+          "depth": 3,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        },
+        {
+          "depth": 3,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "install.md Standard",
+          "anchor": "install-md-standard"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Links",
+          "anchor": "quick-links"
+        }
+      ],
+      "tokensEstimate": 358,
+      "frontmatter": {
+        "title": "Overview",
+        "description": "Documentation toolkit for AI-agent-ready docs",
+        "order": 1
+      }
+    },
+    {
+      "id": "quickstart",
+      "slug": "quickstart",
+      "kind": "doc",
+      "title": "Quickstart",
+      "description": "Get your documentation agent-ready in under 5 minutes",
+      "sourcePath": "docs/quickstart.md",
+      "url": "/docs/quickstart",
+      "rawUrl": "/agent/raw/docs/quickstart.md",
+      "headings": [
+        {
+          "depth": 3,
+          "text": "1. Install",
+          "anchor": "1-install"
+        },
+        {
+          "depth": 3,
+          "text": "2. Initialize",
+          "anchor": "2-initialize"
+        },
+        {
+          "depth": 3,
+          "text": "3. Configure",
+          "anchor": "3-configure"
+        },
+        {
+          "depth": 3,
+          "text": "4. Write docs",
+          "anchor": "4-write-docs"
+        },
+        {
+          "depth": 3,
+          "text": "5. Generate agent files",
+          "anchor": "5-generate-agent-files"
+        },
+        {
+          "depth": 3,
+          "text": "6. Check your score",
+          "anchor": "6-check-your-score"
+        },
+        {
+          "depth": 3,
+          "text": "7. Optional: create a doc site",
+          "anchor": "7-optional-create-a-doc-site"
+        },
+        {
+          "depth": 2,
+          "text": "Next steps",
+          "anchor": "next-steps"
+        }
+      ],
+      "tokensEstimate": 390,
+      "frontmatter": {
+        "title": "Quickstart",
+        "description": "Get your documentation agent-ready in under 5 minutes",
+        "order": 2
+      }
+    },
+    {
+      "id": "skills",
+      "slug": "skills",
+      "kind": "doc",
+      "title": "Skills",
+      "description": "Expert instructions that guide AI agents through specific documentation tasks",
+      "sourcePath": "docs/skills.md",
+      "url": "/docs/skills",
+      "rawUrl": "/agent/raw/docs/skills.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Built-in Skills",
+          "anchor": "built-in-skills"
+        },
+        {
+          "depth": 2,
+          "text": "Creating Custom Skills",
+          "anchor": "creating-custom-skills"
+        },
+        {
+          "depth": 1,
+          "text": "Skill Name",
+          "anchor": "skill-name"
+        },
+        {
+          "depth": 2,
+          "text": "When to Use",
+          "anchor": "when-to-use"
+        },
+        {
+          "depth": 2,
+          "text": "Instructions",
+          "anchor": "instructions"
+        },
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "Best Practices",
+          "anchor": "best-practices"
+        }
+      ],
+      "tokensEstimate": 340,
+      "frontmatter": {
+        "title": "Skills",
+        "description": "Expert instructions that guide AI agents through specific documentation tasks",
+        "order": 4
+      }
+    },
+    {
+      "id": "agent/overview.agent",
+      "slug": "agent/overview.agent",
+      "kind": "agent",
+      "title": "dewey - Agent Context",
+      "description": "Entry: DocsApp, DocsIndex\nLayout: DocsLayout, Header, Sidebar, TableOfContents\nContent: MarkdownContent, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge\nAgent: AgentContext, PromptSlideout, CopyButtons\nP",
+      "sourcePath": "docs/agent/overview.agent.md",
+      "url": "/agent/raw/docs/agent/overview.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/overview.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey - Agent Context",
+          "anchor": "dewey-agent-context"
+        },
+        {
+          "depth": 2,
+          "text": "Package",
+          "anchor": "package"
+        },
+        {
+          "depth": 2,
+          "text": "Purpose",
+          "anchor": "purpose"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Generated Files",
+          "anchor": "generated-files"
+        },
+        {
+          "depth": 2,
+          "text": "Retrieval Artifacts",
+          "anchor": "retrieval-artifacts"
+        },
+        {
+          "depth": 2,
+          "text": "Skills (LLM Prompts)",
+          "anchor": "skills-llm-prompts"
+        },
+        {
+          "depth": 2,
+          "text": "Components (22)",
+          "anchor": "components-22"
+        },
+        {
+          "depth": 2,
+          "text": "Config Schema",
+          "anchor": "config-schema"
+        },
+        {
+          "depth": 2,
+          "text": "Valid Values",
+          "anchor": "valid-values"
+        },
+        {
+          "depth": 2,
+          "text": "Key Files",
+          "anchor": "key-files"
+        }
+      ],
+      "tokensEstimate": 483,
+      "frontmatter": {}
+    },
+    {
+      "id": "prompts/audit-docs",
+      "slug": "prompts/audit-docs",
+      "kind": "prompt",
+      "title": "Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "url": "/agent/raw/docs/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "promptId": "audit-docs",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {}
+    },
+    {
+      "id": "prompts/create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "kind": "prompt",
+      "title": "Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "url": "/agent/raw/docs/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "promptId": "create-agent-md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {}
+    }
+  ],
+  "prompts": [
+    {
+      "id": "audit-docs",
+      "slug": "prompts/audit-docs",
+      "title": "Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {}
+    },
+    {
+      "id": "create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "title": "Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {}
+    }
+  ]
+}

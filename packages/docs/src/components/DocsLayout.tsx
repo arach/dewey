@@ -62,8 +62,9 @@ function DocsSidebar({
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
         style={{
-          background: isDark ? '#0f1214' : 'rgba(250, 250, 250, 0.95)',
-          borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0, 0, 0, 0.1)'}`,
+          background: isDark ? '#0f0f0f' : 'rgba(250, 250, 250, 0.95)',
+          borderRight: `1px solid ${isDark ? '#262626' : 'rgba(0, 0, 0, 0.08)'}`,
+          borderRadius: 0,
           backdropFilter: 'blur(12px)',
         }}
       >
@@ -79,16 +80,16 @@ function DocsSidebar({
           </Link>
 
           {/* Navigation groups */}
-          <nav className="space-y-8">
-            {navigation.map((group) => (
-              <div key={group.title}>
+          <nav className="space-y-0">
+            {navigation.map((group, groupIdx) => (
+              <div key={group.title} className={groupIdx > 0 ? 'mt-5 pt-4' : ''} style={groupIdx > 0 ? { borderTop: `1px solid ${isDark ? '#262626' : 'rgba(0, 0, 0, 0.08)'}` } : undefined}>
                 <h3
-                  className="text-[11px] font-semibold uppercase tracking-[0.15em] mb-3"
+                  className="text-[10px] font-mono font-bold uppercase tracking-[0.12em] mb-3"
                   style={{ color: isDark ? '#6b7280' : '#5c676c' }}
                 >
                   {group.title}
                 </h3>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   {group.items.map((item) => {
                     const isActive = currentPage === item.id
                     const Icon = item.icon
@@ -97,13 +98,14 @@ function DocsSidebar({
                         <Link
                           to={`${basePath}/${item.id}`}
                           onClick={onClose}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors text-left"
                           style={{
+                            borderRadius: '0.75rem',
                             background: isActive
-                              ? isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
+                              ? '#3b82f6'
                               : 'transparent',
                             color: isActive
-                              ? '#3b82f6'
+                              ? '#ffffff'
                               : isDark ? '#9ca3af' : '#2e3538',
                             fontWeight: isActive ? 600 : 400,
                           }}
@@ -154,14 +156,14 @@ function TableOfContents({ sections, isDark }: { sections: DocSection[], isDark:
     <aside
       className="hidden xl:block fixed top-14 right-0 w-56 h-[calc(100vh-56px)] overflow-y-auto"
       style={{
-        background: isDark ? 'rgba(15, 18, 20, 0.8)' : 'rgba(250, 250, 250, 0.8)',
-        borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0, 0, 0, 0.08)'}`,
+        background: isDark ? 'rgba(15, 15, 15, 0.8)' : 'rgba(250, 250, 250, 0.8)',
+        borderLeft: `1px solid ${isDark ? '#262626' : 'rgba(0, 0, 0, 0.08)'}`,
         backdropFilter: 'blur(8px)',
       }}
     >
       <div className="p-5">
         <h4
-          className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-4"
+          className="text-[10px] font-mono font-bold uppercase tracking-[0.12em] mb-4"
           style={{ color: isDark ? '#6b7280' : '#5c676c' }}
         >
           On this page
@@ -272,7 +274,7 @@ export function DocsLayout({
     <div
       className="min-h-screen"
       style={{
-        background: isDark ? '#0a0c0e' : '#fafafa',
+        background: isDark ? '#0f0f0f' : '#fafafa',
         color: isDark ? '#e5e7eb' : '#101518',
       }}
     >
@@ -281,8 +283,8 @@ export function DocsLayout({
         className="fixed top-0 left-0 right-0 z-50 h-14"
         style={{
           backdropFilter: 'blur(12px)',
-          background: isDark ? 'rgba(10, 12, 14, 0.9)' : 'rgba(250, 250, 250, 0.9)',
-          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0, 0, 0, 0.08)'}`,
+          background: isDark ? 'rgba(15, 15, 15, 0.9)' : 'rgba(250, 250, 250, 0.9)',
+          borderBottom: `1px solid ${isDark ? '#262626' : 'rgba(0, 0, 0, 0.08)'}`,
         }}
       >
         <div className="h-full px-4 flex items-center justify-between">
@@ -428,7 +430,7 @@ export function DocsLayout({
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
                   style={{
                     color: isDark ? '#9ca3af' : '#5c676c',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0, 0, 0, 0.12)'}`,
+                    border: `1px solid ${isDark ? '#262626' : 'rgba(0, 0, 0, 0.08)'}`,
                     background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)',
                   }}
                   title="Copy as markdown"
@@ -481,7 +483,7 @@ export function DocsLayout({
           {/* Prev/Next navigation */}
           {(prevPage || nextPage) && (
             <div className="mt-12 pt-6 border-t flex justify-between items-center"
-              style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}
+              style={{ borderColor: isDark ? '#262626' : 'rgba(0,0,0,0.08)' }}
             >
               <div className="flex-1">
                 {prevPage && (
@@ -489,13 +491,13 @@ export function DocsLayout({
                     to={`${basePath}/${prevPage.id}`}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors group"
                     style={{
-                      borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                      borderColor: isDark ? '#262626' : 'rgba(0,0,0,0.08)',
                       color: isDark ? '#9ca3af' : '#5c676c',
                     }}
                   >
                     <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                     <div className="text-left">
-                      <div className="text-[10px] uppercase tracking-wider opacity-60">Previous</div>
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-[0.12em] opacity-60">Previous</div>
                       <div className="text-sm font-medium">{prevPage.title}</div>
                     </div>
                   </Link>
@@ -507,12 +509,12 @@ export function DocsLayout({
                     to={`${basePath}/${nextPage.id}`}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors group"
                     style={{
-                      borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                      borderColor: isDark ? '#262626' : 'rgba(0,0,0,0.08)',
                       color: isDark ? '#9ca3af' : '#5c676c',
                     }}
                   >
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-wider opacity-60">Next</div>
+                      <div className="text-[10px] font-mono font-bold uppercase tracking-[0.12em] opacity-60">Next</div>
                       <div className="text-sm font-medium">{nextPage.title}</div>
                     </div>
                     <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
@@ -541,7 +543,7 @@ export function DocsLayout({
           color: ${isDark ? '#f3f4f6' : '#101518'};
           margin: 3rem 0 1.25rem;
           padding-top: 2rem;
-          border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'};
+          border-top: 1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'};
           scroll-margin-top: 100px;
         }
 
@@ -590,9 +592,9 @@ export function DocsLayout({
         .docs-prose pre {
           margin: 1.5rem 0;
           padding: 1rem;
-          border-radius: 8px;
-          background: ${isDark ? '#1a1d20' : '#f5f5f5'};
-          border: 1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
+          border-radius: 0.5rem;
+          background: ${isDark ? '#1a1a1a' : '#f5f5f5'};
+          border: 1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.06)'};
           overflow-x: auto;
         }
 
@@ -617,7 +619,7 @@ export function DocsLayout({
 
         .docs-prose hr {
           border: none;
-          border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'};
+          border-top: 1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'};
           margin: 3rem 0;
         }
 
@@ -638,7 +640,7 @@ export function DocsLayout({
 
         .docs-prose th, .docs-prose td {
           padding: 0.75rem 1rem;
-          border: 1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'};
+          border: 1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'};
           text-align: left;
         }
 
@@ -664,14 +666,14 @@ export function DocsLayout({
             className="fixed right-0 top-0 bottom-0 w-full max-w-lg z-50 shadow-2xl"
             style={{
               background: isDark ? '#0f1214' : '#ffffff',
-              borderLeft: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+              borderLeft: `1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'}`,
             }}
           >
             <div className="h-full flex flex-col">
               {/* Header */}
               <div
                 className="flex items-center justify-between px-6 py-4 border-b"
-                style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+                style={{ borderColor: isDark ? '#262626' : 'rgba(0,0,0,0.08)' }}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -722,7 +724,7 @@ export function DocsLayout({
                       className="w-full px-3 py-2 rounded-lg text-sm"
                       style={{
                         background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        border: `1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'}`,
                         color: isDark ? '#d1d5db' : '#2e3538',
                       }}
                     >
@@ -770,7 +772,7 @@ export function DocsLayout({
                       className="w-full px-3 py-2 rounded-lg text-sm resize-none"
                       style={{
                         background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        border: `1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'}`,
                         color: isDark ? '#d1d5db' : '#2e3538',
                       }}
                     />
@@ -781,14 +783,14 @@ export function DocsLayout({
               {/* Footer */}
               <div
                 className="px-6 py-4 border-t flex gap-3"
-                style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+                style={{ borderColor: isDark ? '#262626' : 'rgba(0,0,0,0.08)' }}
               >
                 <button
                   onClick={() => setShowPromptBuilder(false)}
                   className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   style={{
                     color: isDark ? '#9ca3af' : '#5c676c',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                    border: `1px solid ${isDark ? '#262626' : 'rgba(0,0,0,0.08)'}`,
                   }}
                 >
                   Cancel

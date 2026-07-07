@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    { "id": "broker", "label": "Broker", "x": 300, "y": 50 },
+    { "id": "dewey", "label": "dewey.main", "x": 100, "y": 200 },
+    { "id": "scout", "label": "scout.main", "x": 300, "y": 200 },
+    { "id": "codex", "label": "codex.main", "x": 500, "y": 200 }
+  ],
+  "edges": [
+    { "from": "dewey", "to": "broker" },
+    { "from": "scout", "to": "broker" },
+    { "from": "codex", "to": "broker" }
+  ]
+}

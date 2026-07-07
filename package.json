@@ -22,7 +22,7 @@
   "workspaces": [
     "packages/*",
     "www",
-    "www-next",
+    "www-astro",
     "reference/*"
   ]
 }

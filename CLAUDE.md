@@ -8,7 +8,7 @@ Documentation toolkit for AI-agent-ready docs. Audits, scores, and generates opt
 
 - Dewey is a **docs agent**, not a docs framework
 - Focus on **preparation and judgment**, not presentation
-- The `www/` folder is a reference implementation - do not invest in UI polish
+- The `www/` folder is the canonical Next.js site; `www-astro/` is archived Astro reference
 - Skills are LLM prompts, not deterministic code
 
 ## Key Entry Points

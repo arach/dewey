@@ -79,9 +79,9 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   // Highlight the code
   const code = typeof children === 'string' ? children.trim() : String(children).trim()
   let highlighted: string
-  try {
+  if (hljs.getLanguage(language)) {
     highlighted = hljs.highlight(code, { language }).value
-  } catch {
+  } else {
     highlighted = code
   }
 
@@ -90,8 +90,8 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
       <div
         className="rounded-lg overflow-hidden"
         style={{
-          background: isDark ? '#1e2126' : '#faf8f5',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,21,24,0.1)'}`,
+          background: isDark ? '#1a1a1a' : '#faf8f5',
+          border: `1px solid ${isDark ? '#262626' : 'rgba(16,21,24,0.08)'}`,
         }}
       >
         {/* Code content */}

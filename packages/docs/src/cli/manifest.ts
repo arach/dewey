@@ -12,14 +12,38 @@ export interface DeweyManifest {
   deweyVersion: string
   createdAt: string
   updatedAt: string
-  template: 'nextjs'
-  theme: string
+  /** Framework scaffold (nextjs, subpath). */
+  scaffold: 'nextjs' | 'subpath'
+  /** Structural layout template (hudson, rail, centered, command). */
+  templateId?: string
+  /** Color theme preset. */
+  themeId?: string
+  /** @deprecated use scaffold */
+  template?: 'nextjs' | 'subpath'
+  /** @deprecated use themeId */
+  theme?: string
   projectName: string
   defaultPage: string
+  /** Docs source directory relative to project root (subpath template) */
+  docsDir?: string
+  /** Base URL path for docs routes (subpath template) */
+  basePath?: string
   files: Record<string, DeweyManifestFile>
 }
 
 export const MANIFEST_FILENAME = '.dewey-manifest.json'
+
+export function getManifestScaffold(m: DeweyManifest): 'nextjs' | 'subpath' {
+  return m.scaffold ?? m.template ?? 'nextjs'
+}
+
+export function getManifestThemeId(m: DeweyManifest): string {
+  return m.themeId ?? m.theme ?? 'neutral'
+}
+
+export function getManifestTemplateId(m: DeweyManifest): string {
+  return m.templateId ?? 'hudson'
+}
 
 export function hashContent(content: string): string {
   return createHash('sha256').update(content).digest('hex')

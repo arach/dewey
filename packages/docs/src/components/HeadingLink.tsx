@@ -15,7 +15,7 @@ export function HeadingLink({ id, size = 'md' }: HeadingLinkProps) {
   return (
     <a
       href={`#${id}`}
-      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2"
+      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0"
       style={{ color: '#9ca3af' }}
       title="Link to this section"
     >

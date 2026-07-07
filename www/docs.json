@@ -1,1 +1,43 @@
-../docs.json
+{
+  "name": "dewey",
+  "tagline": "Agent-ready documentation",
+  "groups": [
+    {
+      "id": "core",
+      "title": "Core",
+      "items": [
+        {
+          "id": "overview",
+          "title": "Overview",
+          "description": "Documentation toolkit for AI-agent-ready docs"
+        },
+        {
+          "id": "quickstart",
+          "title": "Quickstart",
+          "description": "Get your documentation agent-ready in under 5 minutes"
+        },
+        {
+          "id": "skills",
+          "title": "Skills",
+          "description": "Built-in LLM prompt templates"
+        }
+      ]
+    },
+    {
+      "id": "prompts",
+      "title": "Prompts",
+      "items": [
+        {
+          "id": "prompts/create-agent-md",
+          "title": "Create agent.md",
+          "description": "Convert human docs to agent-optimized format"
+        },
+        {
+          "id": "prompts/audit-docs",
+          "title": "Audit docs",
+          "description": "Review documentation for agent-readiness"
+        }
+      ]
+    }
+  ]
+}

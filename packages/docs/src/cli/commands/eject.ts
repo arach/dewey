@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { mkdir, writeFile, readFile, access } from 'fs/promises'
 import { join, resolve } from 'path'
-import { readManifest } from '../manifest.js'
+import { getManifestScaffold, readManifest } from '../manifest.js'
 import { EJECTIBLE_COMPONENTS, type EjectibleComponent } from '../templates/nextjs.js'
 
 interface EjectOptions {
@@ -113,7 +113,7 @@ export async function ejectCommand(componentName: string, dir: string | undefine
     process.exit(1)
   }
 
-  if (manifest.template !== 'nextjs') {
+  if (getManifestScaffold(manifest) !== 'nextjs') {
     console.log(chalk.red('\n  Component ejection is only supported for Next.js sites.'))
     console.log(chalk.gray('  Create a new site with: dewey create <dir>\n'))
     process.exit(1)

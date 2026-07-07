@@ -2,12 +2,20 @@ import chalk from 'chalk'
 import { readFile, writeFile, mkdir, access } from 'fs/promises'
 import { join, dirname, resolve } from 'path'
 import { execSync } from 'child_process'
-import { resolveTheme } from '../templates/themes.js'
+import { resolveTheme, type TemplateId } from '../templates/themes.js'
 import {
   NEXTJS_TEMPLATES,
   NEXTJS_OWNED_FILES,
 } from '../templates/nextjs.js'
 import {
+  SUBPATH_TEMPLATES,
+  SUBPATH_OWNED_FILES,
+  type SubpathTemplateArgs,
+} from '../templates/subpath.js'
+import {
+  getManifestScaffold,
+  getManifestTemplateId,
+  getManifestThemeId,
   hashContent,
   readManifest,
   writeManifest,
@@ -113,12 +121,16 @@ async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
   manifestFiles['docs.json'] = { owner: 'consumer' }
   manifestFiles['src/lib/dewey.tsx'] = { owner: 'consumer' }
 
+  const themeId = resolveTheme(theme)
   return {
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
+    scaffold: 'nextjs',
+    templateId: 'hudson',
+    themeId,
     template: 'nextjs',
-    theme: resolveTheme(theme),
+    theme: themeId,
     projectName,
     defaultPage,
     files: manifestFiles,
@@ -164,16 +176,35 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   }
 
   // Phase 2 & 3 — Classify and generate
-  const templateArgs = {
-    projectName: manifest.projectName,
-    theme: resolveTheme(manifest.theme),
-    defaultPage: manifest.defaultPage,
-  }
+  // Resolve template set based on manifest
+  const isSubpath = getManifestScaffold(manifest) === 'subpath'
+
+  const templates: Record<string, (args: any) => string> = isSubpath
+    ? SUBPATH_TEMPLATES
+    : NEXTJS_TEMPLATES
+
+  const ownedFiles: readonly string[] = isSubpath
+    ? SUBPATH_OWNED_FILES
+    : NEXTJS_OWNED_FILES
+
+  const templateArgs = isSubpath
+    ? {
+        projectName: manifest.projectName,
+        basePath: manifest.basePath ?? '/docs',
+        docsDir: manifest.docsDir ?? './docs',
+        defaultPage: manifest.defaultPage,
+      } satisfies SubpathTemplateArgs
+    : {
+        projectName: manifest.projectName,
+        theme: resolveTheme(getManifestThemeId(manifest)),
+        templateId: getManifestTemplateId(manifest) as TemplateId,
+        defaultPage: manifest.defaultPage,
+      }
 
   const classifications: FileClassification[] = []
 
-  for (const filePath of NEXTJS_OWNED_FILES) {
-    const templateFn = NEXTJS_TEMPLATES[filePath]
+  for (const filePath of ownedFiles) {
+    const templateFn = templates[filePath]
     if (!templateFn) continue
 
     const newContent = templateFn(templateArgs)
@@ -211,7 +242,7 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   const removedFiles: string[] = []
   for (const filePath of Object.keys(manifest.files)) {
     if (manifest.files[filePath].owner !== 'dewey') continue
-    if ((NEXTJS_OWNED_FILES as readonly string[]).includes(filePath)) continue
+    if ((ownedFiles as readonly string[]).includes(filePath)) continue
     removedFiles.push(filePath)
   }
 
@@ -309,7 +340,7 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     }
   }
 
-  for (const filePath of NEXTJS_OWNED_FILES) {
+  for (const filePath of ownedFiles) {
     if (!updatedManifest.files[filePath]) {
       const diskContent = await safeReadFile(join(targetDir, filePath))
       if (diskContent !== null) {

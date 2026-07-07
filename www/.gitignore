@@ -1,5 +1,12 @@
+# Dependencies
 node_modules
-.astro
-dist
-public/pagefind/
-public/agent/
+.pnpm-store
+
+# Next.js
+.next
+out
+
+# Misc
+.DS_Store
+*.log
+*.tsbuildinfo

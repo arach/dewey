@@ -2,7 +2,7 @@
   .doc-content {
     font-family: 'Geist Mono', ui-monospace, monospace;
     font-size: var(--prose-font-size, 13px);
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.75;
     color: var(--color-text);
     overflow-wrap: break-word;
@@ -96,12 +96,27 @@
 
   [data-theme='dark'] .doc-content pre {
     background: var(--code-block-bg-dark) !important;
+    background-color: var(--code-block-bg-dark) !important;
     border-color: #3a3a36;
+    color: #adbac7 !important;
   }
 
-  /* Activate Shiki dark theme colors */
+  [data-theme='dark'] .doc-content pre.astro-code {
+    color: #adbac7 !important;
+  }
+
+  [data-theme='dark'] .doc-content pre code {
+    color: inherit !important;
+  }
+
+  /* Activate Shiki dark theme colors (syntax + plaintext fences) */
   [data-theme='dark'] .doc-content pre span[style] {
     color: var(--shiki-dark) !important;
+  }
+
+  [data-theme='dark'] .doc-content pre .line,
+  [data-theme='dark'] .doc-content pre .line > span:not([style]) {
+    color: #adbac7 !important;
   }
 
   .doc-content code {
@@ -185,8 +200,19 @@
     background: var(--color-surface-muted);
     font-family: 'Geist Mono', ui-monospace, monospace;
     font-size: 12px;
-    font-weight: 400;
-    color: var(--color-text-muted);
+    font-weight: 500;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+  }
+
+  [data-theme='dark'] .doc-content .doc-file-bar {
+    background: #2a2a28;
+    color: #d8d7d0;
+    border-color: #3a3a36;
+  }
+
+  [data-theme='dark'] .doc-content .doc-file-block pre {
+    border-color: #3a3a36;
   }
 
   .doc-content table {

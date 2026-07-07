@@ -1,0 +1,326 @@
+/* ── Command template ─────────────────────────────────────────────────
+ * Command-bar-first. A prominent centered ⌘K bar dominates the top; the side
+ * nav is understated. Rose accent, mono affordances, minimal chrome.
+ */
+
+.tpl-command {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --border: #e8e8ea;
+  --text: #33333a;
+  --text-muted: #90909a;
+  --heading: #17171b;
+  --accent: #e11d48;
+  --accent-soft: rgba(225, 29, 72, 0.07);
+  --code-bg: #f7f7f8;
+  --code-bg-dark: #131316;
+
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.tpl-command[data-theme='dark'] {
+  --bg: #0a0a0c;
+  --surface: #121215;
+  --surface-2: #1a1a1e;
+  --border: #26262b;
+  --text: #d3d3da;
+  --text-muted: #7c7c86;
+  --heading: #f4f4f7;
+  --accent: #fb7185;
+  --accent-soft: rgba(251, 113, 133, 0.12);
+  --code-bg: #121215;
+  --code-bg-dark: #0e0e11;
+}
+
+/* ── Top bar with hero command bar ── */
+.cmd-topbar {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.cmd-brand {
+  font-family: 'Geist Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--heading);
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+
+.cmd-brand span { color: var(--text-muted); font-weight: 400; }
+
+.cmd-topbar-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cmd-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.cmd-icon-btn:hover { color: var(--heading); border-color: var(--text-muted); }
+
+/* Command trigger — the hero, centered and wide */
+.cmd-trigger {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cmd-trigger:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.cmd-trigger-text { flex: 1; text-align: left; }
+
+.cmd-kbd {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ── Palette overlay ── */
+.cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 10, 12, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 12vh;
+}
+
+.cmd-palette {
+  width: min(560px, 92vw);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.cmd-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cmd-input-icon { color: var(--text-muted); flex-shrink: 0; }
+
+.cmd-input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 15px;
+  color: var(--heading);
+  font-family: inherit;
+}
+
+.cmd-input::placeholder { color: var(--text-muted); }
+
+.cmd-results {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cmd-group-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 10px 10px 4px;
+  margin: 0;
+}
+
+.cmd-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cmd-result:hover { background: var(--accent-soft); color: var(--accent); }
+.cmd-result > span:first-of-type { flex: 1; }
+.cmd-result-meta { font-size: 11.5px; color: var(--text-muted); }
+.cmd-result-enter { color: var(--text-muted); opacity: 0; }
+.cmd-result:hover .cmd-result-enter { opacity: 1; }
+.cmd-empty { padding: 12px 10px; font-size: 13px; color: var(--text-muted); }
+
+/* ── Body: understated side nav + centered content ── */
+.cmd-body {
+  display: flex;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.cmd-side {
+  width: 210px;
+  flex-shrink: 0;
+  padding: 34px 8px 60px 24px;
+  position: sticky;
+  top: 58px;
+  height: calc(100vh - 58px);
+  overflow-y: auto;
+}
+
+.cmd-side-group { margin-bottom: 22px; }
+
+.cmd-side-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  padding-left: 10px;
+}
+
+.cmd-side ul { list-style: none; margin: 0; padding: 0; }
+
+.cmd-side a {
+  display: block;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.cmd-side a:hover { color: var(--heading); background: var(--surface-2); }
+.cmd-side a.is-active { color: var(--accent); background: var(--accent-soft); font-weight: 500; }
+
+.cmd-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 40px;
+  padding: 40px 32px 100px;
+}
+
+.cmd-article {
+  flex: 1;
+  min-width: 0;
+  max-width: 720px;
+}
+
+.cmd-title {
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+  line-height: 1.12;
+  margin: 0 0 12px;
+}
+
+.cmd-lede {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0 0 32px;
+}
+
+/* ── Compact TOC ── */
+.cmd-toc {
+  width: 180px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 98px;
+  height: fit-content;
+}
+
+.cmd-toc-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.cmd-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 1px solid var(--border);
+}
+
+.cmd-toc a {
+  display: block;
+  padding-left: 14px;
+  margin-left: -1px;
+  border-left: 1px solid transparent;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.cmd-toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+.cmd-toc-sub a { padding-left: 26px; font-size: 12px; }
+
+@media (max-width: 1024px) {
+  .cmd-toc { display: none; }
+}
+
+@media (max-width: 768px) {
+  .cmd-side { display: none; }
+  .cmd-trigger-text { display: none; }
+}

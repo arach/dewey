@@ -1,0 +1,181 @@
+/* Shared prose + Shiki styling for all template previews.
+ *
+ * Layout chrome lives in each <name>.css. This file only styles the rendered
+ * markdown (`.tpl-prose`) and is theme-switched via the `.tpl[data-theme]`
+ * wrapper so it never leaks onto the site-wide `data-theme` on <html>.
+ *
+ * Every template root defines: --bg --surface --surface-2 --border --text
+ * --text-muted --heading --accent --accent-soft --code-bg --code-bg-dark
+ */
+
+.tpl-prose {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.tpl-prose > :first-child {
+  margin-top: 0;
+}
+
+/* Default to sans so headings don't inherit the site-wide serif from
+ * globals.css. Templates that want serif prose (e.g. Centered) override this. */
+.tpl-prose h2,
+.tpl-prose h3 {
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+}
+
+.tpl-prose h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--heading);
+  margin: 2.25rem 0 0.75rem;
+  line-height: 1.25;
+  scroll-margin-top: 90px;
+}
+
+.tpl-prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--heading);
+  margin: 1.75rem 0 0.5rem;
+  line-height: 1.35;
+  scroll-margin-top: 90px;
+}
+
+.tpl-prose p {
+  margin: 0 0 1rem;
+}
+
+.tpl-prose a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.tpl-prose a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tpl-prose ul,
+.tpl-prose ol {
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+
+.tpl-prose ul { list-style: disc; }
+.tpl-prose ol { list-style: decimal; }
+
+.tpl-prose li {
+  margin-bottom: 0.35rem;
+}
+
+.tpl-prose strong {
+  color: var(--heading);
+  font-weight: 600;
+}
+
+.tpl-prose blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.25rem 0 0.25rem 1rem;
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+  background: var(--accent-soft);
+  border-radius: 0 6px 6px 0;
+}
+
+.tpl-prose blockquote p { margin: 0.25rem 0; }
+
+.tpl-prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+/* ── Inline code ── */
+.tpl-prose :not(pre) > code {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.82em;
+  color: var(--accent);
+}
+
+/* ── Tables ── */
+.tpl-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+}
+
+.tpl-prose thead th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--heading);
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tpl-prose tbody td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tpl-prose tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* ── Code blocks (Shiki dual-theme) ── */
+.tpl-prose pre {
+  background: var(--code-bg) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 1.25rem;
+  overflow-x: auto;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.tpl-prose pre code {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  font: inherit;
+  color: inherit;
+}
+
+.tpl-prose pre .line {
+  display: block;
+  min-height: 0;
+}
+
+.tpl-prose pre .line-empty,
+.tpl-prose pre .line:empty {
+  height: 0.5em;
+  line-height: 0.5em;
+  overflow: hidden;
+}
+
+/* Dark theme — only when THIS template wrapper is dark, not the site <html>. */
+.tpl[data-theme='dark'] .tpl-prose pre {
+  background: var(--code-bg-dark) !important;
+  border-color: var(--border);
+}
+
+.tpl[data-theme='dark'] .tpl-prose pre span[style] {
+  color: var(--shiki-dark) !important;
+}
+
+.tpl[data-theme='dark'] .tpl-prose pre .line,
+.tpl[data-theme='dark'] .tpl-prose pre .line > span:not([style]) {
+  color: #adbac7 !important;
+}

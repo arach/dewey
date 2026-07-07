@@ -1,0 +1,182 @@
+/* Templates gallery — warm Dewey marketing aesthetic (site tokens). */
+
+.gallery-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.gallery-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 56px 32px 120px;
+}
+
+.gallery-header {
+  margin-bottom: 56px;
+}
+
+.gallery-eyebrow {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0 0 12px;
+}
+
+.gallery-title {
+  font-family: var(--heading-font);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400;
+  letter-spacing: var(--heading-letter-spacing);
+  color: var(--heading-color);
+  margin: 0 0 12px;
+}
+
+.gallery-desc {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  max-width: 56ch;
+  margin: 0;
+}
+
+/* ── Sections ── */
+.gallery-section {
+  margin-bottom: 56px;
+}
+
+.gallery-section-head {
+  margin-bottom: 22px;
+}
+
+.gallery-section-head h2 {
+  font-family: var(--heading-font);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--heading-color);
+  margin: 0 0 4px;
+}
+
+.gallery-section-head p {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Grid ── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.gallery-grid--themes {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* ── Card ── */
+.gallery-card {
+  display: block;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-card:hover {
+  border-color: var(--color-text-muted);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+
+/* ── Iframe preview ── */
+.gallery-frame-wrap {
+  position: relative;
+  height: 232px;
+  overflow: hidden;
+  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.gallery-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1400px;
+  height: 900px;
+  border: none;
+  transform: scale(0.34);
+  transform-origin: top left;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Theme swatch ── */
+.gallery-swatch {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.gallery-swatch-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.gallery-swatch-dark {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  clip-path: polygon(22% 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+/* ── Info ── */
+.gallery-info {
+  padding: 16px 18px 18px;
+}
+
+.gallery-info h3 {
+  font-family: 'Geist', sans-serif;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin: 0 0 4px;
+}
+
+.gallery-info p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.gallery-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.gallery-badge {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}

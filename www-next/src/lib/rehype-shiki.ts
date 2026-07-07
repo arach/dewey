@@ -28,7 +28,7 @@ function getClasses(node: Element): string[] {
 }
 
 function setClasses(node: Element, classes: string[]) {
-  const unique = [...new Set(classes.filter(Boolean))]
+  const unique = Array.from(new Set(classes.filter(Boolean)))
   const { class: _dropClass, className: _dropClassName, ...rest } = node.properties ?? {}
   node.properties = {
     ...rest,

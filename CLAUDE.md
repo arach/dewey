@@ -33,7 +33,7 @@ Documentation toolkit for AI-agent-ready docs. Audits, scores, and generates opt
 
 ### Test changes
 ```bash
-pnpm build
+bun run build
 node packages/docs/dist/cli/index.js <command>
 ```
 

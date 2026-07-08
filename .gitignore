@@ -42,8 +42,9 @@ tmp/
 # GitHub skills (local)
 .github/skills/
 
-# Lock files (use pnpm-lock.yaml)
+# Stray per-package lockfiles (monorepo uses root bun.lock)
 www/bun.lock
+www-astro/bun.lock
 .superset/
 # OpenScout local state
 .openscout/project.json

@@ -14,7 +14,7 @@ import { HudsonTemplate } from '@/components/templates/HudsonTemplate'
 import { RailTemplate } from '@/components/templates/RailTemplate'
 import { CenteredTemplate } from '@/components/templates/CenteredTemplate'
 import { CommandTemplate } from '@/components/templates/CommandTemplate'
-import { DocsAppThemePreview } from '@/components/templates/DocsAppThemePreview'
+import { ThemePreviewClient } from '@/components/templates/ThemePreviewClient'
 import '@/styles/templates/_prose.css'
 import '@/styles/templates/hudson.css'
 import '@/styles/templates/rail.css'
@@ -71,7 +71,7 @@ export default async function TemplatePreviewPage({ params }: PageProps) {
   if (!themeEntry) notFound()
 
   return (
-    <DocsAppThemePreview
+    <ThemePreviewClient
       themeId={name as ThemeId}
       layoutConfig={getDocsAppLayout(themeEntry)}
       fontUrls={themeEntry.fonts?.cssUrls}

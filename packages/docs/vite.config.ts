@@ -92,7 +92,7 @@ function ssrSafePlugin() {
       for (const file of Object.values(bundle)) {
         if (file.type === 'chunk' && typeof file.code === 'string') {
           file.code = file.code.replace(
-            'const element = document.createElement("i")',
+            /(?:var|const) element = document\.createElement\("i"\)/g,
             'const element = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" }',
           )
         }

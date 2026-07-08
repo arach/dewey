@@ -10,3 +10,7 @@ out
 .DS_Store
 *.log
 *.tsbuildinfo
+
+# Agent session scratch (local only)
+.codex-*.md
+.scout-*

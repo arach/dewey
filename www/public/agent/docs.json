@@ -6,7 +6,7 @@
     "tagline": "Documentation toolkit for AI-agent-ready docs",
     "repository": null
   },
-  "generatedAt": "2026-07-07T18:17:27.418Z",
+  "generatedAt": "2026-07-08T02:03:39.633Z",
   "artifacts": {
     "manifest": "/agent/manifest.json",
     "docs": "/agent/docs.json",

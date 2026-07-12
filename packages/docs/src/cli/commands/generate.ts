@@ -37,7 +37,7 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function loadDocs(
+export async function loadDocs(
   cwd: string,
   docsPath: string,
   docsRelativePath: string,
@@ -49,15 +49,18 @@ async function loadDocs(
     const filePath = join(docsPath, `${section}.md`)
     if (!await fileExists(filePath)) continue
 
-    const content = await readFile(filePath, 'utf-8')
-    const { data: frontmatter, content: body } = matter(content)
     const agentSourcePath = await resolveAgentDocPath(docsPath, section)
+    const humanSource = await readFile(filePath, 'utf-8')
+    const humanDoc = matter(humanSource)
+    const agentSource = agentSourcePath ? await readFile(agentSourcePath, 'utf-8') : null
+    const agentDoc = agentSource ? matter(agentSource) : null
+    const frontmatter = humanDoc.data
 
     docs.push({
       id: section,
-      title: (frontmatter.title as string) || section.charAt(0).toUpperCase() + section.slice(1),
-      description: frontmatter.description as string | undefined,
-      content: body.trim(),
+      title: (agentDoc?.data.title as string | undefined) || (frontmatter.title as string) || section.charAt(0).toUpperCase() + section.slice(1),
+      description: (agentDoc?.data.description as string | undefined) || frontmatter.description as string | undefined,
+      content: (agentDoc?.content || humanDoc.content).trim(),
       order: (frontmatter.order as number) || 999,
       groupId: frontmatter.groupId as string | undefined,
       groupTitle: frontmatter.group as string | undefined,

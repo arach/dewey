@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { readdir, readFile, writeFile, access, mkdir } from 'fs/promises'
+import type { Dirent } from 'fs'
 import { join } from 'path'
 import { loadConfig, configExists } from '../config.js'
 import type { DeweyConfig } from '../schema.js'
@@ -125,11 +126,29 @@ async function checkFileHasContent(filePath: string, pattern: RegExp): Promise<b
   return pattern.test(content)
 }
 
+async function listMarkdownFiles(directory: string): Promise<string[]> {
+  let entries: Dirent[]
+
+  try {
+    entries = await readdir(directory, { withFileTypes: true })
+  } catch {
+    return []
+  }
+
+  const files = await Promise.all(entries.map(async (entry) => {
+    const entryPath = join(directory, entry.name)
+    if (entry.isDirectory()) return listMarkdownFiles(entryPath)
+    return entry.isFile() && entry.name.endsWith('.md') ? [entryPath] : []
+  }))
+
+  return files.flat()
+}
+
 // ============================================
 // Perform Checks
 // ============================================
 
-async function performChecks(cwd: string, config: DeweyConfig | null): Promise<CategoryResult[]> {
+export async function performChecks(cwd: string, config: DeweyConfig | null): Promise<CategoryResult[]> {
   const docsPath = config?.docs.path ? join(cwd, config.docs.path) : join(cwd, 'docs')
   const results: CategoryResult[] = []
 
@@ -211,7 +230,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has llm.txt
-  const llmTxt = await findFile(cwd, ['llm.txt', 'llms.txt', 'public/llm.txt', 'docs/llm.txt'])
+  const llmTxt = await findFile(cwd, ['llm.txt', 'llms.txt', 'public/llm.txt', 'public/llms.txt', 'docs/llm.txt', 'docs/llms.txt'])
   agentChecks.push({
     name: 'Has llm.txt',
     passed: !!llmTxt,
@@ -230,14 +249,31 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
     hint: claudeMd ? undefined : 'Create CLAUDE.md with project-specific agent rules',
   })
 
-  // Has agent content folder
-  const agentFolder = await fileExists(join(docsPath, 'agent'))
+  // Every human documentation page should have an agent-optimized counterpart.
+  const markdownFiles = await listMarkdownFiles(docsPath)
+  const humanDocs = markdownFiles.filter((file) => {
+    const relativePath = file.slice(docsPath.length + 1).replace(/\\/g, '/')
+    return !relativePath.endsWith('.agent.md')
+      && !relativePath.startsWith('agent/')
+      && !relativePath.startsWith('prompts/')
+      && relativePath !== 'AGENTS.md'
+  })
+  const agentDocs = new Set(markdownFiles.filter((file) => file.endsWith('.agent.md')))
+  const missingAgentDocs = humanDocs.filter((file) => {
+    const relativePath = file.slice(docsPath.length + 1)
+    const directCounterpart = join(docsPath, relativePath.replace(/\.md$/, '.agent.md'))
+    const nestedCounterpart = join(docsPath, 'agent', relativePath.replace(/\.md$/, '.agent.md'))
+    return !agentDocs.has(directCounterpart) && !agentDocs.has(nestedCounterpart)
+  })
+  const hasCompleteAgentContent = humanDocs.length > 0 && missingAgentDocs.length === 0
   agentChecks.push({
-    name: 'Has agent/ folder with .agent.md files',
-    passed: agentFolder,
-    points: agentFolder ? 5 : 0,
+    name: 'Every documentation page has an .agent.md counterpart',
+    passed: hasCompleteAgentContent,
+    points: hasCompleteAgentContent ? 5 : 0,
     maxPoints: 5,
-    hint: agentFolder ? undefined : 'Create docs/agent/ with dense, structured versions of docs',
+    hint: hasCompleteAgentContent
+      ? undefined
+      : `Create dense .agent.md counterparts for ${missingAgentDocs.length || humanDocs.length} documentation page(s)`,
   })
 
   const agentScore = agentChecks.reduce((s, c) => s + c.points, 0)
@@ -253,13 +289,15 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   const handoffChecks: CheckResult[] = []
 
   // Has prompts folder
-  const promptsFolder = await fileExists(join(docsPath, 'prompts'))
+  const promptFiles = (await listMarkdownFiles(join(docsPath, 'prompts')))
+    .filter((file) => !file.endsWith('.agent.md'))
+  const hasPrompts = promptFiles.length > 0
   handoffChecks.push({
-    name: 'Has prompts/ folder',
-    passed: promptsFolder,
-    points: promptsFolder ? 10 : 0,
+    name: 'Has prompt templates',
+    passed: hasPrompts,
+    points: hasPrompts ? 10 : 0,
     maxPoints: 10,
-    hint: promptsFolder ? undefined : 'Create docs/prompts/ with task templates for common operations',
+    hint: hasPrompts ? undefined : 'Create docs/prompts/ with task templates for common operations',
   })
 
   // Has skills
@@ -274,17 +312,14 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
 
   // Has copy instructions (check if any doc mentions copying for agents)
   let hasCopyInstructions = false
-  const allDocs = await readdir(docsPath).catch(() => [])
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasInstructions = await checkFileHasContent(
-        join(docsPath, file),
-        /copy.*agent|agent.*copy|brief.*agent|llm|ai assistant/i
-      )
-      if (hasInstructions) {
-        hasCopyInstructions = true
-        break
-      }
+  for (const file of markdownFiles) {
+    const hasInstructions = await checkFileHasContent(
+      file,
+      /copy.*agent|agent.*copy|brief.*agent|llm|ai assistant/i
+    )
+    if (hasInstructions) {
+      hasCopyInstructions = true
+      break
     }
   }
   handoffChecks.push({
@@ -309,17 +344,12 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
 
   // Check for complete code examples
   let hasCompleteExamples = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      // Look for code blocks with import statements (indicates complete examples)
-      const hasComplete = await checkFileHasContent(
-        join(docsPath, file),
-        /```\w+\n.*import\s+/s
-      )
-      if (hasComplete) {
-        hasCompleteExamples = true
-        break
-      }
+  for (const file of markdownFiles) {
+    // Look for code blocks with import statements (indicates complete examples)
+    const hasComplete = await checkFileHasContent(file, /```\w+\n.*import\s+/s)
+    if (hasComplete) {
+      hasCompleteExamples = true
+      break
     }
   }
   qualityChecks.push({
@@ -332,16 +362,11 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
 
   // Check for type definitions
   let hasTypeDefinitions = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasTypes = await checkFileHasContent(
-        join(docsPath, file),
-        /interface\s+\w+\s*\{|type\s+\w+\s*=/
-      )
-      if (hasTypes) {
-        hasTypeDefinitions = true
-        break
-      }
+  for (const file of markdownFiles) {
+    const hasTypes = await checkFileHasContent(file, /interface\s+\w+\s*\{|type\s+\w+\s*=/)
+    if (hasTypes) {
+      hasTypeDefinitions = true
+      break
     }
   }
   qualityChecks.push({
@@ -354,16 +379,11 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
 
   // Check for file path references
   let hasFilePaths = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasPaths = await checkFileHasContent(
-        join(docsPath, file),
-        /`src\/|`\.\/|`lib\/|`packages\//
-      )
-      if (hasPaths) {
-        hasFilePaths = true
-        break
-      }
+  for (const file of markdownFiles) {
+    const hasPaths = await checkFileHasContent(file, /`src\/|`\.\/|`lib\/|`packages\//)
+    if (hasPaths) {
+      hasFilePaths = true
+      break
     }
   }
   qualityChecks.push({
@@ -376,16 +396,11 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
 
   // Check for valid values lists
   let hasValidValues = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasValues = await checkFileHasContent(
-        join(docsPath, file),
-        /valid\s+(values|options)|one\s+of|enum|'[^']+'\s*\|\s*'[^']+'/i
-      )
-      if (hasValues) {
-        hasValidValues = true
-        break
-      }
+  for (const file of markdownFiles) {
+    const hasValues = await checkFileHasContent(file, /valid\s+(values|options)|one\s+of|enum|'[^']+'\s*\|\s*'[^']+'/i)
+    if (hasValues) {
+      hasValidValues = true
+      break
     }
   }
   qualityChecks.push({
@@ -448,15 +463,8 @@ function generateRecommendations(categories: CategoryResult[]): Recommendation[]
   return recommendations
 }
 
-function getQuickWins(_recommendations: Recommendation[]): string[] {
-  // Quick wins are things that can be done with dewey commands
-  // TODO: Could filter based on recommendations to make these more relevant
-  return [
-    '`dewey init` - Create dewey.config.ts',
-    '`dewey generate` - Generate AGENTS.md and llm.txt',
-    'Create docs/agent/ folder with dense .agent.md versions',
-    'Create docs/prompts/ with task templates',
-  ].filter((_, i) => i < 3) // Top 3 quick wins
+function getQuickWins(recommendations: Recommendation[]): string[] {
+  return recommendations.slice(0, 3).map((recommendation) => recommendation.action)
 }
 
 // ============================================
@@ -653,8 +661,10 @@ export async function agentCoachCommand(options: CoachOptions) {
   const cwd = process.cwd()
   const config = await loadConfig(cwd)
 
-  console.log(chalk.blue('\n🤖 dewey agent'))
-  console.log(chalk.gray('   Checking agent-readiness...\n'))
+  if (!options.json) {
+    console.log(chalk.blue('\n🤖 dewey agent'))
+    console.log(chalk.gray('   Checking agent-readiness...\n'))
+  }
 
   // Perform all checks
   const categories = await performChecks(cwd, config)

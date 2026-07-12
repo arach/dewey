@@ -110,6 +110,7 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc && vite build && tsup src/registry.ts --format esm --dts --out-dir dist && tsup src/cli/index.ts src/cli/agent-artifacts.ts --format esm --dts --out-dir dist/cli && tsup src/tailwind/preset.ts --format esm --dts --out-dir dist/tailwind",
+    "test": "bun test",
     "clean": "rm -rf dist",
     "lint": "eslint src"
   },

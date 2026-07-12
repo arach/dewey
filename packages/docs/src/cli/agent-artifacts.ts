@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises'
 import type { Dirent } from 'fs'
 import { basename, dirname, extname, join, relative, resolve } from 'path'
 import matter from 'gray-matter'
@@ -196,7 +196,7 @@ export function buildAgentManifest(
       },
     },
     recommendedReadOrder: defaultReadOrder.filter((slug) => docs.some((doc) => doc.slug === slug)),
-    docs: docs.map((doc) => toManifestEntry(doc, options.includeContent)),
+    docs: docs.filter((doc) => doc.kind !== 'prompt').map((doc) => toManifestEntry(doc, options.includeContent)),
     prompts: prompts.map((prompt) => toPromptEntry(prompt, options.includeContent)),
   }
 }
@@ -235,6 +235,13 @@ export async function writeAgentArtifacts(options: WriteAgentArtifactsOptions = 
   const promptRegistry = buildPromptRegistry(docs, { project: options.project, includeContent: true })
   const context = formatAgentContext(docs, fullManifest)
   const written: string[] = []
+
+  // These directories mirror source files exactly. Remove them first so deleted
+  // docs and prompts cannot remain addressable after a subsequent generation.
+  await Promise.all([
+    rm(join(outputDir, 'agent/raw/docs'), { recursive: true, force: true }),
+    rm(join(outputDir, 'agent/prompts'), { recursive: true, force: true }),
+  ])
 
   const writeArtifact = async (artifactPath: string, value: string) => {
     const filePath = join(outputDir, artifactPath)

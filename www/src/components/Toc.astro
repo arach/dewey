@@ -1,5 +1,11 @@
 ---
-const { headings = [] } = Astro.props
+interface Heading {
+  depth: number
+  slug: string
+  text: string
+}
+
+const { headings = [] } = Astro.props as { headings?: Heading[] }
 const filtered = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3)
 ---
 

@@ -1,0 +1,666 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "project": {
+    "name": "dewey",
+    "version": "0.3.7",
+    "tagline": "Documentation toolkit for AI-agent-ready docs",
+    "repository": null
+  },
+  "artifacts": {
+    "manifest": "/agent/manifest.json",
+    "docs": "/agent/docs.json",
+    "prompts": "/agent/prompts.json",
+    "context": "/agent/context.md",
+    "contextJson": "/agent/context.json",
+    "allMarkdown": "/agent/bundles/all.md",
+    "promptBundle": "/agent/bundles/prompts.md",
+    "rawMarkdownBase": "/agent/raw/docs/",
+    "bundles": {
+      "core": "/agent/bundles/core.md",
+      "prompts": "/agent/bundles/prompts.md",
+      "all": "/agent/bundles/all.md"
+    }
+  },
+  "docs": [
+    {
+      "id": "AGENTS",
+      "slug": "AGENTS",
+      "kind": "doc",
+      "title": "dewey",
+      "description": "Documentation toolkit for AI-agent-ready docs and retrieval artifacts",
+      "sourcePath": "docs/AGENTS.md",
+      "url": "/docs/AGENTS",
+      "rawUrl": "/agent/raw/docs/AGENTS.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey",
+          "anchor": "dewey"
+        },
+        {
+          "depth": 2,
+          "text": "Critical Context",
+          "anchor": "critical-context"
+        },
+        {
+          "depth": 2,
+          "text": "Project Structure",
+          "anchor": "project-structure"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Navigation",
+          "anchor": "quick-navigation"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "Using Skills",
+          "anchor": "using-skills"
+        },
+        {
+          "depth": 2,
+          "text": "React Components (22 total)",
+          "anchor": "react-components-22-total"
+        },
+        {
+          "depth": 3,
+          "text": "Entry Points",
+          "anchor": "entry-points"
+        },
+        {
+          "depth": 3,
+          "text": "Layout",
+          "anchor": "layout"
+        },
+        {
+          "depth": 3,
+          "text": "Content",
+          "anchor": "content"
+        },
+        {
+          "depth": 3,
+          "text": "Agent-Friendly",
+          "anchor": "agent-friendly"
+        },
+        {
+          "depth": 3,
+          "text": "Provider",
+          "anchor": "provider"
+        },
+        {
+          "depth": 2,
+          "text": "Configuration (dewey.config.ts)",
+          "anchor": "configuration-dewey-config-ts"
+        },
+        {
+          "depth": 2,
+          "text": "Type Reference",
+          "anchor": "type-reference"
+        },
+        {
+          "depth": 3,
+          "text": "CalloutType",
+          "anchor": "callouttype"
+        },
+        {
+          "depth": 3,
+          "text": "BadgeVariant",
+          "anchor": "badgevariant"
+        },
+        {
+          "depth": 3,
+          "text": "ThemePreset",
+          "anchor": "themepreset"
+        },
+        {
+          "depth": 2,
+          "text": "File Generation",
+          "anchor": "file-generation"
+        },
+        {
+          "depth": 2,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        }
+      ],
+      "tokensEstimate": 1011,
+      "frontmatter": {},
+      "markdown": "# dewey\n\n> Documentation toolkit for AI-agent-ready docs and retrieval artifacts\n\n## Critical Context\n\n**IMPORTANT:** Read these rules before making any changes:\n\n- Dewey generates standard files plus the `agent/` retrieval surface: manifests, raw markdown, prompts, and bundles\n- Skills are LLM prompts, NOT deterministic code - they guide agents\n- Each doc page should have TWO versions: human (.md) and agent (.agent.md)\n- The `.dewey/` folder contains generated artifacts (reviews, prompts, drift reports)\n- Never hardcode values that exist in source code - always cross-reference\n\n## Project Structure\n\n| Component | Path | Purpose |\n|-----------|------|---------|\n| React Components | `packages/docs/src/components/` | Optional docs UI components |\n| CLI Commands | `packages/docs/src/cli/commands/` | init, audit, generate, agent |\n| Skills | `packages/docs/src/skills/` | LLM prompt templates |\n| Documentation Site | `www/src/pages/` | Live docs at dewey site |\n\n## Quick Navigation\n\n- Entry point: `packages/docs/src/index.ts`\n- CLI entry: `packages/docs/src/cli/index.ts`\n- Config schema: `packages/docs/src/cli/schema.ts`\n- Main layout: `packages/docs/src/components/DocsLayout.tsx`\n\n## CLI Commands\n\n| Command | Purpose |\n|---------|---------|\n| `dewey init` | Scaffold docs structure + dewey.config.ts |\n| `dewey audit` | Validate documentation completeness |\n| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |\n| `dewey create` | Optional static docs site from markdown |\n| `dewey agent` | Score agent-readiness (100 pts scale) |\n| `dewey update` | Refresh Dewey-owned generated-site files |\n| `dewey eject` | Transfer a component to consumer ownership |\n\n## Skills System\n\nSkills are exportable LLM prompts that guide agents:\n\n| Skill | Purpose |\n|-------|---------|\n| `docsReviewAgent` | Review docs quality, catch drift from codebase |\n| `docsDesignCritic` | Critique page structure — heading hierarchy, component usage, visual rhythm |\n| `promptSlideoutGenerator` | Generate AI-consumable prompt configs |\n| `installMdGenerator` | Create LLM-executable installation (installmd.org) |\n\n### Using Skills\n\n```typescript\nimport { docsReviewAgent } from '@arach/dewey'\n\n// Get the prompt template\nconst prompt = docsReviewAgent.reviewPage\n  .replace('{DOC_FILE}', 'docs/api.md')\n  .replace('{SOURCE_FILES}', 'src/types/index.ts')\n  .replace('{OUTPUT_FILE}', '.dewey/reviews/api.md')\n\n// Feed to LLM for execution\n```\n\n## React Components (22 total)\n\n### Entry Points\n- `DocsApp` - Complete docs site with routing\n- `DocsIndex` - Card-based landing page\n\n### Layout\n- `DocsLayout` - Main layout (sidebar, TOC, navigation)\n- `Header` - Sticky header with theme toggle\n- `Sidebar` - Left navigation panel\n- `TableOfContents` - Right minimap with scroll-spy\n\n### Content\n- `MarkdownContent` - Renders markdown with syntax highlighting\n- `CodeBlock` - Code with copy button\n- `Callout` - Alert boxes (info, warning, tip, danger)\n- `Tabs` - Tabbed content\n- `Steps` - Numbered instructions\n- `Card`, `CardGrid` - Content cards\n- `FileTree` - Directory visualizer\n- `ApiTable` - Props/params table\n- `Badge` - Status indicators\n\n### Agent-Friendly\n- `AgentContext` - Collapsible agent content block\n- `PromptSlideout` - Interactive prompt editor with parameters\n- `CopyButtons` - \"Copy for AI\" and \"Copy Markdown\" buttons\n\n### Provider\n- `DeweyProvider` - Theme and component context\n\n## Configuration (dewey.config.ts)\n\n```typescript\nexport default {\n  project: {\n    name: string,\n    tagline: string,\n    type: 'npm-package' | 'cli-tool' | 'macos-app' | 'react-library' | 'monorepo' | 'generic',\n  },\n  agent: {\n    criticalContext: string[],      // Rules agents MUST know\n    entryPoints: Record<string, string>,  // Key directories\n    rules: Array<{ pattern, instruction }>,\n    sections: string[],             // Docs to include in AGENTS.md\n  },\n  docs: {\n    path: string,    // Default: './docs'\n    output: string,  // Default: './'\n    required: string[],\n  },\n  install: {\n    objective: string,\n    doneWhen: { command, expectedOutput },\n    prerequisites: string[],\n    steps: Array<{ description, command, alternatives }>,\n  },\n}\n```\n\n## Type Reference\n\n### CalloutType\n`'info'` | `'warning'` | `'tip'` | `'danger'`\n\n### BadgeVariant\n`'default'` | `'success'` | `'warning'` | `'danger'` | `'info'` | `'purple'`\n\n### ThemePreset\n`'neutral'` | `'ocean'` | `'emerald'` | `'purple'` | `'dusk'` | `'rose'` | `'github'` | `'warm'` | `'midnight'` | `'editorial'` | `'mono'` | `'hudson'`\n\n## File Generation\n\n`dewey generate` creates:\n\n| File | Format | Purpose |\n|------|--------|---------|\n| AGENTS.md | Markdown | Combined docs with critical context |\n| llms.txt | Plain text | General software context |\n| docs.json | JSON | Structured documentation |\n| install.md | Markdown | LLM-executable installation (installmd.org) |\n| agent/ | Markdown + JSON | Recursive retrieval manifests, raw docs, prompts, and bundles |\n\n## Agent Content Pattern\n\nEach doc page should have two versions:\n\n```\ndocs/\n├── overview.md           # Human-readable\n├── quickstart.md\n├── agent/\n│   ├── overview.agent.md # Agent-optimized (dense, structured)\n│   └── quickstart.agent.md\n├── AGENTS.md            # Combined agent doc\n└── llms.txt             # Plain text summary\n```\n\nThe `.agent.md` versions are:\n- Denser (no prose, just facts)\n- Structured (tables, explicit values)\n- Self-contained (no URL fetching needed)\n- Cross-referenced against source code\n\n---\n\n*Generated by Dewey | [github.com/arach/dewey](https://github.com/arach/dewey)*\n",
+      "content": "# dewey\n\n> Documentation toolkit for AI-agent-ready docs and retrieval artifacts\n\n## Critical Context\n\n**IMPORTANT:** Read these rules before making any changes:\n\n- Dewey generates standard files plus the `agent/` retrieval surface: manifests, raw markdown, prompts, and bundles\n- Skills are LLM prompts, NOT deterministic code - they guide agents\n- Each doc page should have TWO versions: human (.md) and agent (.agent.md)\n- The `.dewey/` folder contains generated artifacts (reviews, prompts, drift reports)\n- Never hardcode values that exist in source code - always cross-reference\n\n## Project Structure\n\n| Component | Path | Purpose |\n|-----------|------|---------|\n| React Components | `packages/docs/src/components/` | Optional docs UI components |\n| CLI Commands | `packages/docs/src/cli/commands/` | init, audit, generate, agent |\n| Skills | `packages/docs/src/skills/` | LLM prompt templates |\n| Documentation Site | `www/src/pages/` | Live docs at dewey site |\n\n## Quick Navigation\n\n- Entry point: `packages/docs/src/index.ts`\n- CLI entry: `packages/docs/src/cli/index.ts`\n- Config schema: `packages/docs/src/cli/schema.ts`\n- Main layout: `packages/docs/src/components/DocsLayout.tsx`\n\n## CLI Commands\n\n| Command | Purpose |\n|---------|---------|\n| `dewey init` | Scaffold docs structure + dewey.config.ts |\n| `dewey audit` | Validate documentation completeness |\n| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |\n| `dewey create` | Optional static docs site from markdown |\n| `dewey agent` | Score agent-readiness (100 pts scale) |\n| `dewey update` | Refresh Dewey-owned generated-site files |\n| `dewey eject` | Transfer a component to consumer ownership |\n\n## Skills System\n\nSkills are exportable LLM prompts that guide agents:\n\n| Skill | Purpose |\n|-------|---------|\n| `docsReviewAgent` | Review docs quality, catch drift from codebase |\n| `docsDesignCritic` | Critique page structure — heading hierarchy, component usage, visual rhythm |\n| `promptSlideoutGenerator` | Generate AI-consumable prompt configs |\n| `installMdGenerator` | Create LLM-executable installation (installmd.org) |\n\n### Using Skills\n\n```typescript\nimport { docsReviewAgent } from '@arach/dewey'\n\n// Get the prompt template\nconst prompt = docsReviewAgent.reviewPage\n  .replace('{DOC_FILE}', 'docs/api.md')\n  .replace('{SOURCE_FILES}', 'src/types/index.ts')\n  .replace('{OUTPUT_FILE}', '.dewey/reviews/api.md')\n\n// Feed to LLM for execution\n```\n\n## React Components (22 total)\n\n### Entry Points\n- `DocsApp` - Complete docs site with routing\n- `DocsIndex` - Card-based landing page\n\n### Layout\n- `DocsLayout` - Main layout (sidebar, TOC, navigation)\n- `Header` - Sticky header with theme toggle\n- `Sidebar` - Left navigation panel\n- `TableOfContents` - Right minimap with scroll-spy\n\n### Content\n- `MarkdownContent` - Renders markdown with syntax highlighting\n- `CodeBlock` - Code with copy button\n- `Callout` - Alert boxes (info, warning, tip, danger)\n- `Tabs` - Tabbed content\n- `Steps` - Numbered instructions\n- `Card`, `CardGrid` - Content cards\n- `FileTree` - Directory visualizer\n- `ApiTable` - Props/params table\n- `Badge` - Status indicators\n\n### Agent-Friendly\n- `AgentContext` - Collapsible agent content block\n- `PromptSlideout` - Interactive prompt editor with parameters\n- `CopyButtons` - \"Copy for AI\" and \"Copy Markdown\" buttons\n\n### Provider\n- `DeweyProvider` - Theme and component context\n\n## Configuration (dewey.config.ts)\n\n```typescript\nexport default {\n  project: {\n    name: string,\n    tagline: string,\n    type: 'npm-package' | 'cli-tool' | 'macos-app' | 'react-library' | 'monorepo' | 'generic',\n  },\n  agent: {\n    criticalContext: string[],      // Rules agents MUST know\n    entryPoints: Record<string, string>,  // Key directories\n    rules: Array<{ pattern, instruction }>,\n    sections: string[],             // Docs to include in AGENTS.md\n  },\n  docs: {\n    path: string,    // Default: './docs'\n    output: string,  // Default: './'\n    required: string[],\n  },\n  install: {\n    objective: string,\n    doneWhen: { command, expectedOutput },\n    prerequisites: string[],\n    steps: Array<{ description, command, alternatives }>,\n  },\n}\n```\n\n## Type Reference\n\n### CalloutType\n`'info'` | `'warning'` | `'tip'` | `'danger'`\n\n### BadgeVariant\n`'default'` | `'success'` | `'warning'` | `'danger'` | `'info'` | `'purple'`\n\n### ThemePreset\n`'neutral'` | `'ocean'` | `'emerald'` | `'purple'` | `'dusk'` | `'rose'` | `'github'` | `'warm'` | `'midnight'` | `'editorial'` | `'mono'` | `'hudson'`\n\n## File Generation\n\n`dewey generate` creates:\n\n| File | Format | Purpose |\n|------|--------|---------|\n| AGENTS.md | Markdown | Combined docs with critical context |\n| llms.txt | Plain text | General software context |\n| docs.json | JSON | Structured documentation |\n| install.md | Markdown | LLM-executable installation (installmd.org) |\n| agent/ | Markdown + JSON | Recursive retrieval manifests, raw docs, prompts, and bundles |\n\n## Agent Content Pattern\n\nEach doc page should have two versions:\n\n```\ndocs/\n├── overview.md           # Human-readable\n├── quickstart.md\n├── agent/\n│   ├── overview.agent.md # Agent-optimized (dense, structured)\n│   └── quickstart.agent.md\n├── AGENTS.md            # Combined agent doc\n└── llms.txt             # Plain text summary\n```\n\nThe `.agent.md` versions are:\n- Denser (no prose, just facts)\n- Structured (tables, explicit values)\n- Self-contained (no URL fetching needed)\n- Cross-referenced against source code\n\n---\n\n*Generated by Dewey | [github.com/arach/dewey](https://github.com/arach/dewey)*"
+    },
+    {
+      "id": "cli",
+      "slug": "cli",
+      "kind": "doc",
+      "title": "CLI Reference",
+      "description": "Dewey commands and their main options",
+      "sourcePath": "docs/cli.md",
+      "url": "/docs/cli",
+      "rawUrl": "/agent/raw/docs/cli.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "CLI Reference",
+          "anchor": "cli-reference"
+        },
+        {
+          "depth": 2,
+          "text": "Run Dewey",
+          "anchor": "run-dewey"
+        },
+        {
+          "depth": 2,
+          "text": "Commands",
+          "anchor": "commands"
+        },
+        {
+          "depth": 2,
+          "text": "Generate options",
+          "anchor": "generate-options"
+        },
+        {
+          "depth": 2,
+          "text": "Machine-readable checks",
+          "anchor": "machine-readable-checks"
+        }
+      ],
+      "tokensEstimate": 300,
+      "frontmatter": {
+        "title": "CLI Reference",
+        "description": "Dewey commands and their main options",
+        "order": 3,
+        "group": "Reference",
+        "groupId": "reference"
+      },
+      "markdown": "---\ntitle: CLI Reference\ndescription: Dewey commands and their main options\norder: 3\ngroup: Reference\ngroupId: reference\n---\n\n# CLI Reference\n\nDewey audits documentation, generates agent-facing artifacts, and publishes the same Markdown through optional site templates.\n\n## Run Dewey\n\nInstall Dewey in a project and use its local binary:\n\n```bash\nbun add -d @arach/dewey\nbunx dewey --help\n```\n\nFor a one-off run without installing it first, address the scoped package directly:\n\n```bash\nbunx @arach/dewey@latest --help\n```\n\n## Commands\n\n| Command | Purpose |\n|---|---|\n| `dewey init` | Create a documentation structure and `dewey.config.ts` |\n| `dewey audit` | Check documentation completeness and quality |\n| `dewey generate` | Generate `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` artifacts |\n| `dewey agent` | Evaluate agent-readiness and recommend improvements |\n| `dewey create <dir>` | Publish Markdown with a Next.js or Astro site template |\n| `dewey update [dir]` | Refresh Dewey-owned files in a generated site |\n| `dewey eject <component> [dir]` | Take ownership of a generated component |\n\n## Generate options\n\n```bash\ndewey generate --source ./docs --output ./generated\ndewey generate --agents-md\ndewey generate --llms-txt\ndewey generate --docs-json\ndewey generate --install-md\ndewey generate --agent-artifacts\n```\n\n`--source` overrides `docs.path` for a run. An empty `agent.sections` array includes every human-readable Markdown document recursively; provide section IDs only when you want an explicit allowlist.\n\n## Machine-readable checks\n\nBoth audit commands can emit JSON for CI and other tooling:\n\n```bash\ndewey audit --json\ndewey agent --json\n```\n",
+      "content": "# CLI Reference\n\nDewey audits documentation, generates agent-facing artifacts, and publishes the same Markdown through optional site templates.\n\n## Run Dewey\n\nInstall Dewey in a project and use its local binary:\n\n```bash\nbun add -d @arach/dewey\nbunx dewey --help\n```\n\nFor a one-off run without installing it first, address the scoped package directly:\n\n```bash\nbunx @arach/dewey@latest --help\n```\n\n## Commands\n\n| Command | Purpose |\n|---|---|\n| `dewey init` | Create a documentation structure and `dewey.config.ts` |\n| `dewey audit` | Check documentation completeness and quality |\n| `dewey generate` | Generate `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` artifacts |\n| `dewey agent` | Evaluate agent-readiness and recommend improvements |\n| `dewey create <dir>` | Publish Markdown with a Next.js or Astro site template |\n| `dewey update [dir]` | Refresh Dewey-owned files in a generated site |\n| `dewey eject <component> [dir]` | Take ownership of a generated component |\n\n## Generate options\n\n```bash\ndewey generate --source ./docs --output ./generated\ndewey generate --agents-md\ndewey generate --llms-txt\ndewey generate --docs-json\ndewey generate --install-md\ndewey generate --agent-artifacts\n```\n\n`--source` overrides `docs.path` for a run. An empty `agent.sections` array includes every human-readable Markdown document recursively; provide section IDs only when you want an explicit allowlist.\n\n## Machine-readable checks\n\nBoth audit commands can emit JSON for CI and other tooling:\n\n```bash\ndewey audit --json\ndewey agent --json\n```"
+    },
+    {
+      "id": "overview",
+      "slug": "overview",
+      "kind": "doc",
+      "title": "Overview",
+      "description": "Documentation toolkit for AI-agent-ready docs",
+      "sourcePath": "docs/overview.md",
+      "url": "/docs/overview",
+      "rawUrl": "/agent/raw/docs/overview.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey",
+          "anchor": "dewey"
+        },
+        {
+          "depth": 2,
+          "text": "What Dewey Does",
+          "anchor": "what-dewey-does"
+        },
+        {
+          "depth": 2,
+          "text": "Key Concepts",
+          "anchor": "key-concepts"
+        },
+        {
+          "depth": 3,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        },
+        {
+          "depth": 3,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "install.md Standard",
+          "anchor": "install-md-standard"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Links",
+          "anchor": "quick-links"
+        }
+      ],
+      "tokensEstimate": 358,
+      "frontmatter": {
+        "title": "Overview",
+        "description": "Documentation toolkit for AI-agent-ready docs",
+        "order": 1
+      },
+      "markdown": "---\ntitle: Overview\ndescription: Documentation toolkit for AI-agent-ready docs\norder: 1\n---\n\n# Dewey\n\nDewey is a documentation toolkit that prepares your docs for AI agents. It audits, scores, and exports structured documentation artifacts without requiring a specific rendering framework.\n\n## What Dewey Does\n\nDewey is a **docs agent**, not a docs framework. It focuses on:\n\n- **Auditing** - Validates documentation completeness and quality\n- **Scoring** - Rates agent-readiness on a 0-100 scale\n- **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md, and the `agent/` retrieval surface\n- **Exporting** - Publishes recursive raw markdown, manifests, prompt registries, and context bundles\n- **Publishing** - Optionally scaffolds a static doc site from your markdown\n- **Reviewing** - Skills that catch drift between docs and codebase\n\n## Key Concepts\n\n### Agent Content Pattern\n\nEach documentation page should have two versions:\n\n| Version | Audience | Style |\n|---------|----------|-------|\n| `.md` | Humans | Narrative, explanatory |\n| `.agent.md` | AI agents | Dense, structured, self-contained |\n\n### Skills System\n\nSkills are LLM prompts, not code. Built-in skills:\n\n- `docsReviewAgent` - Reviews docs quality page-by-page\n- `docsDesignCritic` - Critiques page structure and visual design\n- `promptSlideoutGenerator` - Generates AI-consumable prompt configs\n- `installMdGenerator` - Creates install.md following installmd.org\n\n### install.md Standard\n\nFollows the [installmd.org](https://installmd.org) specification. LLM-executable:\n\n```bash\ncurl https://your-project.com/install.md | claude\n```\n\n## CLI Commands\n\n```\ndewey init      Create docs/ folder and dewey.config.ts\ndewey audit     Check documentation completeness\ndewey generate  Create agent-ready files and retrieval artifacts\ndewey create    Optional static docs site from markdown\ndewey agent     Score agent-readiness (0-100)\n```\n\n## Quick Links\n\n- [Quickstart](./quickstart.md) - Get started in 5 minutes\n- [CLI Reference](./cli.md) - All commands and options\n- [Skills](./skills.md) - Built-in LLM prompt templates\n",
+      "content": "# Dewey\n\nDewey is a documentation toolkit that prepares your docs for AI agents. It audits, scores, and exports structured documentation artifacts without requiring a specific rendering framework.\n\n## What Dewey Does\n\nDewey is a **docs agent**, not a docs framework. It focuses on:\n\n- **Auditing** - Validates documentation completeness and quality\n- **Scoring** - Rates agent-readiness on a 0-100 scale\n- **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md, and the `agent/` retrieval surface\n- **Exporting** - Publishes recursive raw markdown, manifests, prompt registries, and context bundles\n- **Publishing** - Optionally scaffolds a static doc site from your markdown\n- **Reviewing** - Skills that catch drift between docs and codebase\n\n## Key Concepts\n\n### Agent Content Pattern\n\nEach documentation page should have two versions:\n\n| Version | Audience | Style |\n|---------|----------|-------|\n| `.md` | Humans | Narrative, explanatory |\n| `.agent.md` | AI agents | Dense, structured, self-contained |\n\n### Skills System\n\nSkills are LLM prompts, not code. Built-in skills:\n\n- `docsReviewAgent` - Reviews docs quality page-by-page\n- `docsDesignCritic` - Critiques page structure and visual design\n- `promptSlideoutGenerator` - Generates AI-consumable prompt configs\n- `installMdGenerator` - Creates install.md following installmd.org\n\n### install.md Standard\n\nFollows the [installmd.org](https://installmd.org) specification. LLM-executable:\n\n```bash\ncurl https://your-project.com/install.md | claude\n```\n\n## CLI Commands\n\n```\ndewey init      Create docs/ folder and dewey.config.ts\ndewey audit     Check documentation completeness\ndewey generate  Create agent-ready files and retrieval artifacts\ndewey create    Optional static docs site from markdown\ndewey agent     Score agent-readiness (0-100)\n```\n\n## Quick Links\n\n- [Quickstart](./quickstart.md) - Get started in 5 minutes\n- [CLI Reference](./cli.md) - All commands and options\n- [Skills](./skills.md) - Built-in LLM prompt templates"
+    },
+    {
+      "id": "quickstart",
+      "slug": "quickstart",
+      "kind": "doc",
+      "title": "Quickstart",
+      "description": "Get your documentation agent-ready in under 5 minutes",
+      "sourcePath": "docs/quickstart.md",
+      "url": "/docs/quickstart",
+      "rawUrl": "/agent/raw/docs/quickstart.md",
+      "headings": [
+        {
+          "depth": 3,
+          "text": "1. Install",
+          "anchor": "1-install"
+        },
+        {
+          "depth": 3,
+          "text": "2. Initialize",
+          "anchor": "2-initialize"
+        },
+        {
+          "depth": 3,
+          "text": "3. Configure",
+          "anchor": "3-configure"
+        },
+        {
+          "depth": 3,
+          "text": "4. Write docs",
+          "anchor": "4-write-docs"
+        },
+        {
+          "depth": 3,
+          "text": "5. Generate agent files",
+          "anchor": "5-generate-agent-files"
+        },
+        {
+          "depth": 3,
+          "text": "6. Check your score",
+          "anchor": "6-check-your-score"
+        },
+        {
+          "depth": 3,
+          "text": "7. Optional: create a doc site",
+          "anchor": "7-optional-create-a-doc-site"
+        },
+        {
+          "depth": 2,
+          "text": "Next steps",
+          "anchor": "next-steps"
+        }
+      ],
+      "tokensEstimate": 393,
+      "frontmatter": {
+        "title": "Quickstart",
+        "description": "Get your documentation agent-ready in under 5 minutes",
+        "order": 2
+      },
+      "markdown": "---\ntitle: Quickstart\ndescription: Get your documentation agent-ready in under 5 minutes\norder: 2\n---\n\nRequires Node.js 18+ and Bun 1.3+ (recommended) or npm.\n\n### 1. Install\n\n```bash\nbun add -d @arach/dewey\n```\n\n### 2. Initialize\n\n```bash\nbunx dewey init\n```\n\nCreates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.\n\n### 3. Configure\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">dewey.config.ts</div>\n\n```typescript\nexport default {\n  project: {\n    name: 'your-project',\n    tagline: 'What your project does',\n    type: 'npm-package', // or cli-tool, react-library, etc.\n  },\n\n  agent: {\n    criticalContext: [\n      // Rules AI agents MUST know\n      'NEVER do X when Y',\n    ],\n    entryPoints: {\n      'main': 'src/',\n    },\n  },\n\n  install: {\n    objective: 'Install and configure your-project.',\n    steps: [\n      { description: 'Install', command: 'bun add your-project' },\n    ],\n  },\n}\n```\n\n</div>\n\n### 4. Write docs\n\nCreate pages in the `docs/` folder:\n\n```\ndocs/\n  overview.md          # Project introduction\n  quickstart.md        # Getting started guide\n  api.md               # API reference\n  overview.agent.md    # Agent-optimized version\n```\n\n### 5. Generate agent files\n\n```bash\nbunx dewey generate\n```\n\nOutputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.\n\n### 6. Check your score\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">bunx dewey agent</div>\n\n```\nAgent Readiness Report\nOverall Score: 75/100 (Grade: C)\n\nCategories:\n✓ Project Context: 20/25\n○ Agent-Optimized Files: 20/30\n...\n```\n\n</div>\n\n### 7. Optional: create a doc site\n\n```bash\nbunx dewey create my-docs --source ./docs --theme ocean\ncd my-docs && bun install && bun run dev\n```\n\nGenerates a static docs site from the same markdown when you want a human-facing site alongside the agent artifacts.\n\n---\n\n## Next steps\n\n- Create `.agent.md` versions of your docs for denser, structured content\n- Add skills to `.claude/skills/` for custom agent-guided reviews\n- Run `bunx dewey audit` to check documentation completeness\n- Use `dewey create` when you want to publish the same docs as a static site\n",
+      "content": "Requires Node.js 18+ and Bun 1.3+ (recommended) or npm.\n\n### 1. Install\n\n```bash\nbun add -d @arach/dewey\n```\n\n### 2. Initialize\n\n```bash\nbunx dewey init\n```\n\nCreates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.\n\n### 3. Configure\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">dewey.config.ts</div>\n\n```typescript\nexport default {\n  project: {\n    name: 'your-project',\n    tagline: 'What your project does',\n    type: 'npm-package', // or cli-tool, react-library, etc.\n  },\n\n  agent: {\n    criticalContext: [\n      // Rules AI agents MUST know\n      'NEVER do X when Y',\n    ],\n    entryPoints: {\n      'main': 'src/',\n    },\n  },\n\n  install: {\n    objective: 'Install and configure your-project.',\n    steps: [\n      { description: 'Install', command: 'bun add your-project' },\n    ],\n  },\n}\n```\n\n</div>\n\n### 4. Write docs\n\nCreate pages in the `docs/` folder:\n\n```\ndocs/\n  overview.md          # Project introduction\n  quickstart.md        # Getting started guide\n  api.md               # API reference\n  overview.agent.md    # Agent-optimized version\n```\n\n### 5. Generate agent files\n\n```bash\nbunx dewey generate\n```\n\nOutputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.\n\n### 6. Check your score\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">bunx dewey agent</div>\n\n```\nAgent Readiness Report\nOverall Score: 75/100 (Grade: C)\n\nCategories:\n✓ Project Context: 20/25\n○ Agent-Optimized Files: 20/30\n...\n```\n\n</div>\n\n### 7. Optional: create a doc site\n\n```bash\nbunx dewey create my-docs --source ./docs --theme ocean\ncd my-docs && bun install && bun run dev\n```\n\nGenerates a static docs site from the same markdown when you want a human-facing site alongside the agent artifacts.\n\n---\n\n## Next steps\n\n- Create `.agent.md` versions of your docs for denser, structured content\n- Add skills to `.claude/skills/` for custom agent-guided reviews\n- Run `bunx dewey audit` to check documentation completeness\n- Use `dewey create` when you want to publish the same docs as a static site"
+    },
+    {
+      "id": "skills",
+      "slug": "skills",
+      "kind": "doc",
+      "title": "Skills",
+      "description": "Expert instructions that guide AI agents through specific documentation tasks",
+      "sourcePath": "docs/skills.md",
+      "url": "/docs/skills",
+      "rawUrl": "/agent/raw/docs/skills.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Built-in Skills",
+          "anchor": "built-in-skills"
+        },
+        {
+          "depth": 2,
+          "text": "Creating Custom Skills",
+          "anchor": "creating-custom-skills"
+        },
+        {
+          "depth": 1,
+          "text": "Skill Name",
+          "anchor": "skill-name"
+        },
+        {
+          "depth": 2,
+          "text": "When to Use",
+          "anchor": "when-to-use"
+        },
+        {
+          "depth": 2,
+          "text": "Instructions",
+          "anchor": "instructions"
+        },
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "Best Practices",
+          "anchor": "best-practices"
+        }
+      ],
+      "tokensEstimate": 340,
+      "frontmatter": {
+        "title": "Skills",
+        "description": "Expert instructions that guide AI agents through specific documentation tasks",
+        "order": 4
+      },
+      "markdown": "---\ntitle: Skills\ndescription: Expert instructions that guide AI agents through specific documentation tasks\norder: 4\n---\n\nSkills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.\n\n## Built-in Skills\n\n| Skill | Purpose | Usage |\n|-------|---------|-------|\n| `docsReviewAgent` | Reviews doc quality page-by-page — catches stale content, missing sections, unclear explanations, broken links | `Use the docsReviewAgent skill to review docs/overview.md` |\n| `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |\n| `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |\n| `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |\n\n---\n\n## Creating Custom Skills\n\nSkills live as markdown files in your project:\n\n```\n.claude/skills/\n  my-skill.md\n```\n\nEach skill follows a consistent structure:\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">my-skill.md</div>\n\n```markdown\n# Skill Name\n\nBrief description of what this skill does.\n\n## When to Use\n\n- Situation 1\n- Situation 2\n\n## Instructions\n\nStep-by-step guide for the AI agent:\n\n1. First, check X\n2. Then, do Y\n3. Finally, verify Z\n\n## Example\n\nShow an example input and expected output.\n```\n\n</div>\n\n## Best Practices\n\n| Do | Don't |\n|----|-------|\n| Be specific and actionable | Use vague instructions |\n| Include examples | Assume context |\n| Define success criteria | Leave outcomes ambiguous |\n| Reference file paths | Use relative descriptions |\n",
+      "content": "Skills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.\n\n## Built-in Skills\n\n| Skill | Purpose | Usage |\n|-------|---------|-------|\n| `docsReviewAgent` | Reviews doc quality page-by-page — catches stale content, missing sections, unclear explanations, broken links | `Use the docsReviewAgent skill to review docs/overview.md` |\n| `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |\n| `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |\n| `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |\n\n---\n\n## Creating Custom Skills\n\nSkills live as markdown files in your project:\n\n```\n.claude/skills/\n  my-skill.md\n```\n\nEach skill follows a consistent structure:\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">my-skill.md</div>\n\n```markdown\n# Skill Name\n\nBrief description of what this skill does.\n\n## When to Use\n\n- Situation 1\n- Situation 2\n\n## Instructions\n\nStep-by-step guide for the AI agent:\n\n1. First, check X\n2. Then, do Y\n3. Finally, verify Z\n\n## Example\n\nShow an example input and expected output.\n```\n\n</div>\n\n## Best Practices\n\n| Do | Don't |\n|----|-------|\n| Be specific and actionable | Use vague instructions |\n| Include examples | Assume context |\n| Define success criteria | Leave outcomes ambiguous |\n| Reference file paths | Use relative descriptions |"
+    },
+    {
+      "id": "agent/cli.agent",
+      "slug": "agent/cli.agent",
+      "kind": "agent",
+      "title": "CLI Reference",
+      "description": "Dense Dewey CLI contract for agents",
+      "sourcePath": "docs/agent/cli.agent.md",
+      "url": "/agent/raw/docs/agent/cli.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/cli.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey CLI",
+          "anchor": "dewey-cli"
+        },
+        {
+          "depth": 2,
+          "text": "Direct execution",
+          "anchor": "direct-execution"
+        },
+        {
+          "depth": 2,
+          "text": "Generation selection",
+          "anchor": "generation-selection"
+        }
+      ],
+      "tokensEstimate": 249,
+      "frontmatter": {
+        "title": "CLI Reference",
+        "description": "Dense Dewey CLI contract for agents",
+        "order": 3,
+        "group": "Reference",
+        "groupId": "reference"
+      },
+      "markdown": "---\ntitle: CLI Reference\ndescription: Dense Dewey CLI contract for agents\norder: 3\ngroup: Reference\ngroupId: reference\n---\n\n# Dewey CLI\n\n| Command | Inputs | Writes | Purpose |\n|---|---|---|---|\n| `dewey init` | `--type`, `--force` | `docs/`, `dewey.config.ts` | Initialize Dewey |\n| `dewey audit` | `--verbose`, `--json` | none | Check documentation quality |\n| `dewey generate` | `--source`, `--output`, artifact selectors | root artifacts, `agent/` | Compile docs for humans, agents, and tooling |\n| `dewey agent` | `--verbose`, `--json`, `--fix` | optional missing-file fixes | Evaluate agent-readiness |\n| `dewey create <dir>` | `--source`, `--template`, `--theme`, `--name` | generated site | Publish Markdown through Next.js or Astro |\n| `dewey update [dir]` | `--dry-run`, `--force`, `--refresh-nav` | Dewey-owned site files | Upgrade a generated site |\n| `dewey eject <component> [dir]` | `--full` | consumer-owned component | Transfer ownership for customization |\n\n## Direct execution\n\n```bash\nbunx @arach/dewey@latest <command>\n```\n\n## Generation selection\n\n- Default: all standard files plus `agent/` retrieval artifacts.\n- `agent.sections: []`: recursively include every human-readable `.md` file.\n- Non-empty `agent.sections`: exact doc-ID allowlist, including nested IDs such as `guides/install`.\n- `--source <path>`: override `docs.path` for one run.\n- `--output <path>`: override `docs.output`; directory is created recursively.\n",
+      "content": "# Dewey CLI\n\n| Command | Inputs | Writes | Purpose |\n|---|---|---|---|\n| `dewey init` | `--type`, `--force` | `docs/`, `dewey.config.ts` | Initialize Dewey |\n| `dewey audit` | `--verbose`, `--json` | none | Check documentation quality |\n| `dewey generate` | `--source`, `--output`, artifact selectors | root artifacts, `agent/` | Compile docs for humans, agents, and tooling |\n| `dewey agent` | `--verbose`, `--json`, `--fix` | optional missing-file fixes | Evaluate agent-readiness |\n| `dewey create <dir>` | `--source`, `--template`, `--theme`, `--name` | generated site | Publish Markdown through Next.js or Astro |\n| `dewey update [dir]` | `--dry-run`, `--force`, `--refresh-nav` | Dewey-owned site files | Upgrade a generated site |\n| `dewey eject <component> [dir]` | `--full` | consumer-owned component | Transfer ownership for customization |\n\n## Direct execution\n\n```bash\nbunx @arach/dewey@latest <command>\n```\n\n## Generation selection\n\n- Default: all standard files plus `agent/` retrieval artifacts.\n- `agent.sections: []`: recursively include every human-readable `.md` file.\n- Non-empty `agent.sections`: exact doc-ID allowlist, including nested IDs such as `guides/install`.\n- `--source <path>`: override `docs.path` for one run.\n- `--output <path>`: override `docs.output`; directory is created recursively."
+    },
+    {
+      "id": "agent/overview.agent",
+      "slug": "agent/overview.agent",
+      "kind": "agent",
+      "title": "dewey - Agent Context",
+      "description": "Entry: DocsApp, DocsIndex\nLayout: DocsLayout, Header, Sidebar, TableOfContents\nContent: MarkdownContent, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge\nAgent: AgentContext, PromptSlideout, CopyButtons\nP",
+      "sourcePath": "docs/agent/overview.agent.md",
+      "url": "/agent/raw/docs/agent/overview.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/overview.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey - Agent Context",
+          "anchor": "dewey-agent-context"
+        },
+        {
+          "depth": 2,
+          "text": "Package",
+          "anchor": "package"
+        },
+        {
+          "depth": 2,
+          "text": "Purpose",
+          "anchor": "purpose"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Generated Files",
+          "anchor": "generated-files"
+        },
+        {
+          "depth": 2,
+          "text": "Retrieval Artifacts",
+          "anchor": "retrieval-artifacts"
+        },
+        {
+          "depth": 2,
+          "text": "Skills (LLM Prompts)",
+          "anchor": "skills-llm-prompts"
+        },
+        {
+          "depth": 2,
+          "text": "Components (22)",
+          "anchor": "components-22"
+        },
+        {
+          "depth": 2,
+          "text": "Config Schema",
+          "anchor": "config-schema"
+        },
+        {
+          "depth": 2,
+          "text": "Valid Values",
+          "anchor": "valid-values"
+        },
+        {
+          "depth": 2,
+          "text": "Key Files",
+          "anchor": "key-files"
+        }
+      ],
+      "tokensEstimate": 494,
+      "frontmatter": {},
+      "markdown": "# dewey - Agent Context\n\n## Package\n@arach/dewey\n\n## Purpose\nDocumentation toolkit that prepares docs for AI agents. Generates standard agent files, recursive retrieval artifacts, and optional static docs sites.\n\n## CLI Commands\n\n| Command | Action |\n|---------|--------|\n| `dewey init` | Create docs/ + dewey.config.ts |\n| `dewey audit` | Validate completeness |\n| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, agent/ artifacts |\n| `dewey create` | Optional static docs site from markdown |\n| `dewey agent` | Score agent-readiness (0-100 pts) |\n\n## Generated Files\n\n| File | Purpose |\n|------|---------|\n| AGENTS.md | Combined docs with critical context |\n| llms.txt | Plain text for LLMs |\n| docs.json | Structured JSON |\n| install.md | LLM-executable installation (installmd.org) |\n\n## Retrieval Artifacts\n\n| File | Purpose |\n|------|---------|\n| agent/manifest.json | Discovery index |\n| agent/docs.json | Full docs manifest with markdown |\n| agent/prompts.json | Prompt registry |\n| agent/context.md | Compact markdown bundle |\n| agent/context.json | JSON context bundle |\n| agent/raw/docs/ | Raw markdown mirror |\n\n## Skills (LLM Prompts)\n\n| Skill | Purpose |\n|-------|---------|\n| docsReviewAgent | Review quality, catch drift |\n| docsDesignCritic | Critique page structure and visual design |\n| promptSlideoutGenerator | Generate prompt configs |\n| installMdGenerator | Create install.md |\n\n## Components (22)\n\nEntry: DocsApp, DocsIndex\nLayout: DocsLayout, Header, Sidebar, TableOfContents\nContent: MarkdownContent, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge\nAgent: AgentContext, PromptSlideout, CopyButtons\nProvider: DeweyProvider\n\n## Config Schema\n\n```typescript\n{\n  project: { name, tagline, type },\n  agent: { criticalContext[], entryPoints{}, rules[], sections[] },\n  docs: { path, output, required[] },\n  install: { objective, doneWhen, prerequisites[], steps[] }\n}\n```\n\n## Valid Values\n\nProjectType: 'npm-package' | 'cli-tool' | 'macos-app' | 'react-library' | 'monorepo' | 'generic'\nCalloutType: 'info' | 'warning' | 'tip' | 'danger'\nBadgeVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple'\nThemePreset: 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'\n\n## Key Files\n\n| Path | Purpose |\n|------|---------|\n| packages/docs/src/index.ts | Main exports |\n| packages/docs/src/cli/index.ts | CLI entry |\n| packages/docs/src/cli/schema.ts | Config schema |\n| packages/docs/src/skills/ | LLM prompt templates |\n",
+      "content": "# dewey - Agent Context\n\n## Package\n@arach/dewey\n\n## Purpose\nDocumentation toolkit that prepares docs for AI agents. Generates standard agent files, recursive retrieval artifacts, and optional static docs sites.\n\n## CLI Commands\n\n| Command | Action |\n|---------|--------|\n| `dewey init` | Create docs/ + dewey.config.ts |\n| `dewey audit` | Validate completeness |\n| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, agent/ artifacts |\n| `dewey create` | Optional static docs site from markdown |\n| `dewey agent` | Score agent-readiness (0-100 pts) |\n\n## Generated Files\n\n| File | Purpose |\n|------|---------|\n| AGENTS.md | Combined docs with critical context |\n| llms.txt | Plain text for LLMs |\n| docs.json | Structured JSON |\n| install.md | LLM-executable installation (installmd.org) |\n\n## Retrieval Artifacts\n\n| File | Purpose |\n|------|---------|\n| agent/manifest.json | Discovery index |\n| agent/docs.json | Full docs manifest with markdown |\n| agent/prompts.json | Prompt registry |\n| agent/context.md | Compact markdown bundle |\n| agent/context.json | JSON context bundle |\n| agent/raw/docs/ | Raw markdown mirror |\n\n## Skills (LLM Prompts)\n\n| Skill | Purpose |\n|-------|---------|\n| docsReviewAgent | Review quality, catch drift |\n| docsDesignCritic | Critique page structure and visual design |\n| promptSlideoutGenerator | Generate prompt configs |\n| installMdGenerator | Create install.md |\n\n## Components (22)\n\nEntry: DocsApp, DocsIndex\nLayout: DocsLayout, Header, Sidebar, TableOfContents\nContent: MarkdownContent, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge\nAgent: AgentContext, PromptSlideout, CopyButtons\nProvider: DeweyProvider\n\n## Config Schema\n\n```typescript\n{\n  project: { name, tagline, type },\n  agent: { criticalContext[], entryPoints{}, rules[], sections[] },\n  docs: { path, output, required[] },\n  install: { objective, doneWhen, prerequisites[], steps[] }\n}\n```\n\n## Valid Values\n\nProjectType: 'npm-package' | 'cli-tool' | 'macos-app' | 'react-library' | 'monorepo' | 'generic'\nCalloutType: 'info' | 'warning' | 'tip' | 'danger'\nBadgeVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple'\nThemePreset: 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'\n\n## Key Files\n\n| Path | Purpose |\n|------|---------|\n| packages/docs/src/index.ts | Main exports |\n| packages/docs/src/cli/index.ts | CLI entry |\n| packages/docs/src/cli/schema.ts | Config schema |\n| packages/docs/src/skills/ | LLM prompt templates |"
+    },
+    {
+      "id": "agent/quickstart.agent",
+      "slug": "agent/quickstart.agent",
+      "kind": "agent",
+      "title": "Quickstart for agents",
+      "description": "Deterministic setup sequence and expected Dewey outputs",
+      "sourcePath": "docs/agent/quickstart.agent.md",
+      "url": "/agent/raw/docs/agent/quickstart.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/quickstart.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey quickstart contract",
+          "anchor": "dewey-quickstart-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Preconditions",
+          "anchor": "preconditions"
+        },
+        {
+          "depth": 2,
+          "text": "Execution sequence",
+          "anchor": "execution-sequence"
+        },
+        {
+          "depth": 2,
+          "text": "Generated outputs",
+          "anchor": "generated-outputs"
+        },
+        {
+          "depth": 2,
+          "text": "Selection rules",
+          "anchor": "selection-rules"
+        },
+        {
+          "depth": 2,
+          "text": "Optional publishing",
+          "anchor": "optional-publishing"
+        }
+      ],
+      "tokensEstimate": 393,
+      "frontmatter": {
+        "title": "Quickstart for agents",
+        "description": "Deterministic setup sequence and expected Dewey outputs",
+        "order": 2
+      },
+      "markdown": "---\ntitle: Quickstart for agents\ndescription: Deterministic setup sequence and expected Dewey outputs\norder: 2\n---\n\n# Dewey quickstart contract\n\n## Preconditions\n\n| Requirement | Value |\n|---|---|\n| Runtime | Node.js 18+ |\n| Preferred package manager | Bun 1.3+ |\n| Package | `@arach/dewey` |\n\n## Execution sequence\n\n| Step | Command or action | Expected result |\n|---|---|---|\n| Install | `bun add -d @arach/dewey` | Local `dewey` binary available |\n| Initialize | `bunx dewey init` | `docs/` and `dewey.config.ts` created |\n| Configure | Edit `dewey.config.ts` | Project context, document paths, agent rules defined |\n| Author | Add human `.md` and agent `.agent.md` pages | Paired documentation source exists |\n| Generate | `bunx dewey generate` | Standard files and `agent/` retrieval surface written |\n| Audit | `bunx dewey audit` | Deterministic documentation checks reported |\n| Score | `bunx dewey agent` | Agent-readiness score and recommendations reported |\n\n## Generated outputs\n\n| Path | Contract |\n|---|---|\n| `AGENTS.md` | Combined project context and selected docs |\n| `llms.txt` | Compact LLM-facing index and summaries |\n| `docs.json` | Structured documentation manifest |\n| `install.md` | installmd.org-compatible execution guide |\n| `agent/manifest.json` | Retrieval discovery manifest |\n| `agent/docs.json` | Full structured documentation payload |\n| `agent/prompts.json` | Prompt registry |\n| `agent/context.md` | Compact retrieval context |\n| `agent/raw/docs/**` | Recursive raw Markdown mirror |\n\n## Selection rules\n\n| Configuration | Behavior |\n|---|---|\n| `agent.sections: []` | Include all human `.md` documents recursively |\n| Non-empty `agent.sections` | Include exact document IDs only |\n| `generate --source <path>` | Override `docs.path` for one run |\n| `generate --output <path>` | Override `docs.output`; create directory recursively |\n\n## Optional publishing\n\n`bunx dewey create my-docs --source ./docs --theme ocean` scaffolds a static site. Publishing is optional; generated agent artifacts remain the core contract.\n",
+      "content": "# Dewey quickstart contract\n\n## Preconditions\n\n| Requirement | Value |\n|---|---|\n| Runtime | Node.js 18+ |\n| Preferred package manager | Bun 1.3+ |\n| Package | `@arach/dewey` |\n\n## Execution sequence\n\n| Step | Command or action | Expected result |\n|---|---|---|\n| Install | `bun add -d @arach/dewey` | Local `dewey` binary available |\n| Initialize | `bunx dewey init` | `docs/` and `dewey.config.ts` created |\n| Configure | Edit `dewey.config.ts` | Project context, document paths, agent rules defined |\n| Author | Add human `.md` and agent `.agent.md` pages | Paired documentation source exists |\n| Generate | `bunx dewey generate` | Standard files and `agent/` retrieval surface written |\n| Audit | `bunx dewey audit` | Deterministic documentation checks reported |\n| Score | `bunx dewey agent` | Agent-readiness score and recommendations reported |\n\n## Generated outputs\n\n| Path | Contract |\n|---|---|\n| `AGENTS.md` | Combined project context and selected docs |\n| `llms.txt` | Compact LLM-facing index and summaries |\n| `docs.json` | Structured documentation manifest |\n| `install.md` | installmd.org-compatible execution guide |\n| `agent/manifest.json` | Retrieval discovery manifest |\n| `agent/docs.json` | Full structured documentation payload |\n| `agent/prompts.json` | Prompt registry |\n| `agent/context.md` | Compact retrieval context |\n| `agent/raw/docs/**` | Recursive raw Markdown mirror |\n\n## Selection rules\n\n| Configuration | Behavior |\n|---|---|\n| `agent.sections: []` | Include all human `.md` documents recursively |\n| Non-empty `agent.sections` | Include exact document IDs only |\n| `generate --source <path>` | Override `docs.path` for one run |\n| `generate --output <path>` | Override `docs.output`; create directory recursively |\n\n## Optional publishing\n\n`bunx dewey create my-docs --source ./docs --theme ocean` scaffolds a static site. Publishing is optional; generated agent artifacts remain the core contract."
+    },
+    {
+      "id": "agent/skills.agent",
+      "slug": "agent/skills.agent",
+      "kind": "agent",
+      "title": "Skills for agents",
+      "description": "Dewey skill inventory and authoring contract",
+      "sourcePath": "docs/agent/skills.agent.md",
+      "url": "/agent/raw/docs/agent/skills.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/skills.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey skills contract",
+          "anchor": "dewey-skills-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Built-in inventory",
+          "anchor": "built-in-inventory"
+        },
+        {
+          "depth": 2,
+          "text": "Custom skill location",
+          "anchor": "custom-skill-location"
+        },
+        {
+          "depth": 2,
+          "text": "Required skill sections",
+          "anchor": "required-skill-sections"
+        },
+        {
+          "depth": 2,
+          "text": "Authoring rules",
+          "anchor": "authoring-rules"
+        }
+      ],
+      "tokensEstimate": 269,
+      "frontmatter": {
+        "title": "Skills for agents",
+        "description": "Dewey skill inventory and authoring contract",
+        "order": 4
+      },
+      "markdown": "---\ntitle: Skills for agents\ndescription: Dewey skill inventory and authoring contract\norder: 4\n---\n\n# Dewey skills contract\n\nSkills are LLM instructions, not deterministic executable code.\n\n## Built-in inventory\n\n| Skill | Purpose | Success condition |\n|---|---|---|\n| `docsReviewAgent` | Review one page for correctness, completeness, clarity, links, and source drift | Findings reference evidence and actionable changes |\n| `docsDesignCritic` | Review hierarchy, information density, component use, and visual structure | Critique separates structural and presentation issues |\n| `promptSlideoutGenerator` | Produce AI-consumable prompt configuration for a page | Output has explicit inputs, instructions, and expected result |\n| `installMdGenerator` | Produce installmd.org-compatible `install.md` | Instructions are executable, environment-aware, and verifiable |\n\n## Custom skill location\n\n`.claude/skills/<skill-name>.md`\n\n## Required skill sections\n\n| Section | Content |\n|---|---|\n| Name and description | One bounded capability |\n| When to Use | Concrete trigger conditions |\n| Instructions | Ordered, actionable workflow |\n| Success criteria | Verifiable completion conditions |\n| Example | Representative input and expected output |\n\n## Authoring rules\n\n- Use explicit file paths and commands.\n- State required context and constraints.\n- Separate deterministic checks from model judgment.\n- Include failure and escalation behavior.\n- Avoid vague goals, hidden assumptions, and presentation-only prose.\n- Treat examples as contracts, not decoration.\n",
+      "content": "# Dewey skills contract\n\nSkills are LLM instructions, not deterministic executable code.\n\n## Built-in inventory\n\n| Skill | Purpose | Success condition |\n|---|---|---|\n| `docsReviewAgent` | Review one page for correctness, completeness, clarity, links, and source drift | Findings reference evidence and actionable changes |\n| `docsDesignCritic` | Review hierarchy, information density, component use, and visual structure | Critique separates structural and presentation issues |\n| `promptSlideoutGenerator` | Produce AI-consumable prompt configuration for a page | Output has explicit inputs, instructions, and expected result |\n| `installMdGenerator` | Produce installmd.org-compatible `install.md` | Instructions are executable, environment-aware, and verifiable |\n\n## Custom skill location\n\n`.claude/skills/<skill-name>.md`\n\n## Required skill sections\n\n| Section | Content |\n|---|---|\n| Name and description | One bounded capability |\n| When to Use | Concrete trigger conditions |\n| Instructions | Ordered, actionable workflow |\n| Success criteria | Verifiable completion conditions |\n| Example | Representative input and expected output |\n\n## Authoring rules\n\n- Use explicit file paths and commands.\n- State required context and constraints.\n- Separate deterministic checks from model judgment.\n- Include failure and escalation behavior.\n- Avoid vague goals, hidden assumptions, and presentation-only prose.\n- Treat examples as contracts, not decoration."
+    },
+    {
+      "id": "prompts/audit-docs",
+      "slug": "prompts/audit-docs",
+      "kind": "prompt",
+      "title": "Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "url": "/agent/raw/docs/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "promptId": "audit-docs",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {},
+      "markdown": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement\n",
+      "content": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement"
+    },
+    {
+      "id": "prompts/create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "kind": "prompt",
+      "title": "Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "url": "/agent/raw/docs/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "promptId": "create-agent-md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {},
+      "markdown": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>\n",
+      "content": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "audit-docs",
+      "slug": "prompts/audit-docs",
+      "title": "Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {},
+      "markdown": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement\n",
+      "content": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement"
+    },
+    {
+      "id": "create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "title": "Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {},
+      "markdown": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>\n",
+      "content": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>"
+    }
+  ]
+}

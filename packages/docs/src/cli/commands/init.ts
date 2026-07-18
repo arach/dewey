@@ -54,13 +54,13 @@ Get up and running with **{{PROJECT_NAME}}** in under 5 minutes.
 List any requirements:
 
 - Node.js >= 18
-- pnpm (recommended)
+- Bun (recommended)
 
 ## Installation
 
 \`\`\`bash
-# Install via pnpm
-pnpm add {{PROJECT_NAME}}
+# Install via Bun
+bun add {{PROJECT_NAME}}
 
 # Or npm
 npm install {{PROJECT_NAME}}
@@ -199,8 +199,9 @@ Solutions to common issues with **{{PROJECT_NAME}}**.
   },
 }
 
-const CONFIG_TEMPLATE = `/** @type {import('@dewey/cli').DeweyConfig} */
-export default {
+const CONFIG_TEMPLATE = `import { defineConfig } from '@arach/dewey'
+
+export default defineConfig({
   project: {
     name: '{{PROJECT_NAME}}',
     tagline: '{{PROJECT_TAGLINE}}',
@@ -226,8 +227,8 @@ export default {
       // { pattern: 'database', instruction: 'Check src/db/ for database code' },
     ],
 
-    // Which doc sections to include in AGENTS.md
-    sections: ['overview', 'quickstart', 'api'],
+    // Optional allowlist of doc IDs. Leave empty to include every doc.
+    sections: [],
   },
 
   docs: {
@@ -251,16 +252,16 @@ export default {
     // Requirements before installation
     prerequisites: [
       // 'Node.js >= 18',
-      // 'pnpm (recommended)',
+      // 'Bun (recommended)',
     ],
 
     // Installation steps (rendered as TODO checklist)
     steps: [
-      // { description: 'Install the package', command: 'pnpm add {{PROJECT_NAME}}' },
+      // { description: 'Install the package', command: 'bun add {{PROJECT_NAME}}' },
       // { description: 'Verify installation', command: '{{PROJECT_NAME}} --version' },
     ],
   },
-}
+})
 `
 
 async function fileExists(path: string): Promise<boolean> {

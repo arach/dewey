@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode, type ComponentType, type AnchorHTMLAttributes, type ImgHTMLAttributes } from 'react'
+import type { ThemePreset } from '../themes'
+
+export type { ThemePreset } from '../themes'
 
 // ============================================
 // Types
 // ============================================
-
-export type ThemePreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'mono'
 
 export interface ThemeConfig {
   preset?: ThemePreset
@@ -17,6 +18,65 @@ export interface ThemeConfig {
   fonts?: {
     sans?: string
     mono?: string
+  }
+}
+
+export const CUSTOM_THEME_CSS_PROPERTIES = {
+  colors: {
+    primary: '--dw-primary',
+    background: '--dw-background',
+    foreground: '--dw-foreground',
+    accent: '--dw-accent',
+  },
+  fonts: {
+    sans: '--dw-font-sans',
+    mono: '--dw-font-mono',
+  },
+} as const
+
+interface ThemeStyleDeclaration {
+  getPropertyPriority(property: string): string
+  getPropertyValue(property: string): string
+  removeProperty(property: string): string
+  setProperty(property: string, value: string, priority?: string): void
+}
+
+/** Apply a custom theme and return a cleanup that restores prior inline values. */
+export function applyCustomThemeProperties(
+  style: ThemeStyleDeclaration,
+  theme: ThemeConfig,
+): () => void {
+  const previousProperties = new Map<string, { value: string; priority: string }>()
+
+  const applyProperties = (
+    values: Record<string, string | undefined> | undefined,
+    properties: Record<string, string>,
+  ) => {
+    if (!values) return
+
+    for (const [name, value] of Object.entries(values)) {
+      const property = properties[name]
+      if (!property || !value) continue
+
+      previousProperties.set(property, {
+        value: style.getPropertyValue(property),
+        priority: style.getPropertyPriority(property),
+      })
+      style.setProperty(property, value)
+    }
+  }
+
+  applyProperties(theme.colors, CUSTOM_THEME_CSS_PROPERTIES.colors)
+  applyProperties(theme.fonts, CUSTOM_THEME_CSS_PROPERTIES.fonts)
+
+  return () => {
+    for (const [property, previous] of previousProperties) {
+      if (previous.value) {
+        style.setProperty(property, previous.value, previous.priority)
+      } else {
+        style.removeProperty(property)
+      }
+    }
   }
 }
 
@@ -139,40 +199,7 @@ export function DeweyProvider({
     if (typeof document === 'undefined') return
     if (typeof theme === 'string') return // Preset themes use CSS files
 
-    const root = document.documentElement
-    const { colors, fonts } = theme
-
-    // Apply custom colors
-    if (colors?.primary) {
-      root.style.setProperty('--color-dw-primary', colors.primary)
-    }
-    if (colors?.background) {
-      root.style.setProperty('--color-dw-background', colors.background)
-    }
-    if (colors?.foreground) {
-      root.style.setProperty('--color-dw-foreground', colors.foreground)
-    }
-    if (colors?.accent) {
-      root.style.setProperty('--color-dw-accent', colors.accent)
-    }
-
-    // Apply custom fonts
-    if (fonts?.sans) {
-      root.style.setProperty('--font-dw-sans', fonts.sans)
-    }
-    if (fonts?.mono) {
-      root.style.setProperty('--font-dw-mono', fonts.mono)
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (colors?.primary) root.style.removeProperty('--color-dw-primary')
-      if (colors?.background) root.style.removeProperty('--color-dw-background')
-      if (colors?.foreground) root.style.removeProperty('--color-dw-foreground')
-      if (colors?.accent) root.style.removeProperty('--color-dw-accent')
-      if (fonts?.sans) root.style.removeProperty('--font-dw-sans')
-      if (fonts?.mono) root.style.removeProperty('--font-dw-mono')
-    }
+    return applyCustomThemeProperties(document.documentElement.style, theme)
   }, [theme])
 
   // Merge default components with user-provided ones

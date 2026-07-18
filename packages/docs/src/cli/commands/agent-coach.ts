@@ -653,8 +653,10 @@ export async function agentCoachCommand(options: CoachOptions) {
   const cwd = process.cwd()
   const config = await loadConfig(cwd)
 
-  console.log(chalk.blue('\n🤖 dewey agent'))
-  console.log(chalk.gray('   Checking agent-readiness...\n'))
+  if (!options.json) {
+    console.log(chalk.blue('\n🤖 dewey agent'))
+    console.log(chalk.gray('   Checking agent-readiness...\n'))
+  }
 
   // Perform all checks
   const categories = await performChecks(cwd, config)

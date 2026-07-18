@@ -24,29 +24,29 @@ Dewey is a **docs agent**, not a docs framework. It focuses on preparation and j
 ## Install
 
 ```bash
-pnpm add -D @arach/dewey
+bun add -d @arach/dewey
 ```
 
 Or run without installing:
 
 ```bash
-npx dewey <command>
+bunx @arach/dewey@latest <command>
 ```
 
 ## Quick Start
 
 ```bash
 # Scaffold docs/ and dewey.config.ts
-npx dewey init
+bunx dewey init
 
 # Generate agent-ready files
-npx dewey generate
+bunx dewey generate
 
 # Check your agent-readiness score
-npx dewey agent
+bunx dewey agent
 
 # Optional: static docs site from markdown
-npx dewey create my-docs --source ./docs --template nextjs --theme ocean
+bunx dewey create my-docs --source ./docs --template nextjs --theme ocean
 ```
 
 ## CLI
@@ -135,7 +135,7 @@ export default {
   },
   install: {
     objective: 'Install and configure your-project.',
-    steps: [{ description: 'Install', command: 'pnpm add your-project' }],
+    steps: [{ description: 'Install', command: 'bun add your-project' }],
   },
 }
 ```
@@ -201,7 +201,7 @@ import { docsReviewAgent, installMdGenerator } from '@arach/dewey'
 ```bash
 dewey create my-project-docs --source ./docs --template nextjs --theme purple
 cd my-project-docs
-pnpm install && pnpm dev
+bun install && bun run dev
 ```
 
 Templates: `nextjs` (default), `astro`. Themes for scaffolding: `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `hudson`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync, spawn } from 'node:child_process'
-import { mkdirSync, existsSync } from 'node:fs'
+import { mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 
@@ -27,11 +27,11 @@ const templates = [
 async function main() {
   // 1. Build the site
   console.log('Building site...')
-  execSync('pnpm build', { cwd: wwwRoot, stdio: 'inherit' })
+  execSync('bun run build', { cwd: wwwRoot, stdio: 'inherit' })
 
   // 2. Start preview server
   console.log(`Starting preview server on port ${PORT}...`)
-  const server = spawn('npx', ['astro', 'preview', '--port', String(PORT)], {
+  const server = spawn('bunx', ['astro', 'preview', '--port', String(PORT)], {
     cwd: wwwRoot,
     stdio: 'pipe',
   })

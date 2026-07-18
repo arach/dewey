@@ -3,14 +3,14 @@
 // Extracted from create.ts so both `create` and `update` can use them.
 // ---------------------------------------------------------------------------
 
-export const VALID_THEMES = ['neutral', 'ocean', 'emerald', 'purple', 'dusk', 'rose', 'github', 'warm', 'hudson'] as const
-export type ThemeName = typeof VALID_THEMES[number]
+import {
+  VALID_THEMES,
+  resolveTheme,
+  type ThemeName,
+} from '../../themes.js'
 
-export function resolveTheme(theme?: string): ThemeName {
-  if (!theme) return 'neutral'
-  if (VALID_THEMES.includes(theme as ThemeName)) return theme as ThemeName
-  return 'neutral'
-}
+export { VALID_THEMES, resolveTheme }
+export type { ThemeName }
 
 // ---------------------------------------------------------------------------
 // Theme tokens
@@ -76,6 +76,25 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
     --color-text-muted: #9ca3af;
     --color-accent: #f07c4f;
     --color-accent-strong: #f07c4f;`,
+  ),
+
+  editorial: buildTokens(
+    `    --color-bg: #f7f3e9;
+    --color-surface: #fffdf7;
+    --color-surface-muted: #eee8da;
+    --color-border: rgba(40, 43, 54, 0.16);
+    --color-text: #242733;
+    --color-text-muted: #68675f;
+    --color-accent: #9b2f3f;
+    --color-accent-strong: #7f2332;`,
+    `    --color-bg: #17181d;
+    --color-surface: #202127;
+    --color-surface-muted: #292a31;
+    --color-border: rgba(255, 248, 231, 0.14);
+    --color-text: #f2ecdf;
+    --color-text-muted: #aaa498;
+    --color-accent: #e16d7f;
+    --color-accent-strong: #ed8796;`,
   ),
 
   ocean: buildTokens(
@@ -210,6 +229,44 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
     --color-accent: #34d399;
     --color-accent-strong: #34d399;`,
   ),
+
+  midnight: buildTokens(
+    `    --color-bg: #f8fafc;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f1f5f9;
+    --color-border: #e2e8f0;
+    --color-text: #0f172a;
+    --color-text-muted: #64748b;
+    --color-accent: #3b82f6;
+    --color-accent-strong: #2563eb;`,
+    `    --color-bg: #0c0e14;
+    --color-surface: #121620;
+    --color-surface-muted: #181d29;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-text: #e2e8f0;
+    --color-text-muted: #64748b;
+    --color-accent: #60a5fa;
+    --color-accent-strong: #3b82f6;`,
+  ),
+
+  mono: buildTokens(
+    `    --color-bg: #ffffff;
+    --color-surface: #fafafa;
+    --color-surface-muted: #f5f5f5;
+    --color-border: #eaeaea;
+    --color-text: #000000;
+    --color-text-muted: #666666;
+    --color-accent: #0070f3;
+    --color-accent-strong: #0060df;`,
+    `    --color-bg: #000000;
+    --color-surface: #111111;
+    --color-surface-muted: #171717;
+    --color-border: #333333;
+    --color-text: #ededed;
+    --color-text-muted: #888888;
+    --color-accent: #0070f3;
+    --color-accent-strong: #3291ff;`,
+  ),
 }
 
 // ---------------------------------------------------------------------------
@@ -235,7 +292,7 @@ export const ASTRO_TEMPLATES: Record<string, (args: AstroTemplateArgs) => string
     scripts: {
       dev: 'astro dev',
       build: 'astro build',
-      postbuild: 'npx -y pagefind --site dist',
+      postbuild: 'bunx pagefind --site dist',
       preview: 'astro preview',
     },
     dependencies: {

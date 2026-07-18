@@ -47,8 +47,6 @@ Dewey is a **docs agent**, not a docs framework. It focuses on:
 - **Publishing** - Optionally scaffolds a static doc site from your markdown
 - **Reviewing** - Skills that catch drift between docs and codebase
 
-Dewey prepares your docs for AI consumption. Rendering is left to your framework of choice.
-
 ## Key Concepts
 
 ### Agent Content Pattern
@@ -95,36 +93,28 @@ dewey agent     Score agent-readiness (0-100)
 
 ## Quickstart
 
-> Get started with Dewey in 5 minutes
+> Get your documentation agent-ready in under 5 minutes
 
-# Quickstart
+Requires Node.js 18+ and Bun 1.3+ (recommended) or npm.
 
-Get your documentation agent-ready in under 5 minutes.
-
-## Prerequisites
-
-- Node.js >= 18
-- pnpm (recommended) or npm
-
-## Installation
+### 1. Install
 
 ```bash
-pnpm add -D @arach/dewey
+bun add -d @arach/dewey
 ```
 
-## Initialize
+### 2. Initialize
 
 ```bash
-npx dewey init
+bunx dewey init
 ```
 
-This creates:
-- `docs/` folder with starter templates
-- `dewey.config.ts` configuration file
+Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
 
-## Configure
+### 3. Configure
 
-Edit `dewey.config.ts` with your project context:
+<div class="doc-file-block">
+<div class="doc-file-bar">dewey.config.ts</div>
 
 ```typescript
 export default {
@@ -147,41 +137,38 @@ export default {
   install: {
     objective: 'Install and configure your-project.',
     steps: [
-      { description: 'Install', command: 'pnpm add your-project' },
+      { description: 'Install', command: 'bun add your-project' },
     ],
   },
 }
 ```
 
-## Write Documentation
+</div>
 
-Create docs in the `docs/` folder:
+### 4. Write docs
+
+Create pages in the `docs/` folder:
 
 ```
 docs/
-  overview.md      # Project introduction
-  quickstart.md    # Getting started guide
-  api.md           # API reference
-  overview.agent.md  # Agent-optimized version
+  overview.md          # Project introduction
+  quickstart.md        # Getting started guide
+  api.md               # API reference
+  overview.agent.md    # Agent-optimized version
 ```
 
-## Generate Agent Files
+### 5. Generate agent files
 
 ```bash
-npx dewey generate
+bunx dewey generate
 ```
 
-Outputs:
-- `AGENTS.md` - Combined context for AI agents
-- `llms.txt` - Plain text summary for LLMs
-- `docs.json` - Structured documentation
-- `install.md` - LLM-executable installation guide
+Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
-## Check Your Score
+### 6. Check your score
 
-```bash
-npx dewey agent
-```
+<div class="doc-file-block">
+<div class="doc-file-bar">bunx dewey agent</div>
 
 ```
 Agent Readiness Report
@@ -193,63 +180,113 @@ Categories:
 ...
 ```
 
-## Next Steps
+</div>
 
-- Create `.agent.md` versions of your docs
-- Add skills to `.claude/skills/` for custom reviews
-- Run `dewey audit` to check completeness
+### 7. Optional: create a doc site
+
+```bash
+bunx dewey create my-docs --source ./docs --theme ocean
+cd my-docs && bun install && bun run dev
+```
+
+Generates a static docs site from the same markdown when you want a human-facing site alongside the agent artifacts.
+
+---
+
+## Next steps
+
+- Create `.agent.md` versions of your docs for denser, structured content
+- Add skills to `.claude/skills/` for custom agent-guided reviews
+- Run `bunx dewey audit` to check documentation completeness
+- Use `dewey create` when you want to publish the same docs as a static site
+
+## CLI Reference
+
+> Dewey commands and their main options
+
+# CLI Reference
+
+Dewey audits documentation, generates agent-facing artifacts, and publishes the same Markdown through optional site templates.
+
+## Run Dewey
+
+Install Dewey in a project and use its local binary:
+
+```bash
+bun add -d @arach/dewey
+bunx dewey --help
+```
+
+For a one-off run without installing it first, address the scoped package directly:
+
+```bash
+bunx @arach/dewey@latest --help
+```
+
+## Commands
+
+| Command | Purpose |
+|---|---|
+| `dewey init` | Create a documentation structure and `dewey.config.ts` |
+| `dewey audit` | Check documentation completeness and quality |
+| `dewey generate` | Generate `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` artifacts |
+| `dewey agent` | Evaluate agent-readiness and recommend improvements |
+| `dewey create <dir>` | Publish Markdown with a Next.js or Astro site template |
+| `dewey update [dir]` | Refresh Dewey-owned files in a generated site |
+| `dewey eject <component> [dir]` | Take ownership of a generated component |
+
+## Generate options
+
+```bash
+dewey generate --source ./docs --output ./generated
+dewey generate --agents-md
+dewey generate --llms-txt
+dewey generate --docs-json
+dewey generate --install-md
+dewey generate --agent-artifacts
+```
+
+`--source` overrides `docs.path` for a run. An empty `agent.sections` array includes every human-readable Markdown document recursively; provide section IDs only when you want an explicit allowlist.
+
+## Machine-readable checks
+
+Both audit commands can emit JSON for CI and other tooling:
+
+```bash
+dewey audit --json
+dewey agent --json
+```
 
 ## Skills
 
-> Built-in LLM prompt templates
+> Expert instructions that guide AI agents through specific documentation tasks
 
-# Skills
-
-Skills are LLM prompts that guide AI agents through specific tasks. They're not code - they're expert instructions.
+Skills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.
 
 ## Built-in Skills
 
-### docsReviewAgent
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `docsReviewAgent` | Reviews doc quality page-by-page — catches stale content, missing sections, unclear explanations, broken links | `Use the docsReviewAgent skill to review docs/overview.md` |
+| `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |
+| `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |
+| `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |
 
-Reviews documentation quality page-by-page. Catches:
-- Stale content that doesn't match code
-- Missing sections
-- Unclear explanations
-- Broken links
-
-**Usage:**
-```
-Use the docsReviewAgent skill to review docs/overview.md
-```
-
-### promptSlideoutGenerator
-
-Generates AI-consumable prompt configurations for documentation pages.
-
-**Usage:**
-```
-Use promptSlideoutGenerator to create prompt config for the API page
-```
-
-### installMdGenerator
-
-Creates install.md files following the [installmd.org](https://installmd.org) specification.
-
-**Usage:**
-```
-Use installMdGenerator to create install.md from dewey.config.ts
-```
+---
 
 ## Creating Custom Skills
 
-Skills live in `.claude/skills/` as markdown files:
+Skills live as markdown files in your project:
 
 ```
 .claude/skills/
   my-skill.md
 ```
 
-### Skill Structure
+Each skill follows a consistent structure:
+
+<div class="doc-file-block">
+<div class="doc-file-bar">my-skill.md</div>
 
 ```markdown
 # Skill Name
@@ -274,7 +311,9 @@ Step-by-step guide for the AI agent:
 Show an example input and expected output.
 ```
 
-## Skill Best Practices
+</div>
+
+## Best Practices
 
 | Do | Don't |
 |----|-------|
@@ -284,4 +323,4 @@ Show an example input and expected output.
 | Reference file paths | Use relative descriptions |
 
 ---
-Generated by [Dewey](https://github.com/arach/dewey) | Last updated: 2026-01-22
+Generated by [Dewey 0.3.7](https://github.com/arach/dewey)

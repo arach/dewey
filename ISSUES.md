@@ -1,54 +1,99 @@
-# Open Issues — Filed from OpenScout Integration Feedback
+# Dewey improvement backlog
 
-Source: `/Users/arach/dev/openscout/dewey-feedback.md`
+This is the canonical, deduplicated backlog from the July 2026 repository audit. It is organized around Dewey's product pillars: judgment, generation, themes/publishing, trust, and dogfooding.
 
----
+## Completed in the current pass
 
-## Bugs
+- [x] Make `audit --json` and `agent --json` emit one parseable JSON value with no banners.
+- [x] Correct audit scoring so a clean section is 50/50 and duplicate H1s reduce the score.
+- [x] Add focused tests for scoring and machine-readable command output.
+- [x] Make `generate` and `create` discover nested markdown deterministically.
+- [x] Exclude `.agent.md` files from human-document discovery while associating them with their human page.
+- [x] Create missing output directories and add `generate --source`.
+- [x] Default `agent.sections` to all documentation rather than a narrow scaffold list.
+- [x] Fix generated config imports and export `defineConfig` plus configuration types from `@arach/dewey`.
+- [x] Add CLI documentation, including the shipped `update` and `eject` commands.
+- [x] Replace broken direct-run examples with package-qualified commands.
+- [x] Add the MIT license to the repository and published package.
+- [x] Move `clsx`, `tailwind-merge`, and config-loading TypeScript support to runtime dependencies.
+- [x] Report malformed frontmatter with the exact source document before writing generated output.
+- [x] Align runtime theme overrides with the component token contract.
+- [x] Ship and wire the advertised editorial theme for components and generated sites.
+- [x] Export ejected component prop types so generated source type-checks.
+- [x] Add package tests and pull-request CI; gate publishing on lint, tests, and build.
+- [x] Standardize repository scripts and workflows on Bun.
+- [x] Repair current site type errors so the reference implementation can be checked non-interactively.
 
-### BUG-1: DocsLayout export mismatch — .d.ts says default but JS is named
-**Severity:** High — breaks Turbopack/Next.js imports  
-**File:** `packages/docs/src/components/DocsLayout.tsx` (line 224), `packages/docs/src/index.ts` (line 40)  
-**Problem:** `DocsLayout.tsx` uses `export default function DocsLayout`, but `index.ts` re-exports it as `export { default as DocsLayout }`. The compiled `.d.ts` still declares it as a default export, causing "Export default doesn't exist in target module" in Turbopack.  
-**Fix:** Change `DocsLayout.tsx` to use a named export (`export function DocsLayout`) to match the re-export pattern, or fix the `.d.ts` generation.
+## P0 — release blockers
 
-### BUG-2: `dewey generate -o <dir>` fails if output directory doesn't exist
-**Severity:** Medium  
-**File:** `packages/docs/src/cli/commands/generate.ts` (lines 398–441)  
-**Problem:** `writeFile()` is called without ensuring the output directory exists first. Throws `ENOENT`.  
-**Fix:** Add `await mkdir(outputDir, { recursive: true })` before file writes.
+- [x] Regenerate and verify Dewey's committed `AGENTS.md`, `llms.txt`, `docs.json`, and agent retrieval artifacts.
+- [x] Expand package-contract coverage from CSS sources to the CLI binary, README, license, and final `npm pack` contents.
+- [x] Make `packages/docs/package.json` the release source of truth, require matching tags, and maintain release notes in `CHANGELOG.md`.
 
-### BUG-3: `dewey create --source` ignores subdirectories
-**Severity:** Medium  
-**File:** `packages/docs/src/cli/commands/create.ts` (lines 59–89)  
-**Problem:** `loadMarkdownDocs` uses `readdir(docsPath)` which only reads top-level entries. Markdown files in subdirectories (e.g., `docs/guides/*.md`) are silently skipped.  
-**Fix:** Use recursive `readdir` or a glob pattern to find all `.md` files in the source tree.
+## P1 — audit and judgment
 
----
+- [ ] Define the distinct jobs of `audit` (deterministic structure) and `agent` (quality judgment) in product copy and output.
+- [ ] Detect API documentation by evidence rather than filename conventions.
+- [ ] Generate quick wins from actual unmet checks instead of a fixed list.
+- [ ] Make `audit --fix` perform documented safe fixes or remove the promise.
+- [ ] Resolve `agent` from the project root and replace hardcoded filename allow-lists.
+- [ ] Validate project types and make each type change the checks or scaffold meaningfully.
+- [ ] Add score fixtures for sparse, malformed, nested, duplicated-heading, and fully documented projects.
+- [ ] Add drift checks between source code, human docs, and `.agent.md` counterparts.
 
-## Improvements
+## P1 — generation
 
-### IMP-1: Add "Embedding into an existing site" documentation
-**Priority:** High  
-**Problem:** The component library is the right answer for adding docs to an existing Next.js/React site, but this workflow is undocumented. Users can only discover it by asking the agent.  
-**Action:** Add an integration guide covering: installing `@arach/dewey`, importing components + CSS, building a `[...slug]` route, and using `dewey generate` for nav/agent files.
+- [ ] Unify `generate` and `create` on one document-discovery and metadata pipeline.
+- [x] Make generated output reproducible by removing wall-clock timestamps or honoring `SOURCE_DATE_EPOCH`.
+- [x] Add `schemaVersion` to public JSON manifests.
+- [ ] Warn when a source directory is missing or discovery finds no documents.
+- [ ] Protect user-edited generated files with ownership markers, dry-run previews, or explicit overwrite consent.
+- [ ] Prune artifacts for deleted and renamed documents without touching user-owned files.
+- [ ] Make the agent-artifact output directory explicit and safely scoped.
+- [ ] Derive artifact link tables and bundles from a single canonical manifest.
+- [ ] Avoid repeatedly materializing full document content in every artifact.
+- [ ] Improve `llms.txt` summary extraction for frontmatter, lists, headings, and short pages.
+- [ ] Fix fallback prompt URLs that can contain a duplicated `prompts/` segment.
+- [ ] Preserve scoped package names in generated installation instructions.
+- [ ] Make `create` and `generate` compose intentionally instead of maintaining parallel output models.
+- [ ] Pin scaffold dependencies or record a tested compatibility range.
 
-### IMP-2: `dewey generate --docs-json` indexes scaffold content instead of real docs
-**Priority:** Medium  
-**Problem:** After `dewey init` + `dewey generate --docs-json`, output contains scaffold boilerplate (overview.md, quickstart.md) rather than actual docs. The `sections` config defaults are too narrow and the mapping between section IDs and filenames is unclear.  
-**Action:** Default to indexing all `.md` files in `docs.path`. Treat `sections` as an optional filter.
+## P1 — themes and publishing
 
-### IMP-3: Add `--source` flag to `dewey generate`
-**Priority:** Low  
-**Problem:** `dewey create` accepts `--source` but `dewey generate` only reads from config. Inconsistent CLI surface.  
-**Action:** Add `--source <path>` to `dewey generate` to override `docs.path` from config.
+- [x] Establish one canonical theme registry used by package exports, runtime types, the CLI, site generation, and documentation.
+- [ ] Define and test one complete token contract across runtime components, exported CSS, Tailwind, and generated sites.
+- [ ] Audit every preset for missing, renamed, or dead tokens.
+- [ ] Replace hardcoded component palettes with semantic tokens where customization is expected.
+- [ ] Add contrast, focus, reduced-motion, keyboard, and screen-reader checks to every theme and shell.
+- [ ] Add visual regression coverage for each theme in light/dark and representative content states.
+- [ ] Make `eject` verify every rewrite and report partial or failed rewrites.
+- [ ] Record ejected file ownership and version in a manifest so updates can be reviewed safely.
+- [ ] Support recovery or adoption of generated manifests in Next.js/React sites, not only Astro.
+- [ ] Warn on unknown theme names instead of silently falling back.
+- [ ] Remove the dead refresh-navigation mechanism or implement its intended behavior.
 
-### IMP-4: Document Next.js static export + client component pattern
-**Priority:** Low  
-**Problem:** Dewey components use hooks (client), but Next.js static export requires `generateStaticParams` (server). Every page needs a server→client wrapper. Not a bug, but a guide would save time.  
-**Action:** Include this pattern in the embedding guide (IMP-1).
+## P1 — adoption through clarity
 
-### IMP-5: Clarify or remove `@arach/dewey/react` export path
-**Priority:** Low  
-**Problem:** `./react` re-export is identical to the main `@arach/dewey` export, which adds confusion during import troubleshooting.  
-**Action:** Either differentiate it (React-specific subset) or document that it's an alias.
+- [ ] Add a complete “embed Dewey in an existing React/Next.js site” guide.
+- [ ] Document the server-to-client wrapper and static export pattern for Next.js.
+- [ ] Present one coherent onboarding sequence across `init`, `audit`, `generate`, `agent`, and optional `create`.
+- [ ] Explain the human `.md` / agent `.agent.md` pairing with concrete retrieval examples.
+- [ ] Document or differentiate the redundant `@arach/dewey/react` export.
+- [ ] Decide whether `improveAIPrompts` is public and align code, exports, and docs.
+- [ ] Make output locations and produced files explicit before commands write them.
+- [ ] Add copy-paste examples for monorepos, custom source directories, and CI enforcement.
+
+## P2 — maintenance and dogfooding
+
+- [ ] Give every Dewey documentation page a maintained `.agent.md` counterpart.
+- [ ] Remove duplicated site documentation and dead archived content.
+- [ ] Dogfood all public skills and generated artifacts in this repository's CI.
+- [ ] Reconcile stale ROADMAP entries and close issues that are already fixed.
+- [ ] Fix unanchored `.md` filename replacement so only the final extension changes.
+- [ ] Rotate update backups rather than accumulating them indefinitely.
+- [ ] Clarify the purpose of the current no-op TypeScript build step.
+- [ ] Reconsider whether router support must be a required peer dependency.
+- [ ] Reconsider whether all markdown/rendering dependencies belong in the core package.
+- [ ] Populate or remove the empty Purpose column in generated project-structure tables.
+- [ ] Add accessibility regression tests for navigation, search, copy buttons, tables of contents, and mobile menus.
+- [ ] Add a release checklist covering clean checkout, pack inspection, install smoke test, CLI smoke test, and generated-site smoke test.

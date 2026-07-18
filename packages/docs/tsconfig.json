@@ -13,7 +13,6 @@
     "jsx": "react-jsx",
     "strict": true,
     "types": ["node"],
-    "ignoreDeprecations": "6.0",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,

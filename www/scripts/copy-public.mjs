@@ -46,7 +46,7 @@ await writeAgentArtifacts({
 async function ensureAgentArtifactsModule() {
   if (await isCurrent(agentArtifactsModule, agentArtifactsSource)) return
 
-  await execFileAsync('pnpm', ['--dir', docsPackageDir, 'build'], {
+  await execFileAsync('bun', ['run', '--cwd', docsPackageDir, 'build'], {
     cwd: repoRoot,
     maxBuffer: 1024 * 1024 * 20,
   })

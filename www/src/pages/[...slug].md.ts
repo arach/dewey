@@ -14,7 +14,7 @@ export async function getStaticPaths() {
   })
 }
 
-export async function GET({ props }) {
+export async function GET({ props }: { props: { filePath: string } }) {
   const loader = markdownFiles[props.filePath]
   const content = loader ? await loader() : ''
 

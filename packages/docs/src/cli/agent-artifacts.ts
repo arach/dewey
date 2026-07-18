@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'fs/promises'
 import type { Dirent } from 'fs'
 import { basename, dirname, extname, join, relative, resolve } from 'path'
 import matter from 'gray-matter'
+import { DEWEY_SCHEMA_VERSION, getGeneratedAt } from './version.js'
 
 export interface AgentArtifactsProject {
   name: string
@@ -47,13 +48,14 @@ export interface MarkdownHeading {
 }
 
 export interface AgentManifest {
+  schemaVersion: 1
   version: 1
   project: Required<Pick<AgentArtifactsProject, 'name'>> & {
     version: string | null
     tagline: string | null
     repository: string | null
   }
-  generatedAt: string
+  generatedAt?: string
   artifacts: Record<string, string | Record<string, string>>
   recommendedReadOrder: string[]
   docs: AgentManifestEntry[]
@@ -170,8 +172,10 @@ export function buildAgentManifest(
   options: { project?: AgentArtifactsProject; includeContent?: boolean } = {},
 ): AgentManifest {
   const prompts = docs.filter((doc) => doc.kind === 'prompt')
+  const generatedAt = getGeneratedAt()
 
   return {
+    schemaVersion: DEWEY_SCHEMA_VERSION,
     version: 1,
     project: {
       name: options.project?.name || 'project',
@@ -179,7 +183,7 @@ export function buildAgentManifest(
       tagline: options.project?.tagline || null,
       repository: options.project?.repository || null,
     },
-    generatedAt: new Date().toISOString(),
+    ...(generatedAt ? { generatedAt } : {}),
     artifacts: {
       manifest: '/agent/manifest.json',
       docs: '/agent/docs.json',
@@ -208,9 +212,10 @@ export function buildPromptRegistry(
   const manifest = buildAgentManifest(docs, options)
 
   return {
+    schemaVersion: DEWEY_SCHEMA_VERSION,
     version: 1,
     project: manifest.project,
-    generatedAt: manifest.generatedAt,
+    ...(manifest.generatedAt ? { generatedAt: manifest.generatedAt } : {}),
     prompts: manifest.prompts,
   }
 }
@@ -251,9 +256,10 @@ export async function writeAgentArtifacts(options: WriteAgentArtifactsOptions = 
   await writeJsonArtifact('agent/docs.json', fullManifest)
   await writeJsonArtifact('agent/prompts.json', promptRegistry)
   await writeJsonArtifact('agent/context.json', {
+    schemaVersion: DEWEY_SCHEMA_VERSION,
     version: 1,
     project: fullManifest.project,
-    generatedAt: fullManifest.generatedAt,
+    ...(fullManifest.generatedAt ? { generatedAt: fullManifest.generatedAt } : {}),
     artifacts: fullManifest.artifacts,
     docs: fullManifest.docs,
     prompts: fullManifest.prompts,

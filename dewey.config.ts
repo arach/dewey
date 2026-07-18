@@ -1,7 +1,8 @@
-/** @type {import('@dewey/cli').DeweyConfig} */
+/** @type {import('@arach/dewey').DeweyConfig} */
 export default {
   project: {
     name: 'dewey',
+    version: '0.3.7',
     tagline: 'Documentation toolkit for AI-agent-ready docs',
     type: 'npm-package',
   },
@@ -26,6 +27,7 @@ export default {
       { pattern: 'component', instruction: 'Check packages/docs/src/components/ for React components' },
       { pattern: 'skill', instruction: 'Check .claude/skills/ for LLM prompt templates' },
       { pattern: 'config', instruction: 'Check dewey.config.ts for project configuration' },
+      { pattern: 'agent artifacts', instruction: 'Check packages/docs/src/cli/agent-artifacts.ts and `dewey generate --agent-artifacts`' },
     ],
 
     sections: ['overview', 'quickstart', 'cli', 'skills'],
@@ -41,22 +43,22 @@ export default {
     objective: 'Install Dewey and generate agent-ready documentation for your project.',
 
     doneWhen: {
-      command: 'npx dewey agent',
+      command: 'bunx @arach/dewey agent',
       expectedOutput: 'Agent Readiness Report with score',
     },
 
     prerequisites: [
       'Node.js >= 18',
-      'pnpm (recommended) or npm',
+      'Bun >= 1.3 (recommended) or npm',
     ],
 
     steps: [
-      { description: 'Install the package', command: 'pnpm add -D @arach/dewey' },
-      { description: 'Initialize documentation structure', command: 'npx dewey init' },
+      { description: 'Install the package', command: 'bun add -d @arach/dewey' },
+      { description: 'Initialize documentation structure', command: 'bunx @arach/dewey init' },
       { description: 'Edit dewey.config.ts with your project context' },
       { description: 'Write documentation in docs/', command: 'ls docs/' },
-      { description: 'Generate agent files', command: 'npx dewey generate' },
-      { description: 'Check agent-readiness score', command: 'npx dewey agent' },
+      { description: 'Generate agent files', command: 'bunx @arach/dewey generate' },
+      { description: 'Check agent-readiness score', command: 'bunx @arach/dewey agent' },
     ],
   },
 }

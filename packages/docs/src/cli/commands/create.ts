@@ -58,7 +58,7 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
+export async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
   const docs: DocFile[] = []
 
   if (!await fileExists(docsPath)) {
@@ -92,7 +92,7 @@ async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
     })
   }
 
-  docs.sort((a, b) => a.order - b.order)
+  docs.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
 
   return docs
 }
@@ -300,8 +300,8 @@ dist
 
   console.log('Next steps:')
   console.log(chalk.gray(`  cd ${projectDir}`))
-  console.log(chalk.gray('  pnpm install'))
-  console.log(chalk.gray('  pnpm dev'))
+  console.log(chalk.gray('  bun install'))
+  console.log(chalk.gray('  bun run dev'))
   console.log('')
   console.log('Your docs will be available at:')
   console.log(chalk.cyan(`  ${devUrl}`))

@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { HeadingLink } from './HeadingLink'
 
-interface MarkdownContentProps {
+export interface MarkdownContentProps {
   content: string
   isDark?: boolean
 }

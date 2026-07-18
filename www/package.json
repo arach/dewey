@@ -7,7 +7,7 @@
     "predev": "node scripts/copy-public.mjs",
     "build": "astro build",
     "prebuild": "node scripts/copy-public.mjs",
-    "postbuild": "npx -y pagefind --site dist && node scripts/sync-pagefind.mjs",
+    "postbuild": "bunx pagefind --site dist && node scripts/sync-pagefind.mjs",
     "preview": "node scripts/sync-pagefind.mjs && astro preview",
     "lint": "astro check",
     "capture-templates": "node scripts/capture-templates.mjs"
@@ -22,5 +22,11 @@
     "react-dom": "^19.2.7",
     "shiki": "^4.3.0",
     "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
   }
 }

@@ -220,7 +220,7 @@ export function TableOfContents({
 // Auto-generating TOC Component
 // ============================================
 
-interface AutoTocProps {
+export interface AutoTocProps {
   /** Markdown content to extract headings from */
   markdown?: string
   /** Container ref to extract headings from DOM */

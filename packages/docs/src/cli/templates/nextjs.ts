@@ -837,7 +837,7 @@ export function generateNextjsPackageJson(args: NextjsTemplateArgs): string {
     scripts: {
       dev: 'next dev',
       build: 'next build',
-      postbuild: 'npx -y pagefind --site out',
+      postbuild: 'bunx pagefind --site out',
       start: 'next start',
       lint: 'next lint',
     },

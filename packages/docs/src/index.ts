@@ -2,6 +2,24 @@
 // Main Entry Point Components
 // ============================================
 
+// Type-safe Dewey configuration
+export { defineConfig } from './cli/schema'
+export type {
+  AgentRule,
+  DeweyConfig,
+  InstallConfig,
+  ProjectType,
+} from './cli/schema'
+
+export {
+  PUBLISHED_CSS_THEMES,
+  THEME_REGISTRY,
+  VALID_THEMES,
+  isThemeName,
+  resolveTheme,
+} from './themes'
+export type { ThemeDefinition, ThemeName, ThemePreset } from './themes'
+
 // DocsApp - The main entry point for a complete docs site
 export { DocsApp, default as DocsAppDefault } from './components/DocsApp'
 export type { DocsAppProps, DocsAppConfig } from './components/DocsApp'
@@ -24,7 +42,6 @@ export {
 export type {
   DeweyProviderProps,
   DeweyContextValue,
-  ThemePreset,
   ThemeConfig,
   FrameworkComponents,
 } from './components/DeweyProvider'
@@ -39,6 +56,7 @@ export type { HeaderProps } from './components/Header'
 
 export { DocsLayout } from './components/DocsLayout'
 export { MarkdownContent } from './components/MarkdownContent'
+export type { MarkdownContentProps } from './components/MarkdownContent'
 export { CodeBlock } from './components/CodeBlock'
 export { HeadingLink } from './components/HeadingLink'
 
@@ -54,7 +72,7 @@ export {
   extractTocItems,
   extractTocFromDom,
 } from './components/TableOfContents'
-export type { TableOfContentsProps, TocItem } from './components/TableOfContents'
+export type { AutoTocProps, TableOfContentsProps, TocItem } from './components/TableOfContents'
 
 // ============================================
 // UI Components

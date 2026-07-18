@@ -48,8 +48,8 @@ export const AgentConfig = z.object({
   entryPoints: z.record(z.string(), z.string()).default({}),
   /** Pattern-based navigation rules */
   rules: z.array(AgentRule).default([]),
-  /** Which doc sections to include in AGENTS.md */
-  sections: z.array(z.string()).default(['overview', 'quickstart']),
+  /** Optional allowlist of doc IDs. Empty includes every human-readable doc. */
+  sections: z.array(z.string()).default([]),
 })
 
 /**
@@ -100,7 +100,7 @@ export const DeweyConfig = z.object({
     criticalContext: [],
     entryPoints: {},
     rules: [],
-    sections: ['overview', 'quickstart'],
+    sections: [],
   }),
   docs: DocsConfig.default({
     path: './docs',

@@ -8,6 +8,7 @@ import { createCommand } from './commands/create.js'
 import { updateCommand } from './commands/update.js'
 import { ejectCommand } from './commands/eject.js'
 import { DEWEY_VERSION } from './version.js'
+import { VALID_THEMES } from '../themes.js'
 
 const program = new Command()
 
@@ -34,6 +35,7 @@ program
   .command('generate')
   .description('Generate agent-ready files (AGENTS.md, llms.txt, docs.json, install.md)')
   .option('-o, --output <dir>', 'Output directory')
+  .option('-s, --source <path>', 'Override the configured docs source directory')
   .option('--agents-md', 'Generate only AGENTS.md')
   .option('--llms-txt', 'Generate only llms.txt')
   .option('--docs-json', 'Generate only docs.json')
@@ -55,7 +57,7 @@ program
   .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
   .option('-n, --name <name>', 'Project name (defaults to directory name)')
   .option('-t, --template <template>', 'Template to use (nextjs, astro)', 'nextjs')
-  .option('--theme <theme>', 'Color theme (neutral, ocean, emerald, purple, dusk, rose, github, warm, hudson)', 'neutral')
+  .option('--theme <theme>', `Color theme (${VALID_THEMES.join(', ')})`, 'neutral')
   .action(createCommand)
 
 program

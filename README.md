@@ -21,29 +21,29 @@ Dewey is a **docs agent**, not a docs framework. It focuses on preparation and j
 ## Installation
 
 ```bash
-pnpm add -D @arach/dewey
+bun add -d @arach/dewey
 ```
 
 Or run directly:
 
 ```bash
-npx dewey <command>
+bunx @arach/dewey@latest <command>
 ```
 
 ## Quick Start
 
 ```bash
 # Initialize docs structure
-npx dewey init
+bunx dewey init
 
 # Generate agent-ready files
-npx dewey generate
+bunx dewey generate
 
 # Optional: create a static doc site from your markdown
-npx dewey create my-docs --source ./docs --theme ocean
+bunx dewey create my-docs --source ./docs --theme ocean
 
 # Check your agent-readiness score
-npx dewey agent
+bunx dewey agent
 ```
 
 ## CLI Commands
@@ -55,6 +55,8 @@ npx dewey agent
 | `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |
 | `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 scale) |
+| `dewey update` | Refresh Dewey-owned files in a generated site |
+| `dewey eject` | Transfer a component to consumer ownership |
 
 ## Optional Site Generator
 
@@ -63,7 +65,7 @@ npx dewey agent
 ```bash
 dewey create my-project-docs --source ./docs --theme purple
 cd my-project-docs
-pnpm install && pnpm dev
+bun install && bun run dev
 ```
 
 It is a publishing path, not the core contract. The core contract is the generated markdown and JSON artifacts.
@@ -152,7 +154,7 @@ export default {
   install: {
     objective: 'Install and configure your-project.',
     steps: [
-      { description: 'Install', command: 'pnpm add your-project' },
+      { description: 'Install', command: 'bun add your-project' },
     ],
   },
 }

@@ -42,7 +42,7 @@ tmp/
 # GitHub skills (local)
 .github/skills/
 
-# Lock files (use pnpm-lock.yaml)
+# Workspace-local lockfiles (the root bun.lock is canonical)
 www/bun.lock
 .superset/
 # OpenScout local state

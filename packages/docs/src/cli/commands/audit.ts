@@ -32,7 +32,7 @@ const SECTION_CHECKS = {
   hasHeadings: { points: 5, check: (content: string) => /^##\s+.+$/m.test(content) },
   minWordCount: { points: 10, check: (content: string) => content.split(/\s+/).length >= 100 },
   hasLinks: { points: 5, check: (content: string) => /\[.+\]\(.+\)/.test(content) },
-  noDuplicateH1: { points: -5, check: (content: string, fm: Record<string, unknown>) => !(!!fm.title && /^#\s+.+$/m.test(content)) },
+  noDuplicateH1: { points: 5, check: (content: string, fm: Record<string, unknown>) => !(!!fm.title && /^#\s+.+$/m.test(content)) },
   hasErrorExample: { points: 5, check: (content: string, fm: Record<string, unknown>) => {
     const isApiDoc = /api/i.test(String(fm.title || ''))
     if (!isApiDoc) return true // only applies to API docs
@@ -114,7 +114,9 @@ export async function auditCommand(options: AuditOptions) {
     process.exit(1)
   }
 
-  console.log(chalk.blue(`\n📋 Auditing ${config.project.name} documentation...\n`))
+  if (!options.json) {
+    console.log(chalk.blue(`\n📋 Auditing ${config.project.name} documentation...\n`))
+  }
 
   // Get all markdown files
   const files = await readdir(docsPath)

@@ -17,7 +17,7 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-function generateWrapComponent(name: string, meta: EjectibleComponent): string {
+export function generateWrapComponent(name: string, meta: EjectibleComponent): string {
   return `'use client'
 
 import { ${meta.defaultImport} as Default${meta.defaultImport} } from '@arach/dewey'
@@ -36,12 +36,12 @@ export default function ${name}(props: ${meta.propsType}) {
 `
 }
 
-function generateFullComponent(name: string, meta: EjectibleComponent): string {
+export function generateFullComponent(name: string, meta: EjectibleComponent): string {
   // Build destructured props based on the component
   const propsMap: Record<string, string> = {
     Header: '{ projectName, homeUrl, showThemeToggle }',
     Sidebar: '{ tree, currentPage, projectName, basePath }',
-    TableOfContents: '{ items, title, markdown }',
+    TableOfContents: '{ markdown, containerRef, title, className }',
     MarkdownContent: '{ content }',
   }
 

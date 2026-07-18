@@ -1,6 +1,6 @@
 import { access } from 'fs/promises'
 import { join } from 'path'
-import { DEWEY_VERSION } from './version.js'
+import { DEWEY_SCHEMA_VERSION, DEWEY_VERSION, getGeneratedAt } from './version.js'
 
 export interface ManifestDocInput {
   id: string
@@ -89,6 +89,7 @@ export function buildDocsManifest(
   tagline: string | undefined,
   docs: ManifestDocInput[],
 ) {
+  const generatedAt = getGeneratedAt()
   const pages = docs.map((doc) => {
     const group = inferGroup(doc)
 
@@ -144,12 +145,13 @@ export function buildDocsManifest(
   }, [])
 
   return {
+    schemaVersion: DEWEY_SCHEMA_VERSION,
     project: projectName,
     name: projectName,
     version: version || '0.0.0',
     tagline,
     generatedBy: `Dewey ${DEWEY_VERSION}`,
-    generatedAt: new Date().toISOString(),
+    ...(generatedAt ? { generatedAt } : {}),
     defaultPage: docs[0]?.id || null,
     generators: {
       dewey: {

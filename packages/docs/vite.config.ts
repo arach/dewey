@@ -82,19 +82,23 @@ function copyCssPlugin() {
   }
 }
 
-// Vite plugin: guard top-level document access so the bundle is SSR-safe.
 // micromark (used by react-markdown) creates a DOM element at module evaluation
-// time for decoding named character references. This crashes in Node/SSR.
+// time for decoding named character references. Guard every declaration form so
+// optimized bundles remain importable in Node/SSR.
+export function guardTopLevelDocumentAccess(code: string): string {
+  return code.replace(
+    /\b(const|let|var) element = document\.createElement\("i"\)/g,
+    '$1 element = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" }',
+  )
+}
+
 function ssrSafePlugin() {
   return {
     name: 'ssr-safe-document',
     generateBundle(_options: any, bundle: Record<string, any>) {
       for (const file of Object.values(bundle)) {
         if (file.type === 'chunk' && typeof file.code === 'string') {
-          file.code = file.code.replace(
-            'const element = document.createElement("i")',
-            'const element = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" }',
-          )
+          file.code = guardTopLevelDocumentAccess(file.code)
         }
       }
     },

@@ -475,7 +475,8 @@ export function Search() {
       }
 
       // Load and initialize Pagefind UI
-      const mod = await import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')
+      const pagefindUrl = '/pagefind/pagefind-ui.js'
+      const mod = await import(/* webpackIgnore: true */ pagefindUrl)
       const PagefindUI = mod.PagefindUI || mod.default
       container.innerHTML = ''
       new PagefindUI({

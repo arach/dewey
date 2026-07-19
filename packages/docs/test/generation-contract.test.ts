@@ -214,6 +214,17 @@ describe('create composition and dependency compatibility', () => {
     }
   })
 
+  test('loads Pagefind from a runtime URL that Next.js does not type-resolve as a module', () => {
+    const search = NEXTJS_TEMPLATES['src/components/Search.tsx']({
+      projectName: 'fixture',
+      theme: 'neutral',
+      defaultPage: 'overview',
+    })
+    expect(search).toContain("const pagefindUrl = '/pagefind/pagefind-ui.js'")
+    expect(search).toContain('import(/* webpackIgnore: true */ pagefindUrl)')
+    expect(search).not.toContain("import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')")
+  })
+
   test('pins every Astro scaffold dependency and the Pagefind executable', () => {
     const packageJson = JSON.parse(ASTRO_TEMPLATES['package.json']({
       projectName: 'fixture',

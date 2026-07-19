@@ -4,8 +4,6 @@ description: Documentation toolkit for AI-agent-ready docs
 order: 1
 ---
 
-# Dewey
-
 Dewey is a documentation toolkit that prepares your docs for AI agents. It audits, scores, and exports structured documentation artifacts without requiring a specific rendering framework.
 
 ## What Dewey Does
@@ -53,12 +51,27 @@ curl https://your-project.com/install.md | claude
 dewey init      Create docs/ folder and dewey.config.ts
 dewey audit     Check documentation completeness
 dewey generate  Create agent-ready files and retrieval artifacts
-dewey create    Optional static docs site from markdown
 dewey agent     Score agent-readiness (0-100)
+dewey create    Optional static docs site from markdown
 ```
+
+## Onboarding path
+
+Use one sequence for every project (details in [Quickstart](./quickstart.md)):
+
+**init → author → generate → audit → agent → (optional UI)**
+
+| Optional UI | Guide |
+|-------------|--------|
+| Embed in an existing React/Next.js app | [Integrate into an existing site](./integrate-existing-site.md) |
+| Scaffold a standalone docs site | `dewey create` (see [CLI](./cli.md)) |
+
+Agent artifacts from `generate` are the product contract. Components and `create` are presentation options on top of that contract.
 
 ## Quick Links
 
-- [Quickstart](./quickstart.md) - Get started in 5 minutes
+- [Quickstart](./quickstart.md) - Coherent init → generate → audit → agent sequence
+- [Integrate into an existing site](./integrate-existing-site.md) - React/Next.js embed guide
 - [CLI Reference](./cli.md) - All commands and options
+- [API Reference](./api.md) - Public TypeScript, React, theme, and artifact contracts
 - [Skills](./skills.md) - Built-in LLM prompt templates

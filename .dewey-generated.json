@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "generator": "dewey",
+  "files": {
+    "agent/bundles/all.md": {
+      "hash": "121ae891e4e2163282d73668d033b7247b2d4646ebc5d93094f1bec4c00ec082",
+      "scope": "agentArtifacts"
+    },
+    "agent/bundles/core.md": {
+      "hash": "555d939804c33d282bd06404f15c692a4e3b09c0c3cebb4f259451270e3b83e1",
+      "scope": "agentArtifacts"
+    },
+    "agent/bundles/prompts.md": {
+      "hash": "c9d78d7b162b3a0a04b071009b416ca507007fd77ab751e56482080b901ab31c",
+      "scope": "agentArtifacts"
+    },
+    "agent/context.json": {
+      "hash": "de3844452b395e083ed57557e17e6c8dde48648324f9b00f29456d393b04920f",
+      "scope": "agentArtifacts"
+    },
+    "agent/context.md": {
+      "hash": "1dbbd6a947907732aebf4ceb99eb1e060ee1762dce527f602e78116a01ac540e",
+      "scope": "agentArtifacts"
+    },
+    "agent/docs.json": {
+      "hash": "54b1d51415e41580e9a5c745ff58db402b42335e7f2b79e747e0b62acdc47534",
+      "scope": "agentArtifacts"
+    },
+    "agent/manifest.json": {
+      "hash": "81edb10acddf3607dbdf880ab74e4a37a5c3cfec61547337f0cb9dafd5860f65",
+      "scope": "agentArtifacts"
+    },
+    "agent/prompts.json": {
+      "hash": "943ca4e82cc52706426f76d47139f10123dc20946861d00e4a7273f0243da008",
+      "scope": "agentArtifacts"
+    },
+    "agent/prompts/audit-docs.md": {
+      "hash": "71cacd1c4b59b50f9bb8d491bf3f77a84de11a1b81f13aa4f980630de9e562ec",
+      "scope": "agentArtifacts"
+    },
+    "agent/prompts/create-agent-md.md": {
+      "hash": "975eb0a863e216151fc1f685cd73b5ebe08884a065956d13b9bb7f36684cfd82",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/api.agent.md": {
+      "hash": "9cfc8beda9d00aefe265bf7fae51a1da51b4cb5387fcee7d735f54c68a3094f7",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/cli.agent.md": {
+      "hash": "479e37e0735b5f2e5ef530d69383e27aa474b0a4bdd416e6019b5875bb523ca1",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/integrate-existing-site.agent.md": {
+      "hash": "51ce4c4f946e56b1fd57f8093841cb610f898c8c0bce11ef7fe7a0dfa7d590be",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/overview.agent.md": {
+      "hash": "7e72df09c2e1ad4aca125626b991c76c233db1bf14a60b798f98a57dc64bd767",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/quickstart.agent.md": {
+      "hash": "5d0e08bbc0e40d35d4f6a140239355fee2e083ef66d37b2b9354e11b0ecd14e2",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/skills.agent.md": {
+      "hash": "e217771df783af1427e956d431faffcf43bb752e42fdcfc9104b887cae980f67",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/AGENTS.md": {
+      "hash": "ddba590bf78a9b98657189587e982c43e3e3a20e4897c4599464a45fca1060c9",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/api.md": {
+      "hash": "a67ceadd63c659365ff26ff8c65272a03d4f487711d9673399c4e24107d5472e",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/cli.md": {
+      "hash": "14c5b1bc677a39505044950f96d5b8ad57c5602e4d05b5d31f00d79bdde7f565",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/integrate-existing-site.md": {
+      "hash": "2eb36fb2312ef2c6b9a808757aa048f828ece3afa11be4dab8f9019038e1a6a5",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/overview.md": {
+      "hash": "624b37000354d8e67a04015589d54dae061055f3f028a757b72c29988afe72b8",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/prompts/audit-docs.md": {
+      "hash": "71cacd1c4b59b50f9bb8d491bf3f77a84de11a1b81f13aa4f980630de9e562ec",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/prompts/create-agent-md.md": {
+      "hash": "975eb0a863e216151fc1f685cd73b5ebe08884a065956d13b9bb7f36684cfd82",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/quickstart.md": {
+      "hash": "2dd3b6512c33180220bbfabceae1450dbc3a6b78bef087d2d0c751fcf9b39bcd",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/skills.md": {
+      "hash": "fbcbe06a2c3af66b23c3a8ff490bcc17572015c63280f5d9f59b80920d490fa9",
+      "scope": "agentArtifacts"
+    },
+    "AGENTS.md": {
+      "hash": "ecc19a8401814753c12dcf146939ef04ce5fff7c7ccfc78bd1ff15b707427cfd",
+      "scope": "agentsMd"
+    },
+    "docs.json": {
+      "hash": "b307d5af47db248b542f08248ada59170e825389380ca0630ce7c922f26ed81e",
+      "scope": "docsJson"
+    },
+    "install.md": {
+      "hash": "2c17779b9e5b36ca160f93ac6d711220765910e956d6c79cdec0ef36e336cabb",
+      "scope": "installMd"
+    },
+    "llms.txt": {
+      "hash": "72ddd1d81f79f15f9613e4c19a963d1aae9ac70a043c0e2eb0e7e24804e916bf",
+      "scope": "llmsTxt"
+    }
+  }
+}

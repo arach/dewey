@@ -32,13 +32,13 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 
 ## P1 — audit and judgment
 
-- [ ] Define the distinct jobs of `audit` (deterministic structure) and `agent` (quality judgment) in product copy and output.
-- [ ] Detect API documentation by evidence rather than filename conventions.
-- [ ] Generate quick wins from actual unmet checks instead of a fixed list.
-- [ ] Make `audit --fix` perform documented safe fixes or remove the promise.
-- [ ] Resolve `agent` from the project root and replace hardcoded filename allow-lists.
+- [x] Define the distinct jobs of `audit` (deterministic structure) and `agent` (quality judgment) in product copy and output.
+- [x] Detect API documentation by evidence rather than filename conventions.
+- [x] Generate quick wins from actual unmet checks instead of a fixed list.
+- [x] Make `agent --fix` perform documented safe fixes or remove the promise.
+- [x] Resolve `agent` from the project root and replace hardcoded filename allow-lists.
 - [ ] Validate project types and make each type change the checks or scaffold meaningfully.
-- [ ] Add score fixtures for sparse, malformed, nested, duplicated-heading, and fully documented projects.
+- [x] Add score fixtures for sparse, malformed, nested, duplicated-heading, and fully documented projects.
 - [ ] Add drift checks between source code, human docs, and `.agent.md` counterparts.
 
 ## P1 — generation
@@ -46,10 +46,10 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 - [ ] Unify `generate` and `create` on one document-discovery and metadata pipeline.
 - [x] Make generated output reproducible by removing wall-clock timestamps or honoring `SOURCE_DATE_EPOCH`.
 - [x] Add `schemaVersion` to public JSON manifests.
-- [ ] Warn when a source directory is missing or discovery finds no documents.
-- [ ] Protect user-edited generated files with ownership markers, dry-run previews, or explicit overwrite consent.
-- [ ] Prune artifacts for deleted and renamed documents without touching user-owned files.
-- [ ] Make the agent-artifact output directory explicit and safely scoped.
+- [x] Warn when a source directory is missing or discovery finds no documents.
+- [x] Protect user-edited generated files with ownership markers, dry-run previews, or explicit overwrite consent.
+- [x] Prune artifacts for deleted and renamed documents without touching user-owned files.
+- [x] Make the agent-artifact output directory explicit and safely scoped.
 - [ ] Derive artifact link tables and bundles from a single canonical manifest.
 - [ ] Avoid repeatedly materializing full document content in every artifact.
 - [ ] Improve `llms.txt` summary extraction for frontmatter, lists, headings, and short pages.
@@ -74,18 +74,18 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 
 ## P1 — adoption through clarity
 
-- [ ] Add a complete “embed Dewey in an existing React/Next.js site” guide.
-- [ ] Document the server-to-client wrapper and static export pattern for Next.js.
-- [ ] Present one coherent onboarding sequence across `init`, `audit`, `generate`, `agent`, and optional `create`.
-- [ ] Explain the human `.md` / agent `.agent.md` pairing with concrete retrieval examples.
-- [ ] Document or differentiate the redundant `@arach/dewey/react` export.
+- [x] Add a complete “embed Dewey in an existing React/Next.js site” guide.
+- [x] Document the server-to-client wrapper and static export pattern for Next.js.
+- [x] Present one coherent onboarding sequence across `init`, `audit`, `generate`, `agent`, and optional `create`.
+- [x] Explain the human `.md` / agent `.agent.md` pairing with concrete retrieval examples.
+- [x] Document or differentiate the redundant `@arach/dewey/react` export.
 - [ ] Decide whether `improveAIPrompts` is public and align code, exports, and docs.
-- [ ] Make output locations and produced files explicit before commands write them.
-- [ ] Add copy-paste examples for monorepos, custom source directories, and CI enforcement.
+- [x] Make output locations and produced files explicit before commands write them.
+- [x] Add copy-paste examples for monorepos, custom source directories, and CI enforcement.
 
 ## P2 — maintenance and dogfooding
 
-- [ ] Give every Dewey documentation page a maintained `.agent.md` counterpart.
+- [x] Give every Dewey documentation page a maintained `.agent.md` counterpart.
 - [ ] Remove duplicated site documentation and dead archived content.
 - [ ] Dogfood all public skills and generated artifacts in this repository's CI.
 - [ ] Reconcile stale ROADMAP entries and close issues that are already fixed.

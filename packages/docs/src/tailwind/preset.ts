@@ -15,8 +15,9 @@
  */
 
 import type { Config } from 'tailwindcss'
+import type { ThemeName } from '../themes'
 
-export type ColorPreset = 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'midnight' | 'mono'
+export type ColorPreset = ThemeName
 
 export interface DeweyPresetOptions {
   /**
@@ -82,11 +83,11 @@ export function deweyPreset(options: DeweyPresetOptions = {}): Partial<Config> {
           },
         },
         fontFamily: {
-          [`${prefix}-sans`]: 'var(--font-dw-sans, ui-sans-serif, system-ui, sans-serif)',
-          [`${prefix}-mono`]: 'var(--font-dw-mono, ui-monospace, SFMono-Regular, monospace)',
+          [`${prefix}-sans`]: 'var(--dw-font-sans, ui-sans-serif, system-ui, sans-serif)',
+          [`${prefix}-mono`]: 'var(--dw-font-mono, ui-monospace, SFMono-Regular, monospace)',
         },
         borderRadius: {
-          [`${prefix}`]: 'var(--radius-dw, 0.5rem)',
+          [`${prefix}`]: 'var(--dw-radius, 0.5rem)',
         },
       },
     },

@@ -1,8 +1,14 @@
-import { mkdir, readdir, readFile, writeFile } from 'fs/promises'
+import { readdir, readFile } from 'fs/promises'
 import type { Dirent } from 'fs'
-import { basename, dirname, extname, join, relative, resolve } from 'path'
+import { basename, extname, join, relative, resolve } from 'path'
 import matter from 'gray-matter'
 import { DEWEY_SCHEMA_VERSION, getGeneratedAt } from './version.js'
+import {
+  applyGenerationPlan,
+  planGeneratedArtifacts,
+  type GeneratedArtifact,
+  type GenerationOperation,
+} from './generation-plan.js'
 
 export interface AgentArtifactsProject {
   name: string
@@ -19,6 +25,8 @@ export interface CollectMarkdownArtifactsOptions {
 export interface WriteAgentArtifactsOptions extends CollectMarkdownArtifactsOptions {
   outputDir?: string
   project?: AgentArtifactsProject
+  dryRun?: boolean
+  overwrite?: boolean
 }
 
 export interface MarkdownArtifact {
@@ -56,6 +64,11 @@ export interface AgentManifest {
     repository: string | null
   }
   generatedAt?: string
+  ownership: {
+    owner: 'dewey'
+    lifecycle: 'regenerate'
+    registry: '/.dewey-generated.json'
+  }
   artifacts: Record<string, string | Record<string, string>>
   recommendedReadOrder: string[]
   docs: AgentManifestEntry[]
@@ -184,6 +197,11 @@ export function buildAgentManifest(
       repository: options.project?.repository || null,
     },
     ...(generatedAt ? { generatedAt } : {}),
+    ownership: {
+      owner: 'dewey',
+      lifecycle: 'regenerate',
+      registry: '/.dewey-generated.json',
+    },
     artifacts: {
       manifest: '/agent/manifest.json',
       docs: '/agent/docs.json',
@@ -216,6 +234,7 @@ export function buildPromptRegistry(
     version: 1,
     project: manifest.project,
     ...(manifest.generatedAt ? { generatedAt: manifest.generatedAt } : {}),
+    ownership: manifest.ownership,
     prompts: manifest.prompts,
   }
 }
@@ -230,59 +249,83 @@ export function buildContextBundle(
   return formatBundle(title, selected)
 }
 
-export async function writeAgentArtifacts(options: WriteAgentArtifactsOptions = {}) {
+export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOptions = {}) {
   const resolved = resolveOptions(options)
-  const outputDir = options.outputDir ? resolve(options.outputDir) : resolved.rootDir
   const docs = await collectMarkdownArtifacts(resolved)
   const prompts = docs.filter((doc) => doc.kind === 'prompt')
   const manifest = buildAgentManifest(docs, { project: options.project })
   const fullManifest = buildAgentManifest(docs, { project: options.project, includeContent: true })
   const promptRegistry = buildPromptRegistry(docs, { project: options.project, includeContent: true })
   const context = formatAgentContext(docs, fullManifest)
-  const written: string[] = []
-
-  const writeArtifact = async (artifactPath: string, value: string) => {
-    const filePath = join(outputDir, artifactPath)
-    await mkdir(dirname(filePath), { recursive: true })
-    await writeFile(filePath, ensureTrailingNewline(value))
-    written.push(normalizePath(artifactPath))
+  const files: GeneratedArtifact[] = []
+  const addArtifact = (path: string, content: string, marker = false) => {
+    files.push({ path, content: ensureTrailingNewline(content), marker, scope: 'agentArtifacts' })
+  }
+  const addJsonArtifact = (path: string, value: unknown) => {
+    addArtifact(path, JSON.stringify(value, null, 2))
   }
 
-  const writeJsonArtifact = async (artifactPath: string, value: unknown) => {
-    await writeArtifact(artifactPath, `${JSON.stringify(value, null, 2)}\n`)
-  }
-
-  await writeJsonArtifact('agent/manifest.json', manifest)
-  await writeJsonArtifact('agent/docs.json', fullManifest)
-  await writeJsonArtifact('agent/prompts.json', promptRegistry)
-  await writeJsonArtifact('agent/context.json', {
+  addJsonArtifact('agent/manifest.json', manifest)
+  addJsonArtifact('agent/docs.json', fullManifest)
+  addJsonArtifact('agent/prompts.json', promptRegistry)
+  addJsonArtifact('agent/context.json', {
     schemaVersion: DEWEY_SCHEMA_VERSION,
     version: 1,
     project: fullManifest.project,
     ...(fullManifest.generatedAt ? { generatedAt: fullManifest.generatedAt } : {}),
+    ownership: fullManifest.ownership,
     artifacts: fullManifest.artifacts,
     docs: fullManifest.docs,
     prompts: fullManifest.prompts,
   })
 
-  await writeArtifact('agent/context.md', context)
-  await writeArtifact('agent/bundles/all.md', formatBundle('All Documentation', docs))
-  await writeArtifact('agent/bundles/core.md', buildContextBundle(docs, fullManifest.recommendedReadOrder, 'Core Documentation'))
-  await writeArtifact('agent/bundles/prompts.md', formatPromptsBundle(prompts))
+  addArtifact('agent/context.md', context, true)
+  addArtifact('agent/bundles/all.md', formatBundle('All Documentation', docs), true)
+  addArtifact('agent/bundles/core.md', buildContextBundle(docs, fullManifest.recommendedReadOrder, 'Core Documentation'), true)
+  addArtifact('agent/bundles/prompts.md', formatPromptsBundle(prompts), true)
 
   for (const doc of docs) {
-    await writeArtifact(`agent/raw/docs/${doc.slug}.md`, doc.rawMarkdown)
+    addArtifact(`agent/raw/docs/${doc.slug}.md`, doc.rawMarkdown)
   }
 
   for (const prompt of prompts) {
-    await writeArtifact(`agent/prompts/${prompt.promptId}.md`, prompt.rawMarkdown)
+    addArtifact(`agent/prompts/${prompt.promptId}.md`, prompt.rawMarkdown)
   }
 
   return {
     docs: docs.length,
     prompts: prompts.length,
-    written,
+    files,
   }
+}
+
+export async function writeAgentArtifacts(options: WriteAgentArtifactsOptions = {}) {
+  const resolved = resolveOptions(options)
+  const outputDir = options.outputDir ? resolve(options.outputDir) : resolved.rootDir
+  const built = await buildAgentArtifactFiles(options)
+  const plan = await planGeneratedArtifacts(outputDir, built.files, ['agentArtifacts'], {
+    overwrite: options.overwrite,
+  })
+
+  if (!options.dryRun) await applyGenerationPlan(plan)
+
+  return {
+    docs: built.docs,
+    prompts: built.prompts,
+    written: options.dryRun ? [] : built.files.map(file => file.path),
+    changed: changedPaths(plan.operations, 'create', 'update'),
+    deleted: changedPaths(plan.operations, 'delete'),
+    operations: plan.operations,
+  }
+}
+
+function changedPaths(
+  operations: GenerationOperation[],
+  ...actions: GenerationOperation['action'][]
+): string[] {
+  return operations
+    .filter((operation) => actions.includes(operation.action) && operation.scope === 'agentArtifacts')
+    .map((operation) => operation.path)
 }
 
 function resolveOptions(options: CollectMarkdownArtifactsOptions) {

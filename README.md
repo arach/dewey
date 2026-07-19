@@ -32,6 +32,8 @@ bunx @arach/dewey@latest <command>
 
 ## Quick Start
 
+Recommended sequence: **init → author → generate → audit → agent → optional UI**.
+
 ```bash
 # Initialize docs structure
 bunx dewey init
@@ -39,12 +41,22 @@ bunx dewey init
 # Generate agent-ready files
 bunx dewey generate
 
-# Optional: create a static doc site from your markdown
-bunx dewey create my-docs --source ./docs --theme ocean
-
-# Check your agent-readiness score
+# Structural checks, then agent-readiness score
+bunx dewey audit
 bunx dewey agent
+
+# Optional human UI — pick one:
+# A) Embed in an existing React/Next.js site → docs/integrate-existing-site.md
+# B) Scaffold a standalone site:
+bunx dewey create my-docs --source ./docs --theme ocean
 ```
+
+| Guide | Path |
+|-------|------|
+| Full onboarding | [docs/quickstart.md](./docs/quickstart.md) |
+| Embed in existing React/Next.js | [docs/integrate-existing-site.md](./docs/integrate-existing-site.md) |
+| CLI reference | [docs/cli.md](./docs/cli.md) |
+| TypeScript/React API | [docs/api.md](./docs/api.md) |
 
 ## CLI Commands
 
@@ -53,14 +65,14 @@ bunx dewey agent
 | `dewey init` | Scaffold docs structure + dewey.config.ts |
 | `dewey audit` | Validate documentation completeness |
 | `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |
-| `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 scale) |
+| `dewey create` | Optional static docs site from markdown |
 | `dewey update` | Refresh Dewey-owned files in a generated site |
 | `dewey eject` | Transfer a component to consumer ownership |
 
 ## Optional Site Generator
 
-`dewey create` turns a folder of markdown files into a static doc site when you want a human-facing website alongside the agent artifacts:
+`dewey create` turns a folder of markdown files into a static doc site when you want a **standalone** human-facing website alongside the agent artifacts:
 
 ```bash
 dewey create my-project-docs --source ./docs --theme purple
@@ -68,7 +80,9 @@ cd my-project-docs
 bun install && bun run dev
 ```
 
-It is a publishing path, not the core contract. The core contract is the generated markdown and JSON artifacts.
+Already have a React or Next.js app? Embed Dewey components instead of scaffolding a second project — see **[Integrate into an existing site](./docs/integrate-existing-site.md)** (CSS, server/client wrapper, static export, recursive loading, themes, generate-alongside-site, CI).
+
+Both publishing paths are optional. The core contract is the generated markdown and JSON artifacts.
 
 ## Generated Files
 
@@ -78,6 +92,7 @@ It is a publishing path, not the core contract. The core contract is the generat
 | `llms.txt` | Plain text summary for LLMs |
 | `docs.json` | Structured documentation metadata |
 | `install.md` | LLM-executable installation guide ([installmd.org](https://installmd.org)) |
+| `.dewey-generated.json` | Ownership hashes used for safe updates and pruning |
 
 Plain `dewey generate` also emits an `agent/` retrieval surface inspired by
 the Lattices docs migration:
@@ -115,7 +130,7 @@ import {
 
 ## Agent Content Pattern
 
-Each doc page can have two versions:
+Each documentation page should have two maintained versions:
 
 | Version | Audience | Style |
 |---------|----------|-------|
@@ -175,7 +190,7 @@ Custom skills go in `.claude/skills/` as markdown files.
 
 ## React Components
 
-Dewey includes React components for building documentation UIs:
+Optional React components for documentation UIs (not required for agent generation):
 
 ```tsx
 import { DocsApp, MarkdownContent, Callout } from '@arach/dewey'
@@ -183,6 +198,8 @@ import '@arach/dewey/css'
 ```
 
 Components include DocsLayout, Sidebar, TableOfContents, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge, AgentContext, PromptSlideout, and more.
+
+For embedding into an **existing** Next.js or React app (provider, static export, nested docs, CI), follow [docs/integrate-existing-site.md](./docs/integrate-existing-site.md). Prefer imports from `@arach/dewey` (`@arach/dewey/react` is the same export surface).
 
 ## License
 

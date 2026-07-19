@@ -6,11 +6,31 @@ order: 2
 
 Requires Node.js 18+ and Bun 1.3+ (recommended) or npm.
 
+## Onboarding sequence
+
+One path from empty docs to agent-ready artifacts. Optional steps are marked.
+
+| Step | Command / action | What you get |
+|------|------------------|--------------|
+| 1. Install | `bun add -d @arach/dewey` | Local CLI |
+| 2. Init | `bunx dewey init` | `docs/` + `dewey.config.ts` |
+| 3. Configure | Edit `dewey.config.ts` | Project context, agent rules, install steps |
+| 4. Author | Write `.md` and `.agent.md` | Human + agent source pages |
+| 5. Generate | `bunx dewey generate` | `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, `agent/` |
+| 6. Audit | `bunx dewey audit` | Deterministic completeness checks |
+| 7. Score | `bunx dewey agent` | Agent-readiness score (0–100) and recommendations |
+| 8a. Embed (optional) | Components in your React/Next app | Human UI on an **existing** site — [integration guide](./integrate-existing-site.md) |
+| 8b. Create (optional) | `bunx dewey create my-docs --source ./docs --theme ocean` | **Standalone** static docs site |
+
+Core contract is steps 1–7 (especially **generate**). Publishing a site is optional.
+
 ### 1. Install
 
 ```bash
 bun add -d @arach/dewey
 ```
+
+When you will import React components into an app, install as a runtime dependency instead: `bun add @arach/dewey`. See [Integrate into an existing site](./integrate-existing-site.md).
 
 ### 2. Initialize
 
@@ -63,7 +83,7 @@ docs/
   overview.md          # Project introduction
   quickstart.md        # Getting started guide
   api.md               # API reference
-  overview.agent.md    # Agent-optimized version
+  overview.agent.md    # Agent-optimized version (or docs/agent/overview.agent.md)
 ```
 
 ### 5. Generate agent files
@@ -74,7 +94,17 @@ bunx dewey generate
 
 Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
-### 6. Check your score
+### 6. Audit
+
+```bash
+bunx dewey audit
+# CI-friendly:
+bunx dewey audit --json
+```
+
+Structural and completeness checks. Prefer fixing audit findings before treating the score as a release gate.
+
+### 7. Check your score
 
 <div class="doc-file-block">
 <div class="doc-file-bar">bunx dewey agent</div>
@@ -91,14 +121,24 @@ Categories:
 
 </div>
 
-### 7. Optional: create a doc site
+```bash
+bunx dewey agent --json   # machine-readable for CI
+```
+
+### 8. Optional: human-facing docs UI
+
+**Already have a React or Next.js site?** Embed Dewey components under a `/docs` route:
+
+→ [Integrate into an existing site](./integrate-existing-site.md)
+
+**Want a standalone docs site from the same Markdown?**
 
 ```bash
 bunx dewey create my-docs --source ./docs --theme ocean
 cd my-docs && bun install && bun run dev
 ```
 
-Generates a static docs site from the same markdown when you want a human-facing site alongside the agent artifacts.
+Generates a static docs site when you want a separate publishing path alongside agent artifacts.
 
 ---
 
@@ -106,5 +146,6 @@ Generates a static docs site from the same markdown when you want a human-facing
 
 - Create `.agent.md` versions of your docs for denser, structured content
 - Add skills to `.claude/skills/` for custom agent-guided reviews
-- Run `bunx dewey audit` to check documentation completeness
-- Use `dewey create` when you want to publish the same docs as a static site
+- Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
+- Embed components or use `dewey create` only when you need a human site
+- [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)

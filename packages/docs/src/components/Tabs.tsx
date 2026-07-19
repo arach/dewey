@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react'
+import React, { useId, useState, createContext } from 'react'
 
 interface TabsContextValue {
   activeTab: string
@@ -25,27 +25,30 @@ export function Tabs({ defaultTab, children }: TabsProps) {
   )
 
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.props.label || '')
+  const tabsId = useId()
 
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <div className="my-5">
+      <div className="dw-tabs">
         {/* Tab buttons */}
         <div
-          className="flex gap-1 p-1 rounded-lg"
-          style={{ background: 'rgba(0, 0, 0, 0.05)' }}
+          className="dw-tabs-list"
+          role="tablist"
         >
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const isActive = activeTab === tab.props.label
+            const tabId = `${tabsId}-tab-${index}`
+            const panelId = `${tabsId}-panel-${index}`
             return (
               <button
                 key={tab.props.label}
                 onClick={() => setActiveTab(tab.props.label)}
-                className="px-4 py-2 rounded-md text-[13px] font-medium transition-all"
-                style={{
-                  background: isActive ? 'white' : 'transparent',
-                  color: isActive ? '#101518' : '#5c676c',
-                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                }}
+                className={`dw-tabs-trigger${isActive ? ' active' : ''}`}
+                role="tab"
+                id={tabId}
+                aria-controls={panelId}
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
               >
                 {tab.props.label}
               </button>
@@ -54,11 +57,14 @@ export function Tabs({ defaultTab, children }: TabsProps) {
         </div>
 
         {/* Tab content */}
-        <div className="mt-3">
-          {tabs.map((tab) => (
+        <div className="dw-tabs-content">
+          {tabs.map((tab, index) => (
             <div
               key={tab.props.label}
-              style={{ display: activeTab === tab.props.label ? 'block' : 'none' }}
+              role="tabpanel"
+              id={`${tabsId}-panel-${index}`}
+              aria-labelledby={`${tabsId}-tab-${index}`}
+              hidden={activeTab !== tab.props.label}
             >
               {tab.props.children}
             </div>

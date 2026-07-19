@@ -9,7 +9,7 @@
   --dw-background: #fafafa;
   --dw-foreground: #171717;
 
-  --dw-primary: #059669;
+  --dw-primary: #047857;
   --dw-primary-foreground: #ffffff;
 
   --dw-secondary: #ffffff;
@@ -23,7 +23,7 @@
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
   --dw-border: #e5e5e5;
-  --dw-ring: #059669;
+  --dw-ring: #047857;
 
   /* ─── Tailwind-compatible aliases (for arbitrary value classes) ─────── */
   --color-dw-background: var(--dw-background);
@@ -40,16 +40,9 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: #0284c7;
-  --dw-info-foreground: #ffffff;
-
-  --dw-warning: #d97706;
-  --dw-warning-foreground: #171717;
-
-  --dw-error: #dc2626;
-  --dw-error-foreground: #ffffff;
-
-  --dw-success: #059669;
+  /* info / warning / error inherited from tokens.css. success stays emerald
+     to match the theme accent. */
+  --dw-success: #047857;
   --dw-success-foreground: #ffffff;
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
@@ -75,12 +68,14 @@
 
   --dw-primary: #34d399;
   --dw-primary-foreground: #0a0a0a;
+  --dw-success: #34d399;
+  --dw-success-foreground: #0a0a0a;
 
   --dw-secondary: #141414;
   --dw-secondary-foreground: #e5e5e5;
 
   --dw-muted: #1a1a1a;
-  --dw-muted-foreground: #737373;
+  --dw-muted-foreground: #828282;
 
   --dw-accent: #1a1a1a;
   --dw-accent-foreground: #34d399;

@@ -7,6 +7,11 @@
     "tagline": "Documentation toolkit for AI-agent-ready docs",
     "repository": null
   },
+  "ownership": {
+    "owner": "dewey",
+    "lifecycle": "regenerate",
+    "registry": "/.dewey-generated.json"
+  },
   "artifacts": {
     "manifest": "/agent/manifest.json",
     "docs": "/agent/docs.json",
@@ -24,7 +29,8 @@
   },
   "recommendedReadOrder": [
     "overview",
-    "quickstart"
+    "quickstart",
+    "api"
   ],
   "docs": [
     {
@@ -142,6 +148,101 @@
       "frontmatter": {}
     },
     {
+      "id": "api",
+      "slug": "api",
+      "kind": "doc",
+      "title": "API Reference",
+      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+      "sourcePath": "docs/api.md",
+      "url": "/docs/api",
+      "rawUrl": "/agent/raw/docs/api.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Choose the right surface",
+          "anchor": "choose-the-right-surface"
+        },
+        {
+          "depth": 2,
+          "text": "Package entry points",
+          "anchor": "package-entry-points"
+        },
+        {
+          "depth": 2,
+          "text": "Configuration API",
+          "anchor": "configuration-api"
+        },
+        {
+          "depth": 3,
+          "text": "DeweyConfig",
+          "anchor": "deweyconfig"
+        },
+        {
+          "depth": 2,
+          "text": "Programmatic agent artifacts",
+          "anchor": "programmatic-agent-artifacts"
+        },
+        {
+          "depth": 3,
+          "text": "Artifact functions",
+          "anchor": "artifact-functions"
+        },
+        {
+          "depth": 3,
+          "text": "Artifact types and classification",
+          "anchor": "artifact-types-and-classification"
+        },
+        {
+          "depth": 2,
+          "text": "React API",
+          "anchor": "react-api"
+        },
+        {
+          "depth": 3,
+          "text": "Provider and complete app",
+          "anchor": "provider-and-complete-app"
+        },
+        {
+          "depth": 3,
+          "text": "Layout and content components",
+          "anchor": "layout-and-content-components"
+        },
+        {
+          "depth": 3,
+          "text": "Content and agent-friendly components",
+          "anchor": "content-and-agent-friendly-components"
+        },
+        {
+          "depth": 3,
+          "text": "Navigation types",
+          "anchor": "navigation-types"
+        },
+        {
+          "depth": 2,
+          "text": "Themes",
+          "anchor": "themes"
+        },
+        {
+          "depth": 2,
+          "text": "Skills and structured agent content",
+          "anchor": "skills-and-structured-agent-content"
+        },
+        {
+          "depth": 2,
+          "text": "Complete main-module export inventory",
+          "anchor": "complete-main-module-export-inventory"
+        }
+      ],
+      "tokensEstimate": 2645,
+      "frontmatter": {
+        "title": "API Reference",
+        "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+        "order": 5,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
       "id": "cli",
       "slug": "cli",
       "kind": "doc",
@@ -151,11 +252,6 @@
       "url": "/docs/cli",
       "rawUrl": "/agent/raw/docs/cli.md",
       "headings": [
-        {
-          "depth": 1,
-          "text": "CLI Reference",
-          "anchor": "cli-reference"
-        },
         {
           "depth": 2,
           "text": "Run Dewey",
@@ -168,6 +264,11 @@
         },
         {
           "depth": 2,
+          "text": "Recommended order",
+          "anchor": "recommended-order"
+        },
+        {
+          "depth": 2,
           "text": "Generate options",
           "anchor": "generate-options"
         },
@@ -177,13 +278,143 @@
           "anchor": "machine-readable-checks"
         }
       ],
-      "tokensEstimate": 300,
+      "tokensEstimate": 509,
       "frontmatter": {
         "title": "CLI Reference",
         "description": "Dewey commands and their main options",
         "order": 3,
         "group": "Reference",
         "groupId": "reference"
+      }
+    },
+    {
+      "id": "integrate-existing-site",
+      "slug": "integrate-existing-site",
+      "kind": "doc",
+      "title": "Integrate into an existing site",
+      "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
+      "sourcePath": "docs/integrate-existing-site.md",
+      "url": "/docs/integrate-existing-site",
+      "rawUrl": "/agent/raw/docs/integrate-existing-site.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "When to embed vs scaffold",
+          "anchor": "when-to-embed-vs-scaffold"
+        },
+        {
+          "depth": 2,
+          "text": "Prerequisites",
+          "anchor": "prerequisites"
+        },
+        {
+          "depth": 2,
+          "text": "Package and CSS installation",
+          "anchor": "package-and-css-installation"
+        },
+        {
+          "depth": 3,
+          "text": "CSS entry points",
+          "anchor": "css-entry-points"
+        },
+        {
+          "depth": 3,
+          "text": "Import path note",
+          "anchor": "import-path-note"
+        },
+        {
+          "depth": 2,
+          "text": "Recommended architecture",
+          "anchor": "recommended-architecture"
+        },
+        {
+          "depth": 2,
+          "text": "Server-to-client wrapper",
+          "anchor": "server-to-client-wrapper"
+        },
+        {
+          "depth": 3,
+          "text": "1. Client provider",
+          "anchor": "1-client-provider"
+        },
+        {
+          "depth": 3,
+          "text": "2. Server page + client content",
+          "anchor": "2-server-page-client-content"
+        },
+        {
+          "depth": 2,
+          "text": "Static export configuration",
+          "anchor": "static-export-configuration"
+        },
+        {
+          "depth": 2,
+          "text": "Recursive content loading",
+          "anchor": "recursive-content-loading"
+        },
+        {
+          "depth": 3,
+          "text": "Optional navigation from docs.json",
+          "anchor": "optional-navigation-from-docs-json"
+        },
+        {
+          "depth": 2,
+          "text": "Themes at runtime",
+          "anchor": "themes-at-runtime"
+        },
+        {
+          "depth": 2,
+          "text": "Docs layout shell (Header + Sidebar)",
+          "anchor": "docs-layout-shell-header-sidebar"
+        },
+        {
+          "depth": 2,
+          "text": "Dewey generation alongside the site",
+          "anchor": "dewey-generation-alongside-the-site"
+        },
+        {
+          "depth": 3,
+          "text": "Onboarding sequence (shared with greenfield)",
+          "anchor": "onboarding-sequence-shared-with-greenfield"
+        },
+        {
+          "depth": 3,
+          "text": "Serve agent files from the static host",
+          "anchor": "serve-agent-files-from-the-static-host"
+        },
+        {
+          "depth": 2,
+          "text": "CI",
+          "anchor": "ci"
+        },
+        {
+          "depth": 1,
+          "text": ".github/workflows/docs.yml (illustrative)",
+          "anchor": "github-workflows-docs-yml-illustrative"
+        },
+        {
+          "depth": 2,
+          "text": "Monorepo notes",
+          "anchor": "monorepo-notes"
+        },
+        {
+          "depth": 2,
+          "text": "Checklist",
+          "anchor": "checklist"
+        },
+        {
+          "depth": 2,
+          "text": "Related",
+          "anchor": "related"
+        }
+      ],
+      "tokensEstimate": 3050,
+      "frontmatter": {
+        "title": "Integrate into an existing site",
+        "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
+        "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
       }
     },
     {
@@ -196,11 +427,6 @@
       "url": "/docs/overview",
       "rawUrl": "/agent/raw/docs/overview.md",
       "headings": [
-        {
-          "depth": 1,
-          "text": "Dewey",
-          "anchor": "dewey"
-        },
         {
           "depth": 2,
           "text": "What Dewey Does",
@@ -233,11 +459,16 @@
         },
         {
           "depth": 2,
+          "text": "Onboarding path",
+          "anchor": "onboarding-path"
+        },
+        {
+          "depth": 2,
           "text": "Quick Links",
           "anchor": "quick-links"
         }
       ],
-      "tokensEstimate": 358,
+      "tokensEstimate": 490,
       "frontmatter": {
         "title": "Overview",
         "description": "Documentation toolkit for AI-agent-ready docs",
@@ -254,6 +485,11 @@
       "url": "/docs/quickstart",
       "rawUrl": "/agent/raw/docs/quickstart.md",
       "headings": [
+        {
+          "depth": 2,
+          "text": "Onboarding sequence",
+          "anchor": "onboarding-sequence"
+        },
         {
           "depth": 3,
           "text": "1. Install",
@@ -281,13 +517,23 @@
         },
         {
           "depth": 3,
-          "text": "6. Check your score",
-          "anchor": "6-check-your-score"
+          "text": "6. Audit",
+          "anchor": "6-audit"
+        },
+        {
+          "depth": 1,
+          "text": "CI-friendly:",
+          "anchor": "ci-friendly"
         },
         {
           "depth": 3,
-          "text": "7. Optional: create a doc site",
-          "anchor": "7-optional-create-a-doc-site"
+          "text": "7. Check your score",
+          "anchor": "7-check-your-score"
+        },
+        {
+          "depth": 3,
+          "text": "8. Optional: human-facing docs UI",
+          "anchor": "8-optional-human-facing-docs-ui"
         },
         {
           "depth": 2,
@@ -295,7 +541,7 @@
           "anchor": "next-steps"
         }
       ],
-      "tokensEstimate": 393,
+      "tokensEstimate": 753,
       "frontmatter": {
         "title": "Quickstart",
         "description": "Get your documentation agent-ready in under 5 minutes",
@@ -356,6 +602,101 @@
       }
     },
     {
+      "id": "agent/api.agent",
+      "slug": "agent/api.agent",
+      "kind": "agent",
+      "title": "API Reference",
+      "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
+      "sourcePath": "docs/agent/api.agent.md",
+      "url": "/agent/raw/docs/agent/api.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/api.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey API - Agent Context",
+          "anchor": "dewey-api-agent-context"
+        },
+        {
+          "depth": 2,
+          "text": "Purpose",
+          "anchor": "purpose"
+        },
+        {
+          "depth": 2,
+          "text": "Source of truth",
+          "anchor": "source-of-truth"
+        },
+        {
+          "depth": 2,
+          "text": "Surface selection",
+          "anchor": "surface-selection"
+        },
+        {
+          "depth": 2,
+          "text": "Package subpaths",
+          "anchor": "package-subpaths"
+        },
+        {
+          "depth": 2,
+          "text": "Config",
+          "anchor": "config"
+        },
+        {
+          "depth": 2,
+          "text": "Artifact API",
+          "anchor": "artifact-api"
+        },
+        {
+          "depth": 2,
+          "text": "Themes",
+          "anchor": "themes"
+        },
+        {
+          "depth": 2,
+          "text": "React minimal example",
+          "anchor": "react-minimal-example"
+        },
+        {
+          "depth": 2,
+          "text": "Component contracts",
+          "anchor": "component-contracts"
+        },
+        {
+          "depth": 2,
+          "text": "Component/navigation unions",
+          "anchor": "component-navigation-unions"
+        },
+        {
+          "depth": 2,
+          "text": "Main module runtime exports",
+          "anchor": "main-module-runtime-exports"
+        },
+        {
+          "depth": 2,
+          "text": "Main module type exports",
+          "anchor": "main-module-type-exports"
+        },
+        {
+          "depth": 2,
+          "text": "Skills are prompts",
+          "anchor": "skills-are-prompts"
+        },
+        {
+          "depth": 2,
+          "text": "Structured agent content",
+          "anchor": "structured-agent-content"
+        }
+      ],
+      "tokensEstimate": 2134,
+      "frontmatter": {
+        "title": "API Reference",
+        "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
+        "order": 5,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
       "id": "agent/cli.agent",
       "slug": "agent/cli.agent",
       "kind": "agent",
@@ -377,11 +718,21 @@
         },
         {
           "depth": 2,
+          "text": "Recommended order",
+          "anchor": "recommended-order"
+        },
+        {
+          "depth": 2,
           "text": "Generation selection",
           "anchor": "generation-selection"
+        },
+        {
+          "depth": 2,
+          "text": "Audit versus agent",
+          "anchor": "audit-versus-agent"
         }
       ],
-      "tokensEstimate": 249,
+      "tokensEstimate": 353,
       "frontmatter": {
         "title": "CLI Reference",
         "description": "Dense Dewey CLI contract for agents",
@@ -391,11 +742,116 @@
       }
     },
     {
+      "id": "agent/integrate-existing-site.agent",
+      "slug": "agent/integrate-existing-site.agent",
+      "kind": "agent",
+      "title": "Integrate existing site (agent)",
+      "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",
+      "sourcePath": "docs/agent/integrate-existing-site.agent.md",
+      "url": "/agent/raw/docs/agent/integrate-existing-site.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/integrate-existing-site.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey embed contract (existing React / Next.js)",
+          "anchor": "dewey-embed-contract-existing-react-next-js"
+        },
+        {
+          "depth": 2,
+          "text": "Positioning",
+          "anchor": "positioning"
+        },
+        {
+          "depth": 2,
+          "text": "Decision table",
+          "anchor": "decision-table"
+        },
+        {
+          "depth": 2,
+          "text": "Install",
+          "anchor": "install"
+        },
+        {
+          "depth": 2,
+          "text": "Onboarding sequence (shared)",
+          "anchor": "onboarding-sequence-shared"
+        },
+        {
+          "depth": 2,
+          "text": "Architecture (Next App Router)",
+          "anchor": "architecture-next-app-router"
+        },
+        {
+          "depth": 3,
+          "text": "Boundary rule",
+          "anchor": "boundary-rule"
+        },
+        {
+          "depth": 3,
+          "text": "Prefer composed shell",
+          "anchor": "prefer-composed-shell"
+        },
+        {
+          "depth": 2,
+          "text": "Static export",
+          "anchor": "static-export"
+        },
+        {
+          "depth": 2,
+          "text": "Content discovery rules",
+          "anchor": "content-discovery-rules"
+        },
+        {
+          "depth": 2,
+          "text": "Provider snippet contract",
+          "anchor": "provider-snippet-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Scripts (host package.json)",
+          "anchor": "scripts-host-package-json"
+        },
+        {
+          "depth": 2,
+          "text": "CI (minimum)",
+          "anchor": "ci-minimum"
+        },
+        {
+          "depth": 2,
+          "text": "Public agent URLs (optional)",
+          "anchor": "public-agent-urls-optional"
+        },
+        {
+          "depth": 2,
+          "text": "Monorepo",
+          "anchor": "monorepo"
+        },
+        {
+          "depth": 2,
+          "text": "Anti-patterns",
+          "anchor": "anti-patterns"
+        },
+        {
+          "depth": 2,
+          "text": "Related paths",
+          "anchor": "related-paths"
+        }
+      ],
+      "tokensEstimate": 1200,
+      "frontmatter": {
+        "title": "Integrate existing site (agent)",
+        "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",
+        "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
       "id": "agent/overview.agent",
       "slug": "agent/overview.agent",
       "kind": "agent",
       "title": "dewey - Agent Context",
-      "description": "Entry: DocsApp, DocsIndex\nLayout: DocsLayout, Header, Sidebar, TableOfContents\nContent: MarkdownContent, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge\nAgent: AgentContext, PromptSlideout, CopyButtons\nP",
+      "description": "init → author → generate → audit → agent → optional UI",
       "sourcePath": "docs/agent/overview.agent.md",
       "url": "/agent/raw/docs/agent/overview.agent.md",
       "rawUrl": "/agent/raw/docs/agent/overview.agent.md",
@@ -419,6 +875,11 @@
           "depth": 2,
           "text": "CLI Commands",
           "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Onboarding path",
+          "anchor": "onboarding-path"
         },
         {
           "depth": 2,
@@ -456,7 +917,7 @@
           "anchor": "key-files"
         }
       ],
-      "tokensEstimate": 494,
+      "tokensEstimate": 552,
       "frontmatter": {}
     },
     {
@@ -500,7 +961,7 @@
           "anchor": "optional-publishing"
         }
       ],
-      "tokensEstimate": 393,
+      "tokensEstimate": 491,
       "frontmatter": {
         "title": "Quickstart for agents",
         "description": "Deterministic setup sequence and expected Dewey outputs",

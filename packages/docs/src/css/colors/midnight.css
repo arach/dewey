@@ -9,18 +9,18 @@
   /* ─── Core Colors ────────────────────────────────────────────────────── */
   --dw-background: #f8fafc;
   --dw-foreground: #0f172a;
-  --dw-primary: #3b82f6;
+  --dw-primary: #2563eb;
   --dw-primary-foreground: #ffffff;
   --dw-secondary: #f1f5f9;
   --dw-secondary-foreground: #1e293b;
   --dw-muted: #f1f5f9;
-  --dw-muted-foreground: #64748b;
+  --dw-muted-foreground: #5b6a7e;
   --dw-accent: rgba(59, 130, 246, 0.08);
   --dw-accent-foreground: #2563eb;
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
   --dw-border: #e2e8f0;
-  --dw-ring: #3b82f6;
+  --dw-ring: #2563eb;
 
   /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
   --color-dw-background: var(--dw-background);
@@ -41,23 +41,8 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: #0ea5e9;
-  --dw-info-foreground: #ffffff;
-  --dw-warning: #f59e0b;
-  --dw-warning-foreground: #0f172a;
-  --dw-error: #ef4444;
-  --dw-error-foreground: #ffffff;
-  --dw-success: #22c55e;
-  --dw-success-foreground: #ffffff;
-
-  --color-dw-info: var(--dw-info);
-  --color-dw-info-foreground: var(--dw-info-foreground);
-  --color-dw-warning: var(--dw-warning);
-  --color-dw-warning-foreground: var(--dw-warning-foreground);
-  --color-dw-error: var(--dw-error);
-  --color-dw-error-foreground: var(--dw-error-foreground);
-  --color-dw-success: var(--dw-success);
-  --color-dw-success-foreground: var(--dw-success-foreground);
+  /* info / warning / error / success inherited from tokens.css (one accessible
+     contract, light + dark). Override below only for theme identity. */
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
   --dw-code-bg: #f1f5f9;
@@ -68,7 +53,7 @@
   /* ─── Sidebar ────────────────────────────────────────────────────────── */
   --dw-sidebar-bg: rgba(248, 250, 252, 0.9);
   --dw-sidebar-border: #e2e8f0;
-  --dw-sidebar-active: #3b82f6;
+  --dw-sidebar-active: #2563eb;
   --dw-sidebar-active-bg: rgba(59, 130, 246, 0.08);
   --color-dw-sidebar-bg: var(--dw-sidebar-bg);
   --color-dw-sidebar-border: var(--dw-sidebar-border);
@@ -98,7 +83,7 @@
   --dw-secondary: rgba(255, 255, 255, 0.04);
   --dw-secondary-foreground: #e2e8f0;
   --dw-muted: rgba(255, 255, 255, 0.06);
-  --dw-muted-foreground: #64748b;
+  --dw-muted-foreground: #7c8aa0;
   --dw-accent: rgba(96, 165, 250, 0.12);
   --dw-accent-foreground: #60a5fa;
 
@@ -108,15 +93,6 @@
   --color-dw-primary-shadow: 0 12px 32px rgba(59, 130, 246, 0.3);
   --color-dw-primary-glow: 0 0 0 4px rgba(96, 165, 250, 0.2);
   --color-dw-border-subtle: rgba(255, 255, 255, 0.04);
-
-  --dw-info: #38bdf8;
-  --dw-info-foreground: #0c0e14;
-  --dw-warning: #fbbf24;
-  --dw-warning-foreground: #0c0e14;
-  --dw-error: #f87171;
-  --dw-error-foreground: #0c0e14;
-  --dw-success: #4ade80;
-  --dw-success-foreground: #0c0e14;
 
   --dw-code-bg: rgba(255, 255, 255, 0.04);
   --dw-code-border: rgba(255, 255, 255, 0.08);

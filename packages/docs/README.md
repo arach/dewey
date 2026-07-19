@@ -35,6 +35,8 @@ bunx @arach/dewey@latest <command>
 
 ## Quick Start
 
+Sequence: **init → author → generate → audit → agent → optional UI**.
+
 ```bash
 # Scaffold docs/ and dewey.config.ts
 bunx dewey init
@@ -42,12 +44,20 @@ bunx dewey init
 # Generate agent-ready files
 bunx dewey generate
 
-# Check your agent-readiness score
+# Structural checks, then score
+bunx dewey audit
 bunx dewey agent
 
-# Optional: static docs site from markdown
+# Optional: standalone static docs site from markdown
 bunx dewey create my-docs --source ./docs --template nextjs --theme ocean
 ```
+
+| Guide | Location |
+|-------|----------|
+| Onboarding | [docs/quickstart.md](../../docs/quickstart.md) |
+| Embed in existing React/Next.js | [docs/integrate-existing-site.md](../../docs/integrate-existing-site.md) |
+| CLI | [docs/cli.md](../../docs/cli.md) |
+| TypeScript/React API | [docs/api.md](../../docs/api.md) |
 
 ## CLI
 
@@ -70,6 +80,8 @@ dewey generate --llms-txt               # llms.txt only
 dewey generate --docs-json              # docs.json only
 dewey generate --install-md             # install.md only (installmd.org)
 dewey generate --agent-artifacts        # agent/ retrieval surface only
+dewey generate --dry-run                # preview writes, preserves, and pruning
+dewey generate --overwrite              # replace reviewed output conflicts
 ```
 
 ### Agent scoring
@@ -78,8 +90,10 @@ dewey generate --agent-artifacts        # agent/ retrieval surface only
 dewey agent              # summary report
 dewey agent --verbose    # per-check breakdown
 dewey agent --json       # machine-readable output
-dewey agent --fix        # auto-create missing files and folders
 ```
+
+`audit` performs deterministic structural validation. `agent` evaluates broader
+agent-readiness signals and recommends the next improvements; it does not modify files.
 
 ## Generated Files
 
@@ -89,6 +103,7 @@ dewey agent --fix        # auto-create missing files and folders
 | `llms.txt` | Plain text summary for LLMs |
 | `docs.json` | Structured documentation manifest (nav, pages, generators) |
 | `install.md` | LLM-executable installation guide ([installmd.org](https://installmd.org)) |
+| `.dewey-generated.json` | Ownership hashes used for safe updates and pruning |
 
 The `agent/` retrieval surface (via `--agent-artifacts` or full `generate`):
 
@@ -153,7 +168,7 @@ Dewey recognizes colocated agent docs (`docs/overview.agent.md`) and nested agen
 
 ## React Components
 
-Optional React components for documentation UIs:
+Optional React components for documentation UIs (agent generation works without them):
 
 ```tsx
 import { DocsApp, MarkdownContent, Callout } from '@arach/dewey'
@@ -161,6 +176,8 @@ import '@arach/dewey/css'
 ```
 
 Includes `DocsLayout`, `Sidebar`, `TableOfContents`, `CodeBlock`, `Callout`, `Tabs`, `Steps`, `Card`, `FileTree`, `ApiTable`, `Badge`, `AgentContext`, `PromptSlideout`, and more.
+
+**Existing site?** Do not start with `dewey create`. Embed components with a server/client split, recursive markdown loading, and generate-in-CI — full guide: [docs/integrate-existing-site.md](../../docs/integrate-existing-site.md). `@arach/dewey/react` is identical to `@arach/dewey`.
 
 ### CSS themes
 
@@ -196,7 +213,7 @@ import { docsReviewAgent, installMdGenerator } from '@arach/dewey'
 
 ## Site Generator
 
-`dewey create` is a publishing path, not the core contract. The core contract is the generated markdown and JSON artifacts.
+`dewey create` is a **standalone** publishing path, not the core contract. The core contract is the generated markdown and JSON artifacts. To add docs to an app you already ship, use the [existing-site integration guide](../../docs/integrate-existing-site.md) instead.
 
 ```bash
 dewey create my-project-docs --source ./docs --template nextjs --theme purple

@@ -13,8 +13,19 @@ Documentation toolkit that prepares docs for AI agents. Generates standard agent
 | `dewey init` | Create docs/ + dewey.config.ts |
 | `dewey audit` | Validate completeness |
 | `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, agent/ artifacts |
-| `dewey create` | Optional static docs site from markdown |
 | `dewey agent` | Score agent-readiness (0-100 pts) |
+| `dewey create` | Optional static docs site from markdown |
+
+## Onboarding path
+
+`init` → author → `generate` → `audit` → `agent` → optional UI
+
+| Optional UI | Doc |
+|-------------|-----|
+| Embed existing React/Next | `docs/integrate-existing-site.md` |
+| Standalone scaffold | `dewey create` |
+
+Public TypeScript, React, theme, and artifact contracts: `docs/api.md`.
 
 ## Generated Files
 

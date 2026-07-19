@@ -9,25 +9,25 @@
 
 :root {
   /* Fonts */
-  --font-dw-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
-  --font-dw-serif: 'Fraunces', serif;
-  --font-dw-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --dw-font-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --dw-font-serif: 'Fraunces', serif;
+  --dw-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 
   /* ─── Core Colors ────────────────────────────────────────────────────── */
   --dw-background: #f7f3ec;
   --dw-foreground: #101518;
-  --dw-primary: #f07c4f;
-  --dw-primary-foreground: #1c120a;
+  --dw-primary: #b0532b;
+  --dw-primary-foreground: #ffffff;
   --dw-secondary: rgba(255, 255, 255, 0.75);
   --dw-secondary-foreground: #101518;
   --dw-muted: rgba(16, 21, 24, 0.04);
   --dw-muted-foreground: #5c676c;
   --dw-accent: rgba(240, 124, 79, 0.12);
-  --dw-accent-foreground: #f07c4f;
+  --dw-accent-foreground: #93431f;
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
   --dw-border: rgba(16, 21, 24, 0.12);
-  --dw-ring: #f07c4f;
+  --dw-ring: #b0532b;
 
   /* ─── Tailwind-compatible aliases ─────────────────────────────────────── */
   --color-dw-background: var(--dw-background);
@@ -48,23 +48,8 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: oklch(62.3% 0.214 259.815);
-  --dw-info-foreground: hsl(0, 0%, 100%);
-  --dw-warning: oklch(76.9% 0.188 70.08);
-  --dw-warning-foreground: hsl(0, 0%, 9%);
-  --dw-error: oklch(63.7% 0.237 25.331);
-  --dw-error-foreground: hsl(0, 0%, 100%);
-  --dw-success: oklch(72.3% 0.219 149.579);
-  --dw-success-foreground: hsl(0, 0%, 100%);
-
-  --color-dw-info: var(--dw-info);
-  --color-dw-info-foreground: var(--dw-info-foreground);
-  --color-dw-warning: var(--dw-warning);
-  --color-dw-warning-foreground: var(--dw-warning-foreground);
-  --color-dw-error: var(--dw-error);
-  --color-dw-error-foreground: var(--dw-error-foreground);
-  --color-dw-success: var(--dw-success);
-  --color-dw-success-foreground: var(--dw-success-foreground);
+  /* info / warning / error / success inherited from tokens.css (one accessible
+     contract, light + dark). Override below only for theme identity. */
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
   --dw-code-bg: rgba(255, 255, 255, 0.75);
@@ -75,7 +60,7 @@
   /* ─── Sidebar ────────────────────────────────────────────────────────── */
   --dw-sidebar-bg: rgba(247, 243, 236, 0.95);
   --dw-sidebar-border: rgba(16, 21, 24, 0.1);
-  --dw-sidebar-active: #f07c4f;
+  --dw-sidebar-active: #93431f;
   --dw-sidebar-active-bg: rgba(240, 124, 79, 0.1);
   --color-dw-sidebar-bg: var(--dw-sidebar-bg);
   --color-dw-sidebar-border: var(--dw-sidebar-border);
@@ -107,7 +92,7 @@
   --dw-secondary: rgba(255, 255, 255, 0.03);
   --dw-secondary-foreground: #e5e7eb;
   --dw-muted: rgba(255, 255, 255, 0.05);
-  --dw-muted-foreground: #6b7280;
+  --dw-muted-foreground: #868e9c;
   --dw-accent: rgba(240, 124, 79, 0.15);
   --dw-accent-foreground: #f07c4f;
 

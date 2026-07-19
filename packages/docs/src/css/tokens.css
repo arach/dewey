@@ -59,4 +59,63 @@
   --dw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --dw-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --dw-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* ─── Semantic Colors (single contract) ──────────────────────────────────
+   * Accessible defaults for info / warning / error / success. Every color
+   * preset inherits these unless it overrides them, so the semantic contract
+   * is defined once. Base components render semantic colors as TEXT on a soft
+   * tint (see .dw-callout / .dw-badge), so each value meets WCAG AA (>=4.5:1)
+   * as text on its mode's background. Light values are also dark enough that a
+   * white foreground clears AA for solid fills.
+   * ─────────────────────────────────────────────────────────────────────── */
+  --dw-info: #2563eb;
+  --dw-info-foreground: #ffffff;
+  --dw-warning: #935408;
+  --dw-warning-foreground: #ffffff;
+  --dw-error: #c9211f;
+  --dw-error-foreground: #ffffff;
+  --dw-success: #157f3c;
+  --dw-success-foreground: #ffffff;
+
+  --color-dw-info: var(--dw-info);
+  --color-dw-info-foreground: var(--dw-info-foreground);
+  --color-dw-warning: var(--dw-warning);
+  --color-dw-warning-foreground: var(--dw-warning-foreground);
+  --color-dw-error: var(--dw-error);
+  --color-dw-error-foreground: var(--dw-error-foreground);
+  --color-dw-success: var(--dw-success);
+  --color-dw-success-foreground: var(--dw-success-foreground);
+
+  /* Syntax roles are semantic so themes and consumers can override them. */
+  --dw-syntax-keyword: #70401f;
+  --dw-syntax-string: #1f6338;
+  --dw-syntax-number: #235f87;
+  --dw-syntax-type: #60447a;
+  --dw-syntax-function: #4d4d78;
+  --dw-syntax-punctuation: #444b50;
+  --dw-syntax-comment: #4f5959;
+}
+
+/* ─── Semantic Colors — dark mode floor ─────────────────────────────────────
+ * On dark backgrounds semantic colors must be light to stay legible as text,
+ * so the dark floor lifts each hue and flips the solid foreground dark. A
+ * preset with its own .dark semantic values overrides these.
+ * ─────────────────────────────────────────────────────────────────────────── */
+.dark,
+[data-theme="dark"] {
+  --dw-info: #60a5fa;
+  --dw-info-foreground: #0b1120;
+  --dw-warning: #fbbf24;
+  --dw-warning-foreground: #0b1120;
+  --dw-error: #f87171;
+  --dw-error-foreground: #0b1120;
+  --dw-success: #4ade80;
+  --dw-success-foreground: #0b1120;
+  --dw-syntax-keyword: #f0b98c;
+  --dw-syntax-string: #9ed5ad;
+  --dw-syntax-number: #9bc8e5;
+  --dw-syntax-type: #cdb4e8;
+  --dw-syntax-function: #c4c4eb;
+  --dw-syntax-punctuation: #d0d4d8;
+  --dw-syntax-comment: #a7b0b0;
 }

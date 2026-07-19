@@ -35,23 +35,8 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: oklch(62.3% 0.214 259.815);
-  --dw-info-foreground: hsl(0, 0%, 100%);
-  --dw-warning: oklch(76.9% 0.188 70.08);
-  --dw-warning-foreground: hsl(0, 0%, 9%);
-  --dw-error: oklch(63.7% 0.237 25.331);
-  --dw-error-foreground: hsl(0, 0%, 100%);
-  --dw-success: oklch(72.3% 0.219 149.579);
-  --dw-success-foreground: hsl(0, 0%, 100%);
-
-  --color-dw-info: var(--dw-info);
-  --color-dw-info-foreground: var(--dw-info-foreground);
-  --color-dw-warning: var(--dw-warning);
-  --color-dw-warning-foreground: var(--dw-warning-foreground);
-  --color-dw-error: var(--dw-error);
-  --color-dw-error-foreground: var(--dw-error-foreground);
-  --color-dw-success: var(--dw-success);
-  --color-dw-success-foreground: var(--dw-success-foreground);
+  /* info / warning / error / success inherited from tokens.css (one accessible
+     contract, light + dark). Override below only for theme identity. */
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
   --dw-code-bg: hsl(270, 15%, 96%);
@@ -87,7 +72,7 @@
   --dw-background: hsl(265, 25%, 8%);
   --dw-foreground: hsl(270, 15%, 93%);
   --dw-primary: hsl(262, 83%, 68%);
-  --dw-primary-foreground: hsl(0, 0%, 100%);
+  --dw-primary-foreground: hsl(265, 25%, 8%);
   --dw-secondary: hsl(265, 20%, 14%);
   --dw-secondary-foreground: hsl(270, 15%, 93%);
   --dw-muted: hsl(265, 15%, 16%);

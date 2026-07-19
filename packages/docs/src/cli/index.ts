@@ -41,14 +41,17 @@ program
   .option('--docs-json', 'Generate only docs.json')
   .option('--install-md', 'Generate only install.md (installmd.org standard)')
   .option('--agent-artifacts', 'Generate agent retrieval artifacts under agent/')
-  .action(generateCommand)
+  .option('--dry-run', 'Preview creates, updates, and stale-file pruning without writing')
+  .option('--overwrite', 'Explicitly replace reviewed desired-output conflicts')
+  .action(async (options) => {
+    await generateCommand(options)
+  })
 
 program
   .command('agent')
   .description('Check agent-readiness and get recommendations')
   .option('-v, --verbose', 'Show detailed check results')
   .option('--json', 'Output as JSON')
-  .option('--fix', 'Auto-create missing files and folders')
   .action(agentCoachCommand)
 
 program

@@ -81,6 +81,7 @@ describe('reproducible generation metadata', () => {
 
     expect(second).toEqual(first)
     expect(first['AGENTS.md']).not.toContain('Last updated:')
+    expect(first['AGENTS.md']).toContain('<!-- dewey:generated owner=dewey -->')
 
     const docsManifest = JSON.parse(first['docs.json']) as Record<string, unknown>
     expect(docsManifest).toMatchObject({ schemaVersion: 1, version: '2.3.4' })
@@ -94,6 +95,7 @@ describe('reproducible generation metadata', () => {
     ]) {
       const manifest = JSON.parse(first[file]) as Record<string, unknown>
       expect(manifest).toMatchObject({ schemaVersion: 1, version: 1 })
+      expect(manifest).toMatchObject({ ownership: { owner: 'dewey', lifecycle: 'regenerate' } })
       expect(manifest).not.toHaveProperty('generatedAt')
     }
   })

@@ -9,21 +9,21 @@
   --dw-background: #fffcf9;
   --dw-foreground: #1c1917;
 
-  --dw-primary: #ea580c;
+  --dw-primary: #c2410c;
   --dw-primary-foreground: #ffffff;
 
   --dw-secondary: #faf7f5;
   --dw-secondary-foreground: #292524;
 
   --dw-muted: #f5f2ef;
-  --dw-muted-foreground: #78716c;
+  --dw-muted-foreground: #736b63;
 
   --dw-accent: #fef3eb;
   --dw-accent-foreground: #9a3412;
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
   --dw-border: #e7e5e4;
-  --dw-ring: #ea580c;
+  --dw-ring: #c2410c;
 
   /* ─── Tailwind-compatible aliases (for arbitrary value classes) ─────── */
   --color-dw-background: var(--dw-background);
@@ -40,17 +40,8 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: #0284c7;
-  --dw-info-foreground: #ffffff;
-
-  --dw-warning: #d97706;
-  --dw-warning-foreground: #1c1917;
-
-  --dw-error: #dc2626;
-  --dw-error-foreground: #ffffff;
-
-  --dw-success: #16a34a;
-  --dw-success-foreground: #ffffff;
+  /* info / warning / error / success inherited from tokens.css (one accessible
+     contract, light + dark). Override below only for theme identity. */
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
   --dw-code-bg: #faf8f6;

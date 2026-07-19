@@ -11,8 +11,8 @@
 
 :root {
   /* Fonts */
-  --font-dw-sans: 'Geist', -apple-system, 'Segoe UI', sans-serif;
-  --font-dw-mono: 'Geist Mono', 'SF Mono', monospace;
+  --dw-font-sans: 'Geist', -apple-system, 'Segoe UI', sans-serif;
+  --dw-font-mono: 'Geist Mono', 'SF Mono', monospace;
 
   /* ─── Core Colors ────────────────────────────────────────────────────── */
   --dw-background: #ffffff;
@@ -24,7 +24,7 @@
   --dw-muted: #fafafa;
   --dw-muted-foreground: #666666;
   --dw-accent: rgba(0, 112, 243, 0.06);
-  --dw-accent-foreground: #0070f3;
+  --dw-accent-foreground: #005fcf;
 
   /* ─── Borders & Rings ────────────────────────────────────────────────── */
   --dw-border: #eaeaea;
@@ -46,23 +46,11 @@
   --color-dw-ring: var(--dw-ring);
 
   /* ─── Semantic Colors ────────────────────────────────────────────────── */
-  --dw-info: #0070f3;
-  --dw-info-foreground: #ffffff;
-  --dw-warning: #f5a623;
-  --dw-warning-foreground: #000000;
-  --dw-error: #e00;
-  --dw-error-foreground: #ffffff;
-  --dw-success: #0070f3;
+  /* info / warning / error inherited from tokens.css. success stays on the
+     single blue accent to keep the monochrome identity. */
+  --dw-success: #0068d6;
   --dw-success-foreground: #ffffff;
-
-  --color-dw-info: var(--dw-info);
-  --color-dw-info-foreground: var(--dw-info-foreground);
-  --color-dw-warning: var(--dw-warning);
-  --color-dw-warning-foreground: var(--dw-warning-foreground);
-  --color-dw-error: var(--dw-error);
-  --color-dw-error-foreground: var(--dw-error-foreground);
   --color-dw-success: var(--dw-success);
-  --color-dw-success-foreground: var(--dw-success-foreground);
 
   /* ─── Code Blocks ────────────────────────────────────────────────────── */
   --dw-code-bg: #fafafa;
@@ -105,7 +93,9 @@
   --dw-muted: #111111;
   --dw-muted-foreground: #888888;
   --dw-accent: rgba(0, 112, 243, 0.1);
-  --dw-accent-foreground: #0070f3;
+  --dw-accent-foreground: #3b9cff;
+  --dw-success: #4d9dff;
+  --dw-success-foreground: #000000;
 
   --dw-border: #333333;
   --dw-ring: #0070f3;

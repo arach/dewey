@@ -16,74 +16,50 @@ export interface CardGridProps {
 
 export function Card({ title, description, icon: Icon, href, children }: CardProps) {
   const content = (
-    <>
+    <div className="dw-card-content">
       {Icon && (
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
-          style={{ background: 'rgba(240, 124, 79, 0.1)' }}
-        >
-          <Icon className="w-5 h-5" style={{ color: '#f07c4f' }} />
+        <div className="dw-card-icon-box">
+          <Icon aria-hidden="true" />
         </div>
       )}
-      <h3
-        className="font-semibold text-[15px] mb-1"
-        style={{ color: '#101518' }}
-      >
+      <h3 className="dw-card-title">
         {title}
-        {href && (
-          <ArrowRight
-            className="w-4 h-4 inline-block ml-1 transition-transform group-hover:translate-x-0.5"
-            style={{ color: '#9ca3af' }}
-          />
-        )}
       </h3>
       {description && (
-        <p className="text-[13px] leading-relaxed" style={{ color: '#5c676c' }}>
+        <p className="dw-card-description">
           {description}
         </p>
       )}
       {children && (
-        <div className="text-[13px] leading-relaxed mt-2" style={{ color: '#5c676c' }}>
+        <div className="dw-card-description">
           {children}
         </div>
       )}
-    </>
+    </div>
   )
-
-  const cardStyle = {
-    background: 'rgba(255, 255, 255, 0.7)',
-    border: '1px solid rgba(16, 21, 24, 0.1)',
-    backdropFilter: 'blur(8px)',
-  }
 
   if (href) {
     return (
       <a
         href={href}
-        className="block rounded-xl p-5 transition-all hover:shadow-md hover:border-orange-200 group"
-        style={cardStyle}
+        className="dw-card"
       >
         {content}
+        <ArrowRight className="dw-card-arrow" aria-hidden="true" />
       </a>
     )
   }
 
   return (
-    <div className="rounded-xl p-5" style={cardStyle}>
+    <div className="dw-card">
       {content}
     </div>
   )
 }
 
 export function CardGrid({ columns = 2, children }: CardGridProps) {
-  const gridCols = {
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-    4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
-  }
-
   return (
-    <div className={`grid ${gridCols[columns]} gap-4 my-5`}>
+    <div className="dw-card-grid" data-columns={columns}>
       {children}
     </div>
   )

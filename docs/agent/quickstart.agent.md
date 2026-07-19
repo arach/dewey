@@ -18,13 +18,17 @@ order: 2
 
 | Step | Command or action | Expected result |
 |---|---|---|
-| Install | `bun add -d @arach/dewey` | Local `dewey` binary available |
+| Install | `bun add -d @arach/dewey` (or `bun add` if importing components) | Local `dewey` binary available |
 | Initialize | `bunx dewey init` | `docs/` and `dewey.config.ts` created |
 | Configure | Edit `dewey.config.ts` | Project context, document paths, agent rules defined |
 | Author | Add human `.md` and agent `.agent.md` pages | Paired documentation source exists |
 | Generate | `bunx dewey generate` | Standard files and `agent/` retrieval surface written |
-| Audit | `bunx dewey audit` | Deterministic documentation checks reported |
-| Score | `bunx dewey agent` | Agent-readiness score and recommendations reported |
+| Audit | `bunx dewey audit` / `--json` | Deterministic documentation checks reported |
+| Score | `bunx dewey agent` / `--json` | Agent-readiness score and recommendations reported |
+| Embed UI (optional) | Host React/Next routes | See `docs/integrate-existing-site.md` |
+| Create site (optional) | `bunx dewey create …` | Standalone static site only |
+
+Order is fixed for greenfield and embed alike: **init → author → generate → audit → agent → optional UI**.
 
 ## Generated outputs
 
@@ -51,4 +55,9 @@ order: 2
 
 ## Optional publishing
 
-`bunx dewey create my-docs --source ./docs --theme ocean` scaffolds a static site. Publishing is optional; generated agent artifacts remain the core contract.
+| Mode | Entry |
+|---|---|
+| Embed in existing React/Next | `docs/integrate-existing-site.md` + `docs/agent/integrate-existing-site.agent.md` |
+| Standalone site | `bunx dewey create my-docs --source ./docs --theme ocean` |
+
+Publishing is optional; generated agent artifacts remain the core contract.

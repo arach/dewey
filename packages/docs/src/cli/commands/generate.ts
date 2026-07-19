@@ -1,13 +1,21 @@
 import chalk from 'chalk'
-import { readdir, readFile, writeFile, access, mkdir } from 'fs/promises'
+import { readdir, readFile, access } from 'fs/promises'
 import { join, relative, resolve } from 'path'
 import matter from 'gray-matter'
 import { loadConfig } from '../config.js'
 import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
 import { DEWEY_VERSION, getGeneratedAt } from '../version.js'
-import { writeAgentArtifacts } from '../agent-artifacts.js'
+import { buildAgentArtifactFiles } from '../agent-artifacts.js'
+import {
+  applyGenerationPlan,
+  isOutputInsideSource,
+  planGeneratedArtifacts,
+  type GeneratedArtifact,
+  type GenerationAction,
+  type GenerationScope,
+} from '../generation-plan.js'
 
-interface GenerateOptions {
+export interface GenerateOptions {
   output?: string
   source?: string
   agentsMd?: boolean
@@ -15,6 +23,8 @@ interface GenerateOptions {
   docsJson?: boolean
   installMd?: boolean
   agentArtifacts?: boolean
+  dryRun?: boolean
+  overwrite?: boolean
 }
 
 interface DocSection {
@@ -418,10 +428,24 @@ export async function generateCommand(options: GenerateOptions) {
     process.exit(1)
   }
 
+  if (isOutputInsideSource(docsPath, outputPath)) {
+    throw new Error(
+      `Output directory must not be the docs source or one of its descendants: ${outputPath}`,
+    )
+  }
+
   console.log(chalk.blue(`\n🔄 Generating agent files for ${config.project.name}...\n`))
 
   // Get all available sections
   const availableSections = await discoverMarkdownSections(docsPath)
+  if (availableSections.length === 0) {
+    console.warn(chalk.yellow(`⚠ No human Markdown documents found in ${docsPath}`))
+  }
+
+  const missingConfiguredSections = config.agent.sections.filter(section => !availableSections.includes(section))
+  if (missingConfiguredSections.length > 0) {
+    console.warn(chalk.yellow(`⚠ Configured sections not found: ${missingConfiguredSections.join(', ')}`))
+  }
 
   // Filter to configured sections (or use all if not specified)
   const sectionsToInclude = config.agent.sections.length > 0
@@ -440,8 +464,8 @@ export async function generateCommand(options: GenerateOptions) {
     agentArtifacts: generateAll || options.agentArtifacts,
   }
 
-  // Ensure output directory exists
-  await mkdir(outputPath, { recursive: true })
+  const artifacts: GeneratedArtifact[] = []
+  const selectedScopes: GenerationScope[] = []
 
   // Generate AGENTS.md
   if (filesToGenerate.agentsMd) {
@@ -451,9 +475,8 @@ export async function generateCommand(options: GenerateOptions) {
       config,
       docs
     )
-    const filePath = join(outputPath, 'AGENTS.md')
-    await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('AGENTS.md')}`)
+    artifacts.push({ path: 'AGENTS.md', content, marker: true, scope: 'agentsMd' })
+    selectedScopes.push('agentsMd')
   }
 
   // Generate llms.txt
@@ -464,9 +487,8 @@ export async function generateCommand(options: GenerateOptions) {
       docs,
       filesToGenerate.agentArtifacts,
     )
-    const filePath = join(outputPath, 'llms.txt')
-    await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('llms.txt')}`)
+    artifacts.push({ path: 'llms.txt', content, marker: true, scope: 'llmsTxt' })
+    selectedScopes.push('llmsTxt')
   }
 
   // Generate docs.json
@@ -477,39 +499,68 @@ export async function generateCommand(options: GenerateOptions) {
       config.project.tagline,
       docs
     )
-    const filePath = join(outputPath, 'docs.json')
-    await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('docs.json')}`)
+    artifacts.push({ path: 'docs.json', content, scope: 'docsJson' })
+    selectedScopes.push('docsJson')
   }
 
   // Generate install.md (installmd.org standard)
   if (filesToGenerate.installMd) {
     const content = generateInstallMd(config, docs)
-    const filePath = join(outputPath, 'install.md')
-    await writeFile(filePath, content)
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('install.md')} (installmd.org standard)`)
+    artifacts.push({ path: 'install.md', content, marker: true, scope: 'installMd' })
+    selectedScopes.push('installMd')
   }
 
+  let agentArtifactCounts: { docs: number; prompts: number } | undefined
   if (filesToGenerate.agentArtifacts) {
-    const result = await writeAgentArtifacts({
+    const result = await buildAgentArtifactFiles({
       rootDir: cwd,
       docsDir: docsPath,
-      outputDir: outputPath,
       project: {
         name: config.project.name,
         version: config.project.version,
         tagline: config.project.tagline,
       },
     })
-    console.log(chalk.green('✓') + ` Generated ${chalk.cyan('agent/')} retrieval artifacts (${result.docs} docs, ${result.prompts} prompts)`)
+    artifacts.push(...result.files)
+    selectedScopes.push('agentArtifacts')
+    agentArtifactCounts = { docs: result.docs, prompts: result.prompts }
   }
+
+  const plan = await planGeneratedArtifacts(outputPath, artifacts, selectedScopes, {
+    overwrite: options.overwrite,
+  })
+  printGenerationPlan(plan.operations)
+
+  if (!options.dryRun) await applyGenerationPlan(plan)
 
   const generatedSectionFiles = filesToGenerate.agentsMd || filesToGenerate.llmsTxt || filesToGenerate.docsJson || filesToGenerate.installMd
 
-  console.log(chalk.blue('\n✨ Agent files generated!\n'))
+  console.log(chalk.blue(options.dryRun ? '\n🔎 Dry run complete; no files were written.\n' : '\n✨ Agent files generated!\n'))
   console.log(`Output directory: ${chalk.gray(outputPath)}`)
   if (generatedSectionFiles) {
     console.log(`Included sections: ${chalk.gray(sectionsToInclude.join(', '))}`)
+  }
+  if (agentArtifactCounts) {
+    console.log(`Agent artifacts: ${chalk.gray(`${agentArtifactCounts.docs} docs, ${agentArtifactCounts.prompts} prompts`)}`)
+  }
+  console.log()
+
+  return plan
+}
+
+function printGenerationPlan(operations: Array<{ action: GenerationAction; path: string; reason?: string }>): void {
+  const labels: Record<GenerationAction, string> = {
+    create: chalk.green('CREATE'),
+    update: chalk.yellow('UPDATE'),
+    delete: chalk.red('DELETE'),
+    preserve: chalk.magenta('PRESERVE'),
+    unchanged: chalk.gray('UNCHANGED'),
+  }
+
+  console.log(chalk.blue('Generation plan:'))
+  for (const operation of operations) {
+    const reason = operation.reason ? chalk.gray(` — ${operation.reason}`) : ''
+    console.log(`  ${labels[operation.action].padEnd(17)} ${operation.path}${reason}`)
   }
   console.log()
 }

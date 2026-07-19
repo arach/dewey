@@ -1,17 +1,17 @@
 import chalk from 'chalk'
-import { readdir, readFile, writeFile, access, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { loadConfig, configExists } from '../config.js'
+import { readdir, readFile, access } from 'fs/promises'
+import { join, relative, sep } from 'path'
+import matter from 'gray-matter'
+import { loadConfigWithRoot } from '../config.js'
 import type { DeweyConfig } from '../schema.js'
 
 interface CoachOptions {
   verbose?: boolean
   json?: boolean
-  fix?: boolean
-  interactive?: boolean
 }
 
 interface AgentReadinessReport {
+  kind: 'readiness-coaching'
   score: number
   maxScore: number
   grade: 'A' | 'B' | 'C' | 'D' | 'F'
@@ -42,6 +42,13 @@ interface Recommendation {
   action: string
   reason: string
   example?: string
+}
+
+interface MarkdownDocument {
+  path: string
+  absolutePath: string
+  body: string
+  frontmatter: Record<string, unknown>
 }
 
 // ============================================
@@ -119,67 +126,154 @@ async function findFile(basePath: string, names: string[]): Promise<string | nul
   return null
 }
 
-async function checkFileHasContent(filePath: string, pattern: RegExp): Promise<boolean> {
-  if (!await fileExists(filePath)) return false
-  const content = await readFile(filePath, 'utf-8')
-  return pattern.test(content)
+async function discoverMarkdownDocuments(docsPath: string): Promise<MarkdownDocument[]> {
+  if (!await fileExists(docsPath)) return []
+
+  const documents: MarkdownDocument[] = []
+  async function walk(directory: string): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true })
+    for (const entry of entries) {
+      const absolutePath = join(directory, entry.name)
+      if (entry.isDirectory()) {
+        await walk(absolutePath)
+      } else if (entry.isFile() && entry.name.endsWith('.md')) {
+        const raw = await readFile(absolutePath, 'utf-8')
+        let body = raw
+        let frontmatter: Record<string, unknown> = {}
+        try {
+          const parsed = matter(raw)
+          body = parsed.content
+          frontmatter = parsed.data
+        } catch {
+          // Structural parse errors belong to `dewey audit`; coaching can still
+          // extract useful signals from the readable source text.
+        }
+        documents.push({
+          path: relative(docsPath, absolutePath).split(sep).join('/'),
+          absolutePath,
+          body,
+          frontmatter,
+        })
+      }
+    }
+  }
+
+  await walk(docsPath)
+  return documents.sort((a, b) => a.path.localeCompare(b.path))
+}
+
+function documentSignals(document: MarkdownDocument): string {
+  const title = typeof document.frontmatter.title === 'string' ? document.frontmatter.title : ''
+  const headings = document.body.match(/^#{1,3}\s+.+$/gm)?.join('\n') ?? ''
+  return `${document.path}\n${title}\n${headings}`
+}
+
+function isHumanPageDocument(document: MarkdownDocument): boolean {
+  const segments = document.path.split('/')
+  const filename = segments[segments.length - 1] ?? ''
+  return filename.endsWith('.md')
+    && !filename.endsWith('.agent.md')
+    && filename.toLowerCase() !== 'agents.md'
+    && !segments.slice(0, -1).some(segment => ['agent', 'prompts'].includes(segment.toLowerCase()))
+}
+
+function agentCounterpartPaths(path: string): string[] {
+  const id = path.replace(/\.md$/, '')
+  return [`${id}.agent.md`, `agent/${id}.agent.md`]
+}
+
+function hasCompleteCodeExample(document: MarkdownDocument): boolean {
+  return [...document.body.matchAll(/```[^\n]*\n([\s\S]*?)```/g)]
+    .some(match => /(^|\n)\s*import\s+/m.test(match[1]))
+}
+
+function findDocumentByEvidence(
+  documents: MarkdownDocument[],
+  evidence: RegExp,
+): MarkdownDocument | null {
+  return documents.find(document => evidence.test(documentSignals(document))) ?? null
+}
+
+function hasTypedApiEvidence(document: MarkdownDocument): boolean {
+  const hasApiSurface = /\b(api|reference|sdk|endpoint|method|function)s?\b/i.test(documentSignals(document))
+    || /\b(GET|POST|PUT|PATCH|DELETE)\s+\//.test(document.body)
+  const hasTypes = /\binterface\s+\w+\s*\{|\btype\s+\w+\s*=|\b(class|function)\s+\w+|\w+\([^)]*\)\s*:\s*[\w<{[]/.test(document.body)
+  return hasApiSurface && hasTypes
+}
+
+function extractReferencedPaths(content: string): string[] {
+  return [...content.matchAll(/`((?:src|lib|packages|apps)\/[\w./-]+)`/g)].map(match => match[1])
+}
+
+async function hasExistingCodeReference(projectRoot: string, documents: MarkdownDocument[]): Promise<boolean> {
+  for (const document of documents) {
+    for (const path of extractReferencedPaths(document.body)) {
+      if (await fileExists(join(projectRoot, path))) return true
+    }
+  }
+  return false
 }
 
 // ============================================
 // Perform Checks
 // ============================================
 
-async function performChecks(cwd: string, config: DeweyConfig | null): Promise<CategoryResult[]> {
-  const docsPath = config?.docs.path ? join(cwd, config.docs.path) : join(cwd, 'docs')
+async function performChecks(projectRoot: string, config: DeweyConfig | null): Promise<CategoryResult[]> {
+  const docsPath = config?.docs.path ? join(projectRoot, config.docs.path) : join(projectRoot, 'docs')
+  const documents = await discoverMarkdownDocuments(docsPath)
+  const humanDocuments = documents.filter(isHumanPageDocument)
   const results: CategoryResult[] = []
 
   // Project Context checks
   const contextChecks: CheckResult[] = []
 
   // Has overview
-  const overviewFile = await findFile(docsPath, ['overview.md', 'intro.md', 'introduction.md', 'README.md'])
+  const overviewFile = findDocumentByEvidence(humanDocuments, /\b(overview|introduction|about)\b/i)
   contextChecks.push({
     name: 'Has overview documentation',
     passed: !!overviewFile,
     points: overviewFile ? 5 : 0,
     maxPoints: 5,
-    hint: overviewFile ? undefined : 'Create docs/overview.md with project introduction',
+    hint: overviewFile ? undefined : 'Add an overview or introduction document',
   })
 
   // Has quickstart
-  const quickstartFile = await findFile(docsPath, ['quickstart.md', 'getting-started.md', 'quick-start.md'])
-  const quickstartHasCode = quickstartFile ? await checkFileHasContent(quickstartFile, /```\w+/) : false
+  const quickstartFile = humanDocuments.find(document =>
+    /\b(quick[ -]?start|getting started|installation)\b/i.test(documentSignals(document))
+      && /```\w+/.test(document.body),
+  )
+  const quickstartHasCode = !!quickstartFile
   contextChecks.push({
     name: 'Has quickstart with code examples',
     passed: quickstartHasCode,
     points: quickstartHasCode ? 5 : 0,
     maxPoints: 5,
-    hint: quickstartHasCode ? undefined : 'Create docs/quickstart.md with working code examples',
+    hint: quickstartHasCode ? undefined : 'Add getting-started documentation with working code examples',
   })
 
   // Has architecture
-  const archFile = await findFile(docsPath, ['architecture.md', 'structure.md', 'design.md'])
+  const archFile = findDocumentByEvidence(humanDocuments, /\b(architecture|project structure|system design)\b/i)
   contextChecks.push({
     name: 'Has architecture documentation',
     passed: !!archFile,
     points: archFile ? 5 : 0,
     maxPoints: 5,
-    hint: archFile ? undefined : 'Create docs/architecture.md explaining project structure',
+    hint: archFile ? undefined : 'Document the project architecture or structure',
   })
 
   // Has API reference
-  const apiFile = await findFile(docsPath, ['api.md', 'api-reference.md', 'reference.md'])
-  const apiHasTypes = apiFile ? await checkFileHasContent(apiFile, /interface|type\s+\w+/) : false
+  const apiFile = humanDocuments.find(hasTypedApiEvidence)
+  const apiHasTypes = !!apiFile
   contextChecks.push({
     name: 'Has API reference with types',
     passed: apiHasTypes,
     points: apiHasTypes ? 5 : 0,
     maxPoints: 5,
-    hint: apiHasTypes ? undefined : 'Create docs/api.md with TypeScript interfaces',
+    hint: apiHasTypes ? undefined : 'Document the public API surface with type information',
   })
 
   // Has config
-  const hasConfig = await configExists(cwd)
+  const hasConfig = !!config
   contextChecks.push({
     name: 'Has dewey.config.ts',
     passed: hasConfig,
@@ -201,7 +295,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   const agentChecks: CheckResult[] = []
 
   // Has AGENTS.md
-  const agentsMd = await findFile(cwd, ['AGENTS.md', 'docs/AGENTS.md'])
+  const agentsMd = await findFile(projectRoot, ['AGENTS.md', 'docs/AGENTS.md'])
   agentChecks.push({
     name: 'Has AGENTS.md',
     passed: !!agentsMd,
@@ -211,9 +305,9 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has llm.txt
-  const llmTxt = await findFile(cwd, ['llm.txt', 'llms.txt', 'public/llm.txt', 'docs/llm.txt'])
+  const llmTxt = await findFile(projectRoot, ['llm.txt', 'llms.txt', 'public/llm.txt', 'public/llms.txt', 'docs/llm.txt', 'docs/llms.txt'])
   agentChecks.push({
-    name: 'Has llm.txt',
+    name: 'Has llms.txt',
     passed: !!llmTxt,
     points: llmTxt ? 10 : 0,
     maxPoints: 10,
@@ -221,7 +315,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has CLAUDE.md
-  const claudeMd = await findFile(cwd, ['CLAUDE.md', '.claude/CLAUDE.md'])
+  const claudeMd = await findFile(projectRoot, ['CLAUDE.md', '.claude/CLAUDE.md'])
   agentChecks.push({
     name: 'Has CLAUDE.md',
     passed: !!claudeMd,
@@ -231,13 +325,19 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has agent content folder
-  const agentFolder = await fileExists(join(docsPath, 'agent'))
+  const documentPaths = new Set(documents.map(document => document.path))
+  const pairedDocuments = humanDocuments.filter(document =>
+    agentCounterpartPaths(document.path).some(path => documentPaths.has(path)),
+  )
+  const hasCompleteAgentCoverage = humanDocuments.length > 0 && pairedDocuments.length === humanDocuments.length
   agentChecks.push({
-    name: 'Has agent/ folder with .agent.md files',
-    passed: agentFolder,
-    points: agentFolder ? 5 : 0,
+    name: 'Has paired .agent.md coverage',
+    passed: hasCompleteAgentCoverage,
+    points: hasCompleteAgentCoverage ? 5 : 0,
     maxPoints: 5,
-    hint: agentFolder ? undefined : 'Create docs/agent/ with dense, structured versions of docs',
+    hint: hasCompleteAgentCoverage
+      ? undefined
+      : `Create dense .agent.md counterparts for every human page (${pairedDocuments.length}/${humanDocuments.length} paired)`,
   })
 
   const agentScore = agentChecks.reduce((s, c) => s + c.points, 0)
@@ -253,7 +353,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   const handoffChecks: CheckResult[] = []
 
   // Has prompts folder
-  const promptsFolder = await fileExists(join(docsPath, 'prompts'))
+  const promptsFolder = documents.some(document => document.path.split('/').includes('prompts'))
   handoffChecks.push({
     name: 'Has prompts/ folder',
     passed: promptsFolder,
@@ -263,9 +363,10 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has skills
-  const skillsMd = await findFile(docsPath, ['skill.md', 'skills.md'])
+  const skillsMd = documents.find(document => /(^|\/)skills?\.md$/.test(document.path))
+    ?? await findFile(projectRoot, ['.claude/skills/SKILL.md', '.agents/skills/SKILL.md'])
   handoffChecks.push({
-    name: 'Has skill.md',
+    name: 'Has documented agent skills',
     passed: !!skillsMd,
     points: skillsMd ? 10 : 0,
     maxPoints: 10,
@@ -273,20 +374,9 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Has copy instructions (check if any doc mentions copying for agents)
-  let hasCopyInstructions = false
-  const allDocs = await readdir(docsPath).catch(() => [])
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasInstructions = await checkFileHasContent(
-        join(docsPath, file),
-        /copy.*agent|agent.*copy|brief.*agent|llm|ai assistant/i
-      )
-      if (hasInstructions) {
-        hasCopyInstructions = true
-        break
-      }
-    }
-  }
+  const hasCopyInstructions = humanDocuments.some(document =>
+    /copy.*agent|agent.*copy|brief.*agent|llm|ai assistant/i.test(document.body),
+  )
   handoffChecks.push({
     name: 'Docs explain how to brief agents',
     passed: hasCopyInstructions,
@@ -308,20 +398,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   const qualityChecks: CheckResult[] = []
 
   // Check for complete code examples
-  let hasCompleteExamples = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      // Look for code blocks with import statements (indicates complete examples)
-      const hasComplete = await checkFileHasContent(
-        join(docsPath, file),
-        /```\w+\n.*import\s+/s
-      )
-      if (hasComplete) {
-        hasCompleteExamples = true
-        break
-      }
-    }
-  }
+  const hasCompleteExamples = humanDocuments.some(hasCompleteCodeExample)
   qualityChecks.push({
     name: 'Code examples are complete',
     passed: hasCompleteExamples,
@@ -331,19 +408,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Check for type definitions
-  let hasTypeDefinitions = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasTypes = await checkFileHasContent(
-        join(docsPath, file),
-        /interface\s+\w+\s*\{|type\s+\w+\s*=/
-      )
-      if (hasTypes) {
-        hasTypeDefinitions = true
-        break
-      }
-    }
-  }
+  const hasTypeDefinitions = humanDocuments.some(document => /interface\s+\w+\s*\{|type\s+\w+\s*=/.test(document.body))
   qualityChecks.push({
     name: 'Type definitions documented',
     passed: hasTypeDefinitions,
@@ -353,19 +418,7 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Check for file path references
-  let hasFilePaths = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasPaths = await checkFileHasContent(
-        join(docsPath, file),
-        /`src\/|`\.\/|`lib\/|`packages\//
-      )
-      if (hasPaths) {
-        hasFilePaths = true
-        break
-      }
-    }
-  }
+  const hasFilePaths = await hasExistingCodeReference(projectRoot, humanDocuments)
   qualityChecks.push({
     name: 'File paths reference actual code',
     passed: hasFilePaths,
@@ -375,19 +428,9 @@ async function performChecks(cwd: string, config: DeweyConfig | null): Promise<C
   })
 
   // Check for valid values lists
-  let hasValidValues = false
-  for (const file of allDocs) {
-    if (file.endsWith('.md')) {
-      const hasValues = await checkFileHasContent(
-        join(docsPath, file),
-        /valid\s+(values|options)|one\s+of|enum|'[^']+'\s*\|\s*'[^']+'/i
-      )
-      if (hasValues) {
-        hasValidValues = true
-        break
-      }
-    }
-  }
+  const hasValidValues = humanDocuments.some(document =>
+    /valid\s+(values|options)|one\s+of|enum|'[^']+'\s*\|\s*'[^']+'/i.test(document.body),
+  )
   qualityChecks.push({
     name: 'Valid values are listed',
     passed: hasValidValues,
@@ -448,15 +491,8 @@ function generateRecommendations(categories: CategoryResult[]): Recommendation[]
   return recommendations
 }
 
-function getQuickWins(_recommendations: Recommendation[]): string[] {
-  // Quick wins are things that can be done with dewey commands
-  // TODO: Could filter based on recommendations to make these more relevant
-  return [
-    '`dewey init` - Create dewey.config.ts',
-    '`dewey generate` - Generate AGENTS.md and llm.txt',
-    'Create docs/agent/ folder with dense .agent.md versions',
-    'Create docs/prompts/ with task templates',
-  ].filter((_, i) => i < 3) // Top 3 quick wins
+function getQuickWins(recommendations: Recommendation[]): string[] {
+  return recommendations.slice(0, 3).map(recommendation => recommendation.action)
 }
 
 // ============================================
@@ -465,7 +501,7 @@ function getQuickWins(_recommendations: Recommendation[]): string[] {
 
 function printReport(report: AgentReadinessReport, verbose: boolean) {
   console.log(chalk.blue('\n' + '='.repeat(50)))
-  console.log(chalk.blue.bold('  Agent Readiness Report'))
+  console.log(chalk.blue.bold('  Agent Readiness Coaching'))
   console.log(chalk.blue('='.repeat(50) + '\n'))
 
   // Overall score
@@ -526,123 +562,14 @@ function printReport(report: AgentReadinessReport, verbose: boolean) {
     }
   }
 
-  // Quick wins
-  console.log(chalk.bold('\n  Quick Wins:\n'))
-  for (const win of report.quickWins) {
-    console.log(`  ${chalk.cyan('→')} ${win}`)
+  if (report.quickWins.length > 0) {
+    console.log(chalk.bold('\n  Quick Wins:\n'))
+    for (const win of report.quickWins) {
+      console.log(`  ${chalk.cyan('→')} ${win}`)
+    }
   }
 
   console.log()
-}
-
-// ============================================
-// Fix Command
-// ============================================
-
-async function applyFixes(cwd: string, config: DeweyConfig | null) {
-  const docsPath = config?.docs.path ? join(cwd, config.docs.path) : join(cwd, 'docs')
-
-  console.log(chalk.blue('\n🔧 Applying fixes...\n'))
-
-  // Create docs folder if missing
-  if (!await fileExists(docsPath)) {
-    await mkdir(docsPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${docsPath}`)
-  }
-
-  // Create agent folder
-  const agentPath = join(docsPath, 'agent')
-  if (!await fileExists(agentPath)) {
-    await mkdir(agentPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${agentPath}`)
-  }
-
-  // Create prompts folder
-  const promptsPath = join(docsPath, 'prompts')
-  if (!await fileExists(promptsPath)) {
-    await mkdir(promptsPath, { recursive: true })
-    console.log(chalk.green('✓') + ` Created ${promptsPath}`)
-  }
-
-  // Create starter skill.md
-  const skillPath = join(docsPath, 'skill.md')
-  if (!await fileExists(skillPath)) {
-    const skillContent = `# Skills
-
-> Pre-built skills for AI coding assistants
-
-## Available Skills
-
-### project-dev
-
-Develop and debug this project.
-
-**Trigger**: When working on this codebase
-
-**Context to provide**:
-\`\`\`
-[Add project-specific context here]
-- Key files and their purposes
-- Common commands
-- Important patterns
-\`\`\`
-
-## Installing Skills
-
-### Claude Code
-
-Add to your project's \`CLAUDE.md\`:
-
-\`\`\`markdown
-## Project Context
-
-[Paste skill context here]
-\`\`\`
-
-## Prompt Templates
-
-### General Task
-\`\`\`
-Help me [TASK] in this project.
-Key files: [LIST FILES]
-\`\`\`
-`
-    await writeFile(skillPath, skillContent)
-    console.log(chalk.green('✓') + ` Created ${skillPath}`)
-  }
-
-  // Create starter prompt template
-  const promptPath = join(promptsPath, 'general.md')
-  if (!await fileExists(promptPath)) {
-    const promptContent = `# General Task
-
-## Prompt Template
-
-\`\`\`
-Help me [DESCRIBE TASK] in this project.
-
-Context:
-- This is a [PROJECT TYPE] project
-- Key files: [LIST RELEVANT FILES]
-- I want to [SPECIFIC GOAL]
-\`\`\`
-
-## Example
-
-\`\`\`
-Help me add a new feature to this project.
-
-Context:
-- This is a React component library
-- Key files: src/components/, src/hooks/
-- I want to add a new Button variant
-\`\`\`
-`
-    await writeFile(promptPath, promptContent)
-    console.log(chalk.green('✓') + ` Created ${promptPath}`)
-  }
-
-  console.log(chalk.green('\n✨ Fixes applied! Run `dewey agent` again to see your new score.\n'))
 }
 
 // ============================================
@@ -651,15 +578,17 @@ Context:
 
 export async function agentCoachCommand(options: CoachOptions) {
   const cwd = process.cwd()
-  const config = await loadConfig(cwd)
+  const loaded = await loadConfigWithRoot(cwd)
+  const projectRoot = loaded?.projectRoot ?? cwd
+  const config = loaded?.config ?? null
 
   if (!options.json) {
     console.log(chalk.blue('\n🤖 dewey agent'))
-    console.log(chalk.gray('   Checking agent-readiness...\n'))
+    console.log(chalk.gray('   Evaluating documented agent-readiness signals...\n'))
   }
 
   // Perform all checks
-  const categories = await performChecks(cwd, config)
+  const categories = await performChecks(projectRoot, config)
 
   // Calculate totals
   const totalScore = categories.reduce((s, c) => s + c.score, 0)
@@ -670,6 +599,7 @@ export async function agentCoachCommand(options: CoachOptions) {
   const quickWins = getQuickWins(recommendations)
 
   const report: AgentReadinessReport = {
+    kind: 'readiness-coaching',
     score: totalScore,
     maxScore,
     grade: getGrade(totalScore, maxScore),
@@ -686,10 +616,4 @@ export async function agentCoachCommand(options: CoachOptions) {
 
   printReport(report, options.verbose || false)
 
-  // Apply fixes if requested
-  if (options.fix) {
-    await applyFixes(cwd, config)
-  } else if (report.score < maxScore) {
-    console.log(chalk.gray(`  Tip: Run ${chalk.cyan('dewey agent --fix')} to auto-create missing files\n`))
-  }
 }

@@ -19,13 +19,13 @@ export default {
     entryPoints: {
       'cli': 'packages/docs/src/cli/',
       'components': 'packages/docs/src/components/',
-      'skills': '.claude/skills/',
+      'skills': '.agents/skills/',
     },
 
     rules: [
       { pattern: 'cli', instruction: 'Check packages/docs/src/cli/ for CLI commands' },
       { pattern: 'component', instruction: 'Check packages/docs/src/components/ for React components' },
-      { pattern: 'skill', instruction: 'Check .claude/skills/ for LLM prompt templates' },
+      { pattern: 'skill', instruction: 'Check .agents/skills/ for LLM prompt templates' },
       { pattern: 'config', instruction: 'Check dewey.config.ts for project configuration' },
       { pattern: 'agent artifacts', instruction: 'Check packages/docs/src/cli/agent-artifacts.ts and `dewey generate --agent-artifacts`' },
     ],

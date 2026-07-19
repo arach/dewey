@@ -259,7 +259,7 @@ describe('agent JSON output', () => {
     await writeConfig(root)
     await writeFile(join(root, 'AGENTS.md'), '# Agent context')
     await writeFile(join(root, 'llms.txt'), '# LLM context')
-    await writeFile(join(root, 'CLAUDE.md'), '# Project rules')
+    await writeFile(join(root, 'install.md'), '# Installation\n\nRun the documented setup commands.')
     await writeFile(join(root, 'src', 'index.ts'), 'export const ready = true')
     await writeFile(join(docsPath, 'product.agent.md'), '# Dense agent context')
     await writeFile(join(docsPath, 'product.md'), '# Product Overview\n\nAbout this project.')

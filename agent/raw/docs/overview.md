@@ -43,8 +43,10 @@ Skills are LLM prompts, not code. Built-in skills:
 Follows the [installmd.org](https://installmd.org) specification. LLM-executable:
 
 ```bash
-curl https://your-project.com/install.md | claude
+curl -fsSL https://your-project.com/install.md
 ```
+
+Supply the returned instructions to any compatible AI agent.
 
 ## CLI Commands
 

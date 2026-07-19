@@ -35,7 +35,7 @@ The pass prompts guide an LLM; they do not inspect a repository or rewrite files
 Skills live as markdown files in your project:
 
 ```
-.claude/skills/
+.agents/skills/
   my-skill.md
 ```
 

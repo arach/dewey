@@ -5,7 +5,6 @@
  * following the installmd.org standard for LLM-executable installation.
  *
  * @see https://installmd.org
- * @see https://github.com/mintlify/install-md
  *
  * @example
  * import { installMdGenerator } from '@arach/dewey'
@@ -54,7 +53,6 @@ adapt configurations, and execute installations. Complements llms.txt which prov
    */
   specification: {
     url: 'https://installmd.org',
-    repo: 'https://github.com/mintlify/install-md',
     format: 'markdown',
     keyPrinciples: [
       'Outcomes over exact commands - describe what should be achieved',

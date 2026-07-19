@@ -170,7 +170,7 @@ Structured JSON for programmatic access:
 LLM-executable installation instructions following [installmd.org](https://installmd.org):
 - Step-by-step setup
 - Verification commands
-- Can be piped to AI: `curl url/install.md | claude`
+- Can be supplied to an AI agent: `curl -fsSL url/install.md`
 
 ## Agent Content Pattern
 

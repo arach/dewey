@@ -186,7 +186,7 @@ Skills are LLM prompts that guide agents through specific tasks:
 | `promptSlideoutGenerator` | Generate AI-consumable prompt configs |
 | `installMdGenerator` | Create LLM-executable installation |
 
-Custom skills go in `.claude/skills/` as markdown files.
+Custom skills go in `.agents/skills/` as markdown files.
 
 ## React Components
 

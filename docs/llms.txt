@@ -38,7 +38,7 @@ dewey eject <component> - Eject a component for customization
 
 3. install.md Standard
    - Follows installmd.org specification
-   - LLM-executable: `curl url/install.md | claude`
+   - Agent-ready: `curl -fsSL url/install.md`, then supply the returned instructions to an AI agent
 
 ## Documentation
 

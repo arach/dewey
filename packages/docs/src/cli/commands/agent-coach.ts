@@ -83,7 +83,7 @@ const AGENT_CHECKLIST = {
     checks: [
       { id: 'has-agents-md', points: 10, description: 'Has AGENTS.md with dense context' },
       { id: 'has-llm-txt', points: 10, description: 'Has llm.txt or llms.txt' },
-      { id: 'has-claude-md', points: 5, description: 'Has CLAUDE.md for project rules' },
+      { id: 'has-install-md', points: 5, description: 'Has install.md with executable setup instructions' },
       { id: 'has-agent-content', points: 5, description: 'Has agent/ folder with .agent.md files' },
     ],
   },
@@ -317,14 +317,14 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
     hint: llmTxt ? undefined : 'Run `dewey generate --llms-txt` or create public/llm.txt',
   })
 
-  // Has CLAUDE.md
-  const claudeMd = await findFile(projectRoot, ['CLAUDE.md', '.claude/CLAUDE.md'])
+  // Has install.md
+  const installMd = await findFile(projectRoot, ['install.md', 'public/install.md', 'docs/install.md'])
   agentChecks.push({
-    name: 'Has CLAUDE.md',
-    passed: !!claudeMd,
-    points: claudeMd ? 5 : 0,
+    name: 'Has install.md',
+    passed: !!installMd,
+    points: installMd ? 5 : 0,
     maxPoints: 5,
-    hint: claudeMd ? undefined : 'Create CLAUDE.md with project-specific agent rules',
+    hint: installMd ? undefined : 'Run `dewey generate --install-md` to create install.md',
   })
 
   // Has agent content folder
@@ -367,7 +367,7 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
 
   // Has skills
   const skillsMd = documents.find(document => /(^|\/)skills?\.md$/.test(document.path))
-    ?? await findFile(projectRoot, ['.claude/skills/SKILL.md', '.agents/skills/SKILL.md'])
+    ?? await findFile(projectRoot, ['.agents/skills/SKILL.md'])
   handoffChecks.push({
     name: 'Has documented agent skills',
     passed: !!skillsMd,

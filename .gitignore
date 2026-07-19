@@ -16,8 +16,6 @@ out/
 # IDE / Editor configs
 .idea/
 .vscode/
-.cursor/
-.gemini/
 .opencode/
 *.swp
 *.swo
@@ -37,9 +35,6 @@ packages/docs/playwright-report/
 *.tgz
 .turbo/
 tmp/
-
-# Claude Code local settings
-.claude/
 
 # GitHub skills (local)
 .github/skills/

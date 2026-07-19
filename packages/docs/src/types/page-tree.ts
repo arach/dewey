@@ -2,7 +2,6 @@
  * Page Tree Types
  *
  * Navigation structure for documentation sites.
- * Inspired by Fumadocs page tree system.
  */
 
 /**

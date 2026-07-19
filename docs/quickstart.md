@@ -158,7 +158,7 @@ The scaffold pins tested Next.js/Astro dependencies and runs the same agent-arti
 ## Next steps
 
 - Create `.agent.md` versions of your docs for denser, structured content
-- Add skills to `.claude/skills/` for custom agent-guided reviews
+- Add skills to `.agents/skills/` for custom agent-guided reviews
 - Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
 - Embed components or use `dewey create` only when you need a human site
 - [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)

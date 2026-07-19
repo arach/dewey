@@ -31,7 +31,7 @@ Usage: select a prompt from `improveAIPrompts.passes`, replace its placeholders,
 
 ## Custom skill location
 
-`.claude/skills/<skill-name>.md`
+`.agents/skills/<skill-name>.md`
 
 ## Required skill sections
 

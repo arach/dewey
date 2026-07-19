@@ -7,7 +7,7 @@
  *
  * The PromptSlideout is the bridge between human docs and AI consumption.
  * When a user clicks "AI Prompt" on a docs page, they get a self-contained
- * prompt they can paste into Claude, ChatGPT, Copilot, or any LLM.
+ * prompt they can paste into any compatible AI assistant.
  *
  * This skill helps you generate that content:
  * - info: grounds the AI on what this system does

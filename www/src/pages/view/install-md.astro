@@ -1,9 +1,9 @@
 ---
 import AgentFileLayout from '../../layouts/AgentFileLayout.astro'
 
-const raw = await import('../../../install.md?raw')
+const raw = await import('../../../../install.md?raw')
 const content = raw.default
-const mod = await import('../../../install.md')
+const mod = await import('../../../../install.md')
 const { Content } = mod
 ---
 <AgentFileLayout

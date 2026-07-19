@@ -22,50 +22,52 @@ interface TreeNodeProps {
 function TreeNode({ item, level, defaultExpanded }: TreeNodeProps) {
   const [isOpen, setIsOpen] = useState(defaultExpanded)
   const isFolder = item.type === 'folder' || (item.children && item.children.length > 0)
+  const rowClassName = `dw-file-tree-row${item.highlight ? ' is-highlighted' : ''}`
+
+  const rowContent = (
+    <>
+      {isFolder ? (
+        <>
+          <ChevronRight
+            className="dw-file-tree-chevron"
+            data-open={isOpen || undefined}
+            aria-hidden="true"
+          />
+          {isOpen ? (
+            <FolderOpen className="dw-file-tree-folder" aria-hidden="true" />
+          ) : (
+            <Folder className="dw-file-tree-folder" aria-hidden="true" />
+          )}
+        </>
+      ) : (
+        <>
+          <span className="dw-file-tree-spacer" />
+          <File className="dw-file-tree-file" aria-hidden="true" />
+        </>
+      )}
+      <span className="dw-file-tree-name">{item.name}</span>
+    </>
+  )
 
   return (
     <div>
-      <div
-        className="flex items-center gap-1.5 py-1 px-2 rounded cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-        style={{
-          paddingLeft: `${level * 16 + 8}px`,
-          backgroundColor: item.highlight ? 'rgba(240, 124, 79, 0.1)' : undefined,
-        }}
-        onClick={() => isFolder && setIsOpen(!isOpen)}
-      >
-        {isFolder ? (
-          <>
-            <ChevronRight
-              className="w-3.5 h-3.5 transition-transform flex-shrink-0"
-              style={{
-                color: '#9ca3af',
-                transform: isOpen ? 'rotate(90deg)' : undefined,
-              }}
-            />
-            {isOpen ? (
-              <FolderOpen className="w-4 h-4 flex-shrink-0" style={{ color: '#f59e0b' }} />
-            ) : (
-              <Folder className="w-4 h-4 flex-shrink-0" style={{ color: '#f59e0b' }} />
-            )}
-          </>
-        ) : (
-          <>
-            <span className="w-3.5" />
-            <File className="w-4 h-4 flex-shrink-0" style={{ color: '#6b7280' }} />
-          </>
-        )}
-        <span
-          className="text-[13px] font-mono"
-          style={{
-            color: item.highlight ? '#f07c4f' : '#374151',
-            fontWeight: item.highlight ? 500 : 400,
-          }}
+      {isFolder ? (
+        <button
+          type="button"
+          className={rowClassName}
+          style={{ paddingLeft: `${level * 16 + 8}px` }}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
         >
-          {item.name}
-        </span>
-      </div>
+          {rowContent}
+        </button>
+      ) : (
+        <div className={rowClassName} style={{ paddingLeft: `${level * 16 + 8}px` }}>
+          {rowContent}
+        </div>
+      )}
       {isFolder && isOpen && item.children && (
-        <div>
+        <div role="group">
           {item.children.map((child, index) => (
             <TreeNode
               key={`${child.name}-${index}`}
@@ -82,13 +84,7 @@ function TreeNode({ item, level, defaultExpanded }: TreeNodeProps) {
 
 export function FileTree({ items, defaultExpanded = true }: FileTreeProps) {
   return (
-    <div
-      className="rounded-xl my-5 py-2 overflow-hidden font-mono text-sm"
-      style={{
-        background: 'rgba(249, 250, 251, 0.8)',
-        border: '1px solid rgba(16, 21, 24, 0.1)',
-      }}
-    >
+    <div className="dw-file-tree">
       {items.map((item, index) => (
         <TreeNode
           key={`${item.name}-${index}`}

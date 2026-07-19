@@ -43,6 +43,8 @@ bun add @arach/dewey gray-matter
 | `@arach/dewey/tailwind` | Tailwind preset |
 | `@arach/dewey/agent-artifacts` | Programmatic collectors |
 
+Router dependency: none. `react-router-dom` is not a peer dependency.
+
 **Themes:** `neutral` \| `ocean` \| `emerald` \| `purple` \| `dusk` \| `rose` \| `github` \| `warm` \| `midnight` \| `editorial` \| `mono` \| `hudson`
 
 ## Onboarding sequence (shared)
@@ -78,7 +80,14 @@ bun add @arach/dewey gray-matter
 
 ### Prefer composed shell
 
-Use `Header`, `Sidebar`, `MarkdownContent`, `AutoTableOfContents` — not React-Router-oriented `DocsLayout` — for Next embed (matches `dewey create --template nextjs`).
+Compose `Header`, `Sidebar`, `MarkdownContent`, `AutoTableOfContents` for maximum host control. `DocsLayout` is also router-neutral: default anchors, optional `LinkComponent`, optional `currentPage`, browser-path fallback.
+
+## Theme proof contract
+
+- Twelve presets; light and dark.
+- Shared semantic `--dw-*` contract across components, CSS, Tailwind, generated sites.
+- Categories: surfaces/foregrounds; primary/secondary/accent; border/ring; status pairs; code/syntax; sidebar/header; typography/radius/shadow/motion.
+- Tests: complete/dead tokens, WCAG AA text pairs, focus, reduced motion, component semantics, 24 Playwright screenshots.
 
 ## Static export
 
@@ -180,4 +189,5 @@ Write via `docs.output` / `--output public` or post-generate copy.
 | `docs/integrate-existing-site.md` | Human narrative guide |
 | `docs/quickstart.md` | Greenfield sequence |
 | `docs/cli.md` | Flags |
+| `docs/maintenance.md` | Update/eject ownership, adoption, backups, recovery, release |
 | `packages/docs/src/cli/templates/nextjs.ts` | Canonical scaffold reference (implementation, not consumer edit target) |

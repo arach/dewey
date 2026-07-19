@@ -41,10 +41,10 @@ Public TypeScript, React, theme, and artifact contracts: `docs/api.md`.
 | File | Purpose |
 |------|---------|
 | agent/manifest.json | Discovery index |
-| agent/docs.json | Full docs manifest with markdown |
-| agent/prompts.json | Prompt registry |
-| agent/context.md | Compact markdown bundle |
-| agent/context.json | JSON context bundle |
+| agent/docs.json | Document entries with non-prompt content |
+| agent/prompts.json | Prompt registry with prompt content |
+| agent/context.md | Compact retrieval index |
+| agent/context.json | JSON retrieval index |
 | agent/raw/docs/ | Raw markdown mirror |
 
 ## Skills (LLM Prompts)
@@ -55,6 +55,8 @@ Public TypeScript, React, theme, and artifact contracts: `docs/api.md`.
 | docsDesignCritic | Critique page structure and visual design |
 | promptSlideoutGenerator | Generate prompt configs |
 | installMdGenerator | Create install.md |
+| improveAIPrompts | Iterative prompt discovery/draft/review/refinement; public name |
+| improveAIPromptsSkill | Deprecated alias of `improveAIPrompts` |
 
 ## Components (22)
 
@@ -81,6 +83,17 @@ ProjectType: 'npm-package' | 'cli-tool' | 'macos-app' | 'react-library' | 'monor
 CalloutType: 'info' | 'warning' | 'tip' | 'danger'
 BadgeVariant: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple'
 ThemePreset: 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'
+
+## Judgment and generation model
+
+- Project type changes paired scaffold, required docs, install defaults, verification, and evidence checks.
+- `audit` + `agent` JSON include `projectType` and `drift`.
+- Drift checks pairing/cited paths/literal union-enum contracts; regex/evidence only, not semantic/executable proof.
+- `generate`, `create`, artifact API share canonical recursive discovery/frontmatter.
+- One manifest drives retrieval indexes/link tables/bundles.
+- Full content is separated: docs JSON, prompts JSON, raw Markdown, bundles.
+
+Generated-site ownership/recovery/release: `docs/maintenance.md` and `docs/agent/maintenance.agent.md`.
 
 ## Key Files
 

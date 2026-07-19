@@ -1,11 +1,10 @@
 import chalk from 'chalk'
-import { readFile, writeFile, mkdir, access } from 'fs/promises'
+import { readFile, writeFile, mkdir, access, readdir, rm } from 'fs/promises'
 import { join, dirname, resolve } from 'path'
 import { execSync } from 'child_process'
 import {
   ASTRO_TEMPLATES,
   DEWEY_OWNED_FILES,
-  resolveTheme,
 } from '../templates/astro.js'
 import {
   NEXTJS_TEMPLATES,
@@ -18,11 +17,11 @@ import {
   type DeweyManifest,
 } from '../manifest.js'
 import { DEWEY_VERSION } from '../version.js'
+import { resolveCliTheme } from '../input-contracts.js'
 
 interface UpdateOptions {
   dryRun?: boolean
   force?: boolean
-  refreshNav?: boolean
 }
 
 type FileStatus =
@@ -59,7 +58,11 @@ async function safeReadFile(path: string): Promise<string | null> {
 
 function isGitDirty(dir: string): boolean {
   try {
-    const out = execSync('git status --porcelain', { cwd: dir, encoding: 'utf-8' })
+    const out = execSync('git status --porcelain', {
+      cwd: dir,
+      encoding: 'utf-8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
     return out.trim().length > 0
   } catch {
     return false
@@ -67,19 +70,23 @@ function isGitDirty(dir: string): boolean {
 }
 
 async function detectSiteTemplate(dir: string): Promise<'astro' | 'nextjs' | null> {
-  const [hasAstroConfig, hasBaseLayout, hasNextConfig, hasDeweyTsx] = await Promise.all([
+  const [hasAstroConfig, hasBaseLayout, nextConfigCandidates, hasDeweyTsx] = await Promise.all([
     fileExists(join(dir, 'astro.config.mjs')),
     fileExists(join(dir, 'src/layouts/BaseLayout.astro')),
-    fileExists(join(dir, 'next.config.js')),
+    Promise.all(['next.config.js', 'next.config.mjs', 'next.config.ts'].map(file => fileExists(join(dir, file)))),
     fileExists(join(dir, 'src/lib/dewey.tsx')),
   ])
 
+  const hasNextConfig = nextConfigCandidates.some(Boolean)
   if (hasNextConfig && hasDeweyTsx) return 'nextjs'
   if (hasAstroConfig && hasBaseLayout) return 'astro'
   return null
 }
 
-async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
+export async function adoptExistingSite(
+  dir: string,
+  template: 'astro' | 'nextjs',
+): Promise<DeweyManifest> {
   const now = new Date().toISOString()
   const manifestFiles: DeweyManifest['files'] = {}
 
@@ -97,24 +104,33 @@ async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
     else if (tokensContent.includes('#0969da') || tokensContent.includes('#58a6ff')) theme = 'github'
   }
 
-  // Try to detect projectName from BaseLayout
+  // Detect consumer-owned site settings without rewriting them.
   let projectName = 'docs'
-  const baseLayoutContent = await safeReadFile(join(dir, 'src/layouts/BaseLayout.astro'))
-  if (baseLayoutContent) {
-    const match = baseLayoutContent.match(/<a class="text-lg font-semibold" href="\/">(.*?)<\/a>/)
-    if (match) projectName = match[1]
-  }
-
-  // Try to detect defaultPage from index.astro
   let defaultPage = 'overview'
-  const indexContent = await safeReadFile(join(dir, 'src/pages/index.astro'))
-  if (indexContent) {
-    const match = indexContent.match(/url=\/docs\/([^"]+)/)
-    if (match) defaultPage = match[1]
+  if (template === 'nextjs') {
+    const deweyContent = await safeReadFile(join(dir, 'src/lib/dewey.tsx'))
+    if (deweyContent) {
+      projectName = deweyContent.match(/name:\s*['"]([^'"]+)['"]/)?.[1] ?? projectName
+      defaultPage = deweyContent.match(/defaultPage:\s*['"]([^'"]+)['"]/)?.[1] ?? defaultPage
+      theme = deweyContent.match(/theme:\s*['"]([^'"]+)['"]/)?.[1] ?? theme
+    }
+  } else {
+    const baseLayoutContent = await safeReadFile(join(dir, 'src/layouts/BaseLayout.astro'))
+    if (baseLayoutContent) {
+      const match = baseLayoutContent.match(/<a class="text-lg font-semibold" href="\/">(.*?)<\/a>/)
+      if (match) projectName = match[1]
+    }
+
+    const indexContent = await safeReadFile(join(dir, 'src/pages/index.astro'))
+    if (indexContent) {
+      const match = indexContent.match(/url=\/docs\/([^"]+)/)
+      if (match) defaultPage = match[1]
+    }
   }
 
   // Hash all existing dewey-owned files
-  for (const filePath of DEWEY_OWNED_FILES) {
+  const ownedFiles: readonly string[] = template === 'nextjs' ? NEXTJS_OWNED_FILES : DEWEY_OWNED_FILES
+  for (const filePath of ownedFiles) {
     const content = await safeReadFile(join(dir, filePath))
     if (content !== null) {
       manifestFiles[filePath] = {
@@ -128,17 +144,40 @@ async function adoptExistingSite(dir: string): Promise<DeweyManifest> {
   // Mark consumer files
   manifestFiles['package.json'] = { owner: 'consumer' }
   manifestFiles['.gitignore'] = { owner: 'consumer' }
+  if (template === 'nextjs') {
+    for (const filePath of ['docs.json', 'src/lib/dewey.tsx']) {
+      const content = await safeReadFile(join(dir, filePath))
+      manifestFiles[filePath] = {
+        owner: 'consumer',
+        ...(content === null ? {} : { hash: hashContent(content) }),
+      }
+    }
+  }
 
   return {
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
-    template: 'astro',
-    theme: resolveTheme(theme),
+    template,
+    theme: resolveCliTheme(theme, message => console.warn(chalk.yellow(`⚠ ${message}`))),
     projectName,
     defaultPage,
     files: manifestFiles,
   }
+}
+
+export async function pruneBackupSnapshots(backupDir: string, keep = 5): Promise<string[]> {
+  if (!await fileExists(backupDir)) return []
+  const entries = await readdir(backupDir, { withFileTypes: true })
+  const snapshots = entries
+    .filter(entry => entry.isDirectory() && /^\d{4}-\d{2}-\d{2}T/.test(entry.name))
+    .map(entry => entry.name)
+    .sort()
+  const toRemove = snapshots.slice(0, Math.max(0, snapshots.length - keep))
+  for (const name of toRemove) {
+    await rm(join(backupDir, name), { recursive: true, force: true })
+  }
+  return toRemove
 }
 
 export async function updateCommand(dir: string | undefined, options: UpdateOptions) {
@@ -154,12 +193,12 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
 
   if (!manifest) {
     const detected = await detectSiteTemplate(targetDir)
-    if (detected === 'astro') {
-      // Adoption flow for Astro sites
+    if (detected) {
+      // Adoption flow for generated Astro and Next.js sites
       console.log(chalk.blue('\n📋 No manifest found, but this looks like a Dewey site.'))
       console.log(chalk.gray('   Creating .dewey-manifest.json from current file state...\n'))
 
-      manifest = await adoptExistingSite(targetDir)
+      manifest = await adoptExistingSite(targetDir, detected)
       await writeManifest(targetDir, manifest)
 
       console.log(chalk.green('✓') + ' Created .dewey-manifest.json')
@@ -183,7 +222,7 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   // Phase 2 & 3 — Classify and generate
   const templateArgs = {
     projectName: manifest.projectName,
-    theme: resolveTheme(manifest.theme),
+    theme: resolveCliTheme(manifest.theme, message => console.warn(chalk.yellow(`⚠ ${message}`))),
     defaultPage: manifest.defaultPage,
   }
 
@@ -217,7 +256,17 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
       continue
     }
 
-    if (!manifestEntry) {
+    if (manifestEntry && manifestEntry.owner !== 'dewey') {
+      // Consumer-owned and ejected files are never silently reclaimed.
+      classifications.push({
+        filePath,
+        status: 'MODIFIED',
+        diskHash,
+        manifestHash: manifestEntry.hash,
+        newContent,
+      })
+      continue
+    } else if (!manifestEntry) {
       // File exists on disk but not in manifest (new template file)
       classifications.push({ filePath, status: 'NEW', diskHash, newContent })
       continue
@@ -246,7 +295,12 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   const updated = classifications.filter(c => c.status === 'UNCHANGED' || c.status === 'MISSING' || c.status === 'NEW')
   const current = classifications.filter(c => c.status === 'ALREADY_CURRENT')
   const skipped = classifications.filter(c => c.status === 'MODIFIED')
-  const forcedFiles = options.force ? skipped : []
+  const forcedFiles = options.force
+    ? skipped.filter(classification => manifest.files[classification.filePath]?.owner === 'dewey')
+    : []
+  const protectedFiles = skipped.filter(
+    classification => manifest.files[classification.filePath]?.owner !== 'dewey',
+  )
 
   const allToWrite = options.force ? [...updated, ...forcedFiles] : updated
 
@@ -272,6 +326,11 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
     console.log(chalk.yellow(`  Skipped:     `) + `${names} (modified by you — use --force)`)
   }
 
+  if (protectedFiles.length > 0 && options.force) {
+    const names = protectedFiles.map(c => c.filePath).join(', ')
+    console.log(chalk.yellow(`  Protected:   `) + `${names} (consumer/ejected ownership is never reclaimed)`)
+  }
+
   if (forcedFiles.length > 0) {
     const names = forcedFiles.map(c => c.filePath).join(', ')
     console.log(chalk.yellow(`  Forced:      `) + `${names} (backed up to .dewey-backup/)`)
@@ -292,7 +351,9 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   }
 
   // Phase 5 — Write
-  const backupDir = join(targetDir, '.dewey-backup')
+  const backupRoot = join(targetDir, '.dewey-backup')
+  const backupSnapshot = new Date().toISOString().replace(/[:.]/g, '-')
+  const backupDir = join(backupRoot, backupSnapshot)
 
   for (const classification of allToWrite) {
     const fullPath = join(targetDir, classification.filePath)
@@ -353,6 +414,10 @@ export async function updateCommand(dir: string | undefined, options: UpdateOpti
   }
 
   await writeManifest(targetDir, updatedManifest)
+
+  if (forcedFiles.length > 0) {
+    await pruneBackupSnapshots(backupRoot)
+  }
 
   console.log(chalk.green(`✓ Updated ${allToWrite.length} file${allToWrite.length === 1 ? '' : 's'} to Dewey v${DEWEY_VERSION}\n`))
 }

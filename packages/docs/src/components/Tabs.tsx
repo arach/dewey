@@ -27,6 +27,20 @@ export function Tabs({ defaultTab, children }: TabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.props.label || '')
   const tabsId = useId()
 
+  const selectFromKeyboard = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex = index
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+    else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+    else if (event.key === 'Home') nextIndex = 0
+    else if (event.key === 'End') nextIndex = tabs.length - 1
+    else return
+
+    event.preventDefault()
+    setActiveTab(tabs[nextIndex].props.label)
+    const buttons = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+    buttons?.[nextIndex]?.focus()
+  }
+
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
       <div className="dw-tabs">
@@ -41,8 +55,10 @@ export function Tabs({ defaultTab, children }: TabsProps) {
             const panelId = `${tabsId}-panel-${index}`
             return (
               <button
+                type="button"
                 key={tab.props.label}
                 onClick={() => setActiveTab(tab.props.label)}
+                onKeyDown={(event) => selectFromKeyboard(event, index)}
                 className={`dw-tabs-trigger${isActive ? ' active' : ''}`}
                 role="tab"
                 id={tabId}

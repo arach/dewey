@@ -3,9 +3,11 @@ import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
 
 export interface DeweyManifestFile {
-  owner: 'dewey' | 'consumer'
+  owner: 'dewey' | 'consumer' | 'ejected'
   hash?: string
   version?: string
+  component?: string
+  mode?: 'wrap' | 'full'
 }
 
 export interface DeweyManifest {

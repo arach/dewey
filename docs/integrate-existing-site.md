@@ -38,6 +38,7 @@ bun add @arach/dewey gray-matter
 
 - Runtime dependency (not only `-d`) when the site imports Dewey components.
 - `gray-matter` is the usual choice for frontmatter when you load files from disk (same approach as `dewey create --template nextjs`).
+- No router package is required by Dewey. `react-router-dom` is not a peer dependency; pass a framework link adapter where needed.
 
 ### CSS entry points
 
@@ -62,6 +63,8 @@ import '@arach/dewey/css/colors/ocean.css'
 **Themes:** `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `midnight`, `editorial`, `mono`, `hudson`.
 
 Tokens use the `--dw-*` prefix so they rarely collide with a host design system. Dark mode follows a `.dark` class on an ancestor (DeweyProvider manages this when you use the provider).
+
+The complete semantic contract covers surfaces and foregrounds; primary, secondary, and accent pairs; border/ring; info, warning, error, and success pairs; code and syntax colors; sidebar/header colors; typography, radii, shadows, and motion. Every public component and generated theme consumes this contract. The package verifies WCAG AA pairs, focus and reduced motion, plus 24 representative Playwright screenshots (12 themes × light/dark).
 
 ### Import path note
 
@@ -426,7 +429,22 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` over the packaged `DocsLayout` when embedding: `DocsLayout` is oriented toward a React Router demo shell, while the composed pieces match `dewey create --template nextjs` and avoid router coupling.
+Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` when you want full control. The packaged `DocsLayout` is also router-neutral: it uses anchors by default and accepts `LinkComponent` plus `currentPage`.
+
+```tsx
+import Link from 'next/link'
+import { DocsLayout, MarkdownContent } from '@arach/dewey'
+
+<DocsLayout
+  title={doc.title}
+  navigation={navigation}
+  projectName="My Project"
+  currentPage={doc.id}
+  LinkComponent={Link}
+>
+  <MarkdownContent content={doc.content} />
+</DocsLayout>
+```
 
 ## Dewey generation alongside the site
 
@@ -537,6 +555,7 @@ Run generate **before** `next build` when the app imports `docs.json` or serves 
 - [CLI Reference](./cli.md) — flags for generate, audit, agent, create
 - [Overview](./overview.md) — product positioning and agent content pattern
 - [Skills](./skills.md) — LLM prompt skills for review and install.md
+- [Maintaining generated sites](./maintenance.md) — update/eject ownership, adoption, backups, recovery, and release checks
 
 For a ready-made Next.js project instead of embedding, use:
 

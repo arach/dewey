@@ -1,8 +1,9 @@
 import chalk from 'chalk'
-import { mkdir, writeFile, readFile, access } from 'fs/promises'
+import { mkdir, writeFile, readFile, access, rename, rm } from 'fs/promises'
 import { join, resolve } from 'path'
-import { readManifest } from '../manifest.js'
+import { hashContent, readManifest, writeManifest } from '../manifest.js'
 import { EJECTIBLE_COMPONENTS, type EjectibleComponent } from '../templates/nextjs.js'
+import { DEWEY_VERSION } from '../version.js'
 
 interface EjectOptions {
   full?: boolean
@@ -61,14 +62,19 @@ export default function ${name}(${destructured}: ${meta.propsType}) {
 `
 }
 
-function updateDeweyTsx(content: string, componentName: string): string {
+export interface DeweyRewriteResult {
+  content: string
+  importReady: boolean
+  mappingReady: boolean
+  changed: boolean
+  failures: string[]
+}
+
+export function rewriteDeweyTsx(content: string, componentName: string): DeweyRewriteResult {
   // Add import for the override component
   const overrideImport = `import Custom${componentName} from '@/components/overrides/${componentName}'`
 
-  // Check if there's already an import from overrides for this component
-  if (content.includes(overrideImport)) {
-    return content
-  }
+  const alreadyImported = content.includes(overrideImport)
 
   // Add the import after the last existing import line
   const lines = content.split('\n')
@@ -79,7 +85,7 @@ function updateDeweyTsx(content: string, componentName: string): string {
     }
   }
 
-  if (lastImportIndex >= 0) {
+  if (!alreadyImported && lastImportIndex >= 0) {
     lines.splice(lastImportIndex + 1, 0, overrideImport)
   }
 
@@ -87,10 +93,35 @@ function updateDeweyTsx(content: string, componentName: string): string {
   const updatedContent = lines.join('\n')
 
   // Replace `ComponentName: DefaultComponentName` with `ComponentName: CustomComponentName`
-  return updatedContent.replace(
+  const mappedContent = updatedContent.replace(
     new RegExp(`(${componentName}:\\s*)Default${componentName}`),
     `$1Custom${componentName}`,
   )
+
+  const importReady = mappedContent.includes(overrideImport)
+  const mappingReady = new RegExp(`${componentName}:\\s*Custom${componentName}`).test(mappedContent)
+  const failures: string[] = []
+  if (!importReady) failures.push(`could not add the Custom${componentName} import`)
+  if (!mappingReady) failures.push(`could not replace the ${componentName} component mapping`)
+
+  return {
+    content: mappedContent,
+    importReady,
+    mappingReady,
+    changed: mappedContent !== content,
+    failures,
+  }
+}
+
+async function atomicWriteFile(path: string, content: string): Promise<void> {
+  const temporaryPath = `${path}.dewey-tmp-${process.pid}-${Date.now()}`
+  try {
+    await writeFile(temporaryPath, content)
+    await rename(temporaryPath, path)
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined)
+    throw error
+  }
 }
 
 export async function ejectCommand(componentName: string, dir: string | undefined, options: EjectOptions) {
@@ -129,26 +160,67 @@ export async function ejectCommand(componentName: string, dir: string | undefine
     process.exit(1)
   }
 
+  const deweyTsxPath = join(targetDir, 'src/lib/dewey.tsx')
+  if (!await fileExists(deweyTsxPath)) {
+    console.log(chalk.red('\n  Eject failed: src/lib/dewey.tsx was not found.'))
+    console.log(chalk.gray('  No override was created; restore the generated site file and try again.\n'))
+    process.exit(1)
+  }
+
+  const existingDeweyTsx = await readFile(deweyTsxPath, 'utf-8')
+  const rewrite = rewriteDeweyTsx(existingDeweyTsx, componentName)
+  if (rewrite.failures.length > 0) {
+    console.log(chalk.red(`\n  Eject failed: ${rewrite.failures.join('; ')}.`))
+    console.log(chalk.gray('  No files were changed; wire the component manually or restore src/lib/dewey.tsx.\n'))
+    process.exit(1)
+  }
+
   // Generate the override component
   const componentContent = mode === 'full'
     ? generateFullComponent(componentName, meta)
     : generateWrapComponent(componentName, meta)
 
-  // Write the override file
-  await mkdir(join(targetDir, 'src/components/overrides'), { recursive: true })
-  await writeFile(overridePath, componentContent)
-  console.log(chalk.green('\n  ' + '✓') + ` Created src/components/overrides/${componentName}.tsx`)
-
-  // Update dewey.tsx to wire in the override
-  const deweyTsxPath = join(targetDir, 'src/lib/dewey.tsx')
-  if (await fileExists(deweyTsxPath)) {
-    const existing = await readFile(deweyTsxPath, 'utf-8')
-    const updated = updateDeweyTsx(existing, componentName)
-    await writeFile(deweyTsxPath, updated)
-    console.log(chalk.green('  ✓') + ' Updated src/lib/dewey.tsx')
-  } else {
-    console.log(chalk.yellow('  ⚠') + ' Could not find src/lib/dewey.tsx — wire the override manually')
+  const overrideRelativePath = `src/components/overrides/${componentName}.tsx`
+  manifest.files[overrideRelativePath] = {
+    owner: 'ejected',
+    hash: hashContent(componentContent),
+    version: DEWEY_VERSION,
+    component: componentName,
+    mode,
   }
+  manifest.files['src/lib/dewey.tsx'] = {
+    owner: 'ejected',
+    hash: hashContent(rewrite.content),
+    version: DEWEY_VERSION,
+    component: componentName,
+    mode,
+  }
+  manifest.updatedAt = new Date().toISOString()
+
+  // Both rewrites were verified in memory before either file is changed.
+  await mkdir(join(targetDir, 'src/components/overrides'), { recursive: true })
+  let overrideWritten = false
+  let wiringWritten = false
+  let manifestWritten = false
+  try {
+    await atomicWriteFile(overridePath, componentContent)
+    overrideWritten = true
+    await atomicWriteFile(deweyTsxPath, rewrite.content)
+    wiringWritten = true
+    await writeManifest(targetDir, manifest)
+    manifestWritten = true
+  } catch (error) {
+    console.log(chalk.red('\n  Eject did not complete.'))
+    console.log(chalk.gray(`  Override file: ${overrideWritten ? 'written' : 'not written'}`))
+    console.log(chalk.gray(`  Component wiring: ${wiringWritten ? 'written' : 'not written'}`))
+    console.log(chalk.gray(`  Ownership manifest: ${manifestWritten ? 'written' : 'not written'}`))
+    console.log(chalk.gray(`  ${error instanceof Error ? error.message : String(error)}\n`))
+    throw error
+  }
+
+  console.log(chalk.green('\n  ' + '✓') + ` Created ${overrideRelativePath}`)
+  console.log(chalk.green('  ✓') + ' Verified import and component-map rewrites in src/lib/dewey.tsx')
+  console.log(chalk.green('  ✓') + ' Recorded ejected ownership and Dewey version in .dewey-manifest.json')
 
   // Print summary
   const tierLabel = meta.tier === 'safe'

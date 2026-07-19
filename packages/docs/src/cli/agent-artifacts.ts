@@ -1,7 +1,7 @@
-import { readdir, readFile } from 'fs/promises'
-import type { Dirent } from 'fs'
-import { basename, extname, join, relative, resolve } from 'path'
+import { readFile } from 'fs/promises'
+import { basename, join, relative, resolve } from 'path'
 import matter from 'gray-matter'
+import { discoverDocuments } from './docs-manifest.js'
 import { DEWEY_SCHEMA_VERSION, getGeneratedAt } from './version.js'
 import {
   applyGenerationPlan,
@@ -120,8 +120,15 @@ const defaultReadOrder = ['overview', 'quickstart', 'concepts', 'config', 'api',
 
 export async function collectMarkdownArtifacts(options: CollectMarkdownArtifactsOptions = {}): Promise<MarkdownArtifact[]> {
   const resolved = resolveOptions(options)
-  const files = await walkMarkdownFiles(resolved.docsDir)
-  const docs = await Promise.all(files.map((filePath) => parseDocArtifact(filePath, undefined, resolved)))
+  const discovered = await discoverDocuments({ ...resolved, audience: 'all' })
+  const docs = discovered.map((doc) => toMarkdownArtifact({
+    absoluteFilePath: doc.absoluteSourcePath,
+    rawMarkdown: doc.rawContent,
+    content: doc.content,
+    frontmatter: doc.frontmatter,
+    title: doc.title,
+    description: doc.description,
+  }, resolved))
   return docs.sort(compareArtifacts)
 }
 
@@ -152,14 +159,35 @@ export async function parseDocArtifact(
   const absoluteFilePath = resolve(filePath)
   const rawMarkdown = (raw ?? await readFile(absoluteFilePath, 'utf-8')).replace(/\r\n/g, '\n')
   const parsed = matter(rawMarkdown)
-  const content = parsed.content.trim()
+  return toMarkdownArtifact({
+    absoluteFilePath,
+    rawMarkdown,
+    content: parsed.content.trim(),
+    frontmatter: parsed.data,
+    title: getString(parsed.data.title),
+    description: getString(parsed.data.description),
+  }, resolved)
+}
+
+function toMarkdownArtifact(
+  document: {
+    absoluteFilePath: string
+    rawMarkdown: string
+    content: string
+    frontmatter: Record<string, unknown>
+    title?: string
+    description?: string
+  },
+  resolved: ReturnType<typeof resolveOptions>,
+): MarkdownArtifact {
+  const { absoluteFilePath, rawMarkdown, content, frontmatter } = document
   const slug = stripMarkdownExtension(normalizePath(relative(resolved.docsDir, absoluteFilePath)))
   const sourcePath = normalizePath(relative(resolved.rootDir, absoluteFilePath))
   const kind = inferKind(slug)
   const promptId = kind === 'prompt' ? slug.replace(/^prompts\//, '') : undefined
   const headings = extractHeadings(content)
-  const title = getString(parsed.data.title) || headings.find((heading) => heading.depth === 1)?.text || titleFromSlug(slug)
-  const description = getString(parsed.data.description) || extractDescription(content)
+  const title = document.title || headings.find((heading) => heading.depth === 1)?.text || titleFromSlug(slug)
+  const description = document.description || extractDescription(content)
 
   return {
     id: slug,
@@ -172,7 +200,7 @@ export async function parseDocArtifact(
     url: urlForArtifact(slug, kind),
     rawUrl: `/agent/raw/docs/${slug}.md`,
     promptUrl: promptId ? `/agent/prompts/${promptId}.md` : undefined,
-    frontmatter: parsed.data,
+    frontmatter,
     headings,
     tokensEstimate: estimateTokens(content),
     rawMarkdown,
@@ -183,6 +211,14 @@ export async function parseDocArtifact(
 export function buildAgentManifest(
   docs: MarkdownArtifact[],
   options: { project?: AgentArtifactsProject; includeContent?: boolean } = {},
+): AgentManifest {
+  return assembleAgentManifest(docs, options)
+}
+
+function assembleAgentManifest(
+  docs: MarkdownArtifact[],
+  options: { project?: AgentArtifactsProject; includeContent?: boolean },
+  contentKinds?: MarkdownArtifactKind[],
 ): AgentManifest {
   const prompts = docs.filter((doc) => doc.kind === 'prompt')
   const generatedAt = getGeneratedAt()
@@ -218,8 +254,14 @@ export function buildAgentManifest(
       },
     },
     recommendedReadOrder: defaultReadOrder.filter((slug) => docs.some((doc) => doc.slug === slug)),
-    docs: docs.map((doc) => toManifestEntry(doc, options.includeContent)),
-    prompts: prompts.map((prompt) => toPromptEntry(prompt, options.includeContent)),
+    docs: docs.map((doc) => toManifestEntry(
+      doc,
+      options.includeContent && (!contentKinds || contentKinds.includes(doc.kind)),
+    )),
+    prompts: prompts.map((prompt) => toPromptEntry(
+      prompt,
+      options.includeContent && (!contentKinds || contentKinds.includes(prompt.kind)),
+    )),
   }
 }
 
@@ -244,9 +286,12 @@ export function buildContextBundle(
   slugs: string[],
   title = 'Agent Context Bundle',
 ): string {
+  const manifest = buildAgentManifest(docs)
   const bySlug = new Map(docs.map((doc) => [doc.slug, doc]))
-  const selected = slugs.map((slug) => bySlug.get(slug)).filter((doc): doc is MarkdownArtifact => Boolean(doc))
-  return formatBundle(title, selected)
+  const selected = slugs
+    .map(slug => manifest.docs.find(doc => doc.slug === slug))
+    .filter((doc): doc is AgentManifestEntry => Boolean(doc))
+  return formatBundle(title, selected, bySlug)
 }
 
 export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOptions = {}) {
@@ -254,9 +299,16 @@ export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOption
   const docs = await collectMarkdownArtifacts(resolved)
   const prompts = docs.filter((doc) => doc.kind === 'prompt')
   const manifest = buildAgentManifest(docs, { project: options.project })
-  const fullManifest = buildAgentManifest(docs, { project: options.project, includeContent: true })
+  // Keep content in its purpose-built JSON registry instead of cloning every
+  // document into docs.json, prompts.json, and context.json.
+  const fullManifest = assembleAgentManifest(
+    docs,
+    { project: options.project, includeContent: true },
+    ['doc', 'agent', 'reference', 'proposal'],
+  )
   const promptRegistry = buildPromptRegistry(docs, { project: options.project, includeContent: true })
-  const context = formatAgentContext(docs, fullManifest)
+  const docsBySlug = new Map(docs.map(doc => [doc.slug, doc]))
+  const context = formatAgentContext(manifest)
   const files: GeneratedArtifact[] = []
   const addArtifact = (path: string, content: string, marker = false) => {
     files.push({ path, content: ensureTrailingNewline(content), marker, scope: 'agentArtifacts' })
@@ -275,14 +327,25 @@ export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOption
     ...(fullManifest.generatedAt ? { generatedAt: fullManifest.generatedAt } : {}),
     ownership: fullManifest.ownership,
     artifacts: fullManifest.artifacts,
-    docs: fullManifest.docs,
-    prompts: fullManifest.prompts,
+    recommendedReadOrder: manifest.recommendedReadOrder,
+    docs: manifest.docs,
+    prompts: manifest.prompts,
   })
 
   addArtifact('agent/context.md', context, true)
-  addArtifact('agent/bundles/all.md', formatBundle('All Documentation', docs), true)
-  addArtifact('agent/bundles/core.md', buildContextBundle(docs, fullManifest.recommendedReadOrder, 'Core Documentation'), true)
-  addArtifact('agent/bundles/prompts.md', formatPromptsBundle(prompts), true)
+  addArtifact('agent/bundles/all.md', formatBundle('All Documentation', manifest.docs, docsBySlug), true)
+  addArtifact(
+    'agent/bundles/core.md',
+    formatBundle(
+      'Core Documentation',
+      manifest.recommendedReadOrder
+        .map(slug => manifest.docs.find(doc => doc.slug === slug))
+        .filter((doc): doc is AgentManifestEntry => Boolean(doc)),
+      docsBySlug,
+    ),
+    true,
+  )
+  addArtifact('agent/bundles/prompts.md', formatPromptsBundle(manifest.prompts, docsBySlug), true)
 
   for (const doc of docs) {
     addArtifact(`agent/raw/docs/${doc.slug}.md`, doc.rawMarkdown)
@@ -295,6 +358,7 @@ export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOption
   return {
     docs: docs.length,
     prompts: prompts.length,
+    manifest,
     files,
   }
 }
@@ -337,30 +401,6 @@ function resolveOptions(options: CollectMarkdownArtifactsOptions) {
   }
 }
 
-async function walkMarkdownFiles(directory: string): Promise<string[]> {
-  let entries: Dirent[]
-
-  try {
-    entries = await readdir(directory, { withFileTypes: true })
-  } catch {
-    return []
-  }
-
-  const nested = await Promise.all(entries.map(async (entry) => {
-    const entryPath = join(directory, entry.name)
-    if (entry.isDirectory()) {
-      if (entry.name.startsWith('.')) return []
-      return walkMarkdownFiles(entryPath)
-    }
-    if (entry.isFile() && ['.md', '.mdx'].includes(extname(entry.name))) {
-      return [entryPath]
-    }
-    return []
-  }))
-
-  return nested.flat().sort()
-}
-
 function toManifestEntry(doc: MarkdownArtifact, includeContent = false): AgentManifestEntry {
   return {
     id: doc.id,
@@ -382,13 +422,14 @@ function toManifestEntry(doc: MarkdownArtifact, includeContent = false): AgentMa
 }
 
 function toPromptEntry(prompt: MarkdownArtifact, includeContent = false): PromptManifestEntry {
+  const promptId = prompt.promptId || prompt.slug.replace(/^prompts\//, '')
   return {
-    id: prompt.promptId || prompt.slug,
+    id: promptId,
     slug: prompt.slug,
     title: prompt.title,
     description: prompt.description,
     sourcePath: prompt.sourcePath,
-    promptUrl: prompt.promptUrl || `/agent/prompts/${prompt.slug}.md`,
+    promptUrl: prompt.promptUrl || `/agent/prompts/${promptId}.md`,
     rawUrl: prompt.rawUrl,
     headings: prompt.headings,
     tokensEstimate: prompt.tokensEstimate,
@@ -398,7 +439,12 @@ function toPromptEntry(prompt: MarkdownArtifact, includeContent = false): Prompt
   }
 }
 
-function formatAgentContext(docs: MarkdownArtifact[], manifest: AgentManifest): string {
+function artifactPath(manifest: AgentManifest, key: string): string {
+  const value = manifest.artifacts[key]
+  return typeof value === 'string' ? value : ''
+}
+
+function formatAgentContext(manifest: AgentManifest): string {
   const lines = [
     `# ${manifest.project.name} Agent Context`,
     '',
@@ -408,55 +454,60 @@ function formatAgentContext(docs: MarkdownArtifact[], manifest: AgentManifest): 
     '',
     '| Need | Artifact |',
     '|------|----------|',
-    '| Discovery manifest | `/agent/manifest.json` |',
-    '| Full docs with markdown | `/agent/docs.json` |',
-    '| Prompt registry | `/agent/prompts.json` |',
-    '| Combined context | `/agent/context.md` |',
-    '| Raw markdown base | `/agent/raw/docs/` |',
-    '| Core bundle | `/agent/bundles/core.md` |',
-    '| Prompt bundle | `/agent/bundles/prompts.md` |',
+    `| Discovery manifest | \`${artifactPath(manifest, 'manifest')}\` |`,
+    `| Docs with markdown | \`${artifactPath(manifest, 'docs')}\` |`,
+    `| Prompt registry | \`${artifactPath(manifest, 'prompts')}\` |`,
+    `| Retrieval index | \`${artifactPath(manifest, 'context')}\` |`,
+    `| Raw markdown base | \`${artifactPath(manifest, 'rawMarkdownBase')}\` |`,
+    `| All-docs bundle | \`${artifactPath(manifest, 'allMarkdown')}\` |`,
+    `| Prompt bundle | \`${artifactPath(manifest, 'promptBundle')}\` |`,
     '',
     '## Recommended Read Order',
     '',
-    ...manifest.recommendedReadOrder.map((slug) => `- ${slug}: /agent/raw/docs/${slug}.md`),
+    ...manifest.recommendedReadOrder.map((slug) => {
+      const entry = manifest.docs.find(doc => doc.slug === slug)
+      return `- ${slug}: ${entry?.rawUrl || `${artifactPath(manifest, 'rawMarkdownBase')}${slug}.md`}`
+    }),
     '',
     '## Documentation Index',
     '',
     '| Kind | Title | Source | Raw markdown |',
     '|------|-------|--------|--------------|',
-    ...docs.map((doc) => `| ${doc.kind} | ${escapeTable(doc.title)} | \`${doc.sourcePath}\` | ${doc.rawUrl} |`),
+    ...manifest.docs.map((doc) => `| ${doc.kind} | ${escapeTable(doc.title)} | \`${doc.sourcePath}\` | ${doc.rawUrl} |`),
     '',
   ]
-
-  lines.push(formatBundle('Documentation', docs.filter((doc) => doc.kind !== 'prompt')))
-
-  const prompts = docs.filter((doc) => doc.kind === 'prompt')
-  if (prompts.length > 0) {
-    lines.push(formatPromptsBundle(prompts))
-  }
 
   return lines.join('\n')
 }
 
-function formatBundle(title: string, docs: MarkdownArtifact[]): string {
+function formatBundle(
+  title: string,
+  entries: AgentManifestEntry[],
+  docsBySlug: Map<string, MarkdownArtifact>,
+): string {
   const lines = [
     `# ${title}`,
     '',
     '| Kind | Title | Source | Raw markdown |',
     '|------|-------|--------|--------------|',
-    ...docs.map((doc) => `| ${doc.kind} | ${escapeTable(doc.title)} | \`${doc.sourcePath}\` | ${doc.rawUrl} |`),
+    ...entries.map((doc) => `| ${doc.kind} | ${escapeTable(doc.title)} | \`${doc.sourcePath}\` | ${doc.rawUrl} |`),
     '',
   ]
 
-  for (const doc of docs) {
-    lines.push('---', '', `<!-- source: ${doc.sourcePath} -->`, '')
+  for (const entry of entries) {
+    const doc = docsBySlug.get(entry.slug)
+    if (!doc) continue
+    lines.push('---', '', `<!-- source: ${entry.sourcePath} -->`, '')
     lines.push(normalizeMarkdownTitle(doc), '')
   }
 
   return lines.join('\n')
 }
 
-function formatPromptsBundle(prompts: MarkdownArtifact[]): string {
+function formatPromptsBundle(
+  prompts: PromptManifestEntry[],
+  docsBySlug: Map<string, MarkdownArtifact>,
+): string {
   const lines = [
     '# Prompt Bundle',
     '',
@@ -467,8 +518,10 @@ function formatPromptsBundle(prompts: MarkdownArtifact[]): string {
   ]
 
   for (const prompt of prompts) {
+    const doc = docsBySlug.get(prompt.slug)
+    if (!doc) continue
     lines.push('---', '', `<!-- source: ${prompt.sourcePath} -->`, '')
-    lines.push(normalizeMarkdownTitle(prompt), '')
+    lines.push(normalizeMarkdownTitle(doc), '')
   }
 
   return lines.join('\n')

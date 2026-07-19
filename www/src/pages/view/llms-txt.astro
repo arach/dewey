@@ -1,7 +1,7 @@
 ---
 import AgentFileLayout from '../../layouts/AgentFileLayout.astro'
 
-const raw = await import('../../../llms.txt?raw')
+const raw = await import('../../../../llms.txt?raw')
 const content = raw.default
 ---
 <AgentFileLayout

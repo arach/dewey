@@ -1,13 +1,15 @@
 import chalk from 'chalk'
-import { mkdir, writeFile, readFile, readdir, access } from 'fs/promises'
+import { mkdir, writeFile, readFile, access } from 'fs/promises'
 import { dirname, join, basename, relative } from 'path'
-import matter from 'gray-matter'
-import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
+import {
+  buildDocsManifest,
+  discoverDocuments,
+  type DiscoveredDocument,
+} from '../docs-manifest.js'
 import {
   ASTRO_TEMPLATES,
   DEWEY_OWNED_FILES,
   CONSUMER_OWNED_FILES,
-  resolveTheme,
   type AstroTemplateArgs,
 } from '../templates/astro.js'
 import {
@@ -20,7 +22,9 @@ import {
   type NextjsTemplateArgs,
 } from '../templates/nextjs.js'
 import { hashContent, writeManifest, type DeweyManifest } from '../manifest.js'
+import { writeAgentArtifacts } from '../agent-artifacts.js'
 import { DEWEY_VERSION } from '../version.js'
+import { resolveCliTheme } from '../input-contracts.js'
 
 interface CreateOptions {
   source?: string
@@ -29,20 +33,7 @@ interface CreateOptions {
   name?: string
 }
 
-interface DocFile {
-  id: string
-  title: string
-  description?: string
-  content: string
-  rawContent: string
-  order: number
-  groupId?: string
-  groupTitle?: string
-  sourcePath: string
-  absoluteSourcePath: string
-  agentSourcePath?: string
-  absoluteAgentSourcePath?: string
-}
+type DocFile = DiscoveredDocument
 
 function resolveTemplate(template?: string): 'astro' | 'nextjs' {
   if (template === 'astro') return 'astro'
@@ -59,42 +50,11 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 export async function loadMarkdownDocs(docsPath: string): Promise<DocFile[]> {
-  const docs: DocFile[] = []
-
   if (!await fileExists(docsPath)) {
-    return docs
+    return []
   }
-
-  const files = await readdir(docsPath, { recursive: true })
-
-  for (const file of files) {
-    if (!file.endsWith('.md') || file.endsWith('.agent.md')) continue
-
-    const filePath = join(docsPath, String(file))
-    const rawContent = await readFile(filePath, 'utf-8')
-    const { data: frontmatter, content: body } = matter(rawContent)
-    const id = file.replace('.md', '')
-    const agentSourcePath = await resolveAgentDocPath(docsPath, id)
-
-    docs.push({
-      id,
-      title: (frontmatter.title as string) || id.charAt(0).toUpperCase() + id.slice(1),
-      description: frontmatter.description as string | undefined,
-      content: body.trim(),
-      rawContent,
-      order: (frontmatter.order as number) || 999,
-      groupId: frontmatter.groupId as string | undefined,
-      groupTitle: frontmatter.group as string | undefined,
-      sourcePath: file.replace(/\\/g, '/'),
-      absoluteSourcePath: filePath,
-      agentSourcePath: agentSourcePath ? relative(docsPath, agentSourcePath).replace(/\\/g, '/') : undefined,
-      absoluteAgentSourcePath: agentSourcePath,
-    })
-  }
-
-  docs.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
-
-  return docs
+  return (await discoverDocuments({ rootDir: docsPath, docsDir: docsPath, audience: 'human' }))
+    .filter(doc => doc.extension === '.md')
 }
 // ---------------------------------------------------------------------------
 // Create command
@@ -106,7 +66,7 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
   const sourcePath = options.source ? join(cwd, options.source) : join(cwd, 'docs')
   const projectName = options.name || basename(projectDir)
   const template = resolveTemplate(options.template)
-  const theme = resolveTheme(options.theme)
+  const theme = resolveCliTheme(options.theme, message => console.warn(chalk.yellow(`⚠ ${message}`)))
 
   console.log(chalk.blue(`\n🚀 Creating Dewey docs site: ${projectName}\n`))
 
@@ -125,15 +85,19 @@ export async function createCommand(projectDir: string, options: CreateOptions) 
     console.log(chalk.yellow(`⚠️  No markdown files found in ${sourcePath}`))
     console.log(chalk.gray('   Creating with sample documentation...\n'))
 
+    const samplePath = join(sourcePath, 'overview.md')
     docs.push({
       id: 'overview',
       title: 'Overview',
       description: 'Welcome to the documentation',
       content: `Welcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.`,
       rawContent: `---\ntitle: Overview\ndescription: Welcome to the documentation\norder: 1\n---\n\nWelcome to **${projectName}**.\n\nThis is your documentation site. Add markdown files to your docs directory to get started.\n`,
+      frontmatter: { title: 'Overview', description: 'Welcome to the documentation', order: 1 },
       order: 1,
       sourcePath: 'overview.md',
-      absoluteSourcePath: join(sourcePath, 'overview.md'),
+      relativeSourcePath: 'overview.md',
+      extension: '.md',
+      absoluteSourcePath: samplePath,
     })
   }
 
@@ -259,6 +223,17 @@ dist
       console.log(chalk.green('✓') + ` docs/${doc.agentSourcePath}`)
     }
   }
+
+  // A scaffold is a presentation layer over the same retrieval contract as
+  // `dewey generate`. Keep scaffold ownership and generated-artifact ownership
+  // separate, but compose them deliberately in a newly created site.
+  const agentArtifacts = await writeAgentArtifacts({
+    rootDir: targetDir,
+    docsDir,
+    outputDir: targetDir,
+    project: { name: projectName },
+  })
+  console.log(chalk.green('✓') + ` agent/ (${agentArtifacts.docs} docs, ${agentArtifacts.prompts} prompts)`)
 
   // Create .gitignore
   await writeFile(join(targetDir, '.gitignore'), gitignoreContent)

@@ -30,7 +30,7 @@ export default {
       { pattern: 'agent artifacts', instruction: 'Check packages/docs/src/cli/agent-artifacts.ts and `dewey generate --agent-artifacts`' },
     ],
 
-    sections: ['overview', 'quickstart', 'cli', 'skills', 'api', 'integrate-existing-site'],
+    sections: ['overview', 'quickstart', 'cli', 'skills', 'api', 'integrate-existing-site', 'maintenance'],
   },
 
   docs: {

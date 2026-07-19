@@ -14,6 +14,19 @@ Skills are LLM prompts, not code. They're expert instructions that tell AI agent
 | `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |
 | `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |
 | `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |
+| `improveAIPrompts` | Iteratively discovers prompt opportunities, drafts self-contained contracts, reviews them, and refines the result | `Use improveAIPrompts.passes.discovery.prompt`, then draft/review/refine passes |
+
+`improveAIPrompts` is the public name. `improveAIPromptsSkill` is exported only as a deprecated compatibility alias and references the same object.
+
+```ts
+import { improveAIPrompts } from '@arach/dewey'
+
+const discovery = improveAIPrompts.passes.discovery.prompt
+const review = improveAIPrompts.passes.review.prompt
+  .replace('{PASTE_DRAFT}', draft)
+```
+
+The pass prompts guide an LLM; they do not inspect a repository or rewrite files by themselves. Supply the requested context, evaluate the model output against the included quality criteria, and retain human review for project-specific constraints.
 
 ---
 

@@ -16,37 +16,25 @@ export function Steps({ children }: StepsProps) {
   )
 
   return (
-    <div className="my-6">
+    <div className="dw-steps">
       {steps.map((step, index) => (
-        <div key={index} className="flex gap-4 pb-6 last:pb-0">
+        <div key={index} className="dw-step">
           {/* Step number and line */}
-          <div className="flex flex-col items-center">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-semibold flex-shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, #f07c4f, #f2a071)',
-                color: '#1c120a',
-              }}
-            >
+          <div className="dw-step-rail">
+            <div className="dw-step-number">
               {index + 1}
             </div>
             {index < steps.length - 1 && (
-              <div
-                className="w-0.5 flex-1 mt-2"
-                style={{ background: 'rgba(0, 0, 0, 0.1)' }}
-              />
+              <div className="dw-step-line" />
             )}
           </div>
 
           {/* Step content */}
-          <div className="flex-1 min-w-0 pt-1">
-            <h4
-              className="font-semibold text-[15px] mb-2"
-              style={{ color: '#101518' }}
-            >
+          <div className="dw-step-content">
+            <h4 className="dw-step-title">
               {step.props.title}
             </h4>
-            <div className="text-[14px] leading-relaxed" style={{ color: '#5c676c' }}>
+            <div className="dw-step-body">
               {step.props.children}
             </div>
           </div>

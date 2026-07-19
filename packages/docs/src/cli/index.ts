@@ -68,7 +68,6 @@ program
   .description('Update Dewey-owned site files to the latest version')
   .option('--dry-run', 'Preview changes without writing')
   .option('--force', 'Overwrite user-modified files (creates backups)')
-  .option('--refresh-nav', 'Regenerate docs.json from current docs/')
   .action(updateCommand)
 
 program

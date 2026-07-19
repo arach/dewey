@@ -23,16 +23,89 @@ const SHARED_LAYOUT_VARS = `    --radius-sm: 6px;
     --toc-width: 220px;
     --content-max: 760px;`
 
+// Generated sites retain their original --color-* names for template
+// compatibility, but expose the same complete --dw-* contract as the React
+// package and Tailwind preset. New generated UI can therefore consume Dewey
+// components without maintaining a second theme model.
+const SHARED_DW_CONTRACT = `    --dw-background: var(--color-bg);
+    --dw-foreground: var(--color-text);
+    --dw-primary: var(--color-accent-strong);
+    --dw-primary-foreground: var(--color-bg);
+    --dw-secondary: var(--color-surface-muted);
+    --dw-secondary-foreground: var(--color-text);
+    --dw-muted: var(--color-surface-muted);
+    --dw-muted-foreground: var(--color-text-muted);
+    --dw-accent: var(--color-surface-muted);
+    --dw-accent-foreground: var(--color-text);
+    --dw-border: var(--color-border);
+    --dw-ring: var(--color-accent);
+    --dw-code-bg: var(--color-surface-muted);
+    --dw-code-border: var(--color-border);
+    --dw-sidebar-bg: var(--color-surface);
+    --dw-sidebar-border: var(--color-border);
+    --dw-sidebar-active: var(--color-text);
+    --dw-sidebar-active-bg: var(--color-surface-muted);
+    --dw-header-bg: var(--color-surface);
+    --dw-header-border: var(--color-border);
+    --color-dw-background: var(--dw-background);
+    --color-dw-foreground: var(--dw-foreground);
+    --color-dw-primary: var(--dw-primary);
+    --color-dw-primary-foreground: var(--dw-primary-foreground);
+    --color-dw-secondary: var(--dw-secondary);
+    --color-dw-secondary-foreground: var(--dw-secondary-foreground);
+    --color-dw-muted: var(--dw-muted);
+    --color-dw-muted-foreground: var(--dw-muted-foreground);
+    --color-dw-accent: var(--dw-accent);
+    --color-dw-accent-foreground: var(--dw-accent-foreground);
+    --color-dw-border: var(--dw-border);
+    --color-dw-ring: var(--dw-ring);`
+
+const SHARED_DW_LIGHT = `    --dw-info: #2563eb;
+    --dw-info-foreground: #ffffff;
+    --dw-warning: #935408;
+    --dw-warning-foreground: #ffffff;
+    --dw-error: #c9211f;
+    --dw-error-foreground: #ffffff;
+    --dw-success: #157f3c;
+    --dw-success-foreground: #ffffff;
+    --dw-syntax-keyword: #70401f;
+    --dw-syntax-string: #1f6338;
+    --dw-syntax-number: #235f87;
+    --dw-syntax-type: #60447a;
+    --dw-syntax-function: #4d4d78;
+    --dw-syntax-punctuation: #444b50;
+    --dw-syntax-comment: #4f5959;`
+
+const SHARED_DW_DARK = `    --dw-info: #60a5fa;
+    --dw-info-foreground: #0b1120;
+    --dw-warning: #fbbf24;
+    --dw-warning-foreground: #0b1120;
+    --dw-error: #f87171;
+    --dw-error-foreground: #0b1120;
+    --dw-success: #4ade80;
+    --dw-success-foreground: #0b1120;
+    --dw-syntax-keyword: #f0b98c;
+    --dw-syntax-string: #9ed5ad;
+    --dw-syntax-number: #9bc8e5;
+    --dw-syntax-type: #cdb4e8;
+    --dw-syntax-function: #c4c4eb;
+    --dw-syntax-punctuation: #d0d4d8;
+    --dw-syntax-comment: #a7b0b0;`
+
 function buildTokens(lightColors: string, darkColors: string): string {
   return `@layer base {
   :root {
 ${lightColors}
 ${SHARED_LAYOUT_VARS}
+${SHARED_DW_CONTRACT}
+${SHARED_DW_LIGHT}
     --shadow-soft: 0 12px 30px rgba(16, 21, 24, 0.08);
   }
 
   [data-theme='dark'] {
 ${darkColors}
+${SHARED_DW_CONTRACT}
+${SHARED_DW_DARK}
     --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.35);
   }
 }
@@ -292,13 +365,16 @@ export const ASTRO_TEMPLATES: Record<string, (args: AstroTemplateArgs) => string
     scripts: {
       dev: 'astro dev',
       build: 'astro build',
-      postbuild: 'bunx pagefind --site dist',
+      postbuild: 'pagefind --site dist',
       preview: 'astro preview',
     },
     dependencies: {
-      'astro': '^5.2.0',
-      '@tailwindcss/vite': '^4.1.0',
-      'tailwindcss': '^4.1.0',
+      'astro': '5.18.2',
+      '@tailwindcss/vite': '4.3.2',
+      'tailwindcss': '4.3.2',
+    },
+    devDependencies: {
+      'pagefind': '1.5.2',
     },
   }, null, 2),
 
@@ -852,11 +928,11 @@ const pageDescription = description || '${args.projectName} documentation'
         </div>
         <div class="dl-header-right">
           <a href="/llms.txt" class="dl-header-link">llms.txt</a>
-          <button class="dl-search-btn" type="button" data-search-toggle data-pagefind-ignore>
+          <button class="dl-search-btn" type="button" data-search-toggle data-pagefind-ignore aria-label="Search documentation" aria-haspopup="dialog" aria-expanded="false" aria-controls="search-dialog">
             Search\u2026
             <span class="dl-search-key">\u2318K</span>
           </button>
-          <button class="dl-theme-btn" type="button" data-theme-toggle data-pagefind-ignore title="Toggle theme">
+          <button class="dl-theme-btn" type="button" data-theme-toggle data-pagefind-ignore title="Toggle theme" aria-label="Toggle color theme">
             <svg class="dl-theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             <svg class="dl-theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           </button>
@@ -866,12 +942,12 @@ const pageDescription = description || '${args.projectName} documentation'
         <slot />
       </div>
     </div>
-    <div class="dl-search-overlay" data-search-modal data-pagefind-ignore>
+    <div class="dl-search-overlay" data-search-modal data-pagefind-ignore role="dialog" aria-modal="true" aria-labelledby="search-dialog-title" id="search-dialog">
       <div class="dl-search-dialog">
         <div class="dl-search-dialog-header">
           <div>
             <p class="dl-search-dialog-label">Search</p>
-            <h2 class="dl-search-dialog-title">Find docs fast</h2>
+            <h2 class="dl-search-dialog-title" id="search-dialog-title">Find docs fast</h2>
           </div>
           <button class="dl-search-dialog-close" data-search-close>Close</button>
         </div>
@@ -1102,6 +1178,8 @@ const pageDescription = description || '${args.projectName} documentation'
             var searchModal = document.querySelector('[data-search-modal]')
             var searchClose = document.querySelector('[data-search-close]')
             var searchToggles = document.querySelectorAll('[data-search-toggle]')
+            var searchReturnFocus = null
+            var searchInitialized = false
 
             var loadPagefind = function () {
               return new Promise(function (resolve) {
@@ -1123,9 +1201,11 @@ const pageDescription = description || '${args.projectName} documentation'
             }
 
             var initPagefind = function () {
+              if (searchInitialized) return
               loadPagefind().then(function (ok) {
                 if (ok && window.PagefindUI) {
                   new window.PagefindUI({ element: '#search-modal', showSubResults: true })
+                  searchInitialized = true
                 } else {
                   var fb = document.getElementById('search-modal-fallback')
                   if (fb) fb.style.display = 'block'
@@ -1135,19 +1215,43 @@ const pageDescription = description || '${args.projectName} documentation'
 
             var openSearch = function () {
               if (!searchModal) return
+              searchReturnFocus = document.activeElement
               searchModal.classList.add('is-open')
+              searchToggles.forEach(function (btn) { btn.setAttribute('aria-expanded', 'true') })
               initPagefind()
+              setTimeout(function () {
+                var input = searchModal.querySelector('input')
+                if (input) input.focus()
+                else if (searchClose) searchClose.focus()
+              }, 100)
             }
 
             var closeSearch = function () {
               if (!searchModal) return
               searchModal.classList.remove('is-open')
+              searchToggles.forEach(function (btn) { btn.setAttribute('aria-expanded', 'false') })
+              if (searchReturnFocus && searchReturnFocus.focus) searchReturnFocus.focus()
             }
 
             searchToggles.forEach(function (btn) { btn.addEventListener('click', openSearch) })
             searchClose && searchClose.addEventListener('click', closeSearch)
             searchModal && searchModal.addEventListener('click', function (event) {
               if (event.target === searchModal) closeSearch()
+            })
+            window.addEventListener('keydown', function (event) {
+              if (event.key === 'Escape') closeSearch()
+              if (event.key !== 'Tab' || !searchModal || !searchModal.classList.contains('is-open')) return
+              var focusable = Array.from(searchModal.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+              if (!focusable.length) return
+              var first = focusable[0]
+              var last = focusable[focusable.length - 1]
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault()
+                last.focus()
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault()
+                first.focus()
+              }
             })
             window.addEventListener('open-search', openSearch)
           } catch (error) {
@@ -1228,6 +1332,10 @@ const { title = 'Docs' } = Astro.props
               type="button"
               data-search-toggle
               data-pagefind-ignore
+              aria-label="Search documentation"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              aria-controls="search-dialog"
             >
               Search\u2026
               <span class="text-[10px] uppercase tracking-[0.2em]">\u2318K</span>
@@ -1237,6 +1345,7 @@ const { title = 'Docs' } = Astro.props
               type="button"
               data-theme-toggle
               data-pagefind-ignore
+              aria-label="Toggle color theme"
             >
               Theme
             </button>
@@ -1251,12 +1360,16 @@ const { title = 'Docs' } = Astro.props
       class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-6"
       data-search-modal
       data-pagefind-ignore
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="search-dialog-title"
+      id="search-dialog"
     >
       <div class="w-full max-w-2xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-xl">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Search</p>
-            <h2 class="text-lg font-semibold">Find docs fast</h2>
+            <h2 class="text-lg font-semibold" id="search-dialog-title">Find docs fast</h2>
           </div>
           <button class="text-xs text-[var(--color-text-muted)]" data-search-close>Close</button>
         </div>
@@ -1290,6 +1403,8 @@ const { title = 'Docs' } = Astro.props
             var searchModal = document.querySelector('[data-search-modal]')
             var searchClose = document.querySelector('[data-search-close]')
             var searchToggles = document.querySelectorAll('[data-search-toggle]')
+            var searchReturnFocus = null
+            var searchInitialized = false
 
             var loadPagefind = function () {
               return new Promise(function (resolve) {
@@ -1311,9 +1426,11 @@ const { title = 'Docs' } = Astro.props
             }
 
             var initPagefind = function () {
+              if (searchInitialized) return
               loadPagefind().then(function (ok) {
                 if (ok && window.PagefindUI) {
                   new window.PagefindUI({ element: '#search-modal', showSubResults: true })
+                  searchInitialized = true
                 } else {
                   var fb = document.getElementById('search-modal-fallback')
                   if (fb) fb.classList.remove('hidden')
@@ -1323,21 +1440,45 @@ const { title = 'Docs' } = Astro.props
 
             var openSearch = function () {
               if (!searchModal) return
+              searchReturnFocus = document.activeElement
               searchModal.classList.remove('hidden')
               searchModal.classList.add('flex')
+              searchToggles.forEach(function (btn) { btn.setAttribute('aria-expanded', 'true') })
               initPagefind()
+              setTimeout(function () {
+                var input = searchModal.querySelector('input')
+                if (input) input.focus()
+                else if (searchClose) searchClose.focus()
+              }, 100)
             }
 
             var closeSearch = function () {
               if (!searchModal) return
               searchModal.classList.add('hidden')
               searchModal.classList.remove('flex')
+              searchToggles.forEach(function (btn) { btn.setAttribute('aria-expanded', 'false') })
+              if (searchReturnFocus && searchReturnFocus.focus) searchReturnFocus.focus()
             }
 
             searchToggles.forEach(function (btn) { btn.addEventListener('click', openSearch) })
             searchClose && searchClose.addEventListener('click', closeSearch)
             searchModal && searchModal.addEventListener('click', function (event) {
               if (event.target === searchModal) closeSearch()
+            })
+            window.addEventListener('keydown', function (event) {
+              if (event.key === 'Escape') closeSearch()
+              if (event.key !== 'Tab' || !searchModal || searchModal.classList.contains('hidden')) return
+              var focusable = Array.from(searchModal.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+              if (!focusable.length) return
+              var first = focusable[0]
+              var last = focusable[focusable.length - 1]
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault()
+                last.focus()
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault()
+                first.focus()
+              }
             })
             window.addEventListener('open-search', openSearch)
           } catch (error) {
@@ -1393,6 +1534,10 @@ const {
 ---
 
 <BaseLayout title={title} description={description}>
+  <details class="dl-mobile-nav" data-mobile-navigation data-pagefind-ignore>
+    <summary>Browse documentation</summary>
+    <SidebarNav />
+  </details>
   <nav class="dl-sidebar" data-pagefind-ignore>
     <SidebarNav />
   </nav>
@@ -1453,8 +1598,22 @@ const {
       align-self: flex-start;
     }
 
+    .dl-mobile-nav { display: none; }
+
     @media (max-width: 768px) {
       .dl-sidebar { display: none; }
+      .dl-body { flex-direction: column; }
+      .dl-mobile-nav {
+        display: block;
+        width: 100%;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .dl-mobile-nav summary {
+        cursor: pointer;
+        color: var(--color-text);
+        font-weight: 600;
+      }
     }
 
     .dl-main {
@@ -1605,6 +1764,10 @@ const {
 
 <BaseLayout title={title}>
   <div class="grid gap-8 lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)_var(--toc-width)]">
+    <details class="mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 lg:hidden" data-mobile-navigation data-pagefind-ignore>
+      <summary class="cursor-pointer font-medium text-[var(--color-text)]">Browse documentation</summary>
+      <div class="mt-4"><SidebarNav /></div>
+    </details>
     <aside class="hidden lg:block" data-pagefind-ignore>
       <div class="sticky top-24">
         <SidebarNav />

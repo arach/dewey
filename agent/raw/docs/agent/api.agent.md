@@ -241,7 +241,7 @@ Provider rule: components using Dewey context hooks require `DeweyProvider`. Nex
 | `AgentContext` | `content` | `title`, `defaultExpanded`, `className` |
 | `PromptSlideout` | `isOpen`, `onClose`, `info`, `starterTemplate` | `title`, `description`, `params`, `examples`, `expectedOutput`, `className` |
 
-`DocsLayout` is public but router-coupled (`react-router-dom`); `DocsLayoutProps` is not re-exported from main. `CodeBlock` and `HeadingLink` values are public; their prop interfaces are not exported.
+`DocsLayout` is router-neutral: it uses plain anchors by default and accepts `LinkComponent` plus `currentPage` for host integration. `DocsLayoutProps` is re-exported from main. `CodeBlock` and `HeadingLink` values are public; their prop interfaces are not exported.
 
 ## Component/navigation unions
 
@@ -266,7 +266,7 @@ legacy DocSection.level = 2 | 3
 | Layout/content | `Header`, `DocsLayout`, `MarkdownContent`, `CodeBlock`, `HeadingLink`, `Sidebar`, `TableOfContents`, `AutoTableOfContents`, `useActiveSection`, `extractTocItems`, `extractTocFromDom` |
 | UI | `Callout`, `Tabs`, `Tab`, `Steps`, `Step`, `Card`, `CardGrid`, `FileTree`, `ApiTable`, `Badge` |
 | Agent UI | `CopyButtons`, `AgentContext`, `PromptSlideout` |
-| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator` |
+| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator`, `improveAIPrompts`, `improveAIPromptsSkill` |
 | Hooks/utils | `useDarkMode`, `useTableOfContents`, `extractSections`, `cn`, `resolveIcon`, `commonIcons` |
 | Agent content | `agentContent`, `AgentContentBuilder`, `renderAgentMarkdown`, `renderAgentJson`, `renderAgentPlainText` |
 
@@ -276,8 +276,8 @@ legacy DocSection.level = 2 | 3
 |---|---|
 | Config/themes | `AgentRule`, `DeweyConfig`, `InstallConfig`, `ProjectType`, `ThemeDefinition`, `ThemeName`, `ThemePreset` |
 | App/provider | `DocsAppProps`, `DocsAppConfig`, `DocsIndexProps`, `DeweyProviderProps`, `DeweyContextValue`, `ThemeConfig`, `FrameworkComponents` |
-| Components | `HeaderProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
-| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
+| Components | `HeaderProps`, `DocsLayoutProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
+| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `PromptImprovementPass`, `PromptQualityCriteria`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
 | Navigation/utils | `PageTree`, `PageNode`, `PageItem`, `PageFolder`, `PageSeparator`, `FlatPage`, `NavigationConfig`, `NavigationGroup`, `NavigationItem`, `CommonIconName` |
 | Legacy | `NavItem`, `NavGroup`, `DocSection`, `BadgeColor`, `PageLink`, `DocsConfig` |
 
@@ -289,6 +289,17 @@ legacy DocSection.level = 2 | 3
 | `docsDesignCritic` | `DocsDesignCritiqueResult` | LLM prompt set: structure/design critique |
 | `promptSlideoutGenerator` | `PromptSlideoutConfig` | LLM prompt set: slideout authoring |
 | `installMdGenerator` | `InstallMdConfig` | LLM prompt set: install.md authoring |
+| `improveAIPrompts` | `PromptImprovementPass` / `PromptQualityCriteria` | Iterative prompt discovery, draft, review, refinement |
+
+`improveAIPromptsSkill`: deprecated runtime alias, identical object.
+
+## Router and theme contract
+
+- `DocsLayout`: no React Router dependency; default plain anchor; optional `LinkComponent`; optional explicit `currentPage`; browser pathname fallback.
+- `react-router-dom`: not a package peer dependency.
+- Twelve themes × light/dark resolve one `--dw-*` semantic contract across runtime CSS, components, Tailwind, and generated sites.
+- Required categories: surface/foreground; primary/secondary/accent pairs; border/ring; info/warning/error/success pairs; code/syntax; sidebar/header; fonts/radii/shadows/motion.
+- Automated proof: token completeness/dead-token rejection, WCAG AA text pairs, focus, reduced motion, semantic/component checks, and 24 Playwright screenshots.
 
 ## Structured agent content
 

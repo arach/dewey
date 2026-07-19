@@ -40,6 +40,15 @@ bunx dewey init
 
 Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
 
+Choose a project type so the scaffold and later evidence checks match the product:
+
+```bash
+bunx dewey init --type npm-package
+# generic | npm-package | cli-tool | react-library | macos-app | monorepo
+```
+
+Every type creates paired human and agent pages. The focus page and defaults vary: API for npm packages, command reference for CLIs, component reference for React libraries, architecture for generic/macOS projects, and workspace mapping for monorepos. An invalid type fails instead of silently using `generic`.
+
 ### 3. Configure
 
 <div class="doc-file-block">
@@ -94,6 +103,8 @@ bunx dewey generate
 
 Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
+The same canonical document discovery powers `generate`, the optional `create` scaffold, and the artifact API. Full content is materialized deliberately: document bodies in `agent/docs.json`, prompts in `agent/prompts.json`, and Markdown in `agent/raw/docs/` plus bundles. Context files remain compact retrieval indexes.
+
 ### 6. Audit
 
 ```bash
@@ -102,7 +113,7 @@ bunx dewey audit
 bunx dewey audit --json
 ```
 
-Structural and completeness checks. Prefer fixing audit findings before treating the score as a release gate.
+Structural and completeness checks plus project-type evidence and focused documentation drift. JSON output includes structured `projectType` and `drift` objects. Prefer fixing audit findings before treating the score as a release gate.
 
 ### 7. Check your score
 
@@ -140,6 +151,8 @@ cd my-docs && bun install && bun run dev
 
 Generates a static docs site when you want a separate publishing path alongside agent artifacts.
 
+The scaffold pins tested Next.js/Astro dependencies and runs the same agent-artifact writer, so it starts with both a human site and the retrieval contract. For later adoption, updates, ejection, backups, and recovery, see [Maintaining generated sites](./maintenance.md).
+
 ---
 
 ## Next steps
@@ -149,3 +162,4 @@ Generates a static docs site when you want a separate publishing path alongside 
 - Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
 - Embed components or use `dewey create` only when you need a human site
 - [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)
+- [Maintaining generated sites](./maintenance.md) — ownership, update, eject, recovery, and release checks

@@ -3,6 +3,11 @@ import { readdir, readFile, access } from 'fs/promises'
 import { join, relative, sep } from 'path'
 import matter from 'gray-matter'
 import { loadConfigWithRoot } from '../config.js'
+import { analyzeDocumentationDrift, type DriftReport } from '../drift.js'
+import {
+  checkProjectTypeDocumentation,
+  type ProjectTypeDocumentationCheck,
+} from '../project-types.js'
 import type { DeweyConfig } from '../schema.js'
 
 interface CoachOptions {
@@ -16,6 +21,8 @@ interface AgentReadinessReport {
   maxScore: number
   grade: 'A' | 'B' | 'C' | 'D' | 'F'
   categories: CategoryResult[]
+  projectType: ProjectTypeDocumentationCheck
+  drift: DriftReport
   recommendations: Recommendation[]
   quickWins: string[]
 }
@@ -194,13 +201,6 @@ function findDocumentByEvidence(
   return documents.find(document => evidence.test(documentSignals(document))) ?? null
 }
 
-function hasTypedApiEvidence(document: MarkdownDocument): boolean {
-  const hasApiSurface = /\b(api|reference|sdk|endpoint|method|function)s?\b/i.test(documentSignals(document))
-    || /\b(GET|POST|PUT|PATCH|DELETE)\s+\//.test(document.body)
-  const hasTypes = /\binterface\s+\w+\s*\{|\btype\s+\w+\s*=|\b(class|function)\s+\w+|\w+\([^)]*\)\s*:\s*[\w<{[]/.test(document.body)
-  return hasApiSurface && hasTypes
-}
-
 function extractReferencedPaths(content: string): string[] {
   return [...content.matchAll(/`((?:src|lib|packages|apps)\/[\w./-]+)`/g)].map(match => match[1])
 }
@@ -218,10 +218,20 @@ async function hasExistingCodeReference(projectRoot: string, documents: Markdown
 // Perform Checks
 // ============================================
 
-async function performChecks(projectRoot: string, config: DeweyConfig | null): Promise<CategoryResult[]> {
+async function performChecks(projectRoot: string, config: DeweyConfig | null): Promise<{
+  categories: CategoryResult[]
+  projectType: ProjectTypeDocumentationCheck
+  drift: DriftReport
+}> {
   const docsPath = config?.docs.path ? join(projectRoot, config.docs.path) : join(projectRoot, 'docs')
   const documents = await discoverMarkdownDocuments(docsPath)
   const humanDocuments = documents.filter(isHumanPageDocument)
+  const projectType = checkProjectTypeDocumentation(config?.project.type ?? 'generic', humanDocuments)
+  const drift = await analyzeDocumentationDrift({
+    projectRoot,
+    documents,
+    configuredSourcePaths: Object.values(config?.agent.entryPoints ?? {}),
+  })
   const results: CategoryResult[] = []
 
   // Project Context checks
@@ -251,26 +261,19 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
     hint: quickstartHasCode ? undefined : 'Add getting-started documentation with working code examples',
   })
 
-  // Has architecture
-  const archFile = findDocumentByEvidence(humanDocuments, /\b(architecture|project structure|system design)\b/i)
-  contextChecks.push({
-    name: 'Has architecture documentation',
-    passed: !!archFile,
-    points: archFile ? 5 : 0,
-    maxPoints: 5,
-    hint: archFile ? undefined : 'Document the project architecture or structure',
-  })
-
-  // Has API reference
-  const apiFile = humanDocuments.find(hasTypedApiEvidence)
-  const apiHasTypes = !!apiFile
-  contextChecks.push({
-    name: 'Has API reference with types',
-    passed: apiHasTypes,
-    points: apiHasTypes ? 5 : 0,
-    maxPoints: 5,
-    hint: apiHasTypes ? undefined : 'Document the public API surface with type information',
-  })
+  // Project types replace generic architecture/API assumptions with two
+  // explicit evidence requirements for the selected product shape.
+  for (const evidence of projectType.evidence) {
+    contextChecks.push({
+      name: evidence.requirement,
+      passed: evidence.passed,
+      points: evidence.passed ? 5 : 0,
+      maxPoints: 5,
+      hint: evidence.passed
+        ? undefined
+        : `Add ${projectType.label.toLowerCase()} evidence: ${evidence.requirement}`,
+    })
+  }
 
   // Has config
   const hasConfig = !!config
@@ -431,12 +434,18 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
   const hasValidValues = humanDocuments.some(document =>
     /valid\s+(values|options)|one\s+of|enum|'[^']+'\s*\|\s*'[^']+'/i.test(document.body),
   )
+  const contractsAligned = drift.status === 'clean'
+  const validValuesAligned = hasValidValues && contractsAligned
   qualityChecks.push({
-    name: 'Valid values are listed',
-    passed: hasValidValues,
-    points: hasValidValues ? 5 : 0,
+    name: 'Valid values are listed and aligned across source and paired docs',
+    passed: validValuesAligned,
+    points: validValuesAligned ? 5 : 0,
     maxPoints: 5,
-    hint: hasValidValues ? undefined : 'List valid values for props/options (e.g., "size: \'s\' | \'m\' | \'l\'")',
+    hint: !hasValidValues
+      ? 'List valid values for props/options (e.g., "size: \'s\' | \'m\' | \'l\'")'
+      : !contractsAligned
+        ? `Resolve ${drift.issues.length} source/human/agent drift issue${drift.issues.length === 1 ? '' : 's'}`
+        : undefined,
   })
 
   const qualityScore = qualityChecks.reduce((s, c) => s + c.points, 0)
@@ -448,7 +457,7 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
     checks: qualityChecks,
   })
 
-  return results
+  return { categories: results, projectType, drift }
 }
 
 function getStatus(score: number, max: number): 'excellent' | 'good' | 'needs-work' | 'missing' {
@@ -549,6 +558,18 @@ function printReport(report: AgentReadinessReport, verbose: boolean) {
     console.log(chalk.gray('\n  Run with --verbose to see individual checks'))
   }
 
+  const projectTypeStatus = report.projectType.passed ? chalk.green('complete') : chalk.yellow('incomplete')
+  console.log(`\n  Project type: ${report.projectType.label} (${projectTypeStatus})`)
+  const driftStatus = report.drift.status === 'clean' ? chalk.green('clean')
+    : report.drift.status === 'issues' ? chalk.yellow('issues')
+      : chalk.gray('not applicable')
+  console.log(`  Drift: ${driftStatus} (${report.drift.checkedPairs} pairs, ${report.drift.checkedSourceFiles} source files)`)
+  if (verbose) {
+    for (const issue of report.drift.issues) {
+      console.log(chalk.gray(`    - [${issue.code}] ${issue.message}`))
+    }
+  }
+
   // Recommendations
   if (report.recommendations.length > 0) {
     console.log(chalk.bold('\n  Top Recommendations:\n'))
@@ -588,7 +609,7 @@ export async function agentCoachCommand(options: CoachOptions) {
   }
 
   // Perform all checks
-  const categories = await performChecks(projectRoot, config)
+  const { categories, projectType, drift } = await performChecks(projectRoot, config)
 
   // Calculate totals
   const totalScore = categories.reduce((s, c) => s + c.score, 0)
@@ -604,6 +625,8 @@ export async function agentCoachCommand(options: CoachOptions) {
     maxScore,
     grade: getGrade(totalScore, maxScore),
     categories,
+    projectType,
+    drift,
     recommendations,
     quickWins,
   }

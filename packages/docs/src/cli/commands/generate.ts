@@ -1,11 +1,14 @@
 import chalk from 'chalk'
-import { readdir, readFile, access } from 'fs/promises'
-import { join, relative, resolve } from 'path'
-import matter from 'gray-matter'
+import { access } from 'fs/promises'
+import { resolve } from 'path'
 import { loadConfig } from '../config.js'
-import { buildDocsManifest, resolveAgentDocPath } from '../docs-manifest.js'
+import {
+  buildDocsManifest,
+  discoverDocuments,
+  type DiscoveredDocument,
+} from '../docs-manifest.js'
 import { DEWEY_VERSION, getGeneratedAt } from '../version.js'
-import { buildAgentArtifactFiles } from '../agent-artifacts.js'
+import { buildAgentArtifactFiles, type AgentManifest } from '../agent-artifacts.js'
 import {
   applyGenerationPlan,
   isOutputInsideSource,
@@ -27,17 +30,7 @@ export interface GenerateOptions {
   overwrite?: boolean
 }
 
-interface DocSection {
-  id: string
-  title: string
-  description?: string
-  content: string
-  order: number
-  groupId?: string
-  groupTitle?: string
-  sourcePath: string
-  agentSourcePath?: string
-}
+type DocSection = DiscoveredDocument
 
 async function fileExists(path: string): Promise<boolean> {
   try {
@@ -49,13 +42,8 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 export async function discoverMarkdownSections(docsPath: string): Promise<string[]> {
-  const files = await readdir(docsPath, { recursive: true })
-
-  return files
-    .map(String)
-    .filter(file => file.endsWith('.md') && !file.endsWith('.agent.md'))
-    .map(file => file.slice(0, -'.md'.length).replace(/\\/g, '/'))
-    .sort((left, right) => left.localeCompare(right))
+  const docs = await discoverDocuments({ rootDir: docsPath, docsDir: docsPath, audience: 'human' })
+  return docs.filter(doc => doc.extension === '.md').map(doc => doc.id).sort()
 }
 
 export async function loadDocs(
@@ -64,42 +52,10 @@ export async function loadDocs(
   docsRelativePath: string,
   sections: string[],
 ): Promise<DocSection[]> {
-  const docs: DocSection[] = []
-
-  for (const section of sections) {
-    const filePath = join(docsPath, `${section}.md`)
-    if (!await fileExists(filePath)) continue
-
-    const content = await readFile(filePath, 'utf-8')
-    let parsed: ReturnType<typeof matter>
-
-    try {
-      parsed = matter(content)
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error)
-      throw new Error(`Failed to parse frontmatter in ${relative(cwd, filePath).replace(/\\/g, '/')}: ${detail}`)
-    }
-
-    const { data: frontmatter, content: body } = parsed
-    const agentSourcePath = await resolveAgentDocPath(docsPath, section)
-
-    docs.push({
-      id: section,
-      title: (frontmatter.title as string) || section.charAt(0).toUpperCase() + section.slice(1),
-      description: frontmatter.description as string | undefined,
-      content: body.trim(),
-      order: (frontmatter.order as number) || 999,
-      groupId: frontmatter.groupId as string | undefined,
-      groupTitle: frontmatter.group as string | undefined,
-      sourcePath: `${docsRelativePath.replace(/\\/g, '/')}/${section}.md`,
-      agentSourcePath: agentSourcePath ? relative(cwd, agentSourcePath).replace(/\\/g, '/') : undefined,
-    })
-  }
-
-  // Sort by order
-  docs.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
-
-  return docs
+  void docsRelativePath // retained for source compatibility; root-relative paths are canonical
+  const selected = new Set(sections)
+  return (await discoverDocuments({ rootDir: cwd, docsDir: docsPath, audience: 'human' }))
+    .filter(doc => doc.extension === '.md' && selected.has(doc.id))
 }
 
 function generateAgentsMd(projectName: string, tagline: string | undefined, config: Awaited<ReturnType<typeof loadConfig>>, docs: DocSection[]): string {
@@ -131,11 +87,11 @@ function generateAgentsMd(projectName: string, tagline: string | undefined, conf
   if (Object.keys(config.agent.entryPoints).length > 0) {
     lines.push('## Project Structure')
     lines.push('')
-    lines.push('| Component | Path | Purpose |')
-    lines.push('|-----------|------|---------|')
+    lines.push('| Component | Path |')
+    lines.push('|-----------|------|')
     for (const [name, path] of Object.entries(config.agent.entryPoints)) {
       const displayName = name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-      lines.push(`| ${displayName} | \`${path}\` | |`)
+      lines.push(`| ${displayName} | \`${path}\` |`)
     }
     lines.push('')
   }
@@ -171,7 +127,54 @@ function generateAgentsMd(projectName: string, tagline: string | undefined, conf
   return lines.join('\n')
 }
 
-function generateLlmsTxt(projectName: string, tagline: string | undefined, docs: DocSection[], includeAgentArtifacts = false): string {
+function cleanSummaryMarkdown(value: string): string {
+  return value
+    .replace(/^>\s?/gm, '')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/^\d+[.)]\s+/gm, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[\*_~]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function extractLlmsSummary(doc: Pick<DocSection, 'description' | 'content' | 'title'>): string {
+  if (doc.description?.trim()) return cleanSummaryMarkdown(doc.description).slice(0, 320)
+
+  const content = doc.content
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/<!--([\s\S]*?)-->/g, '')
+    .trim()
+
+  const summaryContent = content.replace(/^#{1,6}\s+.*$/gm, '').trim()
+  const blocks = summaryContent.split(/\n{2,}/).map(block => block.trim()).filter(Boolean)
+  const prose = blocks.find(block =>
+    !block.startsWith('#') &&
+    !block.startsWith('|') &&
+    !/^[-*+]\s+/.test(block) &&
+    !/^\d+[.)]\s+/.test(block),
+  )
+  if (prose) return cleanSummaryMarkdown(prose).slice(0, 320)
+
+  const list = blocks.find(block => /^([-*+]\s+|\d+[.)]\s+)/.test(block))
+  if (list) {
+    const items = list.split('\n').filter(line => /^\s*([-*+]\s+|\d+[.)]\s+)/.test(line)).slice(0, 3)
+    const summary = items.map(cleanSummaryMarkdown).filter(Boolean).join('; ')
+    if (summary) return summary.slice(0, 320)
+  }
+
+  const heading = content.match(/^#{1,6}\s+(.+)$/m)?.[1]
+  return cleanSummaryMarkdown(heading || doc.title).slice(0, 320)
+}
+
+function generateLlmsTxt(
+  projectName: string,
+  tagline: string | undefined,
+  docs: DocSection[],
+  agentManifest?: AgentManifest,
+): string {
   const lines: string[] = []
 
   lines.push(`# ${projectName}`)
@@ -188,16 +191,23 @@ function generateLlmsTxt(projectName: string, tagline: string | undefined, docs:
   }
   lines.push('')
 
-  if (includeAgentArtifacts) {
+  if (agentManifest) {
+    const link = (key: string) => {
+      const value = agentManifest.artifacts[key]
+      return typeof value === 'string' ? value : ''
+    }
     lines.push('## Agent Retrieval Artifacts')
     lines.push('')
-    lines.push('- Discovery manifest: /agent/manifest.json')
-    lines.push('- Full docs with markdown: /agent/docs.json')
-    lines.push('- Prompt registry: /agent/prompts.json')
-    lines.push('- Combined context: /agent/context.md')
-    lines.push('- Raw markdown base: /agent/raw/docs/')
-    lines.push('- Core bundle: /agent/bundles/core.md')
-    lines.push('- Prompt bundle: /agent/bundles/prompts.md')
+    lines.push(`- Discovery manifest: ${link('manifest')}`)
+    lines.push(`- Docs with markdown: ${link('docs')}`)
+    lines.push(`- Prompt registry: ${link('prompts')}`)
+    lines.push(`- Retrieval index: ${link('context')}`)
+    lines.push(`- Raw markdown base: ${link('rawMarkdownBase')}`)
+    const bundles = agentManifest.artifacts.bundles
+    if (typeof bundles !== 'string') {
+      lines.push(`- Core bundle: ${bundles.core}`)
+      lines.push(`- Prompt bundle: ${bundles.prompts}`)
+    }
     lines.push('')
   }
 
@@ -205,17 +215,8 @@ function generateLlmsTxt(projectName: string, tagline: string | undefined, docs:
   for (const doc of docs) {
     lines.push(`## ${doc.title}`)
     lines.push('')
-    // Find first non-heading paragraph with actual content
-    const paragraphs = doc.content.split('\n\n')
-    for (const para of paragraphs) {
-      // Strip any headings from the paragraph
-      const content = para.replace(/^#+\s+.+$/gm, '').trim()
-      if (content) {
-        lines.push(content)
-        lines.push('')
-        break
-      }
-    }
+    lines.push(extractLlmsSummary(doc))
+    lines.push('')
   }
 
   // Footer
@@ -244,7 +245,11 @@ function generateInstallMd(config: Awaited<ReturnType<typeof loadConfig>>, docs:
   if (!config) return ''
 
   const lines: string[] = []
-  const projectName = config.project.name.toLowerCase().replace(/\s+/g, '-')
+  const configuredName = config.project.name.trim()
+  // Scoped npm names are already install identifiers; do not slugify away `/` or `@`.
+  const projectName = /^@[^/\s]+\/[^/\s]+$/.test(configuredName)
+    ? configuredName
+    : configuredName.toLowerCase().replace(/\s+/g, '-')
   const install = config.install
 
   // H1 with lowercase hyphenated name
@@ -346,55 +351,52 @@ function generateInstallMd(config: Awaited<ReturnType<typeof loadConfig>>, docs:
       }
     })
   } else {
-    // Generate default steps from quickstart doc if available
+    // Prefer a documented installation section, then fall back to a complete
+    // project-type recipe even when no quickstart page exists.
     const quickstart = docs.find(d => d.id === 'quickstart')
-    if (quickstart) {
-      lines.push('## Installation')
-      lines.push('')
-      // Extract installation section from quickstart if possible
-      const installMatch = quickstart.content.match(/## Installation[\s\S]*?(?=##|$)/)
-      if (installMatch) {
-        lines.push(installMatch[0].replace('## Installation', '').trim())
-      } else {
-        // Fallback based on project type
-        switch (config.project.type) {
-          case 'npm-package':
-          case 'react-library':
-            lines.push('```bash')
-            lines.push('# Using Bun (recommended)')
-            lines.push(`bun add ${projectName}`)
-            lines.push('')
-            lines.push('# Using npm')
-            lines.push(`npm install ${projectName}`)
-            lines.push('')
-            lines.push('# Using yarn')
-            lines.push(`yarn add ${projectName}`)
-            lines.push('```')
-            break
-          case 'cli-tool':
-            lines.push('```bash')
-            lines.push('# Using Bun')
-            lines.push(`bun add -g ${projectName}`)
-            lines.push('')
-            lines.push('# Using npm')
-            lines.push(`npm install -g ${projectName}`)
-            lines.push('```')
-            break
-          case 'macos-app':
-            lines.push('```bash')
-            lines.push('# Using Homebrew')
-            lines.push(`brew install --cask ${projectName}`)
-            lines.push('')
-            lines.push('# Or build from source')
-            lines.push('swift build -c release')
-            lines.push('```')
-            break
-          default:
-            lines.push('See documentation for installation instructions.')
-        }
+    const installMatch = quickstart?.content.match(/## Installation[\s\S]*?(?=##|$)/)
+    lines.push('## Installation')
+    lines.push('')
+    if (installMatch) {
+      lines.push(installMatch[0].replace('## Installation', '').trim())
+    } else {
+      switch (config.project.type) {
+        case 'npm-package':
+        case 'react-library':
+          lines.push('```bash')
+          lines.push('# Using Bun (recommended)')
+          lines.push(`bun add ${projectName}`)
+          lines.push('')
+          lines.push('# Using npm')
+          lines.push(`npm install ${projectName}`)
+          lines.push('')
+          lines.push('# Using yarn')
+          lines.push(`yarn add ${projectName}`)
+          lines.push('```')
+          break
+        case 'cli-tool':
+          lines.push('```bash')
+          lines.push('# Using Bun')
+          lines.push(`bun add -g ${projectName}`)
+          lines.push('')
+          lines.push('# Using npm')
+          lines.push(`npm install -g ${projectName}`)
+          lines.push('```')
+          break
+        case 'macos-app':
+          lines.push('```bash')
+          lines.push('# Using Homebrew')
+          lines.push(`brew install --cask ${projectName}`)
+          lines.push('')
+          lines.push('# Or build from source')
+          lines.push('swift build -c release')
+          lines.push('```')
+          break
+        default:
+          lines.push('See documentation for installation instructions.')
       }
-      lines.push('')
     }
+    lines.push('')
   }
 
   // EXECUTE NOW section
@@ -420,7 +422,6 @@ export async function generateCommand(options: GenerateOptions) {
   }
 
   const docsPath = resolve(cwd, options.source || config.docs.path)
-  const docsRelativePath = relative(cwd, docsPath) || config.docs.path
   const outputPath = resolve(cwd, options.output || config.docs.output)
 
   if (!await fileExists(docsPath)) {
@@ -436,8 +437,10 @@ export async function generateCommand(options: GenerateOptions) {
 
   console.log(chalk.blue(`\n🔄 Generating agent files for ${config.project.name}...\n`))
 
-  // Get all available sections
-  const availableSections = await discoverMarkdownSections(docsPath)
+  // Discover and parse once; every generated surface consumes this canonical set.
+  const discoveredDocs = (await discoverDocuments({ rootDir: cwd, docsDir: docsPath, audience: 'human' }))
+    .filter(doc => doc.extension === '.md')
+  const availableSections = discoveredDocs.map(doc => doc.id).sort()
   if (availableSections.length === 0) {
     console.warn(chalk.yellow(`⚠ No human Markdown documents found in ${docsPath}`))
   }
@@ -452,7 +455,8 @@ export async function generateCommand(options: GenerateOptions) {
     ? config.agent.sections.filter(s => availableSections.includes(s))
     : availableSections
 
-  const docs = await loadDocs(cwd, docsPath, docsRelativePath, sectionsToInclude)
+  const selectedSections = new Set(sectionsToInclude)
+  const docs = discoveredDocs.filter(doc => selectedSections.has(doc.id))
 
   // Determine which files to generate
   const generateAll = !options.agentsMd && !options.llmsTxt && !options.docsJson && !options.installMd && !options.agentArtifacts
@@ -466,6 +470,17 @@ export async function generateCommand(options: GenerateOptions) {
 
   const artifacts: GeneratedArtifact[] = []
   const selectedScopes: GenerationScope[] = []
+  const agentArtifactBuild = filesToGenerate.agentArtifacts
+    ? await buildAgentArtifactFiles({
+        rootDir: cwd,
+        docsDir: docsPath,
+        project: {
+          name: config.project.name,
+          version: config.project.version,
+          tagline: config.project.tagline,
+        },
+      })
+    : undefined
 
   // Generate AGENTS.md
   if (filesToGenerate.agentsMd) {
@@ -485,7 +500,7 @@ export async function generateCommand(options: GenerateOptions) {
       config.project.name,
       config.project.tagline,
       docs,
-      filesToGenerate.agentArtifacts,
+      agentArtifactBuild?.manifest,
     )
     artifacts.push({ path: 'llms.txt', content, marker: true, scope: 'llmsTxt' })
     selectedScopes.push('llmsTxt')
@@ -511,19 +526,10 @@ export async function generateCommand(options: GenerateOptions) {
   }
 
   let agentArtifactCounts: { docs: number; prompts: number } | undefined
-  if (filesToGenerate.agentArtifacts) {
-    const result = await buildAgentArtifactFiles({
-      rootDir: cwd,
-      docsDir: docsPath,
-      project: {
-        name: config.project.name,
-        version: config.project.version,
-        tagline: config.project.tagline,
-      },
-    })
-    artifacts.push(...result.files)
+  if (agentArtifactBuild) {
+    artifacts.push(...agentArtifactBuild.files)
     selectedScopes.push('agentArtifacts')
-    agentArtifactCounts = { docs: result.docs, prompts: result.prompts }
+    agentArtifactCounts = { docs: agentArtifactBuild.docs, prompts: agentArtifactBuild.prompts }
   }
 
   const plan = await planGeneratedArtifacts(outputPath, artifacts, selectedScopes, {

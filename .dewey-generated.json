@@ -3,35 +3,35 @@
   "generator": "dewey",
   "files": {
     "agent/bundles/all.md": {
-      "hash": "121ae891e4e2163282d73668d033b7247b2d4646ebc5d93094f1bec4c00ec082",
+      "hash": "e335b511995228165910a1695fdd8134cbd49d805a303b0f22808aba4361957a",
       "scope": "agentArtifacts"
     },
     "agent/bundles/core.md": {
-      "hash": "555d939804c33d282bd06404f15c692a4e3b09c0c3cebb4f259451270e3b83e1",
+      "hash": "da847b74e2efe4dcb38c0abba668b605a65021bd1cc6cb1990ddb4fdbb745a52",
       "scope": "agentArtifacts"
     },
     "agent/bundles/prompts.md": {
-      "hash": "c9d78d7b162b3a0a04b071009b416ca507007fd77ab751e56482080b901ab31c",
+      "hash": "5e135978c2f5774a42227d8c2088b272f7efb72d3be43525c010332cbc4fa79f",
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "de3844452b395e083ed57557e17e6c8dde48648324f9b00f29456d393b04920f",
+      "hash": "b039df31b6ce1f99d7bc57c839d68f18e97dd587025e7f1ffeabcd419ef708dd",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
-      "hash": "1dbbd6a947907732aebf4ceb99eb1e060ee1762dce527f602e78116a01ac540e",
+      "hash": "964966e83fdc5adde9c96a4e5f9a549942e78db66a55676fe8d788a6e8adec00",
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "54b1d51415e41580e9a5c745ff58db402b42335e7f2b79e747e0b62acdc47534",
+      "hash": "1a86cb2869435aada8f85ce941e86d846364df5225c72ba5a78ead382c6feab4",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "81edb10acddf3607dbdf880ab74e4a37a5c3cfec61547337f0cb9dafd5860f65",
+      "hash": "b039df31b6ce1f99d7bc57c839d68f18e97dd587025e7f1ffeabcd419ef708dd",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {
-      "hash": "943ca4e82cc52706426f76d47139f10123dc20946861d00e4a7273f0243da008",
+      "hash": "7343adb9c39aab4677befea41b28b0a81a72648598b49bca0a0ba6452c02daf9",
       "scope": "agentArtifacts"
     },
     "agent/prompts/audit-docs.md": {
@@ -43,27 +43,31 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/api.agent.md": {
-      "hash": "9cfc8beda9d00aefe265bf7fae51a1da51b4cb5387fcee7d735f54c68a3094f7",
+      "hash": "0c2db6b39c714d07229b578dbced971171a1652b94e429e7395453fa60acb7dc",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/cli.agent.md": {
-      "hash": "479e37e0735b5f2e5ef530d69383e27aa474b0a4bdd416e6019b5875bb523ca1",
+      "hash": "77a4cb11361852376a931685fb4ae9e965b341b7a49807774668a9489a5ecefd",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/integrate-existing-site.agent.md": {
-      "hash": "51ce4c4f946e56b1fd57f8093841cb610f898c8c0bce11ef7fe7a0dfa7d590be",
+      "hash": "072ede9fe6c8d50a514a2107ed494d50225d1d00f6f1f2eb7690b391f6c9ddf5",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/agent/maintenance.agent.md": {
+      "hash": "f55f00f75bec5fc674af6522902e897e9df47758f7fa83ea79560b62e57fe5f3",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/overview.agent.md": {
-      "hash": "7e72df09c2e1ad4aca125626b991c76c233db1bf14a60b798f98a57dc64bd767",
+      "hash": "2495ef744e133bc448b3af77c4147ab664a93c2c163b1e1799b4e12cd72214fd",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/quickstart.agent.md": {
-      "hash": "5d0e08bbc0e40d35d4f6a140239355fee2e083ef66d37b2b9354e11b0ecd14e2",
+      "hash": "bf8d93321f9b9cf5c346509613a21feae3b8c9e3e8821b21950bd45fd21323e5",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/skills.agent.md": {
-      "hash": "e217771df783af1427e956d431faffcf43bb752e42fdcfc9104b887cae980f67",
+      "hash": "436fb40eed57cb000a054759b3065fbab3d7affec001dca6f98f6758fdb88f10",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/AGENTS.md": {
@@ -71,19 +75,23 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/api.md": {
-      "hash": "a67ceadd63c659365ff26ff8c65272a03d4f487711d9673399c4e24107d5472e",
+      "hash": "72142eaf9a850dd22cf66b31f4ae06133f5b9470f22c21a9165492ff69d47870",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/cli.md": {
-      "hash": "14c5b1bc677a39505044950f96d5b8ad57c5602e4d05b5d31f00d79bdde7f565",
+      "hash": "87d58797bb5f2301cdbe4a22bc0d06b4045f75a96bbe5bfa2070514d7217fa35",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/integrate-existing-site.md": {
-      "hash": "2eb36fb2312ef2c6b9a808757aa048f828ece3afa11be4dab8f9019038e1a6a5",
+      "hash": "c0e193a3c84ad16e841ac317d6f95866e3d1691efcce2f0268abf4bbd73a7b25",
+      "scope": "agentArtifacts"
+    },
+    "agent/raw/docs/maintenance.md": {
+      "hash": "2f56b8aed1c0c187b918d03c9ce66485bd6517c81a4ab1a58b9c97eb1ea684ef",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/overview.md": {
-      "hash": "624b37000354d8e67a04015589d54dae061055f3f028a757b72c29988afe72b8",
+      "hash": "a5f8e1afb4c5a2e2348f196595b895262e2a6ce7c3fc8b974a669cebe939feb7",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/prompts/audit-docs.md": {
@@ -95,19 +103,19 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/quickstart.md": {
-      "hash": "2dd3b6512c33180220bbfabceae1450dbc3a6b78bef087d2d0c751fcf9b39bcd",
+      "hash": "998036ea9a1dfc82bd8caf7aa0ead9f2fca512c2c3af8f32bcbffda0f72ff7e6",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/skills.md": {
-      "hash": "fbcbe06a2c3af66b23c3a8ff490bcc17572015c63280f5d9f59b80920d490fa9",
+      "hash": "14ffe5f8be50d216a7873a150d00377e008d7eee0f0786fd865d8db3ca2320d0",
       "scope": "agentArtifacts"
     },
     "AGENTS.md": {
-      "hash": "ecc19a8401814753c12dcf146939ef04ce5fff7c7ccfc78bd1ff15b707427cfd",
+      "hash": "2bb058a3a81b65284bdeba749aadbca28596fb01d4f785ad54ed175ac2d73f6e",
       "scope": "agentsMd"
     },
     "docs.json": {
-      "hash": "b307d5af47db248b542f08248ada59170e825389380ca0630ce7c922f26ed81e",
+      "hash": "55f96bf3dd8c851628bb9592e3d3d106e73c3be52ecd2e956050cd9bcddf3a47",
       "scope": "docsJson"
     },
     "install.md": {
@@ -115,7 +123,7 @@
       "scope": "installMd"
     },
     "llms.txt": {
-      "hash": "72ddd1d81f79f15f9613e4c19a963d1aae9ac70a043c0e2eb0e7e24804e916bf",
+      "hash": "2fbe73677320917faef7592a5dc7af17f130aaa534ef37f639b7d2060a7033b3",
       "scope": "llmsTxt"
     }
   }

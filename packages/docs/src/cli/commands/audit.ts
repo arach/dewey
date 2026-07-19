@@ -3,6 +3,11 @@ import { readdir, readFile, access } from 'fs/promises'
 import { basename, join, relative, sep } from 'path'
 import matter from 'gray-matter'
 import { loadConfigWithRoot } from '../config.js'
+import { analyzeDocumentationDrift, type DriftDocument, type DriftReport } from '../drift.js'
+import {
+  checkProjectTypeDocumentation,
+  type ProjectTypeDocumentationCheck,
+} from '../project-types.js'
 
 interface AuditOptions {
   verbose?: boolean
@@ -15,6 +20,8 @@ interface AuditResult {
   maxScore: number
   percentage: number
   sections: SectionResult[]
+  projectType: ProjectTypeDocumentationCheck
+  drift: DriftReport
   recommendations: string[]
 }
 
@@ -98,6 +105,29 @@ async function discoverMarkdownFiles(docsPath: string): Promise<MarkdownFile[]> 
 
   await walk(docsPath)
   return files.sort((a, b) => a.id.localeCompare(b.id))
+}
+
+async function discoverDriftDocuments(docsPath: string): Promise<DriftDocument[]> {
+  const documents: DriftDocument[] = []
+
+  async function walk(directory: string): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true })
+    for (const entry of entries) {
+      const path = join(directory, entry.name)
+      if (entry.isDirectory()) {
+        await walk(path)
+      } else if (entry.isFile() && entry.name.endsWith('.md')) {
+        const raw = await readFile(path, 'utf8')
+        documents.push({
+          path: relative(docsPath, path).split(sep).join('/'),
+          body: raw,
+        })
+      }
+    }
+  }
+
+  await walk(docsPath)
+  return documents.sort((a, b) => a.path.localeCompare(b.path))
 }
 
 function isHumanPagePath(relativePath: string): boolean {
@@ -210,6 +240,14 @@ export async function auditCommand(options: AuditOptions) {
   }
 
   const markdownFiles = await discoverMarkdownFiles(docsPath)
+  const driftDocuments = await discoverDriftDocuments(docsPath)
+  const humanEvidenceDocuments = driftDocuments.filter(document => isHumanPagePath(document.path))
+  const projectType = checkProjectTypeDocumentation(config.project.type, humanEvidenceDocuments)
+  const drift = await analyzeDocumentationDrift({
+    projectRoot,
+    documents: driftDocuments,
+    configuredSourcePaths: Object.values(config.agent.entryPoints),
+  })
 
   // Audit each section
   const requiredSections = config.docs.required
@@ -238,6 +276,15 @@ export async function auditCommand(options: AuditOptions) {
     }
   }
 
+  for (const evidence of projectType.evidence) {
+    if (!evidence.passed) {
+      recommendations.push(`Add ${projectType.label.toLowerCase()} evidence: ${evidence.requirement}`)
+    }
+  }
+  if (drift.issues.length > 0) {
+    recommendations.push(`Resolve ${drift.issues.length} documentation drift issue${drift.issues.length === 1 ? '' : 's'}`)
+  }
+
   // Calculate total score
   const totalScore = results.reduce((sum, r) => sum + r.score, 0)
   const maxScore = results.reduce((sum, r) => sum + r.maxScore, 0)
@@ -249,6 +296,8 @@ export async function auditCommand(options: AuditOptions) {
     maxScore,
     percentage,
     sections: results,
+    projectType,
+    drift,
     recommendations,
   }
 
@@ -275,6 +324,26 @@ export async function auditCommand(options: AuditOptions) {
       for (const issue of result.issues) {
         console.log(chalk.gray(`    - ${issue}`))
       }
+    }
+  }
+
+  const projectTypeIcon = projectType.passed ? chalk.green('✓') : chalk.yellow('⚠')
+  console.log(`${projectTypeIcon} ${projectType.label} evidence - ${projectType.passed ? chalk.green('complete') : chalk.yellow('incomplete')}`)
+  if (options.verbose) {
+    for (const evidence of projectType.evidence) {
+      const icon = evidence.passed ? chalk.green('✓') : chalk.red('✗')
+      const source = evidence.document ? chalk.gray(` (${evidence.document})`) : ''
+      console.log(`    ${icon} ${evidence.requirement}${source}`)
+    }
+  }
+
+  const driftIcon = drift.status === 'clean' ? chalk.green('✓')
+    : drift.status === 'issues' ? chalk.yellow('⚠')
+      : chalk.gray('○')
+  console.log(`${driftIcon} Documentation drift - ${drift.status} (${drift.checkedPairs} pairs, ${drift.checkedSourceFiles} source files)`)
+  if (options.verbose) {
+    for (const issue of drift.issues) {
+      console.log(chalk.gray(`    - [${issue.code}] ${issue.message}`))
     }
   }
 

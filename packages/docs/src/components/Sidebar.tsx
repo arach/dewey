@@ -48,8 +48,9 @@ function SidebarItem({ item, isActive, basePath, onNavigate }: SidebarItemProps)
         href={`${basePath}/${item.id}`}
         onClick={onNavigate}
         className={`dw-sidebar-item ${isActive ? 'active' : ''}`}
+        aria-current={isActive ? 'page' : undefined}
       >
-        {Icon && <Icon className="dw-sidebar-item-icon" />}
+        {Icon && <Icon className="dw-sidebar-item-icon" aria-hidden="true" />}
         <span>{item.name}</span>
         {item.badge && (
           <span className={`dw-badge dw-badge-${item.badgeColor || 'default'}`}>
@@ -77,12 +78,14 @@ function SidebarFolder({ folder, currentPage, basePath, onNavigate }: SidebarFol
   const Icon = folder.icon ? resolveIcon(folder.icon) : null
 
   return (
-    <div className="dw-sidebar-group">
+    <li className="dw-sidebar-group">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="dw-sidebar-group-title"
+        aria-expanded={isOpen}
       >
-        {Icon && <Icon className="dw-sidebar-item-icon" />}
+        {Icon && <Icon className="dw-sidebar-item-icon" aria-hidden="true" />}
         <span>{folder.name}</span>
         <svg
           className="dw-sidebar-chevron"
@@ -92,6 +95,7 @@ function SidebarFolder({ folder, currentPage, basePath, onNavigate }: SidebarFol
           viewBox="0 0 24 24"
           width="12"
           height="12"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
@@ -109,7 +113,7 @@ function SidebarFolder({ folder, currentPage, basePath, onNavigate }: SidebarFol
           ))}
         </ul>
       )}
-    </div>
+    </li>
   )
 }
 
@@ -179,9 +183,11 @@ export function Sidebar({
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div
+        <button
+          type="button"
           className="dw-sidebar-overlay"
           onClick={onClose}
+          aria-label="Close sidebar"
         />
       )}
 
@@ -189,12 +195,13 @@ export function Sidebar({
       <aside
         className={`dw-sidebar ${isOpen ? 'open' : ''}`}
         data-dark={isDark}
+        aria-label="Documentation navigation"
       >
         {/* Header */}
         <div className="dw-sidebar-header">
           {header ?? (
             <Link href={basePath} className="dw-sidebar-logo">
-              <Book style={{ width: 16, height: 16 }} />
+              <Book style={{ width: 16, height: 16 }} aria-hidden="true" />
               <span className="dw-sidebar-title">{projectName}</span>
             </Link>
           )}
@@ -202,11 +209,12 @@ export function Sidebar({
           {/* Mobile close button */}
           {onClose && (
             <button
+              type="button"
               onClick={onClose}
               className="dw-sidebar-close"
               aria-label="Close sidebar"
             >
-              <X style={{ width: 20, height: 20 }} />
+              <X style={{ width: 20, height: 20 }} aria-hidden="true" />
             </button>
           )}
         </div>

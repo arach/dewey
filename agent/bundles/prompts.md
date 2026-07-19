@@ -2,14 +2,14 @@
 
 | Prompt | Source | Raw markdown |
 |--------|--------|--------------|
-| Audit Docs | `docs/prompts/audit-docs.md` | /agent/prompts/audit-docs.md |
-| Create Agent Md | `docs/prompts/create-agent-md.md` | /agent/prompts/create-agent-md.md |
+| Prompts Audit Docs | `docs/prompts/audit-docs.md` | /agent/prompts/audit-docs.md |
+| Prompts Create Agent Md | `docs/prompts/create-agent-md.md` | /agent/prompts/create-agent-md.md |
 
 ---
 
 <!-- source: docs/prompts/audit-docs.md -->
 
-# Audit Docs
+# Prompts Audit Docs
 
 Use this prompt to audit a project's documentation for agent-readiness.
 
@@ -50,7 +50,7 @@ A report with:
 
 <!-- source: docs/prompts/create-agent-md.md -->
 
-# Create Agent Md
+# Prompts Create Agent Md
 
 Use this prompt to convert human documentation to agent-optimized format.
 

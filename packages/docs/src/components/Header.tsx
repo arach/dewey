@@ -37,14 +37,14 @@ export function Header({
         {/* Left side: Brand + Back */}
         <div className="dw-header-left">
           <Link href={homeUrl} className="dw-header-brand">
-            <span className="dw-header-brand-dot" />
+            <span className="dw-header-brand-dot" aria-hidden="true" />
             <span className="dw-header-brand-name">{projectName}</span>
           </Link>
 
-          <span className="dw-header-divider" />
+          <span className="dw-header-divider" aria-hidden="true" />
 
           <Link href={backUrl} className="dw-header-back">
-            <ArrowLeft className="dw-header-back-icon" />
+            <ArrowLeft className="dw-header-back-icon" aria-hidden="true" />
             <span>{backLabel}</span>
           </Link>
         </div>
@@ -55,11 +55,13 @@ export function Header({
 
           {showThemeToggle && (
             <button
+              type="button"
               onClick={toggleDark}
               className="dw-header-theme-toggle"
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {isDark ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
             </button>
           )}
 

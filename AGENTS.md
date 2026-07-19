@@ -14,11 +14,11 @@
 
 ## Project Structure
 
-| Component | Path | Purpose |
-|-----------|------|---------|
-| Cli | `packages/docs/src/cli/` | |
-| Components | `packages/docs/src/components/` | |
-| Skills | `.claude/skills/` | |
+| Component | Path |
+|-----------|------|
+| Cli | `packages/docs/src/cli/` |
+| Components | `packages/docs/src/components/` |
+| Skills | `.claude/skills/` |
 
 ## Quick Navigation
 
@@ -64,6 +64,7 @@ Skills are LLM prompts, not code. Built-in skills:
 - `docsDesignCritic` - Critiques page structure and visual design
 - `promptSlideoutGenerator` - Generates AI-consumable prompt configs
 - `installMdGenerator` - Creates install.md following installmd.org
+- `improveAIPrompts` - Iterative discovery, drafting, review, and refinement prompts; `improveAIPromptsSkill` remains as a deprecated alias
 
 ### install.md Standard
 
@@ -96,6 +97,10 @@ Use one sequence for every project (details in [Quickstart](./quickstart.md)):
 
 Agent artifacts from `generate` are the product contract. Components and `create` are presentation options on top of that contract.
 
+`init` and the judgment commands are project-aware. The selected project type changes the scaffold and the evidence expected from docs. `audit` and `agent` also report focused source/human/agent drift: paired-file coverage, cited paths, and literal union/enum contracts. These checks are evidence based and do not replace semantic review or executable examples.
+
+Generation and optional site creation share one recursive document model. Retrieval indexes are derived from one manifest, while full content stays in purpose-built document, prompt, raw, and bundle surfaces instead of being cloned into every JSON file.
+
 ## Quick Links
 
 - [Quickstart](./quickstart.md) - Coherent init → generate → audit → agent sequence
@@ -103,6 +108,7 @@ Agent artifacts from `generate` are the product contract. Components and `create
 - [CLI Reference](./cli.md) - All commands and options
 - [API Reference](./api.md) - Public TypeScript, React, theme, and artifact contracts
 - [Skills](./skills.md) - Built-in LLM prompt templates
+- [Maintaining generated sites](./maintenance.md) - Ownership, upgrades, ejection, recovery, and release verification
 
 ## Quickstart
 
@@ -143,6 +149,15 @@ bunx dewey init
 ```
 
 Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
+
+Choose a project type so the scaffold and later evidence checks match the product:
+
+```bash
+bunx dewey init --type npm-package
+# generic | npm-package | cli-tool | react-library | macos-app | monorepo
+```
+
+Every type creates paired human and agent pages. The focus page and defaults vary: API for npm packages, command reference for CLIs, component reference for React libraries, architecture for generic/macOS projects, and workspace mapping for monorepos. An invalid type fails instead of silently using `generic`.
 
 ### 3. Configure
 
@@ -198,6 +213,8 @@ bunx dewey generate
 
 Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
+The same canonical document discovery powers `generate`, the optional `create` scaffold, and the artifact API. Full content is materialized deliberately: document bodies in `agent/docs.json`, prompts in `agent/prompts.json`, and Markdown in `agent/raw/docs/` plus bundles. Context files remain compact retrieval indexes.
+
 ### 6. Audit
 
 ```bash
@@ -206,7 +223,7 @@ bunx dewey audit
 bunx dewey audit --json
 ```
 
-Structural and completeness checks. Prefer fixing audit findings before treating the score as a release gate.
+Structural and completeness checks plus project-type evidence and focused documentation drift. JSON output includes structured `projectType` and `drift` objects. Prefer fixing audit findings before treating the score as a release gate.
 
 ### 7. Check your score
 
@@ -244,6 +261,8 @@ cd my-docs && bun install && bun run dev
 
 Generates a static docs site when you want a separate publishing path alongside agent artifacts.
 
+The scaffold pins tested Next.js/Astro dependencies and runs the same agent-artifact writer, so it starts with both a human site and the retrieval contract. For later adoption, updates, ejection, backups, and recovery, see [Maintaining generated sites](./maintenance.md).
+
 ---
 
 ## Next steps
@@ -253,6 +272,7 @@ Generates a static docs site when you want a separate publishing path alongside 
 - Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
 - Embed components or use `dewey create` only when you need a human site
 - [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)
+- [Maintaining generated sites](./maintenance.md) — ownership, update, eject, recovery, and release checks
 
 ## CLI Reference
 
@@ -287,6 +307,25 @@ bunx @arach/dewey@latest --help
 | `dewey update [dir]` | Refresh Dewey-owned files in a generated site |
 | `dewey eject <component> [dir]` | Take ownership of a generated component |
 
+## Project-aware initialization
+
+`init --type` accepts `generic`, `npm-package`, `cli-tool`, `react-library`, `macos-app`, or `monorepo`. Invalid values fail with the complete valid-value list. The selected type changes the generated human/agent page pair, required-document configuration, installation defaults, verification command, and evidence that `audit` / `agent` expect.
+
+```bash
+bunx dewey init --type cli-tool
+bunx dewey init --type react-library
+bunx dewey init --type monorepo
+```
+
+| Type | Focus page | Evidence expected |
+|---|---|---|
+| `generic` | `architecture` | System structure plus a public interface or integration boundary |
+| `npm-package` | `api` | Package-manager install command plus typed public API |
+| `cli-tool` | `commands` | Commands/options plus executable shell usage |
+| `react-library` | `components` | Component props plus JSX/TSX rendering example |
+| `macos-app` | `architecture` | macOS lifecycle plus Swift/SwiftUI/Xcode evidence |
+| `monorepo` | `packages` | Workspace organization plus package/application paths |
+
 ## Recommended order
 
 `init` → author docs → `generate` → `audit` → `agent` → optional human UI.
@@ -316,6 +355,12 @@ dewey generate --overwrite
 
 Before writing, `generate` prints a plan containing every create, update, preserve, and stale-file deletion. Use `--dry-run` to preview the same plan without creating the output directory or changing files. Dewey tracks owned outputs in `.dewey-generated.json`; unknown or edited desired files block the write. After reviewing the preview, `--overwrite` can explicitly replace those conflicts and adopt the resulting outputs.
 
+`generate`, `create`, and the programmatic artifact API share one recursive discovery/frontmatter pipeline. A default `generate` builds the retrieval manifest once, derives link tables and bundles from that manifest, and keeps full content in purpose-built surfaces: raw Markdown and bundles, document content in `agent/docs.json`, and prompt content in `agent/prompts.json`. `agent/context.md` and `agent/context.json` are retrieval indexes, not additional full-content copies.
+
+`llms.txt` summaries prefer frontmatter descriptions, then prose, lists, headings, and finally the page title. Prompt URLs normalize the `prompts/` prefix once. Generated installation commands preserve scoped package names such as `@scope/package`.
+
+`create` uses the same discovered documents and then composes the agent-artifact writer into the new site. Generated Next.js and Astro package manifests pin the tested dependency versions; Pagefind is a declared dependency rather than an unpinned `bunx` download. Unknown themes emit a warning before falling back to `neutral`.
+
 ## Machine-readable checks
 
 Both audit commands can emit JSON for CI and other tooling:
@@ -326,6 +371,31 @@ dewey agent --json
 ```
 
 `audit` is deterministic structural validation. `agent` is evidence-based readiness coaching: it scores the documentation surface and recommends next actions, but does not write files.
+
+Both JSON reports add:
+
+- `projectType`: selected profile, label, pass/fail state, and the evidence found for each requirement.
+- `drift`: `clean`, `issues`, or `not-applicable`, counts for checked pairs/source files/references/contracts, and structured issues.
+
+Human output always summarizes project-type evidence and drift. Add `--verbose` for matched documents and issue codes. `audit` reports these findings as recommendations without changing its structural page score; `agent` uses project-type evidence in Project Context and uses unresolved contract drift when judging valid-value quality.
+
+Drift checks cover missing/orphan `.agent.md` counterparts, missing cited source paths, human/agent literal-union mismatches, and literal union/enum differences between docs and conventional or configured source trees. The analysis is regex/evidence based: it does not prove semantic prose equivalence, execute examples, or understand arbitrary computed TypeScript types. Treat a clean report as a focused consistency check, not a substitute for review.
+
+## Generated-site maintenance
+
+`update` and `eject` have an ownership contract; see [Maintaining generated sites](./maintenance.md) for adoption, dry runs, ejected ownership, backups, and recovery. The obsolete `--refresh-nav` option has been removed: regenerate source artifacts with `dewey generate`, while `update` only refreshes Dewey-owned scaffold files.
+
+## Error handling in automation
+
+Commands reject invalid configuration and return a non-zero exit status. In CI, capture JSON only after checking the command succeeded:
+
+```bash
+if ! report="$(bunx dewey audit --json)"; then
+  echo "Dewey audit failed before producing a valid report" >&2
+  exit 1
+fi
+printf '%s\n' "$report"
+```
 
 ## Skills
 
@@ -341,6 +411,19 @@ Skills are LLM prompts, not code. They're expert instructions that tell AI agent
 | `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |
 | `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |
 | `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |
+| `improveAIPrompts` | Iteratively discovers prompt opportunities, drafts self-contained contracts, reviews them, and refines the result | `Use improveAIPrompts.passes.discovery.prompt`, then draft/review/refine passes |
+
+`improveAIPrompts` is the public name. `improveAIPromptsSkill` is exported only as a deprecated compatibility alias and references the same object.
+
+```ts
+import { improveAIPrompts } from '@arach/dewey'
+
+const discovery = improveAIPrompts.passes.discovery.prompt
+const review = improveAIPrompts.passes.review.prompt
+  .replace('{PASTE_DRAFT}', draft)
+```
+
+The pass prompts guide an LLM; they do not inspect a repository or rewrite files by themselves. Supply the requested context, evaluate the model output against the included quality criteria, and retain human review for project-specific constraints.
 
 ---
 
@@ -606,7 +689,7 @@ Components that call Dewey hooks must be descendants of `DeweyProvider`. In a Ne
 | `MarkdownContent` | `content` | `isDark` |
 | `TableOfContents` | None | `items`, `title`, `className`, `scrollOffset` |
 | `AutoTableOfContents` | None | `markdown`, `containerRef`, `title`, `className` |
-| `DocsLayout` | See source | Router-coupled compatibility layout from `packages/docs/src/components/DocsLayout.tsx`; its prop type is not re-exported by the main entry point |
+| `DocsLayout` | `children`, `title`, `navigation`, `projectName` | Router-neutral shell; accepts `currentPage` and a framework `LinkComponent`, with plain anchors by default; its prop type is not re-exported by the main entry point |
 | `CodeBlock` / `HeadingLink` | See source | Values are public, but their prop interfaces are not exported |
 
 `TocItem` is `{ id: string; title: string; level: number }`. Related exports are `useActiveSection`, `extractTocItems`, `extractTocFromDom`, `useTableOfContents`, and `extractSections`.
@@ -664,6 +747,10 @@ console.log(THEME_REGISTRY[theme].cssFile)
 
 `PUBLISHED_CSS_THEMES` lists presets with CSS exports; `VALID_THEMES` lists presets accepted by generated sites. Every current registry entry belongs to both lists. `resolveTheme` falls back to `'neutral'`.
 
+All twelve presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
+
+Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 12 themes × light/dark and compares 24 Playwright screenshots.
+
 ## Skills and structured agent content
 
 The skill exports are LLM prompt definitions, not deterministic generators:
@@ -674,6 +761,9 @@ The skill exports are LLM prompt definitions, not deterministic generators:
 | `docsDesignCritic` | Prompt set for structure/design critique; result type `DocsDesignCritiqueResult` |
 | `promptSlideoutGenerator` | Prompt set for authoring slideout configuration; type `PromptSlideoutConfig` |
 | `installMdGenerator` | Prompt set for installmd.org content; type `InstallMdConfig` |
+| `improveAIPrompts` | Iterative discovery/draft/review/refinement prompt set; types `PromptImprovementPass` and `PromptQualityCriteria` |
+
+`improveAIPromptsSkill` is a deprecated alias of `improveAIPrompts` for compatibility.
 
 Structured agent content can be assembled and rendered without the CLI:
 
@@ -707,7 +797,7 @@ The following names are re-exported from `packages/docs/src/index.ts`.
 | Layout/content | `Header`, `DocsLayout`, `MarkdownContent`, `CodeBlock`, `HeadingLink`, `Sidebar`, `TableOfContents`, `AutoTableOfContents`, `useActiveSection`, `extractTocItems`, `extractTocFromDom` |
 | UI | `Callout`, `Tabs`, `Tab`, `Steps`, `Step`, `Card`, `CardGrid`, `FileTree`, `ApiTable`, `Badge` |
 | Agent UI | `CopyButtons`, `AgentContext`, `PromptSlideout` |
-| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator` |
+| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator`, `improveAIPrompts`, `improveAIPromptsSkill` |
 | Hooks/utilities | `useDarkMode`, `useTableOfContents`, `extractSections`, `cn`, `resolveIcon`, `commonIcons` |
 | Agent content | `agentContent`, `AgentContentBuilder`, `renderAgentMarkdown`, `renderAgentJson`, `renderAgentPlainText` |
 
@@ -715,8 +805,8 @@ The following names are re-exported from `packages/docs/src/index.ts`.
 |---|---|
 | Config/themes | `AgentRule`, `DeweyConfig`, `InstallConfig`, `ProjectType`, `ThemeDefinition`, `ThemeName`, `ThemePreset` |
 | App/provider | `DocsAppProps`, `DocsAppConfig`, `DocsIndexProps`, `DeweyProviderProps`, `DeweyContextValue`, `ThemeConfig`, `FrameworkComponents` |
-| Components | `HeaderProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
-| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
+| Components | `HeaderProps`, `DocsLayoutProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
+| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `PromptImprovementPass`, `PromptQualityCriteria`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
 | Navigation/utilities | `PageTree`, `PageNode`, `PageItem`, `PageFolder`, `PageSeparator`, `FlatPage`, `NavigationConfig`, `NavigationGroup`, `NavigationItem`, `CommonIconName` |
 | Legacy | `NavItem`, `NavGroup`, `DocSection`, `BadgeColor`, `PageLink`, `DocsConfig` |
 
@@ -758,6 +848,7 @@ bun add @arach/dewey gray-matter
 
 - Runtime dependency (not only `-d`) when the site imports Dewey components.
 - `gray-matter` is the usual choice for frontmatter when you load files from disk (same approach as `dewey create --template nextjs`).
+- No router package is required by Dewey. `react-router-dom` is not a peer dependency; pass a framework link adapter where needed.
 
 ### CSS entry points
 
@@ -782,6 +873,8 @@ import '@arach/dewey/css/colors/ocean.css'
 **Themes:** `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `midnight`, `editorial`, `mono`, `hudson`.
 
 Tokens use the `--dw-*` prefix so they rarely collide with a host design system. Dark mode follows a `.dark` class on an ancestor (DeweyProvider manages this when you use the provider).
+
+The complete semantic contract covers surfaces and foregrounds; primary, secondary, and accent pairs; border/ring; info, warning, error, and success pairs; code and syntax colors; sidebar/header colors; typography, radii, shadows, and motion. Every public component and generated theme consumes this contract. The package verifies WCAG AA pairs, focus and reduced motion, plus 24 representative Playwright screenshots (12 themes × light/dark).
 
 ### Import path note
 
@@ -1146,7 +1239,22 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` over the packaged `DocsLayout` when embedding: `DocsLayout` is oriented toward a React Router demo shell, while the composed pieces match `dewey create --template nextjs` and avoid router coupling.
+Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` when you want full control. The packaged `DocsLayout` is also router-neutral: it uses anchors by default and accepts `LinkComponent` plus `currentPage`.
+
+```tsx
+import Link from 'next/link'
+import { DocsLayout, MarkdownContent } from '@arach/dewey'
+
+<DocsLayout
+  title={doc.title}
+  navigation={navigation}
+  projectName="My Project"
+  currentPage={doc.id}
+  LinkComponent={Link}
+>
+  <MarkdownContent content={doc.content} />
+</DocsLayout>
+```
 
 ## Dewey generation alongside the site
 
@@ -1257,6 +1365,7 @@ Run generate **before** `next build` when the app imports `docs.json` or serves 
 - [CLI Reference](./cli.md) — flags for generate, audit, agent, create
 - [Overview](./overview.md) — product positioning and agent content pattern
 - [Skills](./skills.md) — LLM prompt skills for review and install.md
+- [Maintaining generated sites](./maintenance.md) — update/eject ownership, adoption, backups, recovery, and release checks
 
 For a ready-made Next.js project instead of embedding, use:
 
@@ -1264,6 +1373,87 @@ For a ready-made Next.js project instead of embedding, use:
 bunx dewey create my-docs --source ./docs --template nextjs --theme ocean
 cd my-docs && bun install && bun run dev
 ```
+
+## Maintaining generated sites
+
+> Safely adopt, update, eject, recover, and release Dewey-generated sites
+
+Dewey separates source documentation from the optional generated site. `dewey generate` owns agent-facing artifacts through `.dewey-generated.json`; `dewey create`, `update`, and `eject` maintain the standalone site through `.dewey-manifest.json`. Review those ownership boundaries before forcing a write.
+
+## Safe update workflow
+
+Commit the site before an update so every scaffold change is reviewable.
+
+```bash
+bunx dewey update ./my-docs --dry-run
+bunx dewey update ./my-docs
+```
+
+`update` classifies each current template file as current, safely updatable, missing/new, or modified. It updates Dewey-owned files whose recorded hash is unchanged and skips consumer-owned, ejected, or locally modified files. It never rewrites `package.json` or `docs/*.md` as part of normal scaffold maintenance.
+
+Use `--force` only after inspecting the dry run:
+
+```bash
+bunx dewey update ./my-docs --dry-run
+bunx dewey update ./my-docs --force
+```
+
+Forced, locally modified Dewey-owned scaffold files are copied into a timestamped `.dewey-backup/<snapshot>/...` tree before replacement. Consumer-owned and ejected files remain protected even with `--force`. Dewey keeps the five newest timestamped snapshots and removes older snapshots after a forced update.
+
+## Recover or adopt a missing manifest
+
+If `.dewey-manifest.json` is absent but the directory still has the recognizable generated structure, the first `dewey update` adopts it:
+
+- Astro: detects `astro.config.mjs` plus `src/layouts/BaseLayout.astro`.
+- Next.js: detects `next.config.js`, `next.config.mjs`, or `next.config.ts` plus `<site-root>/src/lib/dewey.tsx`.
+
+The adoption pass records current hashes, template type, detected project/theme/default page where available, and consumer-owned settings. It writes `.dewey-manifest.json`, stops, and asks you to run `update` again. Review the adopted manifest before that second run. Unknown recorded themes produce a warning and resolve to `neutral`.
+
+## Eject a Next.js component
+
+Ejection transfers a component from Dewey-managed defaults to an explicit override:
+
+```bash
+# Compose the packaged default (recommended starting point)
+bunx dewey eject Header ./my-docs
+
+# Replace it completely
+bunx dewey eject Header ./my-docs --full
+```
+
+Supported components are `Header`, `Sidebar`, `TableOfContents`, and `MarkdownContent`. Ejection is currently Next.js-only.
+
+Before writing, Dewey verifies in memory that it can add the custom import and replace the component map in `<site-root>/src/lib/dewey.tsx`. If either rewrite cannot be proven, it reports the failed step and creates no override. Successful writes use temporary files and report the status of the override, wiring, and manifest if an I/O failure interrupts the operation.
+
+The manifest records the override and its wiring as `owner: "ejected"` with a content hash, Dewey version, component name, and `wrap` or `full` mode. `update` will not reclaim these entries, including with `--force`; remove or deliberately revise the ejected ownership entries only when you want to restore Dewey defaults.
+
+## Recovery checklist
+
+1. Stop if the update/eject summary reports a partial write.
+2. Inspect `git diff`, `.dewey-manifest.json`, and the latest timestamp under `.dewey-backup/`.
+3. Restore from Git first when the site was committed; otherwise copy only the affected file from the newest backup snapshot.
+4. For a missing manifest, run adoption once and review it before applying templates.
+5. Run the site build and the relevant route/component smoke check after recovery.
+
+## Release workflow
+
+Releases use `packages/docs/package.json` as the package-version source of truth and require an exact matching `v<version>` tag. From a clean checkout:
+
+1. Finalize `CHANGELOG.md`, package version, `dewey.config.ts`, and lockfile.
+2. Run `bun run check`.
+3. Regenerate artifacts and confirm `.dewey-generated.json`, root artifacts, and `agent/` have no drift.
+4. Run `bun run verify:package`.
+5. Commit the release candidate so the checkout is clean and the tested package is reviewable.
+6. Run `bun run verify:release-smoke` to pack, install in an isolated consumer, import the public API, exercise packed CLI `init`/`generate`, and build a generated Next.js site. If it fails, fix and commit, then rerun.
+7. Create the exact tag only after the smoke passes, then let the publish workflow repeat package and smoke verification.
+
+The release smoke script requires a clean checkout and removes its isolated temporary directory whether it passes or fails. See `RELEASING.md` for the authoritative repository checklist.
+
+## Related
+
+- [CLI Reference](./cli.md) — command flags and generation semantics
+- [Integrate into an existing site](./integrate-existing-site.md) — use components without a standalone scaffold
+- [API Reference](./api.md) — package, component, theme, and artifact contracts
 
 ---
 Generated by [Dewey 0.3.7](https://github.com/arach/dewey)

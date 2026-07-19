@@ -381,10 +381,43 @@ ${fontOverrides}
   text-decoration: underline;
 }
 
+.docs-mobile-navigation,
+.docs-mobile-nav-trigger {
+  display: none;
+}
+
 /* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .docs-sidebar {
     display: none;
+  }
+
+  .docs-mobile-navigation {
+    display: block;
+  }
+
+  .docs-mobile-nav-trigger {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--dw-border);
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: var(--dw-muted);
+    color: var(--dw-foreground);
+    cursor: pointer;
+  }
+
+  .docs-mobile-navigation .dw-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform var(--dw-transition-normal, 200ms ease);
+  }
+
+  .docs-mobile-navigation .dw-sidebar.open {
+    transform: translateX(0);
   }
 }
 
@@ -424,24 +457,29 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 export function Search() {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const loadedRef = useRef(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
 
   const loadPagefind = useCallback(async () => {
-    if (loadedRef.current || !containerRef.current) return
-    loadedRef.current = true
+    const container = containerRef.current
+    if (!container) return
 
     try {
       // Load Pagefind UI CSS
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = '/pagefind/pagefind-ui.css'
-      document.head.appendChild(link)
+      if (!document.querySelector('link[data-dewey-pagefind]')) {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = '/pagefind/pagefind-ui.css'
+        link.dataset.deweyPagefind = 'true'
+        document.head.appendChild(link)
+      }
 
       // Load and initialize Pagefind UI
       const mod = await import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')
       const PagefindUI = mod.PagefindUI || mod.default
+      container.innerHTML = ''
       new PagefindUI({
-        element: containerRef.current,
+        element: container,
         showSubResults: true,
         showImages: false,
       })
@@ -457,11 +495,16 @@ export function Search() {
         containerRef.current.innerHTML =
           '<p style="padding:1rem;color:var(--dw-muted-foreground);font-size:0.875rem;">Search index not found. Run <code>npm run build</code> to generate it.</p>'
       }
+      closeRef.current?.focus()
     }
   }, [])
 
   useEffect(() => {
-    if (open) loadPagefind()
+    if (open) {
+      closeRef.current?.focus()
+      void loadPagefind()
+      return () => triggerRef.current?.focus()
+    }
   }, [open, loadPagefind])
 
   // Cmd+K / Ctrl+K shortcut
@@ -480,7 +523,12 @@ export function Search() {
   return (
     <>
       <button
+        ref={triggerRef}
+        type="button"
         onClick={() => setOpen(true)}
+        aria-label="Search documentation"
+        aria-haspopup="dialog"
+        aria-expanded={open}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -503,7 +551,29 @@ export function Search() {
       </button>
       {open && (
         <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}>
-          <div className="search-modal">
+          <div
+            className="search-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search documentation"
+            onKeyDown={(event) => {
+              if (event.key !== 'Tab') return
+              const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+                'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+              ))
+              if (focusable.length === 0) return
+              const first = focusable[0]
+              const last = focusable[focusable.length - 1]
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault()
+                last.focus()
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault()
+                first.focus()
+              }
+            }}
+          >
+            <button ref={closeRef} type="button" onClick={() => setOpen(false)} aria-label="Close search">Close</button>
             <div ref={containerRef} />
           </div>
         </div>
@@ -515,6 +585,7 @@ export function Search() {
 
   'src/app/docs/layout.tsx': () => `'use client'
 
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { components, siteConfig } from '@/lib/dewey'
 import { getNavTree } from '@/lib/navigation'
@@ -528,6 +599,7 @@ export default function DocsLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const [navigationOpen, setNavigationOpen] = useState(false)
   const tree = getNavTree()
   const currentPage = pathname.replace(/^\\/docs\\//, '').replace(/\\/$/, '') || siteConfig.defaultPage
 
@@ -537,8 +609,33 @@ export default function DocsLayout({
         projectName={siteConfig.name}
         homeUrl={siteConfig.basePath}
         showThemeToggle
-        actions={<Search />}
+        actions={(
+          <>
+            <button
+              type="button"
+              className="docs-mobile-nav-trigger"
+              onClick={() => setNavigationOpen(true)}
+              aria-label="Open documentation navigation"
+              aria-expanded={navigationOpen}
+            >
+              Menu
+            </button>
+            <Search />
+          </>
+        )}
       />
+      {navigationOpen && (
+        <div className="docs-mobile-navigation">
+          <Sidebar
+            tree={tree}
+            currentPage={currentPage}
+            projectName={siteConfig.name}
+            basePath={siteConfig.basePath}
+            isOpen
+            onClose={() => setNavigationOpen(false)}
+          />
+        </div>
+      )}
       <div className="docs-layout">
         <aside className="docs-sidebar">
           <div className="docs-sidebar-sticky">
@@ -837,22 +934,23 @@ export function generateNextjsPackageJson(args: NextjsTemplateArgs): string {
     scripts: {
       dev: 'next dev',
       build: 'next build',
-      postbuild: 'bunx pagefind --site out',
+      postbuild: 'pagefind --site out',
       start: 'next start',
       lint: 'next lint',
     },
     dependencies: {
-      '@arach/dewey': '^0.3.0',
-      'gray-matter': '^4.0.3',
-      'next': '^14.2.0',
-      'react': '^18.3.0',
-      'react-dom': '^18.3.0',
+      '@arach/dewey': DEWEY_VERSION,
+      'gray-matter': '4.0.3',
+      'next': '14.2.35',
+      'react': '18.3.1',
+      'react-dom': '18.3.1',
     },
     devDependencies: {
-      '@types/node': '^20.0.0',
-      '@types/react': '^18.3.0',
-      '@types/react-dom': '^18.3.0',
-      'typescript': '^5.5.0',
+      '@types/node': '20.19.37',
+      '@types/react': '18.3.28',
+      '@types/react-dom': '18.3.7',
+      'pagefind': '1.5.2',
+      'typescript': '5.9.3',
     },
   }, null, 2)
 }

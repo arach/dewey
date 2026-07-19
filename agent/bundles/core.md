@@ -44,6 +44,7 @@ Skills are LLM prompts, not code. Built-in skills:
 - `docsDesignCritic` - Critiques page structure and visual design
 - `promptSlideoutGenerator` - Generates AI-consumable prompt configs
 - `installMdGenerator` - Creates install.md following installmd.org
+- `improveAIPrompts` - Iterative discovery, drafting, review, and refinement prompts; `improveAIPromptsSkill` remains as a deprecated alias
 
 ### install.md Standard
 
@@ -76,6 +77,10 @@ Use one sequence for every project (details in [Quickstart](./quickstart.md)):
 
 Agent artifacts from `generate` are the product contract. Components and `create` are presentation options on top of that contract.
 
+`init` and the judgment commands are project-aware. The selected project type changes the scaffold and the evidence expected from docs. `audit` and `agent` also report focused source/human/agent drift: paired-file coverage, cited paths, and literal union/enum contracts. These checks are evidence based and do not replace semantic review or executable examples.
+
+Generation and optional site creation share one recursive document model. Retrieval indexes are derived from one manifest, while full content stays in purpose-built document, prompt, raw, and bundle surfaces instead of being cloned into every JSON file.
+
 ## Quick Links
 
 - [Quickstart](./quickstart.md) - Coherent init → generate → audit → agent sequence
@@ -83,6 +88,7 @@ Agent artifacts from `generate` are the product contract. Components and `create
 - [CLI Reference](./cli.md) - All commands and options
 - [API Reference](./api.md) - Public TypeScript, React, theme, and artifact contracts
 - [Skills](./skills.md) - Built-in LLM prompt templates
+- [Maintaining generated sites](./maintenance.md) - Ownership, upgrades, ejection, recovery, and release verification
 
 ---
 
@@ -123,6 +129,15 @@ bunx dewey init
 ```
 
 Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
+
+Choose a project type so the scaffold and later evidence checks match the product:
+
+```bash
+bunx dewey init --type npm-package
+# generic | npm-package | cli-tool | react-library | macos-app | monorepo
+```
+
+Every type creates paired human and agent pages. The focus page and defaults vary: API for npm packages, command reference for CLIs, component reference for React libraries, architecture for generic/macOS projects, and workspace mapping for monorepos. An invalid type fails instead of silently using `generic`.
 
 ### 3. Configure
 
@@ -178,6 +193,8 @@ bunx dewey generate
 
 Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
 
+The same canonical document discovery powers `generate`, the optional `create` scaffold, and the artifact API. Full content is materialized deliberately: document bodies in `agent/docs.json`, prompts in `agent/prompts.json`, and Markdown in `agent/raw/docs/` plus bundles. Context files remain compact retrieval indexes.
+
 ### 6. Audit
 
 ```bash
@@ -186,7 +203,7 @@ bunx dewey audit
 bunx dewey audit --json
 ```
 
-Structural and completeness checks. Prefer fixing audit findings before treating the score as a release gate.
+Structural and completeness checks plus project-type evidence and focused documentation drift. JSON output includes structured `projectType` and `drift` objects. Prefer fixing audit findings before treating the score as a release gate.
 
 ### 7. Check your score
 
@@ -224,6 +241,8 @@ cd my-docs && bun install && bun run dev
 
 Generates a static docs site when you want a separate publishing path alongside agent artifacts.
 
+The scaffold pins tested Next.js/Astro dependencies and runs the same agent-artifact writer, so it starts with both a human site and the retrieval contract. For later adoption, updates, ejection, backups, and recovery, see [Maintaining generated sites](./maintenance.md).
+
 ---
 
 ## Next steps
@@ -233,6 +252,7 @@ Generates a static docs site when you want a separate publishing path alongside 
 - Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
 - Embed components or use `dewey create` only when you need a human site
 - [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)
+- [Maintaining generated sites](./maintenance.md) — ownership, update, eject, recovery, and release checks
 
 ---
 
@@ -450,7 +470,7 @@ Components that call Dewey hooks must be descendants of `DeweyProvider`. In a Ne
 | `MarkdownContent` | `content` | `isDark` |
 | `TableOfContents` | None | `items`, `title`, `className`, `scrollOffset` |
 | `AutoTableOfContents` | None | `markdown`, `containerRef`, `title`, `className` |
-| `DocsLayout` | See source | Router-coupled compatibility layout from `packages/docs/src/components/DocsLayout.tsx`; its prop type is not re-exported by the main entry point |
+| `DocsLayout` | `children`, `title`, `navigation`, `projectName` | Router-neutral shell; accepts `currentPage` and a framework `LinkComponent`, with plain anchors by default; its prop type is not re-exported by the main entry point |
 | `CodeBlock` / `HeadingLink` | See source | Values are public, but their prop interfaces are not exported |
 
 `TocItem` is `{ id: string; title: string; level: number }`. Related exports are `useActiveSection`, `extractTocItems`, `extractTocFromDom`, `useTableOfContents`, and `extractSections`.
@@ -508,6 +528,10 @@ console.log(THEME_REGISTRY[theme].cssFile)
 
 `PUBLISHED_CSS_THEMES` lists presets with CSS exports; `VALID_THEMES` lists presets accepted by generated sites. Every current registry entry belongs to both lists. `resolveTheme` falls back to `'neutral'`.
 
+All twelve presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
+
+Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 12 themes × light/dark and compares 24 Playwright screenshots.
+
 ## Skills and structured agent content
 
 The skill exports are LLM prompt definitions, not deterministic generators:
@@ -518,6 +542,9 @@ The skill exports are LLM prompt definitions, not deterministic generators:
 | `docsDesignCritic` | Prompt set for structure/design critique; result type `DocsDesignCritiqueResult` |
 | `promptSlideoutGenerator` | Prompt set for authoring slideout configuration; type `PromptSlideoutConfig` |
 | `installMdGenerator` | Prompt set for installmd.org content; type `InstallMdConfig` |
+| `improveAIPrompts` | Iterative discovery/draft/review/refinement prompt set; types `PromptImprovementPass` and `PromptQualityCriteria` |
+
+`improveAIPromptsSkill` is a deprecated alias of `improveAIPrompts` for compatibility.
 
 Structured agent content can be assembled and rendered without the CLI:
 
@@ -551,7 +578,7 @@ The following names are re-exported from `packages/docs/src/index.ts`.
 | Layout/content | `Header`, `DocsLayout`, `MarkdownContent`, `CodeBlock`, `HeadingLink`, `Sidebar`, `TableOfContents`, `AutoTableOfContents`, `useActiveSection`, `extractTocItems`, `extractTocFromDom` |
 | UI | `Callout`, `Tabs`, `Tab`, `Steps`, `Step`, `Card`, `CardGrid`, `FileTree`, `ApiTable`, `Badge` |
 | Agent UI | `CopyButtons`, `AgentContext`, `PromptSlideout` |
-| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator` |
+| Skills | `promptSlideoutGenerator`, `docsReviewAgent`, `docsDesignCritic`, `installMdGenerator`, `improveAIPrompts`, `improveAIPromptsSkill` |
 | Hooks/utilities | `useDarkMode`, `useTableOfContents`, `extractSections`, `cn`, `resolveIcon`, `commonIcons` |
 | Agent content | `agentContent`, `AgentContentBuilder`, `renderAgentMarkdown`, `renderAgentJson`, `renderAgentPlainText` |
 
@@ -559,8 +586,8 @@ The following names are re-exported from `packages/docs/src/index.ts`.
 |---|---|
 | Config/themes | `AgentRule`, `DeweyConfig`, `InstallConfig`, `ProjectType`, `ThemeDefinition`, `ThemeName`, `ThemePreset` |
 | App/provider | `DocsAppProps`, `DocsAppConfig`, `DocsIndexProps`, `DeweyProviderProps`, `DeweyContextValue`, `ThemeConfig`, `FrameworkComponents` |
-| Components | `HeaderProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
-| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
+| Components | `HeaderProps`, `DocsLayoutProps`, `MarkdownContentProps`, `SidebarProps`, `AutoTocProps`, `TableOfContentsProps`, `TocItem`, `CalloutProps`, `CalloutType`, `TabsProps`, `TabProps`, `StepsProps`, `StepProps`, `CardProps`, `CardGridProps`, `FileTreeProps`, `FileTreeItem`, `ApiTableProps`, `ApiProperty`, `BadgeProps`, `BadgeVariant`, `CopyButtonsProps`, `AgentContextProps`, `PromptSlideoutProps`, `PromptParam` |
+| Skills/content | `PromptSlideoutConfig`, `DocsReviewResult`, `DocsDesignCritiqueResult`, `InstallMdConfig`, `PromptImprovementPass`, `PromptQualityCriteria`, `AgentContent`, `AgentSection`, `TableSection`, `EnumSection`, `CodeSection`, `TextSection`, `ListSection` |
 | Navigation/utilities | `PageTree`, `PageNode`, `PageItem`, `PageFolder`, `PageSeparator`, `FlatPage`, `NavigationConfig`, `NavigationGroup`, `NavigationItem`, `CommonIconName` |
 | Legacy | `NavItem`, `NavGroup`, `DocSection`, `BadgeColor`, `PageLink`, `DocsConfig` |
 

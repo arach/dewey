@@ -13,6 +13,15 @@ export const ProjectType = z.enum([
 ])
 export type ProjectType = z.infer<typeof ProjectType>
 
+export function parseProjectType(input: unknown): ProjectType {
+  const result = ProjectType.safeParse(input)
+  if (result.success) return result.data
+
+  throw new Error(
+    `Invalid project type "${String(input)}". Expected one of: ${ProjectType.options.join(', ')}`,
+  )
+}
+
 /**
  * Agent-specific rule for contextual navigation
  */

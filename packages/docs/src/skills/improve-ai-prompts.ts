@@ -5,13 +5,13 @@
  * Works for any codebase. Each pass extracts more value and refines output.
  *
  * @example
- * import { improveAIPromptsSkill } from '@arach/dewey'
+ * import { improveAIPrompts } from '@arach/dewey'
  *
  * // Use pass 1 to discover what exists
- * const discoveryPrompt = improveAIPromptsSkill.passes.discovery.prompt
+ * const discoveryPrompt = improveAIPrompts.passes.discovery.prompt
  *
  * // Use pass 3 to review a draft
- * const reviewPrompt = improveAIPromptsSkill.passes.review.prompt
+ * const reviewPrompt = improveAIPrompts.passes.review.prompt
  *   .replace('{PASTE_DRAFT}', myDraft)
  */
 
@@ -28,7 +28,7 @@ export interface PromptQualityCriteria {
   maxScore: number
 }
 
-export const improveAIPromptsSkill = {
+export const improveAIPrompts = {
   /**
    * The goal of AI prompts in documentation
    */
@@ -277,4 +277,7 @@ Return the complete prompt config.`,
   ],
 }
 
-export default improveAIPromptsSkill
+/** @deprecated Prefer the public `improveAIPrompts` name. */
+export const improveAIPromptsSkill = improveAIPrompts
+
+export default improveAIPrompts

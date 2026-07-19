@@ -30,6 +30,8 @@ pnpm-debug.log*
 
 # Testing
 coverage/
+packages/docs/test-results/
+packages/docs/playwright-report/
 
 # Misc
 *.tgz

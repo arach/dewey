@@ -36,6 +36,7 @@ Skills are LLM prompts, not code. Built-in skills:
 - `docsDesignCritic` - Critiques page structure and visual design
 - `promptSlideoutGenerator` - Generates AI-consumable prompt configs
 - `installMdGenerator` - Creates install.md following installmd.org
+- `improveAIPrompts` - Iterative discovery, drafting, review, and refinement prompts; `improveAIPromptsSkill` remains as a deprecated alias
 
 ### install.md Standard
 
@@ -68,6 +69,10 @@ Use one sequence for every project (details in [Quickstart](./quickstart.md)):
 
 Agent artifacts from `generate` are the product contract. Components and `create` are presentation options on top of that contract.
 
+`init` and the judgment commands are project-aware. The selected project type changes the scaffold and the evidence expected from docs. `audit` and `agent` also report focused source/human/agent drift: paired-file coverage, cited paths, and literal union/enum contracts. These checks are evidence based and do not replace semantic review or executable examples.
+
+Generation and optional site creation share one recursive document model. Retrieval indexes are derived from one manifest, while full content stays in purpose-built document, prompt, raw, and bundle surfaces instead of being cloned into every JSON file.
+
 ## Quick Links
 
 - [Quickstart](./quickstart.md) - Coherent init → generate → audit → agent sequence
@@ -75,3 +80,4 @@ Agent artifacts from `generate` are the product contract. Components and `create
 - [CLI Reference](./cli.md) - All commands and options
 - [API Reference](./api.md) - Public TypeScript, React, theme, and artifact contracts
 - [Skills](./skills.md) - Built-in LLM prompt templates
+- [Maintaining generated sites](./maintenance.md) - Ownership, upgrades, ejection, recovery, and release verification

@@ -64,13 +64,7 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   // For inline code, use simple styling
   if (inline || !className?.includes('language-')) {
     return (
-      <code
-        className="px-1.5 py-0.5 rounded text-[13px] font-mono font-medium"
-        style={{
-          background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-          color: isDark ? '#f3f4f6' : '#101518',
-        }}
-      >
+      <code className={`dw-inline-code${isDark ? ' dark' : ''}`}>
         {children}
       </code>
     )
@@ -86,43 +80,29 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   }
 
   return (
-    <div className="relative group mb-4">
-      <div
-        className="rounded-lg overflow-hidden"
-        style={{
-          background: isDark ? '#1e2126' : '#faf8f5',
-          border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,21,24,0.1)'}`,
-        }}
-      >
+    <div className={`dw-code-block group${isDark ? ' dark' : ''}`}>
+      <div className="dw-code-block-frame">
         {/* Code content */}
-        <div className="overflow-x-auto relative">
+        <div className="dw-code-block-scroll">
           {/* Language label */}
           {language !== 'text' && (
-            <span
-              className="absolute top-2 left-3 text-[10px] font-mono tracking-wider uppercase select-none pointer-events-none"
-              style={{
-                color: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-              }}
-            >
+            <span className="dw-code-block-language">
               {language}
             </span>
           )}
           {/* Copy button - icon only, visible on hover */}
           <button
+            type="button"
             onClick={copyToClipboard}
-            className="absolute top-2 right-2 flex items-center justify-center w-7 h-7 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{
-              background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-              color: isDark ? '#9ca3af' : '#5c676c',
-            }}
+            className="dw-code-block-copy"
+            aria-label={copied ? 'Code copied' : 'Copy code'}
             title="Copy code"
           >
-            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
           </button>
-          <pre className="m-0 p-4 pt-8">
+          <pre className="dw-code-block-pre">
             <code
-              className="font-mono text-[13px] leading-relaxed"
-              style={{ color: isDark ? '#abb2bf' : '#383a42' }}
+              className="dw-code-block-code"
               dangerouslySetInnerHTML={{ __html: highlighted }}
             />
           </pre>

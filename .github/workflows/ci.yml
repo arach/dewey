@@ -19,8 +19,26 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run lint
       - run: bun run test
+      - name: Dogfood public skill exports
+        run: bun test packages/docs/test/public-skills.test.ts
       - name: Verify generated artifacts are current
         run: |
           bun packages/docs/src/cli/index.ts generate
-          git diff --exit-code -- AGENTS.md llms.txt docs.json install.md agent
+          git diff --exit-code -- .dewey-generated.json AGENTS.md llms.txt docs.json install.md agent
       - run: bun run build
+      - run: bun run verify:package
+      - name: Smoke test the releasable package from a clean checkout
+        run: bun run verify:release-smoke
+
+  visual:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+      - run: bun install --frozen-lockfile
+      - name: Install pinned Chromium
+        run: bunx playwright install chromium
+      - name: Verify all themes in light and dark
+        run: bun run --cwd packages/docs test:visual

@@ -16,7 +16,7 @@
     {
       "id": "audit-docs",
       "slug": "prompts/audit-docs",
-      "title": "Audit Docs",
+      "title": "Prompts Audit Docs",
       "description": "Use this prompt to audit a project's documentation for agent-readiness.",
       "sourcePath": "docs/prompts/audit-docs.md",
       "promptUrl": "/agent/prompts/audit-docs.md",
@@ -36,7 +36,7 @@
     {
       "id": "create-agent-md",
       "slug": "prompts/create-agent-md",
-      "title": "Create Agent Md",
+      "title": "Prompts Create Agent Md",
       "description": "Use this prompt to convert human documentation to agent-optimized format.",
       "sourcePath": "docs/prompts/create-agent-md.md",
       "promptUrl": "/agent/prompts/create-agent-md.md",

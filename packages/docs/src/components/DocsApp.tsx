@@ -198,25 +198,28 @@ function DocsLayoutInternal({
             <div className="dw-header-left">
               {/* Mobile menu button */}
               <button
+                type="button"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="dw-header-menu-btn"
                 style={{ display: 'none' }}
+                aria-label={sidebarOpen ? 'Close navigation' : 'Open navigation'}
+                aria-expanded={sidebarOpen}
               >
-                <Menu style={{ width: '1.25rem', height: '1.25rem' }} />
+                <Menu style={{ width: '1.25rem', height: '1.25rem' }} aria-hidden="true" />
               </button>
 
               {/* Brand */}
               <Link href={basePath} className="dw-header-brand">
-                <span className="dw-header-brand-dot" />
+                <span className="dw-header-brand-dot" aria-hidden="true" />
                 <span className="dw-header-brand-name">{name}</span>
               </Link>
 
               {/* Divider */}
-              <span className="dw-header-divider" />
+              <span className="dw-header-divider" aria-hidden="true" />
 
               {/* Home link */}
               <Link href={homeUrl} className="dw-header-back">
-                <ArrowLeft className="dw-header-back-icon" />
+                <ArrowLeft className="dw-header-back-icon" aria-hidden="true" />
                 Home
               </Link>
             </div>
@@ -224,11 +227,13 @@ function DocsLayoutInternal({
             <div className="dw-header-right">
               {/* Theme toggle */}
               <button
+                type="button"
                 onClick={toggleDark}
                 className="dw-header-theme-toggle"
+                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                {isDark ? <Sun style={{ width: '1rem', height: '1rem' }} /> : <Moon style={{ width: '1rem', height: '1rem' }} />}
+                {isDark ? <Sun style={{ width: '1rem', height: '1rem' }} aria-hidden="true" /> : <Moon style={{ width: '1rem', height: '1rem' }} aria-hidden="true" />}
               </button>
 
               {/* DOCS label */}
@@ -288,7 +293,7 @@ function DocsLayoutInternal({
 
             {/* Prev/Next navigation */}
             {showPrevNext && (prevPage || nextPage) && (
-              <nav className="dw-prev-next">
+              <nav className="dw-prev-next" aria-label="Previous and next pages">
                 {prevPage ? (
                   <Link
                     href={`${basePath}/${prevPage.id}`}

@@ -118,12 +118,11 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-router-dom', 'react/jsx-runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'react-router-dom': 'ReactRouterDOM',
         },
       },
       plugins: [ssrSafePlugin()],

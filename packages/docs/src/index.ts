@@ -55,6 +55,7 @@ export { Header } from './components/Header'
 export type { HeaderProps } from './components/Header'
 
 export { DocsLayout } from './components/DocsLayout'
+export type { DocsLayoutProps } from './components/DocsLayout'
 export { MarkdownContent } from './components/MarkdownContent'
 export type { MarkdownContentProps } from './components/MarkdownContent'
 export { CodeBlock } from './components/CodeBlock'
@@ -139,6 +140,14 @@ export type { DocsDesignCritiqueResult } from './skills/docs-design-critic'
 
 export { installMdGenerator } from './skills/install-md-generator'
 export type { InstallMdConfig } from './skills/install-md-generator'
+
+// Iterative skill for discovering, drafting, reviewing, and refining
+// self-contained AI prompt contracts.
+export { improveAIPrompts, improveAIPromptsSkill } from './skills/improve-ai-prompts'
+export type {
+  PromptImprovementPass,
+  PromptQualityCriteria,
+} from './skills/improve-ai-prompts'
 
 // ============================================
 // Hooks

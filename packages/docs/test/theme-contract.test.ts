@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PUBLISHED_CSS_THEMES } from '../src/themes'
 import { deweyPreset } from '../src/tailwind/preset'
+import { THEME_TOKENS } from '../src/cli/templates/astro'
 
 /**
  * Semantic-token contract + WCAG AA regression guard for the 12 color presets.
@@ -164,6 +165,42 @@ describe('theme token contract', () => {
     expect(extended.fontFamily['dw-mono']).toContain('--dw-font-mono')
     expect(extended.borderRadius.dw).toContain('--dw-radius')
   })
+
+  test('generated sites expose the same complete token contract in both modes', () => {
+    expect(Object.keys(THEME_TOKENS).sort()).toEqual([...PUBLISHED_CSS_THEMES].sort())
+    for (const [theme, css] of Object.entries(THEME_TOKENS)) {
+      const light = block(css, /:root\s*\{([\s\S]*?)\n\s*\}/)
+      const dark = block(css, /\[data-theme='dark'\]\s*\{([\s\S]*?)\n\s*\}/)
+      for (const [mode, tokens] of [['light', light], ['dark', dark]] as const) {
+        const missing = CONTRACT.filter(key => !(key in tokens))
+        expect(missing, `${theme} generated ${mode} missing: ${missing.join(', ')}`).toEqual([])
+      }
+    }
+  })
+
+  test('presets declare only canonical contract or typography tokens', () => {
+    const allowed = new Set([...CONTRACT, 'font-sans', 'font-serif', 'font-mono'])
+    for (const file of themeFiles) {
+      const css = readFileSync(`${cssDir}/colors/${file}`, 'utf8')
+      const declarations = [...css.matchAll(/--dw-([a-z0-9-]+)\s*:/g)].map(match => match[1])
+      const unknown = declarations.filter(name => !allowed.has(name))
+      expect(unknown, `${file} declares unknown/dead tokens: ${unknown.join(', ')}`).toEqual([])
+    }
+  })
+
+  test('every base component token reference resolves from the floor or a preset', () => {
+    const base = readFileSync(`${cssDir}/base.css`, 'utf8')
+    const references = [...base.matchAll(/var\(--dw-([a-z0-9-]+)/g)].map(match => match[1])
+    const firstTheme = readFileSync(`${cssDir}/colors/${themeFiles[0]}`, 'utf8')
+    const available = new Set([
+      ...Object.keys(floorLight),
+      ...Object.keys(floorDark),
+      ...Object.keys(block(firstTheme, /:root\s*\{([\s\S]*?)\n\}/)),
+      ...Object.keys(block(firstTheme, /\.dark[^{]*\{([\s\S]*?)\n\}/)),
+    ])
+    const missing = [...new Set(references)].filter(name => !available.has(name))
+    expect(missing, `base.css references undeclared tokens: ${missing.join(', ')}`).toEqual([])
+  })
 })
 
 describe('theme WCAG AA', () => {
@@ -202,6 +239,56 @@ describe('base.css accessibility rules', () => {
       const css = readFileSync(`${cssDir}/colors/${file}`, 'utf8')
       expect(css).toContain('--dw-font-sans:')
       expect(css).not.toContain('--font-dw-')
+    }
+  })
+})
+
+describe('public component theme ownership', () => {
+  const componentDir = resolve(cssDir, '../components')
+  const tokenizedComponents = [
+    'AgentContext.tsx',
+    'ApiTable.tsx',
+    'Badge.tsx',
+    'Callout.tsx',
+    'Card.tsx',
+    'CodeBlock.tsx',
+    'CopyButtons.tsx',
+    'DocsLayout.tsx',
+    'FileTree.tsx',
+    'HeadingLink.tsx',
+    'MarkdownContent.tsx',
+    'PromptSlideout.tsx',
+    'Steps.tsx',
+    'Tabs.tsx',
+  ]
+
+  test('tokenized components do not embed literal color palettes', () => {
+    const colorLiteral = /#[0-9a-f]{3,8}\b|(?:rgb|hsl|oklch)a?\(|\b(?:white|black)\b|(?:bg|text|border)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white)/i
+    for (const file of tokenizedComponents) {
+      const source = readFileSync(resolve(componentDir, file), 'utf8')
+      expect(source, `${file} contains a hardcoded color`).not.toMatch(colorLiteral)
+    }
+  })
+
+  test('base styles own each tokenized component surface', () => {
+    const base = readFileSync(`${cssDir}/base.css`, 'utf8')
+    for (const rootClass of [
+      'dw-agent-context',
+      'dw-api-table',
+      'dw-badge',
+      'dw-callout',
+      'dw-card',
+      'dw-code-block',
+      'dw-copy-buttons',
+      'dw-docs-layout',
+      'dw-file-tree',
+      'dw-heading-link',
+      'dw-prose',
+      'dw-prompt-slideout',
+      'dw-steps',
+      'dw-tabs',
+    ]) {
+      expect(base).toContain(`.${rootClass}`)
     }
   })
 })

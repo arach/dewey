@@ -3,3 +3,8 @@ node_modules
 dist
 public/pagefind/
 public/agent/
+public/.dewey-generated.json
+public/AGENTS.md
+public/install.md
+public/llms.txt
+public/lm.txt

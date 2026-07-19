@@ -170,6 +170,7 @@ export function DocsIndex({
               type="search"
               placeholder="Search documentation..."
               className="dw-search-input"
+              aria-label="Search documentation"
             />
             <kbd className="dw-search-kbd">/</kbd>
           </div>

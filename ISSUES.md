@@ -37,40 +37,40 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 - [x] Generate quick wins from actual unmet checks instead of a fixed list.
 - [x] Make `agent --fix` perform documented safe fixes or remove the promise.
 - [x] Resolve `agent` from the project root and replace hardcoded filename allow-lists.
-- [ ] Validate project types and make each type change the checks or scaffold meaningfully.
+- [x] Validate project types and make each type change the checks or scaffold meaningfully.
 - [x] Add score fixtures for sparse, malformed, nested, duplicated-heading, and fully documented projects.
-- [ ] Add drift checks between source code, human docs, and `.agent.md` counterparts.
+- [x] Add drift checks between source code, human docs, and `.agent.md` counterparts.
 
 ## P1 — generation
 
-- [ ] Unify `generate` and `create` on one document-discovery and metadata pipeline.
+- [x] Unify `generate` and `create` on one document-discovery and metadata pipeline.
 - [x] Make generated output reproducible by removing wall-clock timestamps or honoring `SOURCE_DATE_EPOCH`.
 - [x] Add `schemaVersion` to public JSON manifests.
 - [x] Warn when a source directory is missing or discovery finds no documents.
 - [x] Protect user-edited generated files with ownership markers, dry-run previews, or explicit overwrite consent.
 - [x] Prune artifacts for deleted and renamed documents without touching user-owned files.
 - [x] Make the agent-artifact output directory explicit and safely scoped.
-- [ ] Derive artifact link tables and bundles from a single canonical manifest.
-- [ ] Avoid repeatedly materializing full document content in every artifact.
-- [ ] Improve `llms.txt` summary extraction for frontmatter, lists, headings, and short pages.
-- [ ] Fix fallback prompt URLs that can contain a duplicated `prompts/` segment.
-- [ ] Preserve scoped package names in generated installation instructions.
-- [ ] Make `create` and `generate` compose intentionally instead of maintaining parallel output models.
-- [ ] Pin scaffold dependencies or record a tested compatibility range.
+- [x] Derive artifact link tables and bundles from a single canonical manifest.
+- [x] Avoid repeatedly materializing full document content in every artifact.
+- [x] Improve `llms.txt` summary extraction for frontmatter, lists, headings, and short pages.
+- [x] Fix fallback prompt URLs that can contain a duplicated `prompts/` segment.
+- [x] Preserve scoped package names in generated installation instructions.
+- [x] Make `create` and `generate` compose intentionally instead of maintaining parallel output models.
+- [x] Pin scaffold dependencies or record a tested compatibility range.
 
 ## P1 — themes and publishing
 
 - [x] Establish one canonical theme registry used by package exports, runtime types, the CLI, site generation, and documentation.
-- [ ] Define and test one complete token contract across runtime components, exported CSS, Tailwind, and generated sites.
-- [ ] Audit every preset for missing, renamed, or dead tokens.
-- [ ] Replace hardcoded component palettes with semantic tokens where customization is expected.
-- [ ] Add contrast, focus, reduced-motion, keyboard, and screen-reader checks to every theme and shell.
-- [ ] Add visual regression coverage for each theme in light/dark and representative content states.
-- [ ] Make `eject` verify every rewrite and report partial or failed rewrites.
-- [ ] Record ejected file ownership and version in a manifest so updates can be reviewed safely.
-- [ ] Support recovery or adoption of generated manifests in Next.js/React sites, not only Astro.
-- [ ] Warn on unknown theme names instead of silently falling back.
-- [ ] Remove the dead refresh-navigation mechanism or implement its intended behavior.
+- [x] Define and test one complete token contract across runtime components, exported CSS, Tailwind, and generated sites.
+- [x] Audit every preset for missing, renamed, or dead tokens.
+- [x] Replace hardcoded component palettes with semantic tokens where customization is expected.
+- [x] Add contrast, focus, reduced-motion, keyboard, and screen-reader checks to every theme and shell.
+- [x] Add visual regression coverage for each theme in light/dark and representative content states.
+- [x] Make `eject` verify every rewrite and report partial or failed rewrites.
+- [x] Record ejected file ownership and version in a manifest so updates can be reviewed safely.
+- [x] Support recovery or adoption of generated manifests in Next.js/React sites, not only Astro.
+- [x] Warn on unknown theme names instead of silently falling back.
+- [x] Remove the dead refresh-navigation mechanism or implement its intended behavior.
 
 ## P1 — adoption through clarity
 
@@ -79,21 +79,21 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 - [x] Present one coherent onboarding sequence across `init`, `audit`, `generate`, `agent`, and optional `create`.
 - [x] Explain the human `.md` / agent `.agent.md` pairing with concrete retrieval examples.
 - [x] Document or differentiate the redundant `@arach/dewey/react` export.
-- [ ] Decide whether `improveAIPrompts` is public and align code, exports, and docs.
+- [x] Decide whether `improveAIPrompts` is public and align code, exports, and docs.
 - [x] Make output locations and produced files explicit before commands write them.
 - [x] Add copy-paste examples for monorepos, custom source directories, and CI enforcement.
 
 ## P2 — maintenance and dogfooding
 
 - [x] Give every Dewey documentation page a maintained `.agent.md` counterpart.
-- [ ] Remove duplicated site documentation and dead archived content.
-- [ ] Dogfood all public skills and generated artifacts in this repository's CI.
-- [ ] Reconcile stale ROADMAP entries and close issues that are already fixed.
-- [ ] Fix unanchored `.md` filename replacement so only the final extension changes.
-- [ ] Rotate update backups rather than accumulating them indefinitely.
-- [ ] Clarify the purpose of the current no-op TypeScript build step.
-- [ ] Reconsider whether router support must be a required peer dependency.
-- [ ] Reconsider whether all markdown/rendering dependencies belong in the core package.
-- [ ] Populate or remove the empty Purpose column in generated project-structure tables.
-- [ ] Add accessibility regression tests for navigation, search, copy buttons, tables of contents, and mobile menus.
-- [ ] Add a release checklist covering clean checkout, pack inspection, install smoke test, CLI smoke test, and generated-site smoke test.
+- [x] Remove duplicated site documentation and dead archived content.
+- [x] Dogfood all public skills and generated artifacts in this repository's CI.
+- [x] Reconcile stale ROADMAP entries and close issues that are already fixed.
+- [x] Fix unanchored `.md` filename replacement so only the final extension changes.
+- [x] Rotate update backups rather than accumulating them indefinitely.
+- [x] Clarify the purpose of the current no-op TypeScript build step.
+- [x] Reconsider whether router support must be a required peer dependency.
+- [x] Reconsider whether all markdown/rendering dependencies belong in the core package.
+- [x] Populate or remove the empty Purpose column in generated project-structure tables.
+- [x] Add accessibility regression tests for navigation, search, copy buttons, tables of contents, and mobile menus.
+- [x] Add a release checklist covering clean checkout, pack inspection, install smoke test, CLI smoke test, and generated-site smoke test.

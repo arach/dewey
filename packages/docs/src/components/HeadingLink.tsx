@@ -15,11 +15,11 @@ export function HeadingLink({ id, size = 'md' }: HeadingLinkProps) {
   return (
     <a
       href={`#${id}`}
-      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2"
-      style={{ color: '#9ca3af' }}
+      className="dw-heading-link"
+      aria-label="Link to this section"
       title="Link to this section"
     >
-      <LinkIcon className={iconSize} />
+      <LinkIcon className={iconSize} aria-hidden="true" />
     </a>
   )
 }

@@ -16,6 +16,18 @@ Skills are LLM instructions, not deterministic executable code.
 | `docsDesignCritic` | Review hierarchy, information density, component use, and visual structure | Critique separates structural and presentation issues |
 | `promptSlideoutGenerator` | Produce AI-consumable prompt configuration for a page | Output has explicit inputs, instructions, and expected result |
 | `installMdGenerator` | Produce installmd.org-compatible `install.md` | Instructions are executable, environment-aware, and verifiable |
+| `improveAIPrompts` | Discover → draft → review → refine prompt contracts | Result is self-contained and satisfies exported quality criteria |
+
+## Public prompt-improvement contract
+
+| Export | Status |
+|---|---|
+| `improveAIPrompts` | Canonical public runtime object |
+| `improveAIPromptsSkill` | Deprecated alias; same object |
+| `PromptImprovementPass` | Public type |
+| `PromptQualityCriteria` | Public type |
+
+Usage: select a prompt from `improveAIPrompts.passes`, replace its placeholders, send it to an LLM, and review the result. The export is prompt content, not repository automation or a deterministic generator.
 
 ## Custom skill location
 

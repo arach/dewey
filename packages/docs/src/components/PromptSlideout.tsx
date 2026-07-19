@@ -1,44 +1,29 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { X, Copy, Check, Sparkles, ChevronDown, ChevronRight, Info, GripVertical } from 'lucide-react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { Check, ChevronDown, ChevronRight, Copy, GripVertical, Info, Sparkles, X } from 'lucide-react'
 import hljs from 'highlight.js/lib/core'
 import json from 'highlight.js/lib/languages/json'
 
-// Register JSON for syntax highlighting
 hljs.registerLanguage('json', json)
 
 export interface PromptParam {
-  /** Variable name (displayed with squiggles like {NAME}) */
   name: string
-  /** Description of what this parameter is for */
   description: string
-  /** Example value */
   example?: string
 }
 
 export interface PromptSlideoutProps {
-  /** Whether the slideout is open */
   isOpen: boolean
-  /** Called when the slideout should close */
   onClose: () => void
-  /** Title for the prompt */
   title?: string
-  /** Description of what this prompt does */
   description?: string
-  /** TLDR/grounding info for the user - displayed prominently at top */
   info: string
-  /** Parameters in man-page style */
   params?: PromptParam[]
-  /** Starter template with {VARIABLE} placeholders */
   starterTemplate: string
-  /** In-context learning examples (code blocks with good/bad examples) */
   examples?: string
-  /** Expected output format description */
   expectedOutput?: string
-  /** Additional CSS classes */
   className?: string
 }
 
-// Syntax highlight code
 function highlightCode(code: string): string {
   try {
     return hljs.highlight(code.trim(), { language: 'json' }).value
@@ -47,152 +32,19 @@ function highlightCode(code: string): string {
   }
 }
 
-// Highlighted textarea that colors {VARIABLES}
-function HighlightedTextarea({
-  value,
-  onChange
-}: {
-  value: string
-  onChange: (value: string) => void
-}) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const highlightRef = useRef<HTMLDivElement>(null)
-
-  // Sync scroll between textarea and highlight overlay
-  const handleScroll = () => {
-    if (textareaRef.current && highlightRef.current) {
-      highlightRef.current.scrollTop = textareaRef.current.scrollTop
-      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft
-    }
-  }
-
-  // Highlight {VARIABLES} in the text
-  const highlightedHtml = value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\{([A-Z_]+)\}/g, '<span style="color: #c45a2c; font-weight: 600;">{$1}</span>')
-    .replace(/\n/g, '<br>')
-
+function PromptCodeBlock({ code, filename }: { code: string; filename: string }) {
   return (
-    <div style={{ position: 'relative' }}>
-      {/* Highlight overlay */}
-      <div
-        ref={highlightRef}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          padding: '1rem',
-          pointerEvents: 'none',
-          overflow: 'hidden',
-          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-          fontSize: '0.8125rem',
-          fontWeight: 400,
-          lineHeight: 1.5,
-          color: '#2e3538',
-          whiteSpace: 'pre-wrap',
-          wordWrap: 'break-word',
-        }}
-        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      />
-      {/* Actual textarea (transparent text) */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onScroll={handleScroll}
-        style={{
-          width: '100%',
-          minHeight: '220px',
-          padding: '1rem',
-          borderRadius: '0.625rem',
-          border: '1px solid rgba(16, 21, 24, 0.12)',
-          background: 'white',
-          color: 'transparent',
-          caretColor: '#2e3538',
-          fontSize: '0.8125rem',
-          fontWeight: 400,
-          lineHeight: 1.5,
-          outline: 'none',
-          resize: 'vertical',
-          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-          transition: 'border-color 150ms, box-shadow 150ms',
-        }}
-        onFocus={(e) => {
-          e.target.style.borderColor = 'rgba(240, 124, 79, 0.4)'
-          e.target.style.boxShadow = '0 0 0 3px rgba(240, 124, 79, 0.08)'
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = 'rgba(16, 21, 24, 0.12)'
-          e.target.style.boxShadow = 'none'
-        }}
-      />
-    </div>
-  )
-}
-
-// Code block component with traffic light header - warm theme
-function CodeBlock({ code, filename }: { code: string; filename: string }) {
-  return (
-    <div
-      style={{
-        borderRadius: '0.75rem',
-        overflow: 'hidden',
-        background: '#fefdfb',
-        border: '1px solid rgba(16, 21, 24, 0.1)',
-      }}
-    >
-      {/* Header with traffic lights */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          padding: '0.625rem 1rem',
-          background: 'rgba(240, 124, 79, 0.06)',
-          borderBottom: '1px solid rgba(16, 21, 24, 0.08)',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
-          <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27ca40' }} />
-        </div>
-        <span style={{ fontSize: '0.6875rem', color: '#8b9298', fontWeight: 500 }}>{filename}</span>
+    <div className="dw-prompt-code-block">
+      <div className="dw-prompt-code-header">
+        <span>{filename}</span>
       </div>
-      {/* Code content */}
-      <pre style={{
-        margin: 0,
-        padding: '1rem',
-        overflow: 'auto',
-        maxHeight: '280px',
-      }}>
-        <code
-          style={{
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-            fontSize: '0.8125rem',
-            lineHeight: 1.5,
-            color: '#2e3538',
-          }}
-          dangerouslySetInnerHTML={{ __html: highlightCode(code) }}
-        />
+      <pre>
+        <code dangerouslySetInnerHTML={{ __html: highlightCode(code) }} />
       </pre>
     </div>
   )
 }
 
-/**
- * PromptSlideout - Agent briefing panel
- *
- * Structure:
- * 1. Info box - grounding TLDR
- * 2. Parameters - man-page style variable definitions
- * 3. User request - editable textarea with starter template
- * 4. System context - collapsible examples + expected output
- */
 export function PromptSlideout({
   isOpen,
   onClose,
@@ -206,461 +58,213 @@ export function PromptSlideout({
   className = '',
 }: PromptSlideoutProps) {
   const [copied, setCopied] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [userRequest, setUserRequest] = useState('')
+  const [userRequest, setUserRequest] = useState(starterTemplate)
   const [contextExpanded, setContextExpanded] = useState(false)
   const [width, setWidth] = useState(720)
   const isResizing = useRef(false)
   const panelRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const returnFocusRef = useRef<HTMLElement | null>(null)
+  const titleId = useId()
 
-  // Initialize with starter template when opening
   useEffect(() => {
-    if (isOpen) {
-      setUserRequest(starterTemplate)
-      setContextExpanded(false)
-    }
+    if (!isOpen) return
+    setUserRequest(starterTemplate)
+    setContextExpanded(false)
+    returnFocusRef.current = document.activeElement as HTMLElement | null
+    requestAnimationFrame(() => closeRef.current?.focus())
+    return () => returnFocusRef.current?.focus()
   }, [isOpen, starterTemplate])
 
-  // Handle open/close animation
   useEffect(() => {
-    if (isOpen) {
-      setIsVisible(true)
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsAnimating(true)
-        })
-      })
-    } else {
-      setIsAnimating(false)
-      const timer = setTimeout(() => setIsVisible(false), 300)
-      return () => clearTimeout(timer)
+    if (!isOpen) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !panelRef.current) return
+      const focusable = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
-  }, [isOpen])
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
 
-  // Resize handling
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
+  const beginResize = useCallback((event: React.MouseEvent) => {
+    event.preventDefault()
     isResizing.current = true
     document.body.style.cursor = 'ew-resize'
     document.body.style.userSelect = 'none'
   }, [])
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const resize = (event: MouseEvent) => {
       if (!isResizing.current) return
-      const newWidth = window.innerWidth - e.clientX
-      setWidth(Math.max(480, Math.min(1200, newWidth)))
+      setWidth(Math.max(480, Math.min(1200, window.innerWidth - event.clientX)))
     }
-
-    const handleMouseUp = () => {
+    const stopResize = () => {
       isResizing.current = false
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
     }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
+    document.addEventListener('mousemove', resize)
+    document.addEventListener('mouseup', stopResize)
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('mousemove', resize)
+      document.removeEventListener('mouseup', stopResize)
+      stopResize()
     }
   }, [])
 
-  // Build the full prompt for copying
-  const getFullPrompt = useCallback(() => {
-    let prompt = userRequest.trim()
+  const adjustWidth = (event: React.KeyboardEvent) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    const direction = event.key === 'ArrowLeft' ? 1 : -1
+    setWidth((current) => Math.max(480, Math.min(1200, current + direction * 32)))
+  }
 
-    // Add system context if expanded sections exist
+  const fullPrompt = useCallback(() => {
+    let prompt = userRequest.trim()
     if (examples || expectedOutput) {
       prompt += '\n\n---\n\n'
-      if (examples) {
-        prompt += '## Reference Examples\n\n```json\n' + examples.trim() + '\n```\n\n'
-      }
-      if (expectedOutput) {
-        prompt += '## Expected Output\n\n' + expectedOutput
-      }
+      if (examples) prompt += `## Reference Examples\n\n\`\`\`json\n${examples.trim()}\n\`\`\`\n\n`
+      if (expectedOutput) prompt += `## Expected Output\n\n${expectedOutput}`
     }
-
     return prompt
   }, [userRequest, examples, expectedOutput])
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(getFullPrompt())
+      await navigator.clipboard.writeText(fullPrompt())
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
+    } catch (error) {
+      console.error('Failed to copy:', error)
     }
   }
 
-  // Close on escape
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      return () => document.removeEventListener('keydown', handleEscape)
-    }
-  }, [isOpen, onClose])
-
-  if (!isVisible) return null
-
-  const hasSystemContext = examples || expectedOutput
+  if (!isOpen) return null
+  const hasSystemContext = Boolean(examples || expectedOutput)
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(16, 21, 24, 0.4)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 999,
-          opacity: isAnimating ? 1 : 0,
-          transition: 'opacity 300ms ease-out',
-        }}
-      />
-
-      {/* Slideout Panel */}
+    <div className="dw-prompt-layer">
+      <button type="button" className="dw-prompt-backdrop" onClick={onClose} aria-label="Close prompt builder" />
       <div
         ref={panelRef}
         className={`dw-prompt-slideout ${className}`}
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: `${width}px`,
-          maxWidth: '90vw',
-          background: '#faf9f7',
-          boxShadow: '-4px 0 24px rgba(16, 21, 24, 0.12)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          transform: isAnimating ? 'translateX(0)' : 'translateX(100%)',
-          transition: isResizing.current ? 'none' : 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
+        style={{ width: `${width}px` }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
       >
-        {/* Resize Handle */}
         <div
-          onMouseDown={handleMouseDown}
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: '12px',
-            cursor: 'ew-resize',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'transparent',
-            transition: 'background 150ms',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          className="dw-prompt-resize"
+          role="separator"
+          aria-label="Resize prompt builder"
+          aria-orientation="vertical"
+          tabIndex={0}
+          onMouseDown={beginResize}
+          onKeyDown={adjustWidth}
         >
-          <GripVertical size={12} style={{ color: '#8b9298', opacity: 0.6 }} />
+          <GripVertical aria-hidden="true" />
         </div>
 
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1.25rem 1.5rem 1.25rem 2rem',
-            borderBottom: '1px solid rgba(16, 21, 24, 0.08)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '2.25rem',
-                height: '2.25rem',
-                borderRadius: '0.625rem',
-                background: 'linear-gradient(135deg, rgba(240, 124, 79, 0.12) 0%, rgba(240, 124, 79, 0.06) 100%)',
-                color: '#f07c4f',
-              }}
-            >
-              <Sparkles size={18} />
-            </div>
+        <header className="dw-prompt-header">
+          <div className="dw-prompt-heading">
+            <span className="dw-prompt-heading-icon"><Sparkles aria-hidden="true" /></span>
             <div>
-              <h2 style={{
-                margin: 0,
-                fontSize: '1.0625rem',
-                fontWeight: 600,
-                color: '#101518',
-                fontFamily: "'Fraunces', serif",
-              }}>
-                {title}
-              </h2>
-              {description && (
-                <p style={{ margin: 0, fontSize: '0.8125rem', color: '#5c676c', marginTop: '0.125rem' }}>
-                  {description}
-                </p>
-              )}
+              <h2 id={titleId}>{title}</h2>
+              {description && <p>{description}</p>}
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '2rem',
-              height: '2rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: 'transparent',
-              color: '#5c676c',
-              cursor: 'pointer',
-              transition: 'background 150ms',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.06)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          >
-            <X size={18} />
+          <button ref={closeRef} type="button" className="dw-prompt-close" onClick={onClose} aria-label="Close prompt builder">
+            <X aria-hidden="true" />
           </button>
-        </div>
+        </header>
 
-        {/* Main Content */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '1.5rem 1.5rem 1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="dw-prompt-content">
+          <section className="dw-prompt-info">
+            <Info aria-hidden="true" />
+            <p>{info}</p>
+          </section>
 
-          {/* Info Box - Grounding TLDR */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.75rem',
-              padding: '1rem 1.25rem',
-              borderRadius: '0.75rem',
-              background: 'linear-gradient(135deg, rgba(240, 124, 79, 0.08) 0%, rgba(240, 124, 79, 0.03) 100%)',
-              border: '1px solid rgba(240, 124, 79, 0.15)',
-            }}
-          >
-            <Info size={18} style={{ color: '#f07c4f', flexShrink: 0, marginTop: '2px' }} />
-            <p style={{
-              margin: 0,
-              fontSize: '0.9375rem',
-              lineHeight: 1.6,
-              color: '#2e3538',
-            }}>
-              {info}
-            </p>
-          </div>
-
-          {/* Parameters - Clean grid layout */}
           {params.length > 0 && (
-            <div>
-              <h3 style={{
-                margin: '0 0 0.75rem 0',
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: '#8b9298',
-              }}>
-                Parameters
-              </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gap: '0.625rem',
-                  padding: '0.875rem 1rem',
-                  borderRadius: '0.625rem',
-                  background: 'rgba(16, 21, 24, 0.02)',
-                  border: '1px solid rgba(16, 21, 24, 0.08)',
-                }}
-              >
-                {params.map((param, i) => (
-                  <div key={i} style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'auto 1fr',
-                    gap: '0.75rem',
-                    alignItems: 'start',
-                  }}>
-                    <code style={{
-                      padding: '0.25rem 0.625rem',
-                      borderRadius: '0.375rem',
-                      background: 'rgba(240, 124, 79, 0.1)',
-                      color: '#c45a2c',
-                      fontWeight: 600,
-                      fontSize: '0.8125rem',
-                      fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {'{' + param.name + '}'}
-                    </code>
-                    <div style={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
-                      <span style={{ color: '#2e3538' }}>{param.description}</span>
-                      {param.example && (
-                        <span style={{ color: '#8b9298', marginLeft: '0.5rem' }}>
-                          — <em>e.g., "{param.example}"</em>
-                        </span>
-                      )}
-                    </div>
+            <section>
+              <h3 className="dw-prompt-section-title">Parameters</h3>
+              <dl className="dw-prompt-params">
+                {params.map((param) => (
+                  <div key={param.name} className="dw-prompt-param">
+                    <dt><code>{`{${param.name}}`}</code></dt>
+                    <dd>
+                      {param.description}
+                      {param.example && <span> — <em>e.g., “{param.example}”</em></span>}
+                    </dd>
                   </div>
                 ))}
-              </div>
-            </div>
+              </dl>
+            </section>
           )}
 
-          {/* Prompt Template - Editable with starter template */}
-          <div>
-            <div style={{ marginBottom: '0.75rem' }}>
-              <h3 style={{
-                margin: 0,
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: '#8b9298',
-              }}>
-                Prompt Template
-              </h3>
-              {hasSystemContext && !contextExpanded && (
-                <p style={{
-                  margin: '0.375rem 0 0 0',
-                  fontSize: '0.75rem',
-                  color: '#8b9298',
-                }}>
-                  Reference context below will be included when you copy
-                </p>
-              )}
-            </div>
-            <HighlightedTextarea
+          <section>
+            <h3 className="dw-prompt-section-title">Prompt Template</h3>
+            {hasSystemContext && !contextExpanded && (
+              <p className="dw-prompt-section-hint">Reference context below is included when copied.</p>
+            )}
+            <textarea
+              className="dw-prompt-textarea"
               value={userRequest}
-              onChange={setUserRequest}
+              onChange={(event) => setUserRequest(event.target.value)}
+              aria-label="Prompt template"
             />
-          </div>
+          </section>
 
-          {/* System Context - Collapsible */}
           {hasSystemContext && (
-            <div>
+            <section>
               <button
-                onClick={() => setContextExpanded(!contextExpanded)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  width: '100%',
-                }}
+                type="button"
+                className="dw-prompt-context-toggle"
+                onClick={() => setContextExpanded((expanded) => !expanded)}
+                aria-expanded={contextExpanded}
               >
-                {contextExpanded ? (
-                  <ChevronDown size={14} style={{ color: '#5c676c' }} />
-                ) : (
-                  <ChevronRight size={14} style={{ color: '#5c676c' }} />
-                )}
-                <h3 style={{
-                  margin: 0,
-                  fontSize: '0.6875rem',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  color: '#8b9298',
-                }}>
-                  Reference Context {contextExpanded ? '' : '(click to expand)'}
-                </h3>
+                {contextExpanded ? <ChevronDown aria-hidden="true" /> : <ChevronRight aria-hidden="true" />}
+                Reference Context
               </button>
-
-              {/* Collapsed state - helpful info */}
-              {!contextExpanded && (
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    padding: '0.875rem 1rem',
-                    borderRadius: '0.625rem',
-                    background: 'rgba(16, 21, 24, 0.02)',
-                    border: '1px solid rgba(16, 21, 24, 0.06)',
-                  }}
-                >
-                  <p style={{
-                    margin: 0,
-                    fontSize: '0.8125rem',
-                    lineHeight: 1.5,
-                    color: '#5c676c',
-                  }}>
-                    We'll automatically include examples and validation rules to help your AI understand Arc's config format and produce valid output.
-                  </p>
+              {contextExpanded ? (
+                <div className="dw-prompt-context-blocks">
+                  {examples && <PromptCodeBlock code={examples} filename="examples.json" />}
+                  {expectedOutput && <PromptCodeBlock code={expectedOutput} filename="expected-output.txt" />}
                 </div>
+              ) : (
+                <p className="dw-prompt-context-summary">Examples and validation rules will be appended to the copied prompt.</p>
               )}
-
-              {contextExpanded && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.75rem' }}>
-                  {/* In-context examples */}
-                  {examples && <CodeBlock code={examples} filename="examples.json" />}
-
-                  {/* Expected output */}
-                  {expectedOutput && <CodeBlock code={expectedOutput} filename="expected-output.txt" />}
-                </div>
-              )}
-            </div>
+            </section>
           )}
         </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1rem 1.5rem 1rem 2rem',
-            borderTop: '1px solid rgba(16, 21, 24, 0.08)',
-            background: 'rgba(16, 21, 24, 0.02)',
-          }}
-        >
-          <p style={{
-            margin: 0,
-            fontSize: '0.75rem',
-            color: '#8b9298',
-          }}>
-            {hasSystemContext && !contextExpanded
-              ? 'Prompt + reference context will be copied'
-              : 'Copy to paste into your AI assistant'
-            }
-          </p>
-          <button
-            onClick={handleCopy}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.625rem 1.25rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: copied ? '#10b981' : '#f07c4f',
-              color: 'white',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background 150ms',
-            }}
-            onMouseEnter={(e) => {
-              if (!copied) e.currentTarget.style.background = '#e86a3a'
-            }}
-            onMouseLeave={(e) => {
-              if (!copied) e.currentTarget.style.background = '#f07c4f'
-            }}
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? 'Copied!' : 'Copy Prompt'}
+        <footer className="dw-prompt-footer">
+          <p>{hasSystemContext ? 'Prompt and reference context will be copied.' : 'Copy into your AI assistant.'}</p>
+          <button type="button" className={`dw-button ${copied ? 'dw-button-success' : 'dw-button-primary'}`} onClick={handleCopy}>
+            {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+            <span aria-live="polite">{copied ? 'Copied!' : 'Copy Prompt'}</span>
           </button>
-        </div>
+        </footer>
       </div>
-    </>
+    </div>
   )
 }
 

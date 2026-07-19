@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Copy, Check, Bot, X, ChevronDown } from 'lucide-react'
 
 export interface CopyButtonsProps {
@@ -113,24 +113,6 @@ export function CopyButtons({
     return () => document.removeEventListener('mousedown', handleClick)
   }, [copyMenuOpen])
 
-  const buttonStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.375rem',
-    padding: '0.375rem 0.75rem',
-    borderRadius: '0.5rem',
-    fontSize: '0.75rem',
-    fontWeight: 500,
-    transition: 'all 150ms',
-    color: 'var(--color-dw-muted-foreground, #5c676c)',
-    border: '1px solid var(--color-dw-border, rgba(16, 21, 24, 0.12))',
-    background: 'var(--color-dw-card, rgba(255,255,255,0.5))',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  }
-
-  const iconSize = 14
-
   const getFeedbackLabel = () => {
     if (!feedback) return null
     switch (feedback.type) {
@@ -142,99 +124,64 @@ export function CopyButtons({
   }
 
   return (
-    <div className={`dw-copy-buttons ${className}`} style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div className={`dw-copy-buttons ${className}`}>
+      <div className="dw-copy-buttons-row">
         {/* Copy for AI (agent content) */}
         {agentContent && (
           <button
+            type="button"
+            className="dw-copy-buttons-button"
             onClick={() => handleCopy('agent', agentContent)}
-            style={buttonStyle}
             title="Copy AI-optimized content for LLMs and coding assistants"
           >
             {feedback?.type === 'agent' ? (
-              <Check size={iconSize} style={{ color: 'var(--color-dw-success, #10b981)' }} />
+              <Check className="dw-copy-buttons-success" aria-hidden="true" />
             ) : (
-              <Bot size={iconSize} />
+              <Bot aria-hidden="true" />
             )}
             {showLabels && <span>{feedback?.type === 'agent' ? 'Copied!' : 'Copy for AI'}</span>}
           </button>
         )}
 
         {/* Copy dropdown */}
-        <div ref={menuRef} style={{ position: 'relative' }}>
+        <div ref={menuRef} className="dw-copy-buttons-menu-wrap">
           <button
+            type="button"
+            className="dw-copy-buttons-button"
             onClick={() => setCopyMenuOpen(!copyMenuOpen)}
-            style={buttonStyle}
+            aria-expanded={copyMenuOpen}
+            aria-haspopup="menu"
             title="Copy page content"
           >
             {feedback?.type === 'markdown' || feedback?.type === 'plain' ? (
-              <Check size={iconSize} style={{ color: 'var(--color-dw-success, #10b981)' }} />
+              <Check className="dw-copy-buttons-success" aria-hidden="true" />
             ) : (
-              <Copy size={iconSize} />
+              <Copy aria-hidden="true" />
             )}
             {showLabels && (
               <>
                 <span>{feedback?.type === 'markdown' || feedback?.type === 'plain' ? 'Copied!' : 'Copy'}</span>
-                <ChevronDown size={12} style={{ marginLeft: '-2px' }} />
+                <ChevronDown className="dw-copy-buttons-chevron" aria-hidden="true" />
               </>
             )}
           </button>
 
           {/* Dropdown menu */}
           {copyMenuOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 4px)',
-                right: 0,
-                background: 'white',
-                border: '1px solid rgba(16, 21, 24, 0.12)',
-                borderRadius: '0.5rem',
-                boxShadow: '0 4px 12px rgba(16, 21, 24, 0.1)',
-                overflow: 'hidden',
-                zIndex: 50,
-                minWidth: '140px',
-              }}
-            >
+            <div className="dw-copy-buttons-menu" role="menu">
               <button
+                type="button"
+                className="dw-copy-buttons-menu-item"
+                role="menuitem"
                 onClick={() => handleCopy('plain', stripMarkdown(markdownContent))}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  gap: '0.5rem',
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '0.8125rem',
-                  color: '#374151',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'right',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
                 Plain text
               </button>
               <button
+                type="button"
+                className="dw-copy-buttons-menu-item"
+                role="menuitem"
                 onClick={() => handleCopy('markdown', markdownContent)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  gap: '0.5rem',
-                  width: '100%',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '0.8125rem',
-                  color: '#374151',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'right',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 21, 24, 0.04)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
                 Markdown
               </button>
@@ -245,102 +192,36 @@ export function CopyButtons({
 
       {/* Feedback Tray */}
       {feedback && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 0.5rem)',
-            right: 0,
-            width: '320px',
-            background: 'white',
-            border: '1px solid rgba(16, 21, 24, 0.12)',
-            borderRadius: '0.75rem',
-            boxShadow: '0 10px 40px rgba(16, 21, 24, 0.15)',
-            overflow: 'hidden',
-            zIndex: 50,
-            animation: 'slideDown 150ms ease-out',
-          }}
-        >
+        <div className="dw-copy-buttons-feedback" role="status">
           {/* Tray Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0.625rem 0.875rem',
-              background: 'rgba(16, 185, 129, 0.08)',
-              borderBottom: '1px solid rgba(16, 185, 129, 0.15)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Check size={14} style={{ color: '#10b981' }} />
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#065f46' }}>
+          <div className="dw-copy-buttons-feedback-header">
+            <div className="dw-copy-buttons-feedback-heading">
+              <Check aria-hidden="true" />
+              <span>
                 {getFeedbackLabel()}
               </span>
             </div>
             <button
+              type="button"
+              className="dw-copy-buttons-dismiss"
               onClick={dismissFeedback}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '1.25rem',
-                height: '1.25rem',
-                border: 'none',
-                background: 'transparent',
-                color: '#5c676c',
-                cursor: 'pointer',
-                borderRadius: '0.25rem',
-              }}
+              aria-label="Dismiss copy confirmation"
             >
-              <X size={12} />
+              <X aria-hidden="true" />
             </button>
           </div>
 
           {/* Tray Content */}
-          <div style={{ padding: '0.75rem 0.875rem' }}>
-            <div
-              style={{
-                fontSize: '0.75rem',
-                color: '#5c676c',
-                lineHeight: 1.5,
-                fontFamily: 'ui-monospace, "SF Mono", monospace',
-                background: 'rgba(16, 21, 24, 0.03)',
-                padding: '0.5rem 0.625rem',
-                borderRadius: '0.375rem',
-                maxHeight: '4.5rem',
-                overflow: 'hidden',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-              }}
-            >
+          <div className="dw-copy-buttons-feedback-body">
+            <div className="dw-copy-buttons-preview">
               {feedback.preview}
             </div>
-            <div
-              style={{
-                marginTop: '0.5rem',
-                fontSize: '0.6875rem',
-                color: '#9ca3af',
-              }}
-            >
+            <div className="dw-copy-buttons-count">
               {feedback.charCount.toLocaleString()} characters copied to clipboard
             </div>
           </div>
         </div>
       )}
-
-      {/* Keyframe animation */}
-      <style>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   )
 }

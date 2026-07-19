@@ -195,7 +195,7 @@ export function TableOfContents({
   }
 
   return (
-    <aside className={`dw-toc ${className}`} data-dark={isDark}>
+    <aside className={`dw-toc ${className}`} data-dark={isDark} aria-label={title}>
       <h4 className="dw-toc-title">{title}</h4>
       <nav>
         <ul className="dw-toc-list">
@@ -205,6 +205,7 @@ export function TableOfContents({
                 href={`#${item.id}`}
                 className={`dw-toc-link ${activeId === item.id ? 'active' : ''}`}
                 data-level={item.level}
+                aria-current={activeId === item.id ? 'location' : undefined}
               >
                 {item.title}
               </a>

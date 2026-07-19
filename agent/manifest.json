@@ -233,7 +233,7 @@
           "anchor": "complete-main-module-export-inventory"
         }
       ],
-      "tokensEstimate": 2645,
+      "tokensEstimate": 2821,
       "frontmatter": {
         "title": "API Reference",
         "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
@@ -264,6 +264,11 @@
         },
         {
           "depth": 2,
+          "text": "Project-aware initialization",
+          "anchor": "project-aware-initialization"
+        },
+        {
+          "depth": 2,
           "text": "Recommended order",
           "anchor": "recommended-order"
         },
@@ -276,9 +281,19 @@
           "depth": 2,
           "text": "Machine-readable checks",
           "anchor": "machine-readable-checks"
+        },
+        {
+          "depth": 2,
+          "text": "Generated-site maintenance",
+          "anchor": "generated-site-maintenance"
+        },
+        {
+          "depth": 2,
+          "text": "Error handling in automation",
+          "anchor": "error-handling-in-automation"
         }
       ],
-      "tokensEstimate": 509,
+      "tokensEstimate": 1184,
       "frontmatter": {
         "title": "CLI Reference",
         "description": "Dewey commands and their main options",
@@ -408,11 +423,71 @@
           "anchor": "related"
         }
       ],
-      "tokensEstimate": 3050,
+      "tokensEstimate": 3198,
       "frontmatter": {
         "title": "Integrate into an existing site",
         "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
         "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "maintenance",
+      "slug": "maintenance",
+      "kind": "doc",
+      "title": "Maintaining generated sites",
+      "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+      "sourcePath": "docs/maintenance.md",
+      "url": "/docs/maintenance",
+      "rawUrl": "/agent/raw/docs/maintenance.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Safe update workflow",
+          "anchor": "safe-update-workflow"
+        },
+        {
+          "depth": 2,
+          "text": "Recover or adopt a missing manifest",
+          "anchor": "recover-or-adopt-a-missing-manifest"
+        },
+        {
+          "depth": 2,
+          "text": "Eject a Next.js component",
+          "anchor": "eject-a-next-js-component"
+        },
+        {
+          "depth": 1,
+          "text": "Compose the packaged default (recommended starting point)",
+          "anchor": "compose-the-packaged-default-recommended-starting-point"
+        },
+        {
+          "depth": 1,
+          "text": "Replace it completely",
+          "anchor": "replace-it-completely"
+        },
+        {
+          "depth": 2,
+          "text": "Recovery checklist",
+          "anchor": "recovery-checklist"
+        },
+        {
+          "depth": 2,
+          "text": "Release workflow",
+          "anchor": "release-workflow"
+        },
+        {
+          "depth": 2,
+          "text": "Related",
+          "anchor": "related"
+        }
+      ],
+      "tokensEstimate": 884,
+      "frontmatter": {
+        "title": "Maintaining generated sites",
+        "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+        "order": 7,
         "group": "Guides",
         "groupId": "guides"
       }
@@ -468,7 +543,7 @@
           "anchor": "quick-links"
         }
       ],
-      "tokensEstimate": 490,
+      "tokensEstimate": 643,
       "frontmatter": {
         "title": "Overview",
         "description": "Documentation toolkit for AI-agent-ready docs",
@@ -499,6 +574,11 @@
           "depth": 3,
           "text": "2. Initialize",
           "anchor": "2-initialize"
+        },
+        {
+          "depth": 1,
+          "text": "generic | npm-package | cli-tool | react-library | macos-app | monorepo",
+          "anchor": "generic-npm-package-cli-tool-react-library-macos-app-monorepo"
         },
         {
           "depth": 3,
@@ -541,7 +621,7 @@
           "anchor": "next-steps"
         }
       ],
-      "tokensEstimate": 753,
+      "tokensEstimate": 993,
       "frontmatter": {
         "title": "Quickstart",
         "description": "Get your documentation agent-ready in under 5 minutes",
@@ -594,7 +674,7 @@
           "anchor": "best-practices"
         }
       ],
-      "tokensEstimate": 340,
+      "tokensEstimate": 469,
       "frontmatter": {
         "title": "Skills",
         "description": "Expert instructions that guide AI agents through specific documentation tasks",
@@ -683,11 +763,16 @@
         },
         {
           "depth": 2,
+          "text": "Router and theme contract",
+          "anchor": "router-and-theme-contract"
+        },
+        {
+          "depth": 2,
           "text": "Structured agent content",
           "anchor": "structured-agent-content"
         }
       ],
-      "tokensEstimate": 2134,
+      "tokensEstimate": 2284,
       "frontmatter": {
         "title": "API Reference",
         "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
@@ -730,9 +815,34 @@
           "depth": 2,
           "text": "Audit versus agent",
           "anchor": "audit-versus-agent"
+        },
+        {
+          "depth": 2,
+          "text": "Project type contract",
+          "anchor": "project-type-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Canonical generation contract",
+          "anchor": "canonical-generation-contract"
+        },
+        {
+          "depth": 2,
+          "text": "JSON evidence and drift",
+          "anchor": "json-evidence-and-drift"
+        },
+        {
+          "depth": 2,
+          "text": "Maintenance contract",
+          "anchor": "maintenance-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Automation error contract",
+          "anchor": "automation-error-contract"
         }
       ],
-      "tokensEstimate": 353,
+      "tokensEstimate": 939,
       "frontmatter": {
         "title": "CLI Reference",
         "description": "Dense Dewey CLI contract for agents",
@@ -793,6 +903,11 @@
         },
         {
           "depth": 2,
+          "text": "Theme proof contract",
+          "anchor": "theme-proof-contract"
+        },
+        {
+          "depth": 2,
           "text": "Static export",
           "anchor": "static-export"
         },
@@ -837,11 +952,66 @@
           "anchor": "related-paths"
         }
       ],
-      "tokensEstimate": 1200,
+      "tokensEstimate": 1292,
       "frontmatter": {
         "title": "Integrate existing site (agent)",
         "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",
         "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "agent/maintenance.agent",
+      "slug": "agent/maintenance.agent",
+      "kind": "agent",
+      "title": "Maintaining generated sites",
+      "description": "Dense ownership, update, ejection, recovery, backup, and release contract",
+      "sourcePath": "docs/agent/maintenance.agent.md",
+      "url": "/agent/raw/docs/agent/maintenance.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/maintenance.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey generated-site maintenance contract",
+          "anchor": "dewey-generated-site-maintenance-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Ownership manifests",
+          "anchor": "ownership-manifests"
+        },
+        {
+          "depth": 2,
+          "text": "Update",
+          "anchor": "update"
+        },
+        {
+          "depth": 2,
+          "text": "Manifest adoption",
+          "anchor": "manifest-adoption"
+        },
+        {
+          "depth": 2,
+          "text": "Ejection",
+          "anchor": "ejection"
+        },
+        {
+          "depth": 2,
+          "text": "Recovery",
+          "anchor": "recovery"
+        },
+        {
+          "depth": 2,
+          "text": "Release gate",
+          "anchor": "release-gate"
+        }
+      ],
+      "tokensEstimate": 596,
+      "frontmatter": {
+        "title": "Maintaining generated sites",
+        "description": "Dense ownership, update, ejection, recovery, backup, and release contract",
+        "order": 7,
         "group": "Guides",
         "groupId": "guides"
       }
@@ -913,11 +1083,16 @@
         },
         {
           "depth": 2,
+          "text": "Judgment and generation model",
+          "anchor": "judgment-and-generation-model"
+        },
+        {
+          "depth": 2,
           "text": "Key Files",
           "anchor": "key-files"
         }
       ],
-      "tokensEstimate": 552,
+      "tokensEstimate": 676,
       "frontmatter": {}
     },
     {
@@ -957,11 +1132,26 @@
         },
         {
           "depth": 2,
+          "text": "Project type initialization",
+          "anchor": "project-type-initialization"
+        },
+        {
+          "depth": 2,
+          "text": "Check report contract",
+          "anchor": "check-report-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Canonical generation",
+          "anchor": "canonical-generation"
+        },
+        {
+          "depth": 2,
           "text": "Optional publishing",
           "anchor": "optional-publishing"
         }
       ],
-      "tokensEstimate": 491,
+      "tokensEstimate": 716,
       "frontmatter": {
         "title": "Quickstart for agents",
         "description": "Deterministic setup sequence and expected Dewey outputs",
@@ -990,6 +1180,11 @@
         },
         {
           "depth": 2,
+          "text": "Public prompt-improvement contract",
+          "anchor": "public-prompt-improvement-contract"
+        },
+        {
+          "depth": 2,
           "text": "Custom skill location",
           "anchor": "custom-skill-location"
         },
@@ -1004,7 +1199,7 @@
           "anchor": "authoring-rules"
         }
       ],
-      "tokensEstimate": 269,
+      "tokensEstimate": 389,
       "frontmatter": {
         "title": "Skills for agents",
         "description": "Dewey skill inventory and authoring contract",
@@ -1015,7 +1210,7 @@
       "id": "prompts/audit-docs",
       "slug": "prompts/audit-docs",
       "kind": "prompt",
-      "title": "Audit Docs",
+      "title": "Prompts Audit Docs",
       "description": "Use this prompt to audit a project's documentation for agent-readiness.",
       "sourcePath": "docs/prompts/audit-docs.md",
       "url": "/agent/raw/docs/prompts/audit-docs.md",
@@ -1036,7 +1231,7 @@
       "id": "prompts/create-agent-md",
       "slug": "prompts/create-agent-md",
       "kind": "prompt",
-      "title": "Create Agent Md",
+      "title": "Prompts Create Agent Md",
       "description": "Use this prompt to convert human documentation to agent-optimized format.",
       "sourcePath": "docs/prompts/create-agent-md.md",
       "url": "/agent/raw/docs/prompts/create-agent-md.md",
@@ -1063,7 +1258,7 @@
     {
       "id": "audit-docs",
       "slug": "prompts/audit-docs",
-      "title": "Audit Docs",
+      "title": "Prompts Audit Docs",
       "description": "Use this prompt to audit a project's documentation for agent-readiness.",
       "sourcePath": "docs/prompts/audit-docs.md",
       "promptUrl": "/agent/prompts/audit-docs.md",
@@ -1081,7 +1276,7 @@
     {
       "id": "create-agent-md",
       "slug": "prompts/create-agent-md",
-      "title": "Create Agent Md",
+      "title": "Prompts Create Agent Md",
       "description": "Use this prompt to convert human documentation to agent-optimized format.",
       "sourcePath": "docs/prompts/create-agent-md.md",
       "promptUrl": "/agent/prompts/create-agent-md.md",

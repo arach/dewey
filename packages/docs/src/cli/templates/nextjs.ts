@@ -709,7 +709,7 @@ export function DocContent({ doc }: { doc: DocData }) {
               {doc.agentContent && (
                 <button
                   onClick={() => setViewAgent(!viewAgent)}
-                  className={\\\`docs-agent-toggle\\\${viewAgent ? ' active' : ''}\\\`}
+                  className={\`docs-agent-toggle\${viewAgent ? ' active' : ''}\`}
                   title={viewAgent ? 'Switch to human view' : 'View agent-optimized version'}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

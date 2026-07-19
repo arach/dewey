@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
+import ts from 'typescript'
 import {
   buildAgentArtifactFiles,
   buildAgentManifest,
@@ -11,6 +12,7 @@ import {
 import { createCommand, loadMarkdownDocs } from '../src/cli/commands/create'
 import { extractLlmsSummary, generateCommand, loadDocs } from '../src/cli/commands/generate'
 import { ASTRO_TEMPLATES } from '../src/cli/templates/astro'
+import { NEXTJS_TEMPLATES } from '../src/cli/templates/nextjs'
 
 const temporaryDirectories: string[] = []
 
@@ -192,6 +194,26 @@ describe('llms.txt summaries and installation identifiers', () => {
 })
 
 describe('create composition and dependency compatibility', () => {
+  test('emits syntactically valid TypeScript and TSX for every Next.js scaffold file', () => {
+    const args = { projectName: 'fixture', theme: 'neutral' as const, defaultPage: 'overview' }
+    for (const [filePath, template] of Object.entries(NEXTJS_TEMPLATES)) {
+      if (!/\.tsx?$/.test(filePath)) continue
+      const result = ts.transpileModule(template(args), {
+        fileName: filePath,
+        reportDiagnostics: true,
+        compilerOptions: {
+          jsx: ts.JsxEmit.ReactJSX,
+          module: ts.ModuleKind.ESNext,
+          target: ts.ScriptTarget.ES2020,
+        },
+      })
+      const errors = (result.diagnostics ?? [])
+        .filter(diagnostic => diagnostic.category === ts.DiagnosticCategory.Error)
+        .map(diagnostic => ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'))
+      expect(errors).toEqual([])
+    }
+  })
+
   test('pins every Astro scaffold dependency and the Pagefind executable', () => {
     const packageJson = JSON.parse(ASTRO_TEMPLATES['package.json']({
       projectName: 'fixture',

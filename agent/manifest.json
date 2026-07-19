@@ -423,7 +423,7 @@
           "anchor": "related"
         }
       ],
-      "tokensEstimate": 3198,
+      "tokensEstimate": 3226,
       "frontmatter": {
         "title": "Integrate into an existing site",
         "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
@@ -952,7 +952,7 @@
           "anchor": "related-paths"
         }
       ],
-      "tokensEstimate": 1292,
+      "tokensEstimate": 1328,
       "frontmatter": {
         "title": "Integrate existing site (agent)",
         "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",

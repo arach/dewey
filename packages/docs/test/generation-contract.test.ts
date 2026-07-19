@@ -12,7 +12,7 @@ import {
 import { createCommand, loadMarkdownDocs } from '../src/cli/commands/create'
 import { extractLlmsSummary, generateCommand, loadDocs } from '../src/cli/commands/generate'
 import { ASTRO_TEMPLATES } from '../src/cli/templates/astro'
-import { NEXTJS_TEMPLATES } from '../src/cli/templates/nextjs'
+import { generateDeweyTsx, NEXTJS_TEMPLATES } from '../src/cli/templates/nextjs'
 
 const temporaryDirectories: string[] = []
 
@@ -223,6 +223,17 @@ describe('create composition and dependency compatibility', () => {
     expect(search).toContain("const pagefindUrl = '/pagefind/pagefind-ui.js'")
     expect(search).toContain('import(/* webpackIgnore: true */ pagefindUrl)')
     expect(search).not.toContain("import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')")
+  })
+
+  test('adapts Next Link to Dewey\'s string-href framework contract', () => {
+    const dewey = generateDeweyTsx({
+      projectName: 'fixture',
+      theme: 'neutral',
+      defaultPage: 'overview',
+    })
+    expect(dewey).toContain('type DeweyLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }')
+    expect(dewey).toContain('components: { Link: DeweyLink }')
+    expect(dewey).not.toContain('components: { Link, Image }')
   })
 
   test('pins every Astro scaffold dependency and the Pagefind executable', () => {

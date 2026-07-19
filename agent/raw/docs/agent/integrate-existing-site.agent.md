@@ -123,12 +123,15 @@ module.exports = {
 ```tsx
 'use client'
 import { DeweyProvider } from '@arach/dewey'
+import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+
+type DeweyLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+const DeweyLink = ({ href, ...props }: DeweyLinkProps) => <Link href={href} {...props} />
 
 // theme: ThemePreset | ThemeConfig
-// components.Link / components.Image for framework routing/images
-<DeweyProvider theme="ocean" components={{ Link, Image }}>{children}</DeweyProvider>
+// Adapt framework links to Dewey's required string-href contract.
+<DeweyProvider theme="ocean" components={{ Link: DeweyLink }}>{children}</DeweyProvider>
 ```
 
 Root `<html suppressHydrationWarning>` recommended for theme class hydration.

@@ -899,8 +899,14 @@ export function generateDeweyTsx(args: NextjsTemplateArgs): string {
   MarkdownContent as DefaultContent,
 } from '@arach/dewey'
 import type { DeweyProviderProps } from '@arach/dewey'
+import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+
+type DeweyLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+
+function DeweyLink({ href, ...props }: DeweyLinkProps) {
+  return <Link href={href} {...props} />
+}
 
 // ─── Component Overrides ─────────────────────────────────────
 // Swap any component with your own. Run \`dewey eject <name>\`
@@ -922,7 +928,7 @@ export const siteConfig = {
 // ─── Provider Config ─────────────────────────────────────────
 export const providerProps: Omit<DeweyProviderProps, 'children'> = {
   theme: '${args.theme}',
-  components: { Link, Image },
+  components: { Link: DeweyLink },
 }
 `
 }

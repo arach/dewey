@@ -778,12 +778,15 @@ Dewey layout and content components use React hooks (theme, TOC scroll-spy, copy
 
 import { DeweyProvider } from '@arach/dewey'
 import type { DeweyProviderProps } from '@arach/dewey'
+import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+
+type DeweyLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+const DeweyLink = ({ href, ...props }: DeweyLinkProps) => <Link href={href} {...props} />
 
 const providerProps: Omit<DeweyProviderProps, 'children'> = {
   theme: 'ocean',
-  components: { Link, Image },
+  components: { Link: DeweyLink },
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -1018,7 +1021,7 @@ Regenerate `docs.json` whenever nav or page set changes so the UI and agent arti
 Preset via provider:
 
 ```tsx
-<DeweyProvider theme="purple" components={{ Link, Image }}>
+<DeweyProvider theme="purple" components={{ Link: DeweyLink }}>
   {children}
 </DeweyProvider>
 ```
@@ -1093,7 +1096,6 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` when you want full control. The packaged `DocsLayout` is also router-neutral: it uses anchors by default and accepts `LinkComponent` plus `currentPage`.
 
 ```tsx
-import Link from 'next/link'
 import { DocsLayout, MarkdownContent } from '@arach/dewey'
 
 <DocsLayout
@@ -1101,7 +1103,7 @@ import { DocsLayout, MarkdownContent } from '@arach/dewey'
   navigation={navigation}
   projectName="My Project"
   currentPage={doc.id}
-  LinkComponent={Link}
+  LinkComponent={DeweyLink}
 >
   <MarkdownContent content={doc.content} />
 </DocsLayout>
@@ -2169,12 +2171,15 @@ module.exports = {
 ```tsx
 'use client'
 import { DeweyProvider } from '@arach/dewey'
+import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+
+type DeweyLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }
+const DeweyLink = ({ href, ...props }: DeweyLinkProps) => <Link href={href} {...props} />
 
 // theme: ThemePreset | ThemeConfig
-// components.Link / components.Image for framework routing/images
-<DeweyProvider theme="ocean" components={{ Link, Image }}>{children}</DeweyProvider>
+// Adapt framework links to Dewey's required string-href contract.
+<DeweyProvider theme="ocean" components={{ Link: DeweyLink }}>{children}</DeweyProvider>
 ```
 
 Root `<html suppressHydrationWarning>` recommended for theme class hydration.

@@ -3,7 +3,7 @@
   "generator": "dewey",
   "files": {
     "agent/bundles/all.md": {
-      "hash": "e335b511995228165910a1695fdd8134cbd49d805a303b0f22808aba4361957a",
+      "hash": "6eb962f0c769dd6944915dcb1b39a476342c7fc363b58666fe350fa4e76de5ae",
       "scope": "agentArtifacts"
     },
     "agent/bundles/core.md": {
@@ -15,7 +15,7 @@
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "b039df31b6ce1f99d7bc57c839d68f18e97dd587025e7f1ffeabcd419ef708dd",
+      "hash": "9fa9886d6ace4eb12aae12ecab5387bcdd58c7e9387303a944b23e4d0017a345",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
@@ -23,11 +23,11 @@
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "1a86cb2869435aada8f85ce941e86d846364df5225c72ba5a78ead382c6feab4",
+      "hash": "41bae307c672668b3cbc7ab1a00efd0d2adadba2ef77c18f720459b2b507f52d",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "b039df31b6ce1f99d7bc57c839d68f18e97dd587025e7f1ffeabcd419ef708dd",
+      "hash": "9fa9886d6ace4eb12aae12ecab5387bcdd58c7e9387303a944b23e4d0017a345",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {
@@ -51,7 +51,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/integrate-existing-site.agent.md": {
-      "hash": "072ede9fe6c8d50a514a2107ed494d50225d1d00f6f1f2eb7690b391f6c9ddf5",
+      "hash": "cd411cc797a9920c5d1bc642003fded76ab3870437f1775f9d00d41326bda811",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/maintenance.agent.md": {
@@ -83,7 +83,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/integrate-existing-site.md": {
-      "hash": "c0e193a3c84ad16e841ac317d6f95866e3d1691efcce2f0268abf4bbd73a7b25",
+      "hash": "7803be329ea647f5353b727676cff69bacf84fa107a9a6b3000f3e48b2a6c3bc",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/maintenance.md": {
@@ -111,11 +111,11 @@
       "scope": "agentArtifacts"
     },
     "AGENTS.md": {
-      "hash": "2bb058a3a81b65284bdeba749aadbca28596fb01d4f785ad54ed175ac2d73f6e",
+      "hash": "641c5f325f291cd5fe22fb839da794598013f8c77496911533cb73df7c3eb288",
       "scope": "agentsMd"
     },
     "docs.json": {
-      "hash": "55f96bf3dd8c851628bb9592e3d3d106e73c3be52ecd2e956050cd9bcddf3a47",
+      "hash": "b8714de3a657f6841e922032d3019b11acbd0926a811a22bc5b6afb9fad5b671",
       "scope": "docsJson"
     },
     "install.md": {

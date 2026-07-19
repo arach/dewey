@@ -465,9 +465,8 @@ Update this map whenever a workspace is added, renamed, moved, or changes owners
 `,
 }
 
-const CONFIG_TEMPLATE = `import { defineConfig } from '@arach/dewey'
-
-export default defineConfig({
+const CONFIG_TEMPLATE = `/** @type {import('@arach/dewey').DeweyConfig} */
+export default {
   project: {
     name: '{{PROJECT_NAME}}',
     tagline: '{{PROJECT_TAGLINE}}',
@@ -527,7 +526,7 @@ export default defineConfig({
       { description: 'Verify the installation', command: '{{VERIFY_COMMAND}}' },
     ],
   },
-})
+}
 `
 
 async function fileExists(path: string): Promise<boolean> {

@@ -70,6 +70,8 @@ describe('project type validation and scaffolds', () => {
 
       expect(config).toContain(`type: '${type}'`)
       expect(config).toContain(`required: ${JSON.stringify(profile.requiredDocuments)}`)
+      expect(config).toContain("@type {import('@arach/dewey').DeweyConfig}")
+      expect(config).not.toContain("from '@arach/dewey'")
       expect(checkProjectTypeDocumentation(type, documents)).toMatchObject({
         projectType: type,
         label: profile.label,

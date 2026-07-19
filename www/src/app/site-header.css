@@ -1,0 +1,121 @@
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 clamp(20px, 4vw, 48px);
+}
+
+.site-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 40px;
+}
+
+.site-header-logo {
+  font-family: 'Noto Serif Display', serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--color-text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.site-header-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
+.site-header-link {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-header-link:hover {
+  color: var(--color-text);
+}
+
+.site-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.site-header-search {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  background: none;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+@media (min-width: 640px) {
+  .site-header-search {
+    display: flex;
+  }
+}
+
+.site-header-search:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+}
+
+.site-header-search-key {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.site-header-theme {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.site-header-theme:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+}
+
+.site-header-gh {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-header-gh:hover {
+  color: var(--color-text);
+}

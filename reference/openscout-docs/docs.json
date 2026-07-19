@@ -1,0 +1,21 @@
+{
+  "name": "Scout",
+  "groups": [
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "items": [
+        { "id": "overview", "title": "Overview", "description": "What Scout does and when to use it" },
+        { "id": "architecture", "title": "Architecture", "description": "How Scout is built and why" }
+      ]
+    },
+    {
+      "id": "reference",
+      "title": "Reference",
+      "items": [
+        { "id": "protocol", "title": "Protocol", "description": "Message envelope and wire protocol" },
+        { "id": "agents", "title": "Agents", "description": "Registration, capabilities, and lifecycle" }
+      ]
+    }
+  ]
+}

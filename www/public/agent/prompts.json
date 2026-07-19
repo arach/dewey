@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "project": {
+    "name": "dewey",
+    "version": null,
+    "tagline": "Documentation toolkit for AI-agent-ready docs",
+    "repository": null
+  },
+  "ownership": {
+    "owner": "dewey",
+    "lifecycle": "regenerate",
+    "registry": "/.dewey-generated.json"
+  },
+  "prompts": [
+    {
+      "id": "audit-docs",
+      "slug": "prompts/audit-docs",
+      "title": "Prompts Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {},
+      "markdown": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement\n",
+      "content": "Use this prompt to audit a project's documentation for agent-readiness.\n\n```\nReview the documentation in this project for AI-agent readiness:\n\n1. Check for completeness:\n   - Does overview.md explain what the project does?\n   - Does quickstart.md have working code examples?\n   - Is there API documentation?\n\n2. Check for agent-optimized versions:\n   - Are there .agent.md files alongside .md files?\n   - Do agent versions use structured data (tables, lists) over prose?\n\n3. Check for critical context:\n   - Is there an AGENTS.md with entry points and rules?\n   - Is there an llms.txt for quick context loading?\n\n4. Check for install.md:\n   - Does it follow installmd.org format?\n   - Are steps executable as a TODO checklist?\n\nOutput a score 0-100 and specific recommendations.\n```\n\n---\n\n## Expected Output\n\nA report with:\n- Overall score\n- Category breakdown\n- Specific files to create or improve\n- Quick wins for score improvement"
+    },
+    {
+      "id": "create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "title": "Prompts Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {},
+      "markdown": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>\n",
+      "content": "Use this prompt to convert human documentation to agent-optimized format.\n\n```\nConvert this documentation to agent-optimized format (.agent.md):\n\nInput: [paste human-readable .md content]\n\nRequirements for agent-optimized version:\n1. Remove narrative prose - use bullet points and tables\n2. Make it self-contained - no \"see other page\" references\n3. Include all parameters, types, and return values\n4. Use structured data:\n   - Tables for options/parameters\n   - Code blocks for examples\n   - Lists for steps\n5. Front-load critical information\n6. Keep it dense but complete\n\nOutput the .agent.md content.\n```\n\n---\n\n## Example\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Human-readable docs</div>\n\n```markdown\nThe `init` command helps you get started with Dewey. It creates\nthe necessary configuration files and folder structure. You'll\nwant to run this first before using other commands.\n```\n\n</div>\n\n<div class=\"doc-file-block\">\n<div class=\"doc-file-bar\">Agent-optimized output</div>\n\n```markdown\n## init\n\n| Aspect | Value |\n|--------|-------|\n| Purpose | Create config and folder structure |\n| Run when | First time setup |\n| Creates | dewey.config.ts, docs/ |\n| Prereqs | None |\n```\n\n</div>"
+    }
+  ]
+}

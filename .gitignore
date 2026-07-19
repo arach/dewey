@@ -41,6 +41,7 @@ tmp/
 
 # Workspace-local lockfiles (the root bun.lock is canonical)
 www/bun.lock
+www-astro/bun.lock
 .superset/
 # OpenScout local state
 .openscout/project.json

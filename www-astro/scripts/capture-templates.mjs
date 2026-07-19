@@ -112,7 +112,7 @@ async function main() {
     server.kill()
   }
 
-  console.log(`\nDone! ${templates.length * 2} screenshots saved to www/public/templates/`)
+  console.log(`\nDone! ${templates.length * 2} screenshots saved to www-astro/public/templates/`)
 }
 
 async function waitForServer(url, timeout) {

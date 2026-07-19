@@ -158,6 +158,7 @@ export async function adoptExistingSite(
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
+    scaffold: template,
     template,
     theme: resolveCliTheme(theme, message => console.warn(chalk.yellow(`⚠ ${message}`))),
     projectName,

@@ -221,6 +221,7 @@ function assembleAgentManifest(
   contentKinds?: MarkdownArtifactKind[],
 ): AgentManifest {
   const prompts = docs.filter((doc) => doc.kind === 'prompt')
+  const documentEntries = docs.filter((doc) => doc.kind !== 'prompt')
   const generatedAt = getGeneratedAt()
 
   return {
@@ -254,7 +255,7 @@ function assembleAgentManifest(
       },
     },
     recommendedReadOrder: defaultReadOrder.filter((slug) => docs.some((doc) => doc.slug === slug)),
-    docs: docs.map((doc) => toManifestEntry(
+    docs: documentEntries.map((doc) => toManifestEntry(
       doc,
       options.includeContent && (!contentKinds || contentKinds.includes(doc.kind)),
     )),

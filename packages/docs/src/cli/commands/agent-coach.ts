@@ -218,7 +218,7 @@ async function hasExistingCodeReference(projectRoot: string, documents: Markdown
 // Perform Checks
 // ============================================
 
-async function performChecks(projectRoot: string, config: DeweyConfig | null): Promise<{
+async function performReadinessChecks(projectRoot: string, config: DeweyConfig | null): Promise<{
   categories: CategoryResult[]
   projectType: ProjectTypeDocumentationCheck
   drift: DriftReport
@@ -334,7 +334,7 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
   )
   const hasCompleteAgentCoverage = humanDocuments.length > 0 && pairedDocuments.length === humanDocuments.length
   agentChecks.push({
-    name: 'Has paired .agent.md coverage',
+    name: 'Has .agent.md counterpart coverage',
     passed: hasCompleteAgentCoverage,
     points: hasCompleteAgentCoverage ? 5 : 0,
     maxPoints: 5,
@@ -358,7 +358,7 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
   // Has prompts folder
   const promptsFolder = documents.some(document => document.path.split('/').includes('prompts'))
   handoffChecks.push({
-    name: 'Has prompts/ folder',
+    name: 'Has prompt templates',
     passed: promptsFolder,
     points: promptsFolder ? 10 : 0,
     maxPoints: 10,
@@ -458,6 +458,14 @@ async function performChecks(projectRoot: string, config: DeweyConfig | null): P
   })
 
   return { categories: results, projectType, drift }
+}
+
+/** Run the score categories without rendering a report. */
+export async function performChecks(
+  projectRoot: string,
+  config: DeweyConfig | null,
+): Promise<CategoryResult[]> {
+  return (await performReadinessChecks(projectRoot, config)).categories
 }
 
 function getStatus(score: number, max: number): 'excellent' | 'good' | 'needs-work' | 'missing' {
@@ -609,7 +617,7 @@ export async function agentCoachCommand(options: CoachOptions) {
   }
 
   // Perform all checks
-  const { categories, projectType, drift } = await performChecks(projectRoot, config)
+  const { categories, projectType, drift } = await performReadinessChecks(projectRoot, config)
 
   // Calculate totals
   const totalScore = categories.reduce((s, c) => s + c.score, 0)

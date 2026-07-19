@@ -261,6 +261,7 @@ dist
     deweyVersion: DEWEY_VERSION,
     createdAt: now,
     updatedAt: now,
+    scaffold: template,
     template,
     theme,
     projectName,

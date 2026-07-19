@@ -97,6 +97,10 @@
     "./agent-artifacts": {
       "import": "./dist/cli/agent-artifacts.js",
       "types": "./dist/cli/agent-artifacts.d.ts"
+    },
+    "./registry": {
+      "import": "./dist/registry.js",
+      "types": "./dist/registry.d.ts"
     }
   },
   "files": [
@@ -107,10 +111,10 @@
   "scripts": {
     "dev": "vite build --watch",
     "typecheck": "tsc --noEmit",
-    "build": "bun run typecheck && vite build && tsup src/cli/index.ts src/cli/agent-artifacts.ts --format esm --dts --out-dir dist/cli && tsup src/tailwind/preset.ts --format esm --dts --out-dir dist/tailwind",
+    "build": "bun run typecheck && vite build && tsup src/cli/index.ts src/cli/agent-artifacts.ts --format esm --dts --out-dir dist/cli && tsup src/tailwind/preset.ts --format esm --dts --out-dir dist/tailwind && tsup src/registry.ts --format esm --dts --out-dir dist",
     "clean": "rm -rf dist",
     "lint": "bun run typecheck",
-    "test": "bun test test/*.test.ts",
+    "test": "bun test test/*.test.ts tests/*.test.ts",
     "test:visual": "playwright test",
     "verify:package": "bun scripts/verify-package.ts",
     "verify:release": "bun scripts/verify-release-version.ts"

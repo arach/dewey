@@ -1,0 +1,241 @@
+@layer base {
+  .doc-content {
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: var(--prose-font-size, 13px);
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-text);
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .doc-content h1 {
+    font-family: var(--heading-font);
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: var(--heading-letter-spacing);
+    margin: 0 0 1rem;
+  }
+
+  .doc-content h2 {
+    font-family: var(--heading-font);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: var(--heading-letter-spacing);
+    margin: 2.5rem 0 1rem;
+    padding-top: var(--h2-padding-top);
+    padding-bottom: var(--h2-padding-bottom);
+    border-top: var(--h2-border-top);
+    border-bottom: var(--h2-border-bottom);
+    scroll-margin-top: 100px;
+  }
+
+  .doc-content h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .doc-content h3 {
+    font-family: var(--heading-font);
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: var(--heading-letter-spacing);
+    margin: 1.75rem 0 0.75rem;
+    color: var(--h3-color);
+    scroll-margin-top: 100px;
+  }
+
+  .doc-content p,
+  .doc-content ul,
+  .doc-content ol,
+  .doc-content table {
+    margin: 0 0 1.25rem;
+  }
+
+  .doc-content ul,
+  .doc-content ol {
+    padding-left: 1.5rem;
+  }
+
+  .doc-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .doc-content li::marker {
+    color: var(--color-text-muted);
+  }
+
+  .doc-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 300;
+  }
+
+  .doc-content a:hover {
+    text-decoration: underline;
+  }
+
+  .doc-content strong {
+    font-weight: 450;
+    color: var(--color-text);
+  }
+
+  .doc-content pre {
+    background: var(--code-block-bg) !important;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin: 0 0 1.25rem;
+    overflow-x: auto;
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: var(--prose-code-font-size, 13px);
+    line-height: 1.7;
+  }
+
+  [data-theme='dark'] .doc-content pre {
+    background: var(--code-block-bg-dark) !important;
+    background-color: var(--code-block-bg-dark) !important;
+    border-color: #3a3a36;
+    color: #adbac7 !important;
+  }
+
+  [data-theme='dark'] .doc-content pre.astro-code {
+    color: #adbac7 !important;
+  }
+
+  [data-theme='dark'] .doc-content pre code {
+    color: inherit !important;
+  }
+
+  /* Activate Shiki dark theme colors (syntax + plaintext fences) */
+  [data-theme='dark'] .doc-content pre span[style] {
+    color: var(--shiki-dark) !important;
+  }
+
+  [data-theme='dark'] .doc-content pre .line,
+  [data-theme='dark'] .doc-content pre .line > span:not([style]) {
+    color: #adbac7 !important;
+  }
+
+  .doc-content code {
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    background: var(--inline-code-bg);
+    color: var(--inline-code-color);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.8125em;
+  }
+
+  .doc-content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── Copy button ── */
+  .doc-copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .doc-content pre:hover .doc-copy-btn,
+  pre:hover > .doc-copy-btn {
+    opacity: 1;
+  }
+
+  .doc-copy-btn:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+  }
+
+  .doc-copy-btn.copied {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    opacity: 1;
+  }
+
+  .doc-content hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+
+  /* ── File block with title bar ── */
+  .doc-content .doc-file-block {
+    margin: 0 0 1.25rem;
+  }
+
+  .doc-content .doc-file-block pre {
+    margin: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: none;
+  }
+
+  .doc-content .doc-file-bar {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background: var(--color-surface-muted);
+    font-family: 'Geist Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+  }
+
+  [data-theme='dark'] .doc-content .doc-file-bar {
+    background: #2a2a28;
+    color: #d8d7d0;
+    border-color: #3a3a36;
+  }
+
+  [data-theme='dark'] .doc-content .doc-file-block pre {
+    border-color: #3a3a36;
+  }
+
+  .doc-content table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .doc-content th,
+  .doc-content td {
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .doc-content th {
+    font-weight: 400;
+  }
+
+  .doc-content tr:last-child td {
+    border-bottom: none;
+  }
+}

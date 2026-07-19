@@ -1,0 +1,223 @@
+/* ── Centered template ────────────────────────────────────────────────
+ * No sidebar. One narrow centered measure with a floating TOC pinned in the
+ * right margin. Serif display headings, teal accent, reading-first spacing.
+ */
+
+.tpl-centered {
+  --bg: #fcfbf8;
+  --surface: #ffffff;
+  --surface-2: #f2f1ec;
+  --border: #e7e5dd;
+  --text: #33322d;
+  --text-muted: #8f8d83;
+  --heading: #1f1e19;
+  --accent: #0d9488;
+  --accent-soft: rgba(13, 148, 136, 0.08);
+  --code-bg: #f7f6f1;
+  --code-bg-dark: #14171a;
+
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.tpl-centered[data-theme='dark'] {
+  --bg: #0d0f0e;
+  --surface: #151816;
+  --surface-2: #1c1f1d;
+  --border: #262a28;
+  --text: #d5d6d1;
+  --text-muted: #7d817a;
+  --heading: #f3f4ef;
+  --accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.12);
+  --code-bg: #151816;
+  --code-bg-dark: #101312;
+}
+
+/* ── Minimal top bar ── */
+.ctr-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.ctr-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.01em;
+}
+
+.ctr-brand-mark {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Noto Serif Display', serif;
+  font-size: 14px;
+}
+
+.ctr-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.ctr-header-nav a {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.ctr-header-nav a:hover { color: var(--heading); }
+
+.ctr-theme {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.ctr-theme:hover { color: var(--heading); border-color: var(--text-muted); }
+
+/* ── Article ── */
+.ctr-main {
+  padding: 40px 32px 120px;
+}
+
+.ctr-article {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.ctr-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
+.ctr-title {
+  font-family: 'Noto Serif Display', Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+  line-height: 1.08;
+  margin: 0 0 18px;
+}
+
+.ctr-lede {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+
+.ctr-rule {
+  height: 1px;
+  background: var(--border);
+  margin: 0 0 32px;
+}
+
+/* Roomier prose in the centered reading layout */
+.tpl-centered .tpl-prose {
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.tpl-centered .tpl-prose h2 {
+  font-family: 'Noto Serif Display', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin-top: 2.75rem;
+}
+
+.tpl-centered .tpl-prose h3 {
+  font-family: 'Noto Serif Display', Georgia, serif;
+  font-weight: 500;
+}
+
+.ctr-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.ctr-footer a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ── Floating TOC ── */
+.ctr-toc {
+  position: fixed;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+  width: 190px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 16px 16px 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.ctr-toc-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.ctr-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ctr-toc a {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: color 0.15s;
+}
+
+.ctr-toc a:hover { color: var(--accent); }
+.ctr-toc-sub { padding-left: 12px; }
+.ctr-toc-sub a { font-size: 12px; opacity: 0.85; }
+
+/* Hide the floating TOC when the margin gets too tight */
+@media (max-width: 1180px) {
+  .ctr-toc { display: none; }
+}

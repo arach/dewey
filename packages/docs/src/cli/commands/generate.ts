@@ -54,8 +54,29 @@ export async function loadDocs(
 ): Promise<DocSection[]> {
   void docsRelativePath // retained for source compatibility; root-relative paths are canonical
   const selected = new Set(sections)
-  return (await discoverDocuments({ rootDir: cwd, docsDir: docsPath, audience: 'human' }))
+  const [humanDocs, allDocs] = await Promise.all([
+    discoverDocuments({ rootDir: cwd, docsDir: docsPath, audience: 'human' }),
+    discoverDocuments({ rootDir: cwd, docsDir: docsPath, audience: 'all' }),
+  ])
+  const byRelativePath = new Map(allDocs.map(doc => [doc.relativeSourcePath, doc]))
+
+  return humanDocs
     .filter(doc => doc.extension === '.md' && selected.has(doc.id))
+    .map(doc => {
+      const agentDoc = doc.relativeAgentSourcePath
+        ? byRelativePath.get(doc.relativeAgentSourcePath)
+        : undefined
+      if (!agentDoc) return doc
+
+      return {
+        ...doc,
+        title: agentDoc.title,
+        description: agentDoc.description ?? doc.description,
+        content: agentDoc.content,
+        rawContent: agentDoc.rawContent,
+        frontmatter: agentDoc.frontmatter,
+      }
+    })
 }
 
 function generateAgentsMd(projectName: string, tagline: string | undefined, config: Awaited<ReturnType<typeof loadConfig>>, docs: DocSection[]): string {

@@ -13,7 +13,7 @@ export default {
       'Skills are LLM prompts, not deterministic code - they guide agents',
       'Each doc page should have TWO versions: .md for humans, .agent.md for AI agents',
       'Agent versions should be dense, structured, self-contained - prefer tables over prose',
-      'The www/ folder is a reference implementation only - do not invest in UI polish',
+      'The www/ folder is the canonical Next.js site; www-astro/ is archived Astro reference only',
     ],
 
     entryPoints: {

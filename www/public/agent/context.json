@@ -1,0 +1,1253 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "project": {
+    "name": "dewey",
+    "version": null,
+    "tagline": "Documentation toolkit for AI-agent-ready docs",
+    "repository": null
+  },
+  "ownership": {
+    "owner": "dewey",
+    "lifecycle": "regenerate",
+    "registry": "/.dewey-generated.json"
+  },
+  "artifacts": {
+    "manifest": "/agent/manifest.json",
+    "docs": "/agent/docs.json",
+    "prompts": "/agent/prompts.json",
+    "context": "/agent/context.md",
+    "contextJson": "/agent/context.json",
+    "allMarkdown": "/agent/bundles/all.md",
+    "promptBundle": "/agent/bundles/prompts.md",
+    "rawMarkdownBase": "/agent/raw/docs/",
+    "bundles": {
+      "core": "/agent/bundles/core.md",
+      "prompts": "/agent/bundles/prompts.md",
+      "all": "/agent/bundles/all.md"
+    }
+  },
+  "recommendedReadOrder": [
+    "overview",
+    "quickstart",
+    "api"
+  ],
+  "docs": [
+    {
+      "id": "AGENTS",
+      "slug": "AGENTS",
+      "kind": "doc",
+      "title": "dewey",
+      "description": "Documentation toolkit for AI-agent-ready docs and retrieval artifacts",
+      "sourcePath": "docs/AGENTS.md",
+      "url": "/docs/AGENTS",
+      "rawUrl": "/agent/raw/docs/AGENTS.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey",
+          "anchor": "dewey"
+        },
+        {
+          "depth": 2,
+          "text": "Critical Context",
+          "anchor": "critical-context"
+        },
+        {
+          "depth": 2,
+          "text": "Project Structure",
+          "anchor": "project-structure"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Navigation",
+          "anchor": "quick-navigation"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "Using Skills",
+          "anchor": "using-skills"
+        },
+        {
+          "depth": 2,
+          "text": "React Components (22 total)",
+          "anchor": "react-components-22-total"
+        },
+        {
+          "depth": 3,
+          "text": "Entry Points",
+          "anchor": "entry-points"
+        },
+        {
+          "depth": 3,
+          "text": "Layout",
+          "anchor": "layout"
+        },
+        {
+          "depth": 3,
+          "text": "Content",
+          "anchor": "content"
+        },
+        {
+          "depth": 3,
+          "text": "Agent-Friendly",
+          "anchor": "agent-friendly"
+        },
+        {
+          "depth": 3,
+          "text": "Provider",
+          "anchor": "provider"
+        },
+        {
+          "depth": 2,
+          "text": "Configuration (dewey.config.ts)",
+          "anchor": "configuration-dewey-config-ts"
+        },
+        {
+          "depth": 2,
+          "text": "Type Reference",
+          "anchor": "type-reference"
+        },
+        {
+          "depth": 3,
+          "text": "CalloutType",
+          "anchor": "callouttype"
+        },
+        {
+          "depth": 3,
+          "text": "BadgeVariant",
+          "anchor": "badgevariant"
+        },
+        {
+          "depth": 3,
+          "text": "ThemePreset",
+          "anchor": "themepreset"
+        },
+        {
+          "depth": 2,
+          "text": "File Generation",
+          "anchor": "file-generation"
+        },
+        {
+          "depth": 2,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        }
+      ],
+      "tokensEstimate": 1011,
+      "frontmatter": {}
+    },
+    {
+      "id": "api",
+      "slug": "api",
+      "kind": "doc",
+      "title": "API Reference",
+      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+      "sourcePath": "docs/api.md",
+      "url": "/docs/api",
+      "rawUrl": "/agent/raw/docs/api.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Choose the right surface",
+          "anchor": "choose-the-right-surface"
+        },
+        {
+          "depth": 2,
+          "text": "Package entry points",
+          "anchor": "package-entry-points"
+        },
+        {
+          "depth": 2,
+          "text": "Configuration API",
+          "anchor": "configuration-api"
+        },
+        {
+          "depth": 3,
+          "text": "DeweyConfig",
+          "anchor": "deweyconfig"
+        },
+        {
+          "depth": 2,
+          "text": "Programmatic agent artifacts",
+          "anchor": "programmatic-agent-artifacts"
+        },
+        {
+          "depth": 3,
+          "text": "Artifact functions",
+          "anchor": "artifact-functions"
+        },
+        {
+          "depth": 3,
+          "text": "Artifact types and classification",
+          "anchor": "artifact-types-and-classification"
+        },
+        {
+          "depth": 2,
+          "text": "React API",
+          "anchor": "react-api"
+        },
+        {
+          "depth": 3,
+          "text": "Provider and complete app",
+          "anchor": "provider-and-complete-app"
+        },
+        {
+          "depth": 3,
+          "text": "Layout and content components",
+          "anchor": "layout-and-content-components"
+        },
+        {
+          "depth": 3,
+          "text": "Content and agent-friendly components",
+          "anchor": "content-and-agent-friendly-components"
+        },
+        {
+          "depth": 3,
+          "text": "Navigation types",
+          "anchor": "navigation-types"
+        },
+        {
+          "depth": 2,
+          "text": "Themes",
+          "anchor": "themes"
+        },
+        {
+          "depth": 2,
+          "text": "Skills and structured agent content",
+          "anchor": "skills-and-structured-agent-content"
+        },
+        {
+          "depth": 2,
+          "text": "Complete main-module export inventory",
+          "anchor": "complete-main-module-export-inventory"
+        }
+      ],
+      "tokensEstimate": 2821,
+      "frontmatter": {
+        "title": "API Reference",
+        "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+        "order": 5,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
+      "id": "cli",
+      "slug": "cli",
+      "kind": "doc",
+      "title": "CLI Reference",
+      "description": "Dewey commands and their main options",
+      "sourcePath": "docs/cli.md",
+      "url": "/docs/cli",
+      "rawUrl": "/agent/raw/docs/cli.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Run Dewey",
+          "anchor": "run-dewey"
+        },
+        {
+          "depth": 2,
+          "text": "Commands",
+          "anchor": "commands"
+        },
+        {
+          "depth": 2,
+          "text": "Project-aware initialization",
+          "anchor": "project-aware-initialization"
+        },
+        {
+          "depth": 2,
+          "text": "Recommended order",
+          "anchor": "recommended-order"
+        },
+        {
+          "depth": 2,
+          "text": "Generate options",
+          "anchor": "generate-options"
+        },
+        {
+          "depth": 2,
+          "text": "Machine-readable checks",
+          "anchor": "machine-readable-checks"
+        },
+        {
+          "depth": 2,
+          "text": "Generated-site maintenance",
+          "anchor": "generated-site-maintenance"
+        },
+        {
+          "depth": 2,
+          "text": "Error handling in automation",
+          "anchor": "error-handling-in-automation"
+        }
+      ],
+      "tokensEstimate": 1184,
+      "frontmatter": {
+        "title": "CLI Reference",
+        "description": "Dewey commands and their main options",
+        "order": 3,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
+      "id": "integrate-existing-site",
+      "slug": "integrate-existing-site",
+      "kind": "doc",
+      "title": "Integrate into an existing site",
+      "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
+      "sourcePath": "docs/integrate-existing-site.md",
+      "url": "/docs/integrate-existing-site",
+      "rawUrl": "/agent/raw/docs/integrate-existing-site.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "When to embed vs scaffold",
+          "anchor": "when-to-embed-vs-scaffold"
+        },
+        {
+          "depth": 2,
+          "text": "Prerequisites",
+          "anchor": "prerequisites"
+        },
+        {
+          "depth": 2,
+          "text": "Package and CSS installation",
+          "anchor": "package-and-css-installation"
+        },
+        {
+          "depth": 3,
+          "text": "CSS entry points",
+          "anchor": "css-entry-points"
+        },
+        {
+          "depth": 3,
+          "text": "Import path note",
+          "anchor": "import-path-note"
+        },
+        {
+          "depth": 2,
+          "text": "Recommended architecture",
+          "anchor": "recommended-architecture"
+        },
+        {
+          "depth": 2,
+          "text": "Server-to-client wrapper",
+          "anchor": "server-to-client-wrapper"
+        },
+        {
+          "depth": 3,
+          "text": "1. Client provider",
+          "anchor": "1-client-provider"
+        },
+        {
+          "depth": 3,
+          "text": "2. Server page + client content",
+          "anchor": "2-server-page-client-content"
+        },
+        {
+          "depth": 2,
+          "text": "Static export configuration",
+          "anchor": "static-export-configuration"
+        },
+        {
+          "depth": 2,
+          "text": "Recursive content loading",
+          "anchor": "recursive-content-loading"
+        },
+        {
+          "depth": 3,
+          "text": "Optional navigation from docs.json",
+          "anchor": "optional-navigation-from-docs-json"
+        },
+        {
+          "depth": 2,
+          "text": "Themes at runtime",
+          "anchor": "themes-at-runtime"
+        },
+        {
+          "depth": 2,
+          "text": "Docs layout shell (Header + Sidebar)",
+          "anchor": "docs-layout-shell-header-sidebar"
+        },
+        {
+          "depth": 2,
+          "text": "Dewey generation alongside the site",
+          "anchor": "dewey-generation-alongside-the-site"
+        },
+        {
+          "depth": 3,
+          "text": "Onboarding sequence (shared with greenfield)",
+          "anchor": "onboarding-sequence-shared-with-greenfield"
+        },
+        {
+          "depth": 3,
+          "text": "Serve agent files from the static host",
+          "anchor": "serve-agent-files-from-the-static-host"
+        },
+        {
+          "depth": 2,
+          "text": "CI",
+          "anchor": "ci"
+        },
+        {
+          "depth": 1,
+          "text": ".github/workflows/docs.yml (illustrative)",
+          "anchor": "github-workflows-docs-yml-illustrative"
+        },
+        {
+          "depth": 2,
+          "text": "Monorepo notes",
+          "anchor": "monorepo-notes"
+        },
+        {
+          "depth": 2,
+          "text": "Checklist",
+          "anchor": "checklist"
+        },
+        {
+          "depth": 2,
+          "text": "Related",
+          "anchor": "related"
+        }
+      ],
+      "tokensEstimate": 3226,
+      "frontmatter": {
+        "title": "Integrate into an existing site",
+        "description": "Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract",
+        "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "maintenance",
+      "slug": "maintenance",
+      "kind": "doc",
+      "title": "Maintaining generated sites",
+      "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+      "sourcePath": "docs/maintenance.md",
+      "url": "/docs/maintenance",
+      "rawUrl": "/agent/raw/docs/maintenance.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Safe update workflow",
+          "anchor": "safe-update-workflow"
+        },
+        {
+          "depth": 2,
+          "text": "Recover or adopt a missing manifest",
+          "anchor": "recover-or-adopt-a-missing-manifest"
+        },
+        {
+          "depth": 2,
+          "text": "Eject a Next.js component",
+          "anchor": "eject-a-next-js-component"
+        },
+        {
+          "depth": 1,
+          "text": "Compose the packaged default (recommended starting point)",
+          "anchor": "compose-the-packaged-default-recommended-starting-point"
+        },
+        {
+          "depth": 1,
+          "text": "Replace it completely",
+          "anchor": "replace-it-completely"
+        },
+        {
+          "depth": 2,
+          "text": "Recovery checklist",
+          "anchor": "recovery-checklist"
+        },
+        {
+          "depth": 2,
+          "text": "Release workflow",
+          "anchor": "release-workflow"
+        },
+        {
+          "depth": 2,
+          "text": "Related",
+          "anchor": "related"
+        }
+      ],
+      "tokensEstimate": 884,
+      "frontmatter": {
+        "title": "Maintaining generated sites",
+        "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+        "order": 7,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "overview",
+      "slug": "overview",
+      "kind": "doc",
+      "title": "Overview",
+      "description": "Documentation toolkit for AI-agent-ready docs",
+      "sourcePath": "docs/overview.md",
+      "url": "/docs/overview",
+      "rawUrl": "/agent/raw/docs/overview.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "What Dewey Does",
+          "anchor": "what-dewey-does"
+        },
+        {
+          "depth": 2,
+          "text": "Key Concepts",
+          "anchor": "key-concepts"
+        },
+        {
+          "depth": 3,
+          "text": "Agent Content Pattern",
+          "anchor": "agent-content-pattern"
+        },
+        {
+          "depth": 3,
+          "text": "Skills System",
+          "anchor": "skills-system"
+        },
+        {
+          "depth": 3,
+          "text": "install.md Standard",
+          "anchor": "install-md-standard"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Onboarding path",
+          "anchor": "onboarding-path"
+        },
+        {
+          "depth": 2,
+          "text": "Quick Links",
+          "anchor": "quick-links"
+        }
+      ],
+      "tokensEstimate": 654,
+      "frontmatter": {
+        "title": "Overview",
+        "description": "Documentation toolkit for AI-agent-ready docs",
+        "order": 1
+      }
+    },
+    {
+      "id": "quickstart",
+      "slug": "quickstart",
+      "kind": "doc",
+      "title": "Quickstart",
+      "description": "Get your documentation agent-ready in under 5 minutes",
+      "sourcePath": "docs/quickstart.md",
+      "url": "/docs/quickstart",
+      "rawUrl": "/agent/raw/docs/quickstart.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Onboarding sequence",
+          "anchor": "onboarding-sequence"
+        },
+        {
+          "depth": 3,
+          "text": "1. Install",
+          "anchor": "1-install"
+        },
+        {
+          "depth": 3,
+          "text": "2. Initialize",
+          "anchor": "2-initialize"
+        },
+        {
+          "depth": 1,
+          "text": "generic | npm-package | cli-tool | react-library | macos-app | monorepo",
+          "anchor": "generic-npm-package-cli-tool-react-library-macos-app-monorepo"
+        },
+        {
+          "depth": 3,
+          "text": "3. Configure",
+          "anchor": "3-configure"
+        },
+        {
+          "depth": 3,
+          "text": "4. Write docs",
+          "anchor": "4-write-docs"
+        },
+        {
+          "depth": 3,
+          "text": "5. Generate agent files",
+          "anchor": "5-generate-agent-files"
+        },
+        {
+          "depth": 3,
+          "text": "6. Audit",
+          "anchor": "6-audit"
+        },
+        {
+          "depth": 1,
+          "text": "CI-friendly:",
+          "anchor": "ci-friendly"
+        },
+        {
+          "depth": 3,
+          "text": "7. Check your score",
+          "anchor": "7-check-your-score"
+        },
+        {
+          "depth": 3,
+          "text": "8. Optional: human-facing docs UI",
+          "anchor": "8-optional-human-facing-docs-ui"
+        },
+        {
+          "depth": 2,
+          "text": "Next steps",
+          "anchor": "next-steps"
+        }
+      ],
+      "tokensEstimate": 993,
+      "frontmatter": {
+        "title": "Quickstart",
+        "description": "Get your documentation agent-ready in under 5 minutes",
+        "order": 2
+      }
+    },
+    {
+      "id": "skills",
+      "slug": "skills",
+      "kind": "doc",
+      "title": "Skills",
+      "description": "Expert instructions that guide AI agents through specific documentation tasks",
+      "sourcePath": "docs/skills.md",
+      "url": "/docs/skills",
+      "rawUrl": "/agent/raw/docs/skills.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Built-in Skills",
+          "anchor": "built-in-skills"
+        },
+        {
+          "depth": 2,
+          "text": "Creating Custom Skills",
+          "anchor": "creating-custom-skills"
+        },
+        {
+          "depth": 1,
+          "text": "Skill Name",
+          "anchor": "skill-name"
+        },
+        {
+          "depth": 2,
+          "text": "When to Use",
+          "anchor": "when-to-use"
+        },
+        {
+          "depth": 2,
+          "text": "Instructions",
+          "anchor": "instructions"
+        },
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "Best Practices",
+          "anchor": "best-practices"
+        }
+      ],
+      "tokensEstimate": 469,
+      "frontmatter": {
+        "title": "Skills",
+        "description": "Expert instructions that guide AI agents through specific documentation tasks",
+        "order": 4
+      }
+    },
+    {
+      "id": "agent/api.agent",
+      "slug": "agent/api.agent",
+      "kind": "agent",
+      "title": "API Reference",
+      "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
+      "sourcePath": "docs/agent/api.agent.md",
+      "url": "/agent/raw/docs/agent/api.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/api.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey API - Agent Context",
+          "anchor": "dewey-api-agent-context"
+        },
+        {
+          "depth": 2,
+          "text": "Purpose",
+          "anchor": "purpose"
+        },
+        {
+          "depth": 2,
+          "text": "Source of truth",
+          "anchor": "source-of-truth"
+        },
+        {
+          "depth": 2,
+          "text": "Surface selection",
+          "anchor": "surface-selection"
+        },
+        {
+          "depth": 2,
+          "text": "Package subpaths",
+          "anchor": "package-subpaths"
+        },
+        {
+          "depth": 2,
+          "text": "Config",
+          "anchor": "config"
+        },
+        {
+          "depth": 2,
+          "text": "Artifact API",
+          "anchor": "artifact-api"
+        },
+        {
+          "depth": 2,
+          "text": "Themes",
+          "anchor": "themes"
+        },
+        {
+          "depth": 2,
+          "text": "React minimal example",
+          "anchor": "react-minimal-example"
+        },
+        {
+          "depth": 2,
+          "text": "Component contracts",
+          "anchor": "component-contracts"
+        },
+        {
+          "depth": 2,
+          "text": "Component/navigation unions",
+          "anchor": "component-navigation-unions"
+        },
+        {
+          "depth": 2,
+          "text": "Main module runtime exports",
+          "anchor": "main-module-runtime-exports"
+        },
+        {
+          "depth": 2,
+          "text": "Main module type exports",
+          "anchor": "main-module-type-exports"
+        },
+        {
+          "depth": 2,
+          "text": "Skills are prompts",
+          "anchor": "skills-are-prompts"
+        },
+        {
+          "depth": 2,
+          "text": "Router and theme contract",
+          "anchor": "router-and-theme-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Structured agent content",
+          "anchor": "structured-agent-content"
+        }
+      ],
+      "tokensEstimate": 2284,
+      "frontmatter": {
+        "title": "API Reference",
+        "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
+        "order": 5,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
+      "id": "agent/cli.agent",
+      "slug": "agent/cli.agent",
+      "kind": "agent",
+      "title": "CLI Reference",
+      "description": "Dense Dewey CLI contract for agents",
+      "sourcePath": "docs/agent/cli.agent.md",
+      "url": "/agent/raw/docs/agent/cli.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/cli.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey CLI",
+          "anchor": "dewey-cli"
+        },
+        {
+          "depth": 2,
+          "text": "Direct execution",
+          "anchor": "direct-execution"
+        },
+        {
+          "depth": 2,
+          "text": "Recommended order",
+          "anchor": "recommended-order"
+        },
+        {
+          "depth": 2,
+          "text": "Generation selection",
+          "anchor": "generation-selection"
+        },
+        {
+          "depth": 2,
+          "text": "Audit versus agent",
+          "anchor": "audit-versus-agent"
+        },
+        {
+          "depth": 2,
+          "text": "Project type contract",
+          "anchor": "project-type-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Canonical generation contract",
+          "anchor": "canonical-generation-contract"
+        },
+        {
+          "depth": 2,
+          "text": "JSON evidence and drift",
+          "anchor": "json-evidence-and-drift"
+        },
+        {
+          "depth": 2,
+          "text": "Maintenance contract",
+          "anchor": "maintenance-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Automation error contract",
+          "anchor": "automation-error-contract"
+        }
+      ],
+      "tokensEstimate": 939,
+      "frontmatter": {
+        "title": "CLI Reference",
+        "description": "Dense Dewey CLI contract for agents",
+        "order": 3,
+        "group": "Reference",
+        "groupId": "reference"
+      }
+    },
+    {
+      "id": "agent/integrate-existing-site.agent",
+      "slug": "agent/integrate-existing-site.agent",
+      "kind": "agent",
+      "title": "Integrate existing site (agent)",
+      "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",
+      "sourcePath": "docs/agent/integrate-existing-site.agent.md",
+      "url": "/agent/raw/docs/agent/integrate-existing-site.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/integrate-existing-site.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey embed contract (existing React / Next.js)",
+          "anchor": "dewey-embed-contract-existing-react-next-js"
+        },
+        {
+          "depth": 2,
+          "text": "Positioning",
+          "anchor": "positioning"
+        },
+        {
+          "depth": 2,
+          "text": "Decision table",
+          "anchor": "decision-table"
+        },
+        {
+          "depth": 2,
+          "text": "Install",
+          "anchor": "install"
+        },
+        {
+          "depth": 2,
+          "text": "Onboarding sequence (shared)",
+          "anchor": "onboarding-sequence-shared"
+        },
+        {
+          "depth": 2,
+          "text": "Architecture (Next App Router)",
+          "anchor": "architecture-next-app-router"
+        },
+        {
+          "depth": 3,
+          "text": "Boundary rule",
+          "anchor": "boundary-rule"
+        },
+        {
+          "depth": 3,
+          "text": "Prefer composed shell",
+          "anchor": "prefer-composed-shell"
+        },
+        {
+          "depth": 2,
+          "text": "Theme proof contract",
+          "anchor": "theme-proof-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Static export",
+          "anchor": "static-export"
+        },
+        {
+          "depth": 2,
+          "text": "Content discovery rules",
+          "anchor": "content-discovery-rules"
+        },
+        {
+          "depth": 2,
+          "text": "Provider snippet contract",
+          "anchor": "provider-snippet-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Scripts (host package.json)",
+          "anchor": "scripts-host-package-json"
+        },
+        {
+          "depth": 2,
+          "text": "CI (minimum)",
+          "anchor": "ci-minimum"
+        },
+        {
+          "depth": 2,
+          "text": "Public agent URLs (optional)",
+          "anchor": "public-agent-urls-optional"
+        },
+        {
+          "depth": 2,
+          "text": "Monorepo",
+          "anchor": "monorepo"
+        },
+        {
+          "depth": 2,
+          "text": "Anti-patterns",
+          "anchor": "anti-patterns"
+        },
+        {
+          "depth": 2,
+          "text": "Related paths",
+          "anchor": "related-paths"
+        }
+      ],
+      "tokensEstimate": 1328,
+      "frontmatter": {
+        "title": "Integrate existing site (agent)",
+        "description": "Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path",
+        "order": 6,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "agent/maintenance.agent",
+      "slug": "agent/maintenance.agent",
+      "kind": "agent",
+      "title": "Maintaining generated sites",
+      "description": "Dense ownership, update, ejection, recovery, backup, and release contract",
+      "sourcePath": "docs/agent/maintenance.agent.md",
+      "url": "/agent/raw/docs/agent/maintenance.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/maintenance.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey generated-site maintenance contract",
+          "anchor": "dewey-generated-site-maintenance-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Ownership manifests",
+          "anchor": "ownership-manifests"
+        },
+        {
+          "depth": 2,
+          "text": "Update",
+          "anchor": "update"
+        },
+        {
+          "depth": 2,
+          "text": "Manifest adoption",
+          "anchor": "manifest-adoption"
+        },
+        {
+          "depth": 2,
+          "text": "Ejection",
+          "anchor": "ejection"
+        },
+        {
+          "depth": 2,
+          "text": "Recovery",
+          "anchor": "recovery"
+        },
+        {
+          "depth": 2,
+          "text": "Release gate",
+          "anchor": "release-gate"
+        }
+      ],
+      "tokensEstimate": 596,
+      "frontmatter": {
+        "title": "Maintaining generated sites",
+        "description": "Dense ownership, update, ejection, recovery, backup, and release contract",
+        "order": 7,
+        "group": "Guides",
+        "groupId": "guides"
+      }
+    },
+    {
+      "id": "agent/overview.agent",
+      "slug": "agent/overview.agent",
+      "kind": "agent",
+      "title": "dewey - Agent Context",
+      "description": "init → author → generate → audit → agent → optional UI",
+      "sourcePath": "docs/agent/overview.agent.md",
+      "url": "/agent/raw/docs/agent/overview.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/overview.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "dewey - Agent Context",
+          "anchor": "dewey-agent-context"
+        },
+        {
+          "depth": 2,
+          "text": "Package",
+          "anchor": "package"
+        },
+        {
+          "depth": 2,
+          "text": "Purpose",
+          "anchor": "purpose"
+        },
+        {
+          "depth": 2,
+          "text": "CLI Commands",
+          "anchor": "cli-commands"
+        },
+        {
+          "depth": 2,
+          "text": "Onboarding path",
+          "anchor": "onboarding-path"
+        },
+        {
+          "depth": 2,
+          "text": "Generated Files",
+          "anchor": "generated-files"
+        },
+        {
+          "depth": 2,
+          "text": "Retrieval Artifacts",
+          "anchor": "retrieval-artifacts"
+        },
+        {
+          "depth": 2,
+          "text": "Skills (LLM Prompts)",
+          "anchor": "skills-llm-prompts"
+        },
+        {
+          "depth": 2,
+          "text": "Components (22)",
+          "anchor": "components-22"
+        },
+        {
+          "depth": 2,
+          "text": "Config Schema",
+          "anchor": "config-schema"
+        },
+        {
+          "depth": 2,
+          "text": "Valid Values",
+          "anchor": "valid-values"
+        },
+        {
+          "depth": 2,
+          "text": "Judgment and generation model",
+          "anchor": "judgment-and-generation-model"
+        },
+        {
+          "depth": 2,
+          "text": "Key Files",
+          "anchor": "key-files"
+        }
+      ],
+      "tokensEstimate": 676,
+      "frontmatter": {}
+    },
+    {
+      "id": "agent/quickstart.agent",
+      "slug": "agent/quickstart.agent",
+      "kind": "agent",
+      "title": "Quickstart for agents",
+      "description": "Deterministic setup sequence and expected Dewey outputs",
+      "sourcePath": "docs/agent/quickstart.agent.md",
+      "url": "/agent/raw/docs/agent/quickstart.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/quickstart.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey quickstart contract",
+          "anchor": "dewey-quickstart-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Preconditions",
+          "anchor": "preconditions"
+        },
+        {
+          "depth": 2,
+          "text": "Execution sequence",
+          "anchor": "execution-sequence"
+        },
+        {
+          "depth": 2,
+          "text": "Generated outputs",
+          "anchor": "generated-outputs"
+        },
+        {
+          "depth": 2,
+          "text": "Selection rules",
+          "anchor": "selection-rules"
+        },
+        {
+          "depth": 2,
+          "text": "Project type initialization",
+          "anchor": "project-type-initialization"
+        },
+        {
+          "depth": 2,
+          "text": "Check report contract",
+          "anchor": "check-report-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Canonical generation",
+          "anchor": "canonical-generation"
+        },
+        {
+          "depth": 2,
+          "text": "Optional publishing",
+          "anchor": "optional-publishing"
+        }
+      ],
+      "tokensEstimate": 716,
+      "frontmatter": {
+        "title": "Quickstart for agents",
+        "description": "Deterministic setup sequence and expected Dewey outputs",
+        "order": 2
+      }
+    },
+    {
+      "id": "agent/skills.agent",
+      "slug": "agent/skills.agent",
+      "kind": "agent",
+      "title": "Skills for agents",
+      "description": "Dewey skill inventory and authoring contract",
+      "sourcePath": "docs/agent/skills.agent.md",
+      "url": "/agent/raw/docs/agent/skills.agent.md",
+      "rawUrl": "/agent/raw/docs/agent/skills.agent.md",
+      "headings": [
+        {
+          "depth": 1,
+          "text": "Dewey skills contract",
+          "anchor": "dewey-skills-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Built-in inventory",
+          "anchor": "built-in-inventory"
+        },
+        {
+          "depth": 2,
+          "text": "Public prompt-improvement contract",
+          "anchor": "public-prompt-improvement-contract"
+        },
+        {
+          "depth": 2,
+          "text": "Custom skill location",
+          "anchor": "custom-skill-location"
+        },
+        {
+          "depth": 2,
+          "text": "Required skill sections",
+          "anchor": "required-skill-sections"
+        },
+        {
+          "depth": 2,
+          "text": "Authoring rules",
+          "anchor": "authoring-rules"
+        }
+      ],
+      "tokensEstimate": 389,
+      "frontmatter": {
+        "title": "Skills for agents",
+        "description": "Dewey skill inventory and authoring contract",
+        "order": 4
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "id": "audit-docs",
+      "slug": "prompts/audit-docs",
+      "title": "Prompts Audit Docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "sourcePath": "docs/prompts/audit-docs.md",
+      "promptUrl": "/agent/prompts/audit-docs.md",
+      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Expected Output",
+          "anchor": "expected-output"
+        }
+      ],
+      "tokensEstimate": 192,
+      "frontmatter": {}
+    },
+    {
+      "id": "create-agent-md",
+      "slug": "prompts/create-agent-md",
+      "title": "Prompts Create Agent Md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "sourcePath": "docs/prompts/create-agent-md.md",
+      "promptUrl": "/agent/prompts/create-agent-md.md",
+      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
+      "headings": [
+        {
+          "depth": 2,
+          "text": "Example",
+          "anchor": "example"
+        },
+        {
+          "depth": 2,
+          "text": "init",
+          "anchor": "init"
+        }
+      ],
+      "tokensEstimate": 227,
+      "frontmatter": {}
+    }
+  ]
+}

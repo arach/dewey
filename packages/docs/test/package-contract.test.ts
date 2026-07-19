@@ -16,9 +16,9 @@ describe('published dependency contract', () => {
     }
   })
 
-  test('keeps build-only TypeScript and Playwright out of runtime dependencies', () => {
-    expect(manifest.dependencies).not.toHaveProperty('typescript')
-    expect(manifest.devDependencies).toHaveProperty('typescript')
+  test('ships config-loading TypeScript support but keeps Playwright development-only', () => {
+    expect(manifest.dependencies).toHaveProperty('typescript')
+    expect(manifest.devDependencies).not.toHaveProperty('typescript')
     expect(manifest.dependencies).not.toHaveProperty('@playwright/test')
     expect(manifest.devDependencies).toHaveProperty('@playwright/test')
   })

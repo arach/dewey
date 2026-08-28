@@ -3,7 +3,7 @@
   "generator": "dewey",
   "files": {
     "agent/bundles/all.md": {
-      "hash": "75138af0e5f8ec1b15fb5d31b04a0f216fe2c56c203b0356fd383d298386f344",
+      "hash": "ef75b45486bdafdf5f8fe5f809e3339dd0d7f47f5fc2cb11559861ba6969b507",
       "scope": "agentArtifacts"
     },
     "agent/bundles/core.md": {
@@ -15,19 +15,19 @@
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "89d729c253f443e1cfc79ab8b765cabbd92ab9078e3d853203343e333bdef14d",
+      "hash": "6415ec5eea503a61be63d1ad6990d402c199e2d8036018afa6551f3c0755acd4",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
-      "hash": "964966e83fdc5adde9c96a4e5f9a549942e78db66a55676fe8d788a6e8adec00",
+      "hash": "166971cbcb3faa78507bf9c7bf0bb9a03cb4f40111b450fb1870897a68985566",
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "81962270b0b981cf0bbe4974f35137486b6b76a9eec4e51e08ea0f515dc8967f",
+      "hash": "c0c6756a542090a6b40646ebce22bfb8364b96fd705398bfadcebd4f35783e5a",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "89d729c253f443e1cfc79ab8b765cabbd92ab9078e3d853203343e333bdef14d",
+      "hash": "6415ec5eea503a61be63d1ad6990d402c199e2d8036018afa6551f3c0755acd4",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {
@@ -71,7 +71,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/AGENTS.md": {
-      "hash": "ddba590bf78a9b98657189587e982c43e3e3a20e4897c4599464a45fca1060c9",
+      "hash": "b3bc347ec4427db071f63460e8b42bf9d6d31eb52c5660f25e2358020e696c07",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/api.md": {
@@ -111,7 +111,7 @@
       "scope": "agentArtifacts"
     },
     "AGENTS.md": {
-      "hash": "54bb2e4ec1cefadf73268622e7bbcfd1434559e49063fbe2f16833ec66192b8c",
+      "hash": "2fcbdd0c7f045abea34d6bae9732e81a53a116585201fc81fbf59803783cbb68",
       "scope": "agentsMd"
     },
     "docs.json": {

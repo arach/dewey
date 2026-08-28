@@ -39,7 +39,5 @@ Documentation toolkit for AI-agent-ready docs
 | agent | dewey - Agent Context | `docs/agent/overview.agent.md` | /agent/raw/docs/agent/overview.agent.md |
 | agent | Quickstart for agents | `docs/agent/quickstart.agent.md` | /agent/raw/docs/agent/quickstart.agent.md |
 | agent | Skills for agents | `docs/agent/skills.agent.md` | /agent/raw/docs/agent/skills.agent.md |
-| prompt | Prompts Audit Docs | `docs/prompts/audit-docs.md` | /agent/raw/docs/prompts/audit-docs.md |
-| prompt | Prompts Create Agent Md | `docs/prompts/create-agent-md.md` | /agent/raw/docs/prompts/create-agent-md.md |
 
 <!-- dewey:generated owner=dewey -->

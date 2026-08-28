@@ -1205,53 +1205,6 @@
         "description": "Dewey skill inventory and authoring contract",
         "order": 4
       }
-    },
-    {
-      "id": "prompts/audit-docs",
-      "slug": "prompts/audit-docs",
-      "kind": "prompt",
-      "title": "Prompts Audit Docs",
-      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
-      "sourcePath": "docs/prompts/audit-docs.md",
-      "url": "/agent/raw/docs/prompts/audit-docs.md",
-      "rawUrl": "/agent/raw/docs/prompts/audit-docs.md",
-      "promptId": "audit-docs",
-      "promptUrl": "/agent/prompts/audit-docs.md",
-      "headings": [
-        {
-          "depth": 2,
-          "text": "Expected Output",
-          "anchor": "expected-output"
-        }
-      ],
-      "tokensEstimate": 192,
-      "frontmatter": {}
-    },
-    {
-      "id": "prompts/create-agent-md",
-      "slug": "prompts/create-agent-md",
-      "kind": "prompt",
-      "title": "Prompts Create Agent Md",
-      "description": "Use this prompt to convert human documentation to agent-optimized format.",
-      "sourcePath": "docs/prompts/create-agent-md.md",
-      "url": "/agent/raw/docs/prompts/create-agent-md.md",
-      "rawUrl": "/agent/raw/docs/prompts/create-agent-md.md",
-      "promptId": "create-agent-md",
-      "promptUrl": "/agent/prompts/create-agent-md.md",
-      "headings": [
-        {
-          "depth": 2,
-          "text": "Example",
-          "anchor": "example"
-        },
-        {
-          "depth": 2,
-          "text": "init",
-          "anchor": "init"
-        }
-      ],
-      "tokensEstimate": 227,
-      "frontmatter": {}
     }
   ],
   "prompts": [

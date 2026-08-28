@@ -19,7 +19,7 @@
 | React Components | `packages/docs/src/components/` | Optional docs UI components |
 | CLI Commands | `packages/docs/src/cli/commands/` | init, audit, generate, agent |
 | Skills | `packages/docs/src/skills/` | LLM prompt templates |
-| Documentation Site | `www/src/pages/` | Live docs at dewey site |
+| Documentation Site | `www/src/app/` | Live docs at dewey site |
 
 ## Quick Navigation
 

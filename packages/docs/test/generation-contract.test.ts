@@ -13,6 +13,7 @@ import { createCommand, loadMarkdownDocs } from '../src/cli/commands/create'
 import { extractLlmsSummary, generateCommand, loadDocs } from '../src/cli/commands/generate'
 import { ASTRO_TEMPLATES } from '../src/cli/templates/astro'
 import { generateDeweyTsx, NEXTJS_TEMPLATES } from '../src/cli/templates/nextjs'
+import { DEWEY_VERSION } from '../src/cli/version'
 
 const temporaryDirectories: string[] = []
 
@@ -275,7 +276,7 @@ describe('create composition and dependency compatibility', () => {
       scripts: Record<string, string>
     }
     expect(packageJson.dependencies).toMatchObject({
-      '@arach/dewey': '0.3.7',
+      '@arach/dewey': DEWEY_VERSION,
       'next': '14.2.35',
       'react': '18.3.1',
     })

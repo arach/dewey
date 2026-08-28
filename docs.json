@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "project": "dewey",
   "name": "dewey",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "tagline": "Documentation toolkit for AI-agent-ready docs",
-  "generatedBy": "Dewey 0.3.7",
+  "generatedBy": "Dewey 0.4.0",
   "defaultPage": "overview",
   "generators": {
     "dewey": {

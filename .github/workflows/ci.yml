@@ -40,6 +40,7 @@ jobs:
           bun-version: 1.3.11
       - run: bun install --frozen-lockfile
       - name: Install pinned Chromium
-        run: bunx playwright install chromium
+        working-directory: packages/docs
+        run: bunx playwright install chromium chromium-headless-shell
       - name: Verify all themes in light and dark
         run: bun run --cwd packages/docs test:visual

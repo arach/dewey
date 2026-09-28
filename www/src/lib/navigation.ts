@@ -12,6 +12,13 @@ interface DocsJson {
   groups: DocsGroup[]
 }
 
+export function getPageSequence(): { id: string; title: string }[] {
+  const data = docsJson as DocsJson
+  return data.groups.flatMap((group) =>
+    group.items.map((item) => ({ id: item.id, title: item.title })),
+  )
+}
+
 export function getNavTree(): PageNode[] {
   const data = docsJson as DocsJson
   return data.groups.map((group) => ({

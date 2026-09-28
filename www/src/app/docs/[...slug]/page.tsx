@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getDocBySlug, getAllDocSlugs } from '@/lib/docs'
+import { getPageSequence } from '@/lib/navigation'
 import { extractHeadings, stripLeadHeading } from '@/lib/headings'
 import { ProdMarkdownContent } from '@/components/ProdMarkdownContent'
 import { CodeCopyInit } from '@/components/CodeCopyInit'
@@ -27,6 +28,11 @@ export default async function DocPage({ params }: PageProps) {
   const renderedContent = stripLeadHeading(doc.content)
   const headings = extractHeadings(renderedContent)
 
+  const sequence = getPageSequence()
+  const index = sequence.findIndex((item) => item.id === slugStr)
+  const prev = index > 0 ? sequence[index - 1] : undefined
+  const next = index >= 0 && index < sequence.length - 1 ? sequence[index + 1] : undefined
+
   return (
     <div className="dl-content-wrap">
       <div className="dl-page-header">
@@ -37,6 +43,7 @@ export default async function DocPage({ params }: PageProps) {
         </div>
         <DocPageActions
           title={doc.title}
+          slug={slugStr}
           rawMarkdown={doc.rawMarkdown}
           agentContent={doc.agentContent}
           isPrompt={doc.isPrompt}
@@ -49,6 +56,20 @@ export default async function DocPage({ params }: PageProps) {
           <CodeCopyInit />
         </div>
         <footer className="dl-footer">
+          <nav className="dl-pagenav" aria-label="Pagination">
+            {prev ? (
+              <Link className="dl-pagenav-link" href={`/docs/${prev.id}`}>
+                <span className="dl-pagenav-dir">&larr; Previous</span>
+                <span className="dl-pagenav-title">{prev.title}</span>
+              </Link>
+            ) : <span />}
+            {next ? (
+              <Link className="dl-pagenav-link dl-pagenav-next" href={`/docs/${next.id}`}>
+                <span className="dl-pagenav-dir">Next &rarr;</span>
+                <span className="dl-pagenav-title">{next.title}</span>
+              </Link>
+            ) : <span />}
+          </nav>
           <span className="dl-footer-text">
             <Link href="/">dewey</Link> &mdash; agent-ready documentation
           </span>

@@ -1,0 +1,125 @@
+.contact-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.contact-main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 80px 24px 96px;
+}
+
+.contact-header {
+  margin-bottom: 48px;
+}
+
+.contact-eyebrow {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin: 0 0 16px;
+}
+
+.contact-header h1 {
+  font-family: var(--heading-font);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.05;
+  letter-spacing: var(--heading-letter-spacing);
+  color: var(--heading-color);
+  margin: 0 0 18px;
+}
+
+.contact-header > p {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 46ch;
+}
+
+.contact-header strong {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.contact-list li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.contact-list a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.contact-list a:hover {
+  background: var(--color-surface-muted);
+}
+
+.contact-list-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.contact-list a:hover .contact-list-label {
+  color: var(--color-accent);
+}
+
+.contact-list-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.contact-note {
+  margin: 28px 0 0;
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.contact-note a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .contact-main {
+    padding: 48px 20px 72px;
+  }
+
+  .contact-header h1 {
+    font-size: 38px;
+  }
+
+  .contact-list a {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .contact-list-desc {
+    text-align: left;
+  }
+}

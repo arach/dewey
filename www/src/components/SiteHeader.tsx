@@ -49,6 +49,9 @@ export function SiteHeader({ showSearch = false }: { showSearch?: boolean }) {
             <Link href="/templates" className="site-header-link">
               Templates
             </Link>
+            <Link href="/contact" className="site-header-link">
+              Contact
+            </Link>
             <a href="https://github.com/arach/dewey" className="site-header-link" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>

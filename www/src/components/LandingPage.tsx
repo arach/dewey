@@ -311,6 +311,7 @@ export function LandingPage() {
           </span>
           <div className="v3-footer-links">
             <Link href="/docs">Docs</Link>
+            <Link href="/contact">Contact</Link>
             <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">
               npm
             </a>

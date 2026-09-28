@@ -1,5 +1,6 @@
 import { DocsSidebar } from '@/components/DocsSidebar'
 import { DocsNavToggle } from '@/components/DocsNavToggle'
+import { DocsTopbar } from '@/components/DocsTopbar'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import Link from 'next/link'
 
@@ -12,6 +13,7 @@ export default function DocsLayout({
     <div className="dl">
       <DocsSidebar />
       <div className="dl-main">
+        <DocsTopbar />
         <div className="dl-mobile-header">
           <div className="dl-mobile-header-left">
             <DocsNavToggle />

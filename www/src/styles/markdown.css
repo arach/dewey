@@ -1,8 +1,8 @@
 .doc-content {
-  font-family: 'Geist Mono', ui-monospace, monospace;
-  font-size: var(--prose-font-size, 13px);
-  font-weight: 300;
-  line-height: 1.75;
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-size: var(--prose-font-size, 15px);
+  font-weight: 400;
+  line-height: 1.7;
   color: var(--color-text);
   overflow-wrap: break-word;
   min-width: 0;
@@ -22,35 +22,38 @@
 }
 
 .doc-content h2 {
-  font-family: var(--heading-font);
-  font-size: 1.25rem;
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--heading-color, var(--color-text));
-  letter-spacing: var(--heading-letter-spacing);
+  letter-spacing: -0.015em;
   font-synthesis: none;
-  margin: 2.5rem 0 1rem;
-  padding-top: var(--h2-padding-top);
-  padding-bottom: var(--h2-padding-bottom);
-  border-top: var(--h2-border-top);
-  border-bottom: var(--h2-border-bottom);
+  margin: 2.75rem 0 1rem;
   scroll-margin-top: 100px;
 }
 
 .doc-content h2:first-child {
   margin-top: 0;
-  padding-top: 0;
-  border-top: none;
 }
 
 .doc-content h3 {
-  font-family: var(--heading-font);
-  font-size: 1.05rem;
-  font-weight: 500;
-  letter-spacing: var(--heading-letter-spacing);
-  margin: 1.75rem 0 0.75rem;
-  color: var(--h3-color);
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 2rem 0 0.75rem;
+  color: var(--heading-color, var(--color-text));
   font-synthesis: none;
   scroll-margin-top: 100px;
+}
+
+.doc-content h4 {
+  font-family: 'Geist', -apple-system, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--heading-color, var(--color-text));
 }
 
 .doc-content p,
@@ -76,24 +79,37 @@
 .doc-content a {
   color: var(--color-accent);
   text-decoration: none;
-  font-weight: 300;
+  font-weight: 500;
 }
 
 .doc-content a:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .doc-content strong {
-  font-weight: 450;
+  font-weight: 600;
   color: var(--color-text);
+}
+
+.doc-content blockquote {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: rgba(196, 101, 58, 0.06);
+  color: var(--color-text-muted);
+}
+
+.doc-content blockquote p:last-child {
+  margin-bottom: 0;
 }
 
 .doc-content pre {
   position: relative;
   display: block;
-  background: var(--code-block-bg) !important;
-  border: 1px solid var(--color-border);
-  border-bottom: none;
+  background: #232321 !important;
+  border: 1px solid #3a3a36;
   border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   margin: 0 0 1.25rem;
@@ -101,7 +117,7 @@
   font-family: 'Geist Mono', ui-monospace, monospace;
   font-size: var(--prose-code-font-size, 13px);
   line-height: 1.7;
-  color: var(--code-block-text, var(--color-text));
+  color: #adbac7 !important;
   tab-size: 2;
 }
 
@@ -136,28 +152,21 @@
   overflow: hidden;
 }
 
-[data-theme='dark'] .doc-content pre {
-  background: var(--code-block-bg-dark) !important;
-  background-color: var(--code-block-bg-dark) !important;
-  border-color: #3a3a36;
+.doc-content pre.shiki,
+.doc-content pre.astro-code {
   color: #adbac7 !important;
 }
 
-[data-theme='dark'] .doc-content pre.shiki,
-[data-theme='dark'] .doc-content pre.astro-code {
-  color: #adbac7 !important;
-}
-
-[data-theme='dark'] .doc-content pre code {
+.doc-content pre code {
   color: inherit !important;
 }
 
-[data-theme='dark'] .doc-content pre span[style] {
+.doc-content pre span[style] {
   color: var(--shiki-dark) !important;
 }
 
-[data-theme='dark'] .doc-content pre .line,
-[data-theme='dark'] .doc-content pre .line > span:not([style]) {
+.doc-content pre .line,
+.doc-content pre .line > span:not([style]) {
   color: #adbac7 !important;
 }
 
@@ -166,9 +175,8 @@
   font-family: 'Geist Mono', ui-monospace, monospace;
   background: var(--inline-code-bg);
   color: var(--inline-code-color);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 0.125rem 0.375rem;
+  border-radius: 5px;
+  padding: 0.15rem 0.4rem;
   font-size: 0.8125em;
   font-weight: 400;
   white-space: normal;
@@ -195,9 +203,9 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: #9da7b3;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.15s, color 0.15s, border-color 0.15s;
@@ -212,8 +220,8 @@ pre:hover > .doc-copy-btn {
 }
 
 .doc-copy-btn:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-muted);
+  color: #e8e7e0;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .doc-copy-btn.copied {
@@ -262,25 +270,15 @@ pre:hover > .doc-copy-btn {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #3a3a36;
   border-bottom: none;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background: var(--color-surface-muted);
+  background: #2a2a28;
   font-family: 'Geist Mono', ui-monospace, monospace;
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-text);
-  letter-spacing: 0.01em;
-}
-
-[data-theme='dark'] .doc-content .doc-file-bar {
-  background: #2a2a28;
   color: #d8d7d0;
-  border-color: #3a3a36;
-}
-
-[data-theme='dark'] .doc-content .doc-file-block pre {
-  border-color: #3a3a36;
+  letter-spacing: 0.01em;
 }
 
 .doc-content table {
@@ -300,7 +298,9 @@ pre:hover > .doc-copy-btn {
 }
 
 .doc-content th {
-  font-weight: 400;
+  font-weight: 600;
+  font-size: 0.85em;
+  background: var(--color-surface-muted);
 }
 
 .doc-content tr:last-child td {

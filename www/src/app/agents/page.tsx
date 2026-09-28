@@ -29,7 +29,7 @@ const RETRIEVAL = [
 export default function AgentsPage() {
   return (
     <div className="agents-page">
-      <SiteHeader />
+      <SiteHeader showSearch />
       <main className="agents-main">
         <header className="agents-header">
           <h1>Agent Entry Points</h1>

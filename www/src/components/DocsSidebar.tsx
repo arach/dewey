@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { navGroups } from '@/lib/nav'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { Search } from '@/components/Search'
 
 function GitHubIcon() {
   return (
@@ -24,12 +26,26 @@ function NpmIcon() {
 export function DocsSidebar() {
   const pathname = usePathname().replace(/\/$/, '') || '/'
 
+  useEffect(() => {
+    document.querySelector('.dl')?.classList.remove('dl-nav-open')
+  }, [pathname])
+
   return (
-    <aside className="dl-sidebar">
+    <>
+      <div
+        className="dl-nav-scrim"
+        aria-hidden
+        onClick={() => document.querySelector('.dl')?.classList.remove('dl-nav-open')}
+      />
+      <aside className="dl-sidebar">
       <div className="dl-sidebar-header">
         <Link href="/" className="dl-logo">
           dewey <span>/ docs</span>
         </Link>
+      </div>
+
+      <div className="dl-sidebar-search">
+        <Search />
       </div>
 
       <div className="dl-sidebar-body">
@@ -72,6 +88,7 @@ export function DocsSidebar() {
         </div>
         <ThemeToggle />
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }

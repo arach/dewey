@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function Search() {
+export function Search({
+  className,
+  label = 'Search docs',
+}: {
+  className?: string
+  label?: string
+}) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const loadedRef = useRef(false)
@@ -18,10 +24,11 @@ export function Search() {
       link.href = '/pagefind/pagefind-ui.css'
       document.head.appendChild(link)
 
-      // Load and initialize Pagefind UI
+      // Load and initialize Pagefind UI (IIFE attaches window.PagefindUI)
       // @ts-expect-error — pagefind-ui.js is generated at build time by postbuild
-      const mod = await import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')
-      const PagefindUI = mod.PagefindUI || mod.default
+      await import(/* webpackIgnore: true */ '/pagefind/pagefind-ui.js')
+      const PagefindUI = (window as { PagefindUI?: new (opts: object) => void }).PagefindUI
+      if (!PagefindUI) throw new Error('PagefindUI not found')
       new PagefindUI({
         element: containerRef.current,
         showSubResults: true,
@@ -37,7 +44,7 @@ export function Search() {
       // Pagefind not built yet — show hint
       if (containerRef.current) {
         containerRef.current.innerHTML =
-          '<p style="padding:1rem;color:var(--dw-muted-foreground);font-size:0.875rem;">Search index not found. Run <code>npm run build</code> to generate it.</p>'
+          '<p style="padding:1rem;color:var(--color-text-muted);font-size:0.875rem;">Search index not found. Run <code>npm run build</code> to generate it.</p>'
       }
     }
   }, [])
@@ -62,30 +69,19 @@ export function Search() {
   return (
     <>
       <button
+        type="button"
+        className={className ?? 'dl-search-btn'}
         onClick={() => setOpen(true)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          padding: '0.375rem 0.75rem',
-          borderRadius: '0.5rem',
-          fontSize: '0.8125rem',
-          color: 'var(--dw-muted-foreground)',
-          background: 'var(--dw-muted)',
-          border: '1px solid var(--dw-border)',
-          cursor: 'pointer',
-          whiteSpace: 'nowrap',
-        }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
         </svg>
-        Search…
-        <kbd style={{ fontSize: '0.6875rem', opacity: 0.6, marginLeft: '0.25rem' }}>⌘K</kbd>
+        <span>{label}</span>
+        <kbd className="search-kbd">⌘K</kbd>
       </button>
       {open && (
         <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false) }}>
-          <div className="search-modal">
+          <div className="search-modal" role="dialog" aria-label="Search documentation">
             <div ref={containerRef} />
           </div>
         </div>

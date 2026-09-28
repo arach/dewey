@@ -1,4 +1,5 @@
 import { DocsSidebar } from '@/components/DocsSidebar'
+import { DocsNavToggle } from '@/components/DocsNavToggle'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import Link from 'next/link'
 
@@ -12,9 +13,12 @@ export default function DocsLayout({
       <DocsSidebar />
       <div className="dl-main">
         <div className="dl-mobile-header">
-          <Link href="/" className="dl-logo" style={{ fontSize: 18 }}>
-            dewey <span>/ docs</span>
-          </Link>
+          <div className="dl-mobile-header-left">
+            <DocsNavToggle />
+            <Link href="/" className="dl-logo" style={{ fontSize: 18 }}>
+              dewey <span>/ docs</span>
+            </Link>
+          </div>
           <ThemeToggle />
         </div>
         {children}

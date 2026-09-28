@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Search } from '@/components/Search'
 
 function ThemeButton() {
   const toggle = () => {
@@ -55,10 +56,7 @@ export function SiteHeader({ showSearch = false }: { showSearch?: boolean }) {
         </div>
         <div className="site-header-right">
           {showSearch && (
-            <button type="button" className="site-header-search">
-              Search
-              <span className="site-header-search-key">⌘K</span>
-            </button>
+            <Search className="site-header-search" label="Search" />
           )}
           <ThemeButton />
           <a

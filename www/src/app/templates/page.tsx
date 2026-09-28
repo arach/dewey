@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function TemplatesGalleryPage() {
   return (
     <div className="gallery-page">
-      <SiteHeader />
+      <SiteHeader showSearch />
 
       <main className="gallery-main">
         <header className="gallery-header">

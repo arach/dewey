@@ -123,7 +123,7 @@ export function LandingPage() {
 
   return (
     <>
-      <SiteHeader showSearch={false} />
+      <SiteHeader showSearch />
 
       <div className="v3">
         <section className="v3-hero">

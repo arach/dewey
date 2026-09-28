@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 const CHANNELS = [
   {
-    href: 'mailto:arach@tchoupani.com',
-    label: 'arach@tchoupani.com',
+    href: 'mailto:founder@deweydocs.com',
+    label: 'founder@deweydocs.com',
     desc: 'Email — fastest path for anything Dewey',
   },
   {

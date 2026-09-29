@@ -65,6 +65,14 @@ export { HeadingLink } from './components/HeadingLink'
 export { Sidebar } from './components/Sidebar'
 export type { SidebarProps } from './components/Sidebar'
 
+// RailNav - Icon rail navigation surface (layout.nav === 'rail')
+export { RailNav } from './components/RailNav'
+export type { RailNavProps } from './components/RailNav'
+
+// CommandPalette - Command-bar navigation surface (layout.nav === 'command')
+export { CommandPalette } from './components/CommandPalette'
+export type { CommandPaletteProps } from './components/CommandPalette'
+
 // TableOfContents - Right minimap with scroll-spy
 export {
   TableOfContents,
@@ -151,6 +159,15 @@ export type {
   PromptImprovementPass,
   PromptQualityCriteria,
 } from './skills/improve-ai-prompts'
+
+// ============================================
+// Arc Diagram Generator
+// ============================================
+
+// Skill for turning Dewey artifacts (agent/diagram.json scaffold +
+// docs context) into ArcDiagramData architecture diagrams for Arc.
+export { arcDiagramGenerator } from './skills/arc-diagram-generator'
+export type { ArcDiagramSkillConfig } from './skills/arc-diagram-generator'
 
 // ============================================
 // Hooks

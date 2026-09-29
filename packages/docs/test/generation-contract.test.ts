@@ -107,6 +107,46 @@ describe('agent artifact composition', () => {
     expect(manifest.prompts[0]?.promptUrl).toBe('/agent/prompts/review.md')
   })
 
+  test('emits a valid ArcDiagramData scaffold at agent/diagram.json', async () => {
+    const root = await makeTemporaryDirectory()
+    const docsDir = join(root, 'docs')
+    await mkdir(join(docsDir, 'prompts'), { recursive: true })
+    await writeFile(join(docsDir, 'overview.md'), '# Overview\n\nIntro page.\n')
+    await writeFile(join(docsDir, 'quickstart.md'), '# Quickstart\n\nGet going.\n')
+    await writeFile(join(docsDir, 'prompts', 'review.md'), '# Review\n\nPrompt page.\n')
+
+    const built = await buildAgentArtifactFiles({ rootDir: root, docsDir, project: { name: 'fixture' } })
+    const files = new Map(built.files.map(file => [file.path, file.content]))
+    const manifest = JSON.parse(files.get('agent/manifest.json')!) as {
+      artifacts: Record<string, string | Record<string, string>>
+    }
+
+    expect(manifest.artifacts.diagram).toBe('/agent/diagram.json')
+    expect(files.get('agent/context.md')).toContain('/agent/diagram.json')
+
+    const diagram = JSON.parse(files.get('agent/diagram.json')!) as {
+      layout: { width: number; height: number }
+      nodes: Record<string, { x: number; y: number; size: string }>
+      nodeData: Record<string, { icon: string; name: string; color: string }>
+      connectors: Array<{ from: string; to: string; style: string }>
+      connectorStyles: Record<string, unknown>
+    }
+
+    // ArcDiagramData contract: node/data parity, valid sizes, live connectors
+    expect(Object.keys(diagram.nodes).sort()).toEqual(Object.keys(diagram.nodeData).sort())
+    for (const node of Object.values(diagram.nodes)) {
+      expect(['xs', 's', 'm', 'l']).toContain(node.size)
+    }
+    for (const connector of diagram.connectors) {
+      expect(diagram.nodes[connector.from]).toBeDefined()
+      expect(diagram.nodes[connector.to]).toBeDefined()
+      expect(diagram.connectorStyles[connector.style]).toBeDefined()
+    }
+    expect(diagram.nodes.project).toBeDefined()
+    expect(diagram.nodeData.overview).toBeDefined()
+    expect(diagram.layout.width).toBeGreaterThan(0)
+  })
+
   test('normalizes a fallback prompt URL without duplicating prompts/', () => {
     const prompt = {
       id: 'prompts/review',

@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises'
 import { basename, join, relative, resolve } from 'path'
 import matter from 'gray-matter'
+import { buildArcDiagramArtifact } from './arc-diagram.js'
 import { discoverDocuments } from './docs-manifest.js'
 import { DEWEY_SCHEMA_VERSION, getGeneratedAt } from './version.js'
 import {
@@ -248,6 +249,7 @@ function assembleAgentManifest(
       allMarkdown: '/agent/bundles/all.md',
       promptBundle: '/agent/bundles/prompts.md',
       rawMarkdownBase: '/agent/raw/docs/',
+      diagram: '/agent/diagram.json',
       bundles: {
         core: '/agent/bundles/core.md',
         prompts: '/agent/bundles/prompts.md',
@@ -347,6 +349,7 @@ export async function buildAgentArtifactFiles(options: WriteAgentArtifactsOption
     true,
   )
   addArtifact('agent/bundles/prompts.md', formatPromptsBundle(manifest.prompts, docsBySlug), true)
+  addJsonArtifact('agent/diagram.json', buildArcDiagramArtifact(manifest, docs))
 
   for (const doc of docs) {
     addArtifact(`agent/raw/docs/${doc.slug}.md`, doc.rawMarkdown)
@@ -462,6 +465,7 @@ function formatAgentContext(manifest: AgentManifest): string {
     `| Raw markdown base | \`${artifactPath(manifest, 'rawMarkdownBase')}\` |`,
     `| All-docs bundle | \`${artifactPath(manifest, 'allMarkdown')}\` |`,
     `| Prompt bundle | \`${artifactPath(manifest, 'promptBundle')}\` |`,
+    `| Arc diagram scaffold | \`${artifactPath(manifest, 'diagram')}\` |`,
     '',
     '## Recommended Read Order',
     '',

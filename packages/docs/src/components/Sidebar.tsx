@@ -19,6 +19,8 @@ export interface SidebarProps {
   basePath?: string
   /** Whether sidebar is open (mobile) */
   isOpen?: boolean
+  /** Number items sequentially (handbook/chapter navigation) */
+  numbered?: boolean
   /** Callback to close sidebar (mobile) */
   onClose?: () => void
   /** Custom header content */
@@ -172,6 +174,7 @@ export function Sidebar({
   projectName = 'Docs',
   basePath = '/docs',
   isOpen = false,
+  numbered = false,
   onClose,
   header,
   footer,
@@ -193,7 +196,7 @@ export function Sidebar({
 
       {/* Sidebar */}
       <aside
-        className={`dw-sidebar ${isOpen ? 'open' : ''}`}
+        className={`dw-sidebar ${isOpen ? 'open' : ''}${numbered ? ' dw-sidebar-numbered' : ''}`}
         data-dark={isDark}
         aria-label="Documentation navigation"
       >

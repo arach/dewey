@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { Menu, Sun, Moon, ArrowLeft } from 'lucide-react'
 import { DeweyProvider, useDewey, useLink, type DeweyProviderProps } from './DeweyProvider'
 import { Sidebar } from './Sidebar'
+import { RailNav } from './RailNav'
+import { CommandPalette } from './CommandPalette'
 import { TableOfContents, extractTocItems } from './TableOfContents'
 import { DocsIndex } from './DocsIndex'
 import { MarkdownContent } from './MarkdownContent'
+import { MEASURE_WIDTH, DENSITY_VARS } from '../templates/registry'
 import type { PageNode, PageItem, NavigationConfig } from '../types/page-tree'
 
 // ============================================
@@ -22,14 +25,25 @@ export interface DocsAppConfig {
   homeUrl?: string
   /** Navigation structure */
   navigation?: NavigationConfig
-  /** Layout options */
+  /** Layout options — see TemplateLayoutSpec for the full model */
   layout?: {
+    /** Navigation surface (default: 'sidebar'). */
+    nav?: 'sidebar' | 'rail' | 'command' | 'none'
+    /** @deprecated use nav: 'none' */
     sidebar?: boolean
-    toc?: boolean
+    /** TOC placement (default: 'right'); boolean: true→'right', false→'none' */
+    toc?: 'right' | 'floating' | 'inline' | 'none' | boolean
     header?: boolean | 'minimal'
     footer?: boolean
     prevNext?: boolean
     breadcrumbs?: boolean
+    /** Content measure; 'split' lifts code blocks into a right rail */
+    measure?: 'narrow' | 'normal' | 'wide' | 'split'
+    density?: 'compact' | 'normal' | 'spacious'
+    /** Number sidebar items sequentially (handbook navigation) */
+    numbered?: boolean
+    /** Skin key → `dw-skin-<skin>` class on the layout root */
+    skin?: string
   }
 }
 
@@ -67,6 +81,7 @@ function buildPageTree(navigation: NavigationConfig | undefined, docs: Record<st
     const folder: PageNode = {
       type: 'folder',
       name: group.title,
+      icon: group.icon,
       defaultOpen: !group.collapsed,
       children: group.items.map((item) => ({
         type: 'page' as const,
@@ -120,15 +135,40 @@ function DocsLayoutInternal({
   } = config
 
   const {
-    sidebar: showSidebar = true,
-    toc: showToc = true,
     header: headerOption = true,
     prevNext: showPrevNext = true,
     breadcrumbs: showBreadcrumbs = true,
+    numbered = false,
+    skin,
+    measure = 'normal',
+    density = 'normal',
   } = layout
+
+  // Normalize nav: explicit nav wins; legacy `sidebar: false` maps to 'none'
+  const navMode = layout.nav ?? (layout.sidebar === false ? 'none' : 'sidebar')
+  const showSidebar = navMode === 'sidebar'
+  const showRail = navMode === 'rail'
+  const showCommand = navMode === 'command'
+
+  // Normalize toc: boolean → placement; 'inline' → 'right'
+  const tocMode =
+    layout.toc === false ? 'none'
+    : layout.toc === true ? 'right'
+    : layout.toc ?? 'right'
+  const showToc = tocMode !== 'none'
 
   const showHeader = headerOption !== false
   const isMinimalHeader = headerOption === 'minimal'
+
+  // Measure + density resolve to CSS vars on the layout root
+  const layoutVars = useMemo(() => {
+    const vars: Record<string, string> = {}
+    for (const [k, v] of Object.entries(DENSITY_VARS[density])) {
+      if (v !== undefined) vars[k] = v
+    }
+    if (measure !== 'normal') vars['--dw-content-max-width'] = MEASURE_WIDTH[measure]
+    return vars as CSSProperties
+  }, [measure, density])
 
   // Get current content
   const content = currentPage ? docs[currentPage] : null
@@ -190,13 +230,19 @@ function DocsLayoutInternal({
   }, [basePath, currentPage, config.navigation, flatPages, name])
 
   return (
-    <div className="dw-layout">
+    <div
+      className={`dw-layout${skin ? ` dw-skin-${skin}` : ''}`}
+      data-nav={navMode}
+      data-measure={measure}
+      style={layoutVars}
+    >
       {/* Header */}
       {showHeader && (
         <header className={`dw-header${isMinimalHeader ? ' dw-header-minimal' : ''}`}>
           <div className="dw-header-inner">
             <div className="dw-header-left">
-              {/* Mobile menu button */}
+              {/* Mobile menu button (only when a sidebar exists) */}
+              {showSidebar && (
               <button
                 type="button"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -207,6 +253,7 @@ function DocsLayoutInternal({
               >
                 <Menu style={{ width: '1.25rem', height: '1.25rem' }} aria-hidden="true" />
               </button>
+              )}
 
               {/* Brand */}
               <Link href={basePath} className="dw-header-brand">
@@ -223,6 +270,13 @@ function DocsLayoutInternal({
                 Home
               </Link>
             </div>
+
+            {/* Command bar is the primary nav surface in command mode */}
+            {showCommand && (
+              <div className="dw-header-center">
+                <CommandPalette tree={pageTree} basePath={basePath} />
+              </div>
+            )}
 
             <div className="dw-header-right">
               {/* Theme toggle */}
@@ -243,7 +297,7 @@ function DocsLayoutInternal({
         </header>
       )}
 
-      {/* Sidebar */}
+      {/* Navigation surfaces */}
       {showSidebar && (
         <Sidebar
           tree={pageTree}
@@ -252,6 +306,16 @@ function DocsLayoutInternal({
           basePath={basePath}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          numbered={numbered}
+        />
+      )}
+
+      {showRail && (
+        <RailNav
+          tree={pageTree}
+          currentPage={currentPage}
+          projectName={name}
+          basePath={basePath}
         />
       )}
 
@@ -288,7 +352,7 @@ function DocsLayoutInternal({
             )}
 
             <article className="dw-prose">
-              <MarkdownContent content={content} isDark={isDark} />
+              <MarkdownContent content={content} isDark={isDark} split={measure === 'split'} />
             </article>
 
             {/* Prev/Next navigation */}
@@ -332,7 +396,10 @@ function DocsLayoutInternal({
 
       {/* Table of Contents */}
       {showToc && !isIndex && tocItems.length > 0 && (
-        <TableOfContents items={tocItems} />
+        <TableOfContents
+          items={tocItems}
+          className={tocMode === 'floating' ? 'dw-toc-floating' : undefined}
+        />
       )}
     </div>
   )

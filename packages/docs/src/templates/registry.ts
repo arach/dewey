@@ -1,7 +1,7 @@
 // Canonical template + theme registry types and CLI resolution helpers.
 // Gallery-specific preview metadata lives in www/src/lib/templates.ts.
 
-export type TemplateId = 'hudson' | 'rail' | 'centered' | 'command'
+export type TemplateId = 'hudson' | 'rail' | 'centered' | 'command' | 'endpoint' | 'atlas' | 'typewriter'
 export type ThemeId =
   | 'neutral'
   | 'ocean'
@@ -14,7 +14,7 @@ export type ThemeId =
   | 'midnight'
   | 'mono'
 
-export const VALID_TEMPLATE_IDS = ['hudson', 'rail', 'centered', 'command'] as const
+export const VALID_TEMPLATE_IDS = ['hudson', 'rail', 'centered', 'command', 'endpoint', 'atlas', 'typewriter'] as const
 export const VALID_THEME_IDS = [
   'neutral',
   'ocean',
@@ -51,15 +51,28 @@ export interface TemplateLayoutSpec {
     prevNext: boolean
     agentActions: boolean
   }
+  /** Number sidebar items sequentially (handbook/chapter navigation) */
+  numbered?: boolean
+  /** Optional skin key — maps to `dw-skin-<skin>` on the DocsApp root */
+  skin?: string
   cssVars?: Partial<Record<`--${string}`, string>>
 }
 
 export interface DocsAppLayoutConfig {
-  sidebar: boolean
-  toc: boolean
+  /** Navigation surface rendered by DocsApp */
+  nav: 'sidebar' | 'rail' | 'command' | 'none'
+  /** TOC placement; 'none' disables */
+  toc: 'right' | 'floating' | 'none'
   header: boolean | 'minimal'
   prevNext: boolean
   breadcrumbs: boolean
+  /** Content measure; 'split' lifts code blocks into a right-hand rail */
+  measure: ContentMeasure
+  density: LayoutDensity
+  /** Number sidebar items sequentially */
+  numbered?: boolean
+  /** Skin key → `dw-skin-<skin>` class on the layout root */
+  skin?: string
 }
 
 export interface CreateThemeSpec {
@@ -187,6 +200,27 @@ export const CREATE_TEMPLATE_SPECS: Record<TemplateId, CreateTemplateSpec> = {
     defaultTheme: 'neutral',
     compatibleThemes: 'none',
   },
+  endpoint: {
+    id: 'endpoint',
+    label: 'Endpoint',
+    status: 'experimental',
+    defaultTheme: 'ocean',
+    compatibleThemes: 'none',
+  },
+  atlas: {
+    id: 'atlas',
+    label: 'Atlas',
+    status: 'experimental',
+    defaultTheme: 'warm',
+    compatibleThemes: 'none',
+  },
+  typewriter: {
+    id: 'typewriter',
+    label: 'Typewriter',
+    status: 'experimental',
+    defaultTheme: 'mono',
+    compatibleThemes: 'none',
+  },
 }
 
 export const DEFAULT_DOCS_LAYOUT: TemplateLayoutSpec = {
@@ -198,14 +232,14 @@ export const DEFAULT_DOCS_LAYOUT: TemplateLayoutSpec = {
   page: { breadcrumbs: true, prevNext: true, agentActions: true },
 }
 
-const MEASURE_WIDTH: Record<ContentMeasure, string> = {
+export const MEASURE_WIDTH: Record<ContentMeasure, string> = {
   narrow: '65ch',
   normal: '80ch',
   wide: '100ch',
-  split: '100ch',
+  split: '112ch',
 }
 
-const DENSITY_VARS: Record<LayoutDensity, Partial<Record<`--${string}`, string>>> = {
+export const DENSITY_VARS: Record<LayoutDensity, Partial<Record<`--${string}`, string>>> = {
   compact: {
     '--dw-content-padding-y': '1.25rem',
     '--dw-prose-line-height': '1.6',
@@ -265,11 +299,15 @@ export function resolveTheme(theme?: string): ThemeId {
 
 export function toDocsAppLayout(layout: TemplateLayoutSpec): DocsAppLayoutConfig {
   return {
-    sidebar: layout.nav === 'sidebar',
-    toc: layout.toc !== 'none',
+    nav: layout.nav === 'topbar' ? 'command' : layout.nav,
+    toc: layout.toc === 'inline' ? 'right' : layout.toc,
     header: layout.header === 'none' ? false : layout.header === 'minimal' ? 'minimal' : true,
     prevNext: layout.page.prevNext,
     breadcrumbs: layout.page.breadcrumbs,
+    measure: layout.measure,
+    density: layout.density,
+    numbered: layout.numbered,
+    skin: layout.skin,
   }
 }
 

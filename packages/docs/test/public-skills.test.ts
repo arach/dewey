@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  arcDiagramGenerator,
   docsDesignCritic,
   docsReviewAgent,
   installMdGenerator,
@@ -9,6 +10,7 @@ import {
 describe('public skills dogfood contract', () => {
   test('exports self-contained prompts with actionable purpose and success instructions', () => {
     const skills = [
+      arcDiagramGenerator,
       docsDesignCritic,
       docsReviewAgent,
       installMdGenerator,

@@ -84,6 +84,8 @@ export interface FlatPage {
 export interface NavigationGroup {
   /** Group title */
   title: string
+  /** Lucide icon name — used by icon-rail navigation */
+  icon?: string
   /** Whether group is collapsed by default */
   collapsed?: boolean
   /** Items in this group */

@@ -1,0 +1,47 @@
+/* Atlas skin — handbook/chapter reading: serif prose, numbered nav, generous measure. */
+
+.dw-skin-atlas .dw-prose {
+  font-family: var(--dw-font-serif);
+  font-size: 1.0625rem;
+}
+.dw-skin-atlas .dw-prose h1,
+.dw-skin-atlas .dw-prose h2,
+.dw-skin-atlas .dw-prose h3,
+.dw-skin-atlas .dw-prose h4 {
+  font-family: var(--dw-font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.dw-skin-atlas .dw-prose h1 {
+  font-size: 2.5rem;
+  line-height: 1.12;
+}
+.dw-skin-atlas .dw-prose h2 {
+  font-size: 1.625rem;
+  margin-top: 3rem;
+}
+.dw-skin-atlas .dw-prose blockquote {
+  border-left: none;
+  margin: 2.5rem 0;
+  padding: 0 2rem;
+  font-family: var(--dw-font-serif);
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--dw-foreground);
+}
+.dw-skin-atlas .dw-prose blockquote p { margin: 0; }
+.dw-skin-atlas .dw-prose hr {
+  border: none;
+  margin: 3rem auto;
+  width: 4rem;
+  border-top: 1px solid var(--dw-border);
+}
+.dw-skin-atlas .dw-prose pre,
+.dw-skin-atlas .dw-prose code { font-family: var(--dw-font-mono); }
+
+/* Chapter-to-chapter navigation reads like a book footer */
+.dw-skin-atlas .dw-prev-next a,
+.dw-skin-atlas .dw-prev-next .dw-prev-next-link {
+  padding: 1.25rem 1.5rem;
+}

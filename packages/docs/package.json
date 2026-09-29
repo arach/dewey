@@ -82,6 +82,18 @@
       "style": "./dist/css/colors/mono.css",
       "default": "./dist/css/colors/mono.css"
     },
+    "./css/skins/atlas.css": {
+      "style": "./dist/css/skins/atlas.css",
+      "default": "./dist/css/skins/atlas.css"
+    },
+    "./css/skins/endpoint.css": {
+      "style": "./dist/css/skins/endpoint.css",
+      "default": "./dist/css/skins/endpoint.css"
+    },
+    "./css/skins/terminal.css": {
+      "style": "./dist/css/skins/terminal.css",
+      "default": "./dist/css/skins/terminal.css"
+    },
     "./css/colors/hudson.css": {
       "style": "./dist/css/colors/hudson.css",
       "default": "./dist/css/colors/hudson.css"

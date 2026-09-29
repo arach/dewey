@@ -22,6 +22,19 @@ function copyCssFiles() {
       copyFileSync(`src/css/colors/${file}`, `dist/css/colors/${file}`)
     }
   }
+
+  // Copy skin presets (mkdirSync creates the dir; guard for first run)
+  try {
+    mkdirSync('dist/css/skins', { recursive: true })
+    const skinFiles = readdirSync('src/css/skins')
+    for (const file of skinFiles) {
+      if (file.endsWith('.css')) {
+        copyFileSync(`src/css/skins/${file}`, `dist/css/skins/${file}`)
+      }
+    }
+  } catch {
+    // src/css/skins may not exist in older trees
+  }
 }
 
 // Plugin to copy CSS files to dist with watch support

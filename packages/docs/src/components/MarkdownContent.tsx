@@ -5,10 +5,13 @@ import matter from 'gray-matter'
 import { useMemo } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { HeadingLink } from './HeadingLink'
+import { rehypeDwSplit } from '../utils/rehype-split'
 
 export interface MarkdownContentProps {
   content: string
   isDark?: boolean
+  /** Lift fenced code blocks into a right-hand rail per section */
+  split?: boolean
 }
 
 export function normalizeMarkdownHref(href: string | undefined): string | undefined {
@@ -16,7 +19,7 @@ export function normalizeMarkdownHref(href: string | undefined): string | undefi
   return href.replace(/\.md$/, '')
 }
 
-export function MarkdownContent({ content, isDark = false }: MarkdownContentProps) {
+export function MarkdownContent({ content, isDark = false, split = false }: MarkdownContentProps) {
   // Strip frontmatter if present
   const body = useMemo(() => {
     // Only process if content might have frontmatter (starts with ---)
@@ -30,7 +33,7 @@ export function MarkdownContent({ content, isDark = false }: MarkdownContentProp
     <div className={`dw-prose${isDark ? ' dark' : ''}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSlug]}
+        rehypePlugins={split ? [rehypeSlug, rehypeDwSplit] : [rehypeSlug]}
         components={{
         // Headings with anchor links
         h1: ({ children, id, ...props }) => (

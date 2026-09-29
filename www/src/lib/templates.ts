@@ -31,7 +31,7 @@ export interface RegistryBase<TKind extends 'template' | 'theme', TId extends st
 
 export interface TemplateEntry extends RegistryBase<'template', TemplateId> {
   layout: TemplateLayoutSpec
-  preview: { renderer: 'standalone-react'; component: TemplateId }
+  preview: { renderer: 'docs-app' }
 }
 
 export interface ThemeEntry extends RegistryBase<'theme', ThemeId> {
@@ -63,7 +63,29 @@ export const templateRegistry: readonly RegistryEntry[] = [
       density: 'normal',
       page: { breadcrumbs: true, prevNext: true, agentActions: true },
     },
-    preview: { renderer: 'standalone-react', component: 'hudson' },
+    preview: { renderer: 'docs-app' },
+  },
+  {
+    kind: 'template',
+    id: 'endpoint',
+    label: 'Endpoint',
+    description: 'API-reference layout: prose on the left, request/response code rail on the right.',
+    status: 'experimental',
+    gallery: {
+      order: 15,
+      swatch: { primary: '#2563eb', background: '#f8fafc', darkBackground: '#0b0e13' },
+      badges: ['Code rail', 'Sidebar', 'Wide'],
+    },
+    layout: {
+      header: 'bar',
+      nav: 'sidebar',
+      toc: 'none',
+      measure: 'split',
+      density: 'normal',
+      skin: 'endpoint',
+      page: { breadcrumbs: true, prevNext: true, agentActions: true },
+    },
+    preview: { renderer: 'docs-app' },
   },
   {
     kind: 'template',
@@ -83,7 +105,7 @@ export const templateRegistry: readonly RegistryEntry[] = [
       density: 'normal',
       page: { breadcrumbs: true, prevNext: false, agentActions: true },
     },
-    preview: { renderer: 'standalone-react', component: 'rail' },
+    preview: { renderer: 'docs-app' },
   },
   {
     kind: 'template',
@@ -103,7 +125,7 @@ export const templateRegistry: readonly RegistryEntry[] = [
       density: 'spacious',
       page: { breadcrumbs: false, prevNext: false, agentActions: true },
     },
-    preview: { renderer: 'standalone-react', component: 'centered' },
+    preview: { renderer: 'docs-app' },
   },
   {
     kind: 'template',
@@ -123,7 +145,52 @@ export const templateRegistry: readonly RegistryEntry[] = [
       density: 'compact',
       page: { breadcrumbs: true, prevNext: false, agentActions: true },
     },
-    preview: { renderer: 'standalone-react', component: 'command' },
+    preview: { renderer: 'docs-app' },
+  },
+  {
+    kind: 'template',
+    id: 'atlas',
+    label: 'Atlas',
+    description: 'Handbook layout: numbered chapters, serif titles, meant to be read front to back.',
+    status: 'experimental',
+    gallery: {
+      order: 50,
+      swatch: { primary: '#b45309', background: '#f9f6f0', darkBackground: '#141210' },
+      badges: ['Numbered chapters', 'Serif', 'Narrow'],
+    },
+    layout: {
+      header: 'minimal',
+      nav: 'sidebar',
+      toc: 'none',
+      measure: 'narrow',
+      density: 'spacious',
+      numbered: true,
+      skin: 'atlas',
+      page: { breadcrumbs: false, prevNext: true, agentActions: true },
+    },
+    preview: { renderer: 'docs-app' },
+  },
+  {
+    kind: 'template',
+    id: 'typewriter',
+    label: 'Typewriter',
+    description: 'All-monospace operator docs. Square corners, ASCII rules, terminal chrome.',
+    status: 'experimental',
+    gallery: {
+      order: 60,
+      swatch: { primary: '#16a34a', background: '#fbfaf7', darkBackground: '#0c0e0a' },
+      badges: ['Mono', 'Compact', 'Terminal'],
+    },
+    layout: {
+      header: 'bar',
+      nav: 'sidebar',
+      toc: 'right',
+      measure: 'wide',
+      density: 'compact',
+      skin: 'terminal',
+      page: { breadcrumbs: true, prevNext: true, agentActions: true },
+    },
+    preview: { renderer: 'docs-app' },
   },
   ...themeEntries(),
 ]
@@ -221,54 +288,3 @@ export function galleryStaticParams(): { name: string }[] {
 
 export const templateItems = templateRegistry.filter((e): e is TemplateEntry => e.kind === 'template')
 export const themeItems = templateRegistry.filter((e): e is ThemeEntry => e.kind === 'theme')
-
-// ─── Legacy aliases (gallery page + previews) ────────────────────────
-
-export interface TocEntry {
-  id: string
-  text: string
-  depth: 2 | 3
-}
-
-export interface TemplatePreviewProps {
-  contentHtml: string
-  title: string
-  description: string
-  toc: TocEntry[]
-  themeId?: ThemeId
-  layoutConfig?: DocsAppLayoutConfig
-}
-
-/** @deprecated use getEntry */
-export function getTemplate(name: string) {
-  const e = getEntry(name)
-  if (!e) return undefined
-  return {
-    name: e.id,
-    displayName: e.label,
-    description: e.description,
-    category: e.kind,
-    primaryColor: e.gallery.swatch.primary,
-    bgColor: e.gallery.swatch.background,
-    darkBgColor: e.gallery.swatch.darkBackground,
-    fontUrls: e.fonts?.cssUrls,
-    preview: e.kind === 'template' ? 'standalone' : 'theme',
-  }
-}
-
-/** @deprecated use galleryStaticParams */
-export const templates = templateRegistry.map((e) => getTemplate(e.id)!)
-
-/** @deprecated use getDocsAppLayout */
-export function templateLayoutToConfig(name: string) {
-  const entry = getEntry(name)
-  const layoutConfig = entry ? getDocsAppLayout(entry) : toDocsAppLayout({
-    header: 'bar',
-    nav: 'sidebar',
-    toc: 'right',
-    measure: 'normal',
-    density: 'normal',
-    page: { breadcrumbs: true, prevNext: true, agentActions: true },
-  })
-  return { layoutConfig, cssOverrides: '' }
-}

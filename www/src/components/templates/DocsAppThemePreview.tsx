@@ -20,21 +20,34 @@ const THEME_CSS: Record<ThemeId, () => Promise<unknown>> = {
   mono: () => import('@arach/dewey/css/colors/mono.css'),
 }
 
+const SKIN_CSS: Record<string, () => Promise<unknown>> = {
+  atlas: () => import('@arach/dewey/css/skins/atlas.css'),
+  endpoint: () => import('@arach/dewey/css/skins/endpoint.css'),
+  terminal: () => import('@arach/dewey/css/skins/terminal.css'),
+}
+
 export function DocsAppThemePreview({
   themeId,
   layoutConfig,
   fontUrls = [],
+  skin,
+  slug,
 }: {
   themeId: ThemeId
   layoutConfig: DocsAppLayoutConfig
   fontUrls?: string[]
+  /** Optional skin key — loads `css/skins/<skin>.css` and adds `dw-skin-<skin>` */
+  skin?: string
+  /** Preview slug for basePath (defaults to themeId) */
+  slug?: string
 }) {
   const [currentPage, setCurrentPage] = useState(previewDataset.activePageId)
-  const basePath = `/templates/${themeId}`
+  const basePath = `/templates/${slug ?? themeId}`
 
   useEffect(() => {
     void THEME_CSS[themeId]?.()
-  }, [themeId])
+    if (skin) void SKIN_CSS[skin]?.()
+  }, [themeId, skin])
 
   useEffect(() => {
     for (const url of fontUrls) {
@@ -48,12 +61,12 @@ export function DocsAppThemePreview({
   }, [fontUrls])
 
   return (
-    <div className="theme-docs-app-preview" data-theme-preview={themeId}>
+    <div className="theme-docs-app-preview" data-theme-preview={slug ?? themeId}>
       <header className="theme-preview-bar">
         <a href="/templates" className="theme-preview-back">
           ← Templates
         </a>
-        <span className="theme-preview-name">{themeId}</span>
+        <span className="theme-preview-name">{slug ?? themeId}</span>
       </header>
       <DocsApp
         config={{
@@ -65,10 +78,11 @@ export function DocsAppThemePreview({
         onNavigate={setCurrentPage}
         providerProps={{
           theme: themeId,
-          storageKey: `dewey-preview-${themeId}-dark`,
+          storageKey: `dewey-preview-${slug ?? themeId}-dark`,
           components: {
-            Link: ({ href, children, ...props }) => {
-              const handleClick = (e: React.MouseEvent) => {
+            Link: ({ href, children, onClick, ...props }) => {
+              const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+                onClick?.(e)
                 e.preventDefault()
                 if (href?.startsWith(`${basePath}/`)) {
                   const pageId = href.slice(`${basePath}/`.length)

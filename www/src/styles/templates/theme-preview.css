@@ -36,3 +36,24 @@
   letter-spacing: 0.12em;
   color: var(--dw-muted-foreground, #737373);
 }
+
+/* DocsApp's chrome uses fixed/sticky viewport offsets — shift it below the
+   36px preview bar so the two never overlap. */
+.theme-docs-app-preview .dw-header {
+  top: 36px;
+}
+.theme-docs-app-preview .dw-sidebar,
+.theme-docs-app-preview .dw-toc {
+  top: calc(var(--dw-header-height, 3.5rem) + 36px);
+  height: calc(100vh - var(--dw-header-height, 3.5rem) - 36px);
+}
+.theme-docs-app-preview .dw-rail {
+  top: 36px;
+  height: calc(100vh - 36px);
+}
+.theme-docs-app-preview .dw-toc-floating {
+  top: calc(var(--dw-header-height, 3.5rem) + 36px + 3rem);
+}
+.theme-docs-app-preview .dw-split-rail {
+  top: calc(var(--dw-header-height, 3.5rem) + 36px + 1.5rem);
+}

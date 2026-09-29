@@ -11,6 +11,7 @@ export interface PreviewPage {
 export interface PreviewNavItem {
   id: string
   title: string
+  hash?: string
   active?: boolean
   icon?: string
 }
@@ -122,6 +123,31 @@ export default defineConfig({
 Built-in skills include \`docsReviewAgent\`, \`installMdGenerator\`, and \`docsDesignCritic\`.
 `
 
+const SKILLS_MD = `## Docs Review
+
+The \`docsReviewAgent\` skill walks each page and flags stale sections, missing examples, and drift between the human and agent versions.
+
+\`\`\`bash
+dewey skills run docsReviewAgent --page quickstart
+\`\`\`
+
+## Design Critic
+
+\`docsDesignCritic\` critiques structure and readability — heading rhythm, paragraph length, scannability — without touching the code.
+
+## install.md
+
+\`installMdGenerator\` produces an [install.md](https://installmd.org)-compatible file: LLM-executable install instructions an agent can follow end to end.
+
+\`\`\`bash
+curl -fsSL https://your-project.com/install.md
+\`\`\`
+
+## Writing your own
+
+Drop a directory under \`.agents/skills/\` with a \`SKILL.md\` — Dewey picks it up on the next \`generate\` run and lists it in the prompt registry.
+`
+
 export const previewDataset: PreviewDataset = {
   project: {
     name: 'Dewey',
@@ -142,6 +168,12 @@ export const previewDataset: PreviewDataset = {
       description: 'Fine-tune Dewey behavior for your project.',
       markdown: CONFIGURATION_MD,
     },
+    skills: {
+      id: 'skills',
+      title: 'Skills',
+      description: 'Built-in LLM prompt skills for docs review, design critique, and install.md generation.',
+      markdown: SKILLS_MD,
+    },
   },
   nav: [
     {
@@ -150,8 +182,8 @@ export const previewDataset: PreviewDataset = {
       icon: 'rocket',
       items: [
         { id: 'getting-started', title: 'Introduction', active: true },
-        { id: 'getting-started', title: 'Installation' },
-        { id: 'getting-started', title: 'Quick Setup' },
+        { id: 'getting-started', title: 'Installation', hash: 'installation' },
+        { id: 'getting-started', title: 'Quick Setup', hash: 'quick-setup' },
       ],
     },
     {
@@ -160,8 +192,8 @@ export const previewDataset: PreviewDataset = {
       icon: 'book-open',
       items: [
         { id: 'configuration', title: 'Configuration' },
-        { id: 'configuration', title: 'Writing Docs' },
-        { id: 'configuration', title: 'Agent Content' },
+        { id: 'configuration', title: 'Config File', hash: 'config-file' },
+        { id: 'skills', title: 'Skills Overview' },
       ],
     },
     {
@@ -169,9 +201,9 @@ export const previewDataset: PreviewDataset = {
       title: 'Skills',
       icon: 'sparkles',
       items: [
-        { id: 'getting-started', title: 'Docs Review' },
-        { id: 'getting-started', title: 'Design Critic' },
-        { id: 'getting-started', title: 'Install.md' },
+        { id: 'skills', title: 'Docs Review', hash: 'docs-review' },
+        { id: 'skills', title: 'Design Critic', hash: 'design-critic' },
+        { id: 'skills', title: 'Install.md', hash: 'installmd' },
       ],
     },
     {
@@ -179,9 +211,9 @@ export const previewDataset: PreviewDataset = {
       title: 'Reference',
       icon: 'code',
       items: [
-        { id: 'getting-started', title: 'CLI Commands' },
-        { id: 'configuration', title: 'Config Options' },
-        { id: 'getting-started', title: 'Components' },
+        { id: 'getting-started', title: 'CLI Commands', hash: 'cli-commands' },
+        { id: 'configuration', title: 'Config Options', hash: 'config-file' },
+        { id: 'getting-started', title: 'Agent Readiness', hash: 'agent-readiness' },
       ],
     },
   ],
@@ -219,6 +251,7 @@ export function previewDocsAppConfig(basePath: string) {
     homeUrl: previewDataset.project.homeUrl,
     navigation: previewDataset.nav.map((g) => ({
       title: g.title,
+      icon: g.icon,
       items: g.items.map((item) => ({ id: item.id, title: item.title })),
     })),
   }

@@ -14,16 +14,22 @@ export function ThemePreviewClient({
   themeId,
   layoutConfig,
   fontUrls,
+  skin,
+  slug,
 }: {
   themeId: ThemeId
   layoutConfig: DocsAppLayoutConfig
   fontUrls?: string[]
+  skin?: string
+  slug?: string
 }) {
   return (
     <DocsAppThemePreview
       themeId={themeId}
       layoutConfig={layoutConfig}
       fontUrls={fontUrls}
+      skin={skin}
+      slug={slug}
     />
   )
 }

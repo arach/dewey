@@ -13,6 +13,7 @@ Documentation toolkit for AI-agent-ready docs
 | Raw markdown base | `/agent/raw/docs/` |
 | All-docs bundle | `/agent/bundles/all.md` |
 | Prompt bundle | `/agent/bundles/prompts.md` |
+| Arc diagram scaffold | `/agent/diagram.json` |
 
 ## Recommended Read Order
 

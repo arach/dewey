@@ -26,6 +26,13 @@ const coreItems: NavItem[] = data.groups
     href: `/docs/${item.id}`,
   })) ?? []
 
+const referenceItems: NavItem[] = data.groups
+  .find((g) => g.id === 'reference')
+  ?.items.map((item) => ({
+    title: item.title,
+    href: `/docs/${item.id}`,
+  })) ?? []
+
 const promptItems: NavItem[] = data.groups
   .find((g) => g.id === 'prompts')
   ?.items.map((item) => ({
@@ -35,6 +42,7 @@ const promptItems: NavItem[] = data.groups
 
 export const navGroups: NavGroup[] = [
   { id: 'core', title: 'Core', items: coreItems },
+  { id: 'reference', title: 'Reference', items: referenceItems },
   { id: 'prompts', title: 'Prompts', items: promptItems },
   { id: 'customization', title: 'Customization', items: [{ title: 'Templates', href: '/templates' }] },
   {
@@ -57,6 +65,15 @@ export const homeGroups = [
       { title: 'Skills', description: 'LLM prompt templates for docs review and design critique.', href: '/docs/skills' },
       { title: 'Doc Site Generator', description: 'Scaffold a static Astro site from markdown.', href: '/docs/quickstart#create-a-doc-site' },
       { title: 'Templates', description: 'Browse layout and color themes for your doc site.', href: '/templates' },
+    ],
+  },
+  {
+    title: 'Reference',
+    cards: [
+      { title: 'CLI Reference', description: 'Every command and its options.', href: '/docs/cli' },
+      { title: 'API Reference', description: 'TypeScript, React, theme, and artifact contracts.', href: '/docs/api' },
+      { title: 'Integrate', description: 'Embed Dewey in an existing React or Next.js app.', href: '/docs/integrate-existing-site' },
+      { title: 'Maintenance', description: 'Update, eject, and release generated sites.', href: '/docs/maintenance' },
     ],
   },
   {

@@ -21,6 +21,7 @@
     "allMarkdown": "/agent/bundles/all.md",
     "promptBundle": "/agent/bundles/prompts.md",
     "rawMarkdownBase": "/agent/raw/docs/",
+    "diagram": "/agent/diagram.json",
     "bundles": {
       "core": "/agent/bundles/core.md",
       "prompts": "/agent/bundles/prompts.md",

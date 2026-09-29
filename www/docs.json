@@ -24,6 +24,32 @@
       ]
     },
     {
+      "id": "reference",
+      "title": "Reference",
+      "items": [
+        {
+          "id": "cli",
+          "title": "CLI Reference",
+          "description": "Dewey commands and their main options"
+        },
+        {
+          "id": "api",
+          "title": "API Reference",
+          "description": "Public TypeScript, React, theme, and agent-artifact APIs"
+        },
+        {
+          "id": "integrate-existing-site",
+          "title": "Integrate into an existing site",
+          "description": "Embed Dewey components in an existing React or Next.js app"
+        },
+        {
+          "id": "maintenance",
+          "title": "Maintaining generated sites",
+          "description": "Update, eject, recover, and release Dewey-generated sites"
+        }
+      ]
+    },
+    {
       "id": "prompts",
       "title": "Prompts",
       "items": [

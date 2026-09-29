@@ -12,7 +12,7 @@ export default function DocsLayout({
   return (
     <div className="dl">
       <DocsSidebar />
-      <div className="dl-main">
+      <main className="dl-main">
         <DocsTopbar />
         <div className="dl-mobile-header">
           <div className="dl-mobile-header-left">
@@ -24,7 +24,7 @@ export default function DocsLayout({
           <ThemeToggle />
         </div>
         {children}
-      </div>
+      </main>
     </div>
   )
 }

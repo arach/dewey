@@ -4,6 +4,11 @@ import { resolve } from 'node:path'
 
 const repositoryRoot = resolve(import.meta.dir, '../../..')
 
+// The guard covers the publishable surface (package + generated artifacts).
+// The marketing/docs site legitimately names third-party AI tools as
+// integration targets, so www* is out of scope.
+const excludedPrefixes = ['www/', 'www-astro/']
+
 // Encode forbidden names so this guard does not create its own text matches.
 const forbiddenNames = [
   [97, 110, 116, 104, 114, 111, 112, 105, 99],
@@ -38,7 +43,9 @@ test('tracked content stays vendor-neutral', async () => {
   const tracked = Bun.spawnSync(['git', 'ls-files', '-z'], { cwd: repositoryRoot })
   expect(tracked.exitCode).toBe(0)
 
-  const paths = tracked.stdout.toString().split('\0').filter(Boolean)
+  const paths = tracked.stdout.toString().split('\0')
+    .filter(Boolean)
+    .filter(path => !excludedPrefixes.some(prefix => path.startsWith(prefix)))
   const violations: string[] = []
 
   for (const path of paths) {

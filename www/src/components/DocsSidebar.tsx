@@ -15,14 +15,6 @@ function GitHubIcon() {
   )
 }
 
-function NpmIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.331h-2.669zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
-    </svg>
-  )
-}
-
 export function DocsSidebar() {
   const pathname = usePathname().replace(/\/$/, '') || '/'
 
@@ -37,7 +29,7 @@ export function DocsSidebar() {
         aria-hidden
         onClick={() => document.querySelector('.dl')?.classList.remove('dl-nav-open')}
       />
-      <aside className="dl-sidebar">
+      <aside className="dl-sidebar" id="dl-sidebar" aria-label="Documentation navigation">
       <div className="dl-sidebar-header">
         <Link href="/" className="dl-logo">
           dewey <span>/ docs</span>
@@ -50,7 +42,7 @@ export function DocsSidebar() {
 
       <div className="dl-sidebar-body">
         {navGroups.map((group) => (
-          <nav key={group.id} className="dl-nav-group">
+          <nav key={group.id} className="dl-nav-group" aria-label={group.title}>
             <p className="dl-nav-label">{group.title}</p>
             {group.items.map((item) => (
               <Link
@@ -75,15 +67,6 @@ export function DocsSidebar() {
             title="GitHub"
           >
             <GitHubIcon />
-          </a>
-          <a
-            href="https://www.npmjs.com/package/@arach/dewey"
-            className="dl-sidebar-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="npm"
-          >
-            <NpmIcon />
           </a>
         </div>
         <ThemeToggle />

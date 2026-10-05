@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 250" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Library index cards</title>
+  <desc id="desc">A lifted ruled index card above an aligned stack, with double margins and a centered filing rod hole.</desc>
+  <g stroke="#655E52" stroke-width="0.864" stroke-linecap="round" stroke-linejoin="round">
+    <!-- The raised card carries the useful details from the catalog reference. -->
+    <rect x="48" y="35" width="224" height="137" rx="2"/>
+    <path d="M48 65H272M81 35V172M97 35V172"/>
+    <path d="M49 86H271M49 104H271M49 122H271M49 140H271" stroke-width="0.6"/>
+    <circle cx="160" cy="157" r="5.5"/>
+    <!-- A loose interval separates the lifted sheet from the settled stack. -->
+    <path d="M48 187H272V198H48V187Z"/>
+    <path d="M48 204H272M48 210H272M48 216H272"/>
+    <path d="M48 198V216M272 198V216"/>
+  </g>
+</svg>

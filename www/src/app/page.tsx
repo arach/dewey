@@ -1,5 +1,2 @@
-import { LandingPage } from '@/components/LandingPage'
-
-export default function Home() {
-  return <LandingPage />
-}
+import { MinimalLandingPage } from '@/components/MinimalLandingPage'
+export default function Home() { return <MinimalLandingPage /> }

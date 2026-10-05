@@ -425,3 +425,26 @@
 }
 
 .dewey-home { color-scheme: light; min-height: 100vh; }
+
+/* Library mechanisms respond once, then settle; no ambient loops. */
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) and (pointer: fine) {
+    .dewey-home .plate:hover { --drawer-x: -9px; --drawer-y: 5px; }
+    .dewey-home .supplies figure:nth-child(1):hover { --cards-y: -12px; }
+    .dewey-home .supplies figure:nth-child(2):hover { --book-turn: -8deg; }
+    .dewey-home .supplies figure:nth-child(3):hover { --stamp-y: 10px; }
+    .dewey-home .supplies figure:nth-child(4):hover { --pull-scale: .45; }
+  }
+  .dewey-home .plate:focus-visible { --drawer-x: -9px; --drawer-y: 5px; }
+  .dewey-home .supplies figure:nth-child(1):focus-visible { --cards-y: -12px; }
+  .dewey-home .supplies figure:nth-child(2):focus-visible { --book-turn: -8deg; }
+  .dewey-home .supplies figure:nth-child(3):focus-visible { --stamp-y: 10px; }
+  .dewey-home .supplies figure:nth-child(4):focus-visible { --pull-scale: .45; }
+}
+.dewey-home .plate:focus-visible, .dewey-home .supplies figure:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 5px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dewey-home .plate, .dewey-home .supplies figure { --motion-duration: 0ms; }
+}

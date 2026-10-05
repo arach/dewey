@@ -87,7 +87,7 @@ export function MinimalLandingPage(){return <div className="dewey-home" onClick=
 <p>{"From an empty folder to scored, agent-ready docs. The files "}<code>{"generate"}</code>{" writes are the contract; files Dewey does not own are left alone."}</p>
 </div>
 <div className="catalog">
-<figure className="plate">
+<figure className="plate" tabIndex={0}>
 <svg className="ln" viewBox="0 0 260 230" role="img" aria-label="Line drawing of a six-drawer card catalogue with one drawer pulled open"><use href="/brand/library-lines.svg#cabinet" /></svg>
 <figcaption><span>{"Fig. 1 \u00b7 Card catalogue"}</span><span>{"dewey.config.ts"}</span></figcaption>
 </figure>
@@ -228,10 +228,10 @@ export function MinimalLandingPage(){return <div className="dewey-home" onClick=
 <p>{"Built-in skills: "}<code>{"docsReviewAgent"}</code>{", "}<code>{"docsDesignCritic"}</code>{", "}<code>{"installMdGenerator"}</code>{", "}<code>{"promptSlideoutGenerator"}</code>{", "}<code>{"improveAIPrompts"}</code>{"."}</p>
 </div>
 <div className="supplies">
-<figure><svg className="ln" viewBox="0 0 260 170" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#tray" /></svg><figcaption><b>{"Review"}</b>{"Page-by-page review that checks docs against the code to catch drift. "}<span>{"docsReviewAgent"}</span></figcaption></figure>
-<figure><svg className="ln" viewBox="0 0 240 180" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#bookend" /></svg><figcaption><b>{"Install guides"}</b>{"An install.md an agent can follow to the end. "}<span>{"installMdGenerator"}</span></figcaption></figure>
-<figure><svg className="ln" viewBox="0 0 240 200" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#dater" /></svg><figcaption><b>{"Regenerate"}</b>{"Generated files are recorded and refreshed; yours are preserved. "}<span>{"dewey generate"}</span></figcaption></figure>
-<figure><svg className="ln" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#holder" /></svg><figcaption><b>{"Publish, optionally"}</b>{"Embed in React or Next.js, or create a static site. "}<span>{"dewey create"}</span></figcaption></figure>
+<figure tabIndex={0}><svg className="ln" viewBox="0 0 260 170" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#tray" /></svg><figcaption><b>{"Review"}</b>{"Page-by-page review that checks docs against the code to catch drift. "}<span>{"docsReviewAgent"}</span></figcaption></figure>
+<figure tabIndex={0}><svg className="ln" viewBox="0 0 240 180" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#bookend" /></svg><figcaption><b>{"Install guides"}</b>{"An install.md an agent can follow to the end. "}<span>{"installMdGenerator"}</span></figcaption></figure>
+<figure tabIndex={0}><svg className="ln" viewBox="0 0 240 200" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#dater" /></svg><figcaption><b>{"Regenerate"}</b>{"Generated files are recorded and refreshed; yours are preserved. "}<span>{"dewey generate"}</span></figcaption></figure>
+<figure tabIndex={0}><svg className="ln" viewBox="0 0 200 120" aria-hidden="true" focusable="false"><use href="/brand/library-lines.svg#holder" /></svg><figcaption><b>{"Publish, optionally"}</b>{"Embed in React or Next.js, or create a static site. "}<span>{"dewey create"}</span></figcaption></figure>
 </div>
 <div className="close">
 <div>

@@ -129,6 +129,7 @@
     "test": "bun test test/*.test.ts tests/*.test.ts",
     "test:visual": "playwright test",
     "verify:package": "bun scripts/verify-package.ts",
+    "verify:install": "bun scripts/package-install-smoke.ts",
     "verify:release": "bun scripts/verify-release-version.ts"
   },
   "peerDependencies": {

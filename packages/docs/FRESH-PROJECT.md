@@ -24,13 +24,17 @@ DEWEY_RUNTIME=node DEWEY_CLI="$PWD/packages/docs/dist/cli/index.js" \
 
 ## Use it in a new project
 
-Run these commands from the new project's root. The examples address this checkout's CLI; nothing needs publishing first.
+Run these commands from the new project's root:
 
 ```sh
-bun /Users/arach/dev/dewey/packages/docs/src/cli/index.ts init \
+bunx @arach/dewey init \
   --purpose 'Describe the project purpose' \
   --rule 'State a real hard rule'
 ```
+
+`npx @arach/dewey init` works the same under Node. To use this checkout instead, run `bun <checkout>/packages/docs/src/cli/index.ts`; it needs no build first. Below, `dewey` means either.
+
+`bun run --cwd packages/docs verify:install` packs the package, installs the tarball into a scratch project, and runs init, build and check there under Node and Bun.
 
 Repeat `--rule` as needed. Use `--no-rules` to explicitly declare none. Purpose defaults to the package description. Interactive init asks only for missing purpose/rules; non-interactive init requires flags for missing information.
 
@@ -47,9 +51,9 @@ Init creates:
 The site is usable immediately, but drafts are **not** a passing documentation check. Author the guide and maps, verify their claims, and remove `draft: true`. Then:
 
 ```sh
-bun /Users/arach/dev/dewey/packages/docs/src/cli/index.ts review docs/src.agent.md
-bun /Users/arach/dev/dewey/packages/docs/src/cli/index.ts build
-bun /Users/arach/dev/dewey/packages/docs/src/cli/index.ts check --json
+dewey review docs/src.agent.md
+dewey build
+dewey check --json
 python3 -m http.server 4387 --bind 127.0.0.1 --directory .dewey/site
 ```
 

@@ -71,6 +71,23 @@ describe('fresh-project loop', () => {
     expect((await readFile(join(root, '.dewey/site/client.js'), 'utf8')).length).toBeGreaterThan(10000)
     expect(await codes(root)).not.toContain('SITE_NAV_MISSING')
   })
+  test('issues name the file line and a fix', async () => {
+    const root = await ready()
+    // quickstart.md has 6 frontmatter lines and a blank line, so body line 3 is file line 9.
+    const path = join(root, 'docs/quickstart.md')
+    const original = await readFile(path, 'utf8')
+    await writeFile(path, original.replace('Run `bun run test`.', 'Run `bun run absent`.') + '\n```sh\nbun run test\ndewey_nonexistent_command_87\n```\n')
+    const { issues } = await checkProject(root)
+    const script = issues.find(issue => issue.code === 'MISSING_SCRIPT')!
+    expect(script.line).toBe(original.split('\n').findIndex(line => line.includes('bun run test')) + 1)
+    expect(script.fix).toContain('package.json')
+    const command = issues.find(issue => issue.code === 'MISSING_COMMAND')!
+    expect(command.line).toBe(original.split('\n').length + 3)
+    const text = run(root, ['check'])
+    expect(text.out).toContain(`docs/quickstart.md:${script.line} MISSING_SCRIPT`)
+    expect(text.out).toContain('  fix: ')
+    expect(issues.every(issue => issue.fix)).toBe(true)
+  })
   test('host pointer files are opt-in and must redirect to the front door', async () => {
     const root = await fixture()
     expect(run(root, ['init', '--no-rules', '--host', 'TOOL.md']).code).toBe(0)

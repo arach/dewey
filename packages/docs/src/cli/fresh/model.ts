@@ -8,8 +8,34 @@ export const OUTPUT = '.dewey/site'
 export const KINDS = ['guide', 'map', 'reference', 'history'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
 export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[] }
-export interface Doc { path: string; title: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; draft: boolean; hidden: boolean; route: string }
-export interface Issue { code: string; path: string; message: string }
+// offset: lines of frontmatter before body, so body positions map to file lines.
+export interface Doc { path: string; title: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string }
+export interface Issue { code: string; path: string; line?: number; message: string; fix?: string }
+// One default repair per issue code; an issue may carry a more specific fix.
+export const FIXES: Record<string, string> = {
+  PROJECT_INVALID: 'Run dewey init, or repair .dewey/project.json.',
+  DOC_KIND: 'Add kind: guide, reference, map or history to the frontmatter.',
+  DOC_COVERS: 'Set covers to a project-relative path or glob, or a list of them, using *, ** or ?.',
+  FRONT_DOOR_MISSING: 'Run dewey init, or restore AGENTS.md.',
+  FRONT_DOOR_BUDGET: 'Move tutorials and reference into docs/ and link to them from AGENTS.md.',
+  FRONT_DOOR_POINTER: 'Replace the file with one line that links to AGENTS.md.',
+  SKILL_MISSING: 'Add SKILL.md that tells another project how to use this one.',
+  MAP_MISSING: 'Run dewey new map <area>, then describe its files, data flow and traps.',
+  DOC_DRAFT: 'Finish the doc, then delete the draft: true line.',
+  REVIEW_REQUIRED: 'Re-read the covered code, correct the doc, then run dewey review <doc>.',
+  COVERAGE_EMPTY: 'Fix the pattern or remove it.',
+  NON_PUBLIC_LINK: 'Link to a guide or reference instead, or cite the path in backticks.',
+  BROKEN_LINK: 'Point the link at a file that exists, or remove it.',
+  BROKEN_ANCHOR: 'Use a heading that exists in the target file.',
+  MISSING_PATH: 'Update the path to where the file lives now, or remove the reference.',
+  MISSING_SCRIPT: 'Use a script from package.json, or add the script.',
+  MISSING_COMMAND: 'Use a command the project provides, or change the fence language.',
+  OUTPUT_OWNERSHIP: 'Move hand edits out of the generated file, delete it, then run dewey build.',
+  STALE_OUTPUT: 'Run dewey build.',
+  NAV_MISSING: 'Run dewey build; if it persists, remove nav: false.',
+  SITE_LINK: 'Fix the link in the source Markdown, then run dewey build.',
+}
+export function lineAt(text: string, index: number): number { return text.slice(0, Math.max(0, index)).split('\n').length }
 export interface Model { root: string; project: Project; docs: Doc[]; sources: string[]; scripts: Record<string, string>; issues: Issue[] }
 const IGNORED = new Set(['node_modules', 'dist', 'build', 'coverage', 'vendor', 'docs', 'test', 'tests', '__tests__'])
 export const hash = (value: string | Uint8Array) => createHash('sha256').update(value).digest('hex')
@@ -99,7 +125,7 @@ export async function loadModel(root: string): Promise<Model> {
     const raw = await readFile(join(root, path), 'utf8')
     const { data, content } = matter(raw)
     const kind = data.kind ?? (path === 'README.md' ? 'guide' : undefined)
-    if (!KINDS.includes(kind)) { issues.push({ code: 'DOC_KIND', path, message: `Declare kind: ${KINDS.join(' | ')}` }); continue }
+    if (!KINDS.includes(kind)) { issues.push({ code: 'DOC_KIND', path, line: 1, message: `Declare kind: ${KINDS.join(' | ')}` }); continue }
     const covers = typeof data.covers === 'string' ? [data.covers] : data.covers ?? []
     if (!Array.isArray(covers) || covers.some(pattern => typeof pattern !== 'string')) { issues.push({ code: 'DOC_COVERS', path, message: 'covers must be a path/glob or an array of paths/globs' }); continue }
     let valid = true
@@ -109,7 +135,7 @@ export async function loadModel(root: string): Promise<Model> {
     if (!valid) continue
     if (kind === 'map' && !covers.length) issues.push({ code: 'DOC_COVERS', path, message: 'A map must declare the code it covers' })
     const route = path === 'README.md' ? 'readme.html' : `${path.replace(/\.md$/, '')}.html`
-    docs.push({ path, title: String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path), kind, covers, body: content, raw, draft: data.draft === true, hidden: data.nav === false, route })
+    docs.push({ path, title: String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route })
   }
   return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
 }

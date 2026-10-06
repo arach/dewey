@@ -78,6 +78,8 @@ Coverage accepts `*`, `**`, and `?`, with project-relative paths. `src/*` does n
 - Missing cited conventional paths, nonexistent package scripts, and missing simple shell commands.
 - Missing local Markdown links/anchors, unpublished map/history links from human pages, stale outputs, broken rendered links, and human pages absent from navigation.
 
+Each issue carries the file, the line when it has one, and a `fix`. Text output prints `path:line CODE message` followed by the fix. A pass means references, coverage, reviews and outputs are consistent; it does not prove the prose is true.
+
 It does not execute documentation commands. External links are not fetched. Source changes request review; they are not proof that prose is false.
 
 Init refuses existing scaffold targets. Rerunning it in an initialized project updates only the observed front-door region and generated outputs. Build updates only the marked region in root `llms.txt`; surrounding authored text survives. Generated site files have hash-based ownership: modified/unowned targets block a build before writes. Obsolete unchanged owned pages are pruned. Symlink output paths are refused.

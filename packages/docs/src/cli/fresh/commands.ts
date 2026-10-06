@@ -2,7 +2,7 @@ import { access, constants, lstat, readFile, realpath } from 'node:fs/promises'
 import { basename, delimiter, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
-import { assertWritable, coverageHash, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
+import { assertWritable, coverageHash, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
 import { attributes, markdown, siteFiles } from './site.js'
 import { region, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
@@ -132,10 +132,10 @@ async function executable(command: string): Promise<boolean> {
 export async function checkProject(directory = process.cwd()): Promise<{ passed: boolean; issues: Issue[] }> {
   const model = await loadModel(await realpath(directory))
   const issues = [...model.issues]
-  const issue = (code: string, path: string, message: string) => issues.push({ code, path, message })
+  const issue = (code: string, path: string, message: string, line?: number, fix?: string) => issues.push({ code, path, ...(line ? { line } : {}), message, ...(fix ? { fix } : {}) })
   const front = await optional(join(model.root, 'AGENTS.md'))
   if (front === null) issue('FRONT_DOOR_MISSING', 'AGENTS.md', 'Front door is missing')
-  else if (front.trimEnd().split('\n').length > 150) issue('FRONT_DOOR_BUDGET', 'AGENTS.md', 'Front door exceeds 150 lines')
+  else if (front.trimEnd().split('\n').length > 150) issue('FRONT_DOOR_BUDGET', 'AGENTS.md', 'Front door exceeds 150 lines', 151)
   for (const host of model.project.hosts ?? []) {
     if (!(await optional(join(model.root, host)))?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', host, `Point ${host} to AGENTS.md`)
   }
@@ -145,43 +145,48 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   const uncovered = model.sources.filter(path => !maps.some(doc => doc.covers.some(pattern => matches(path, pattern))))
   for (const area of new Set(uncovered.map(sourceArea))) issue('MAP_MISSING', area, `${area} has no map for: ${uncovered.filter(path => sourceArea(path) === area).join(', ')}`)
   for (const doc of model.docs) {
-    if (doc.draft) issue('DOC_DRAFT', doc.path, 'Author and review this scaffold; then remove draft: true')
-    if (doc.covers.length && (reviews[doc.path]?.sourceHash !== await coverageHash(model, doc) || reviews[doc.path]?.docHash !== hash(doc.raw))) issue('REVIEW_REQUIRED', doc.path, `Covered code or documentation needs review; after review run dewey review ${doc.path}`)
-    for (const pattern of doc.covers) if (!model.sources.some(path => matches(path, pattern))) issue('COVERAGE_EMPTY', doc.path, `Coverage pattern matches no source files: ${pattern}`)
+    if (doc.draft) issue('DOC_DRAFT', doc.path, 'This doc is still a scaffold', lineAt(doc.raw, doc.raw.search(/^draft:/m)))
+    if (doc.covers.length && (reviews[doc.path]?.sourceHash !== await coverageHash(model, doc) || reviews[doc.path]?.docHash !== hash(doc.raw))) issue('REVIEW_REQUIRED', doc.path, 'Covered code or this doc changed since the last review', undefined, `Re-read the covered code, correct the doc, then run dewey review ${doc.path}.`)
+    for (const pattern of doc.covers) if (!model.sources.some(path => matches(path, pattern))) issue('COVERAGE_EMPTY', doc.path, `Coverage pattern matches no source files: ${pattern}`, lineAt(doc.raw, doc.raw.indexOf(pattern)))
   }
-  const texts = [...model.docs.map(doc => ({ path: doc.path, body: doc.body })), ...await Promise.all(['AGENTS.md', 'SKILL.md'].map(async path => ({ path, body: await optional(join(model.root, path)) ?? '' })))]
+  const texts = [...model.docs.map(doc => ({ path: doc.path, body: doc.body, offset: doc.offset })), ...await Promise.all(['AGENTS.md', 'SKILL.md'].map(async path => ({ path, body: await optional(join(model.root, path)) ?? '', offset: 0 })))]
   for (const doc of texts) {
+    const at = (index: number) => index < 0 ? undefined : doc.offset + lineAt(doc.body, index)
     const rendered = markdown(doc.body)
     for (const href of [...attributes(rendered, 'href'), ...attributes(rendered, 'src')]) {
+      const line = at(doc.body.indexOf(href))
       try {
         const target = resolveReference(doc.path, href)
         if (!target) continue
         const absolute = safePath(model.root, target.path)
         const other = model.docs.find(candidate => candidate.path === target.path)
-        if (other && !human(other) && model.docs.some(candidate => candidate.path === doc.path && human(candidate))) issue('NON_PUBLIC_LINK', doc.path, `Human page links to unpublished ${other.kind}: ${target.path}`)
-        if (!(await lstat(absolute).catch(() => null))) issue('BROKEN_LINK', doc.path, `Missing link target: ${href}`)
+        if (other && !human(other) && model.docs.some(candidate => candidate.path === doc.path && human(candidate))) issue('NON_PUBLIC_LINK', doc.path, `Human page links to unpublished ${other.kind}: ${target.path}`, line)
+        if (!(await lstat(absolute).catch(() => null))) issue('BROKEN_LINK', doc.path, `Missing link target: ${href}`, line)
         else if (target.fragment && target.path.endsWith('.md')) {
           const body = other?.body ?? await readFile(absolute, 'utf8')
-          if (!attributes(markdown(body), 'id').includes(target.fragment)) issue('BROKEN_ANCHOR', doc.path, `Missing heading: ${href}`)
+          if (!attributes(markdown(body), 'id').includes(target.fragment)) issue('BROKEN_ANCHOR', doc.path, `Missing heading: ${href}`, line)
         }
-      } catch (error) { issue('BROKEN_LINK', doc.path, `${href}: ${String(error)}`) }
+      } catch (error) { issue('BROKEN_LINK', doc.path, `${href}: ${String(error)}`, line) }
     }
     for (const match of doc.body.matchAll(/`([^`\n]+)`/g)) {
       const path = match[1].replace(/:\d+(?::\d+)?$/, '')
       if (/^(src|lib|Sources|packages|apps|scripts|docs|\.agents)\/[\w./-]+\/?$/.test(path) || /^[\w.-]+\.(?:md|json|ya?ml|toml|[cm]?[jt]sx?|swift|py|go|rs|sh)$/.test(path)) {
-        if (!(await lstat(safePath(model.root, path)).catch(() => null))) issue('MISSING_PATH', doc.path, `Cited path does not exist: ${path}`)
+        if (!(await lstat(safePath(model.root, path)).catch(() => null))) issue('MISSING_PATH', doc.path, `Cited path does not exist: ${path}`, at(match.index))
       }
     }
     for (const match of doc.body.matchAll(/\b(?:bun|npm|pnpm|yarn) run ([\w:.-]+)/g)) {
-      if (!(match[1] in model.scripts)) issue('MISSING_SCRIPT', doc.path, `No package script named ${match[1]}`)
+      if (!(match[1] in model.scripts)) issue('MISSING_SCRIPT', doc.path, `No package script named ${match[1]}`, at(match.index))
     }
     for (const fence of doc.body.matchAll(/```(?:sh|bash|zsh|shell)\s*\n([\s\S]*?)```/g)) {
+      let position = fence.index + fence[0].indexOf('\n') + 1
       for (const line of fence[1].split('\n')) {
+        const lineNumber = at(position)
+        position += line.length + 1
         const command = line.trim().replace(/^\$\s+/, '').match(/^([\w./-]+)(?:\s|$)/)?.[1]
         if (!command) continue
         if (command.startsWith('./')) {
-          try { await access(safePath(model.root, command), constants.X_OK) } catch { issue('MISSING_COMMAND', doc.path, `Local command is missing or not executable: ${command}`) }
-        } else if (!await executable(command)) issue('MISSING_COMMAND', doc.path, `Command not found on PATH: ${command}`)
+          try { await access(safePath(model.root, command), constants.X_OK) } catch { issue('MISSING_COMMAND', doc.path, `Local command is missing or not executable: ${command}`, lineNumber) }
+        } else if (!await executable(command)) issue('MISSING_COMMAND', doc.path, `Command not found on PATH: ${command}`, lineNumber)
       }
     }
   }
@@ -214,11 +219,13 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
       } catch (error) { issue('SITE_LINK', path, String(error)) }
     }
   }
-  return { passed: issues.length === 0, issues }
+  return { passed: issues.length === 0, issues: issues.map(item => ({ ...item, fix: item.fix ?? FIXES[item.code] })) }
 }
+// A pass means references, coverage and outputs line up. It cannot prove the prose is true.
+const PASSED = 'Dewey check passed: references, coverage, reviews and outputs are consistent. It does not prove the prose is true.'
 export async function freshCheck(options: { json?: boolean } = {}): Promise<void> {
   let result: { passed: boolean; issues: Issue[] }
-  try { result = await checkProject() } catch (error) { result = { passed: false, issues: [{ code: 'PROJECT_INVALID', path: STATE, message: error instanceof Error ? error.message : String(error) }] } }
-  console.log(options.json ? json(result).trimEnd() : result.passed ? 'Dewey check passed.' : result.issues.map(issue => `${issue.code} ${issue.path}: ${issue.message}`).join('\n'))
+  try { result = await checkProject() } catch (error) { result = { passed: false, issues: [{ code: 'PROJECT_INVALID', path: STATE, message: error instanceof Error ? error.message : String(error), fix: FIXES.PROJECT_INVALID }] } }
+  console.log(options.json ? json(result).trimEnd() : result.passed ? PASSED : result.issues.map(issue => `${issue.path}${issue.line ? `:${issue.line}` : ''} ${issue.code} ${issue.message}\n  fix: ${issue.fix}`).join('\n'))
   if (!result.passed) process.exitCode = 1
 }

@@ -1,9 +1,11 @@
-import { access, constants, lstat, readFile, realpath } from 'node:fs/promises'
+import { access, constants, lstat, readFile, realpath, rm, writeFile } from 'node:fs/promises'
+import matter from 'gray-matter'
 import { basename, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { assertWritable, BUDGET, coverageHash, coverageHashes, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
 import { attributes, llmsIndex, markdown, siteFiles } from './site.js'
+import { extractLlmsSummary } from './summary.js'
 import { hasSymbol, readText, SYMBOL_FILE } from './symbols.js'
 import { region, regionState, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
@@ -73,30 +75,91 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
     await freshBuild(root)
     return
   }
-  const purpose = options.purpose?.trim() || pkg.description?.trim() || await answer('What is this project for?')
+  // An adopted repo usually says what it is for in its README.
+  const readme = await optional(join(root, 'README.md'))
+  const described = readme ? extractLlmsSummary({ title: '', content: matter(readme).content }).trim() : ''
+  const purpose = options.purpose?.trim() || pkg.description?.trim() || described || await answer('What is this project for?')
   if (!purpose) throw new Error('A project purpose is required')
   const rules = options.rule ?? (options.rules === false ? [] : (await answer('Which hard rules must agents follow? (empty means none)')).split('\n').filter(Boolean))
   const hosts = options.host ?? []
   for (const host of hosts) if (!/^[\w.-]+\.md$/.test(host) || host === 'AGENTS.md') throw new Error(`Invalid host file: ${host}; use a root Markdown file name`)
   const project: Project = { schemaVersion: 1, name: pkg.name || basename(root), purpose, rules, ...(hosts.length ? { hosts } : {}) }
+
+  // Adopt what is already there. Authored files are kept; only marked regions and missing kinds are added.
+  for (const path of ['.dewey/outputs.json', OUTPUT]) {
+    await assertWritable(root, path)
+    if (await lstat(safePath(root, path)).catch(() => null)) throw new Error(`Refusing existing init target: ${path}. Remove it and run dewey init again.`)
+  }
+  const llms = await optional(join(root, 'llms.txt'))
+  if (llms !== null && regionState(llms, 'index') === 'broken') throw new Error('llms.txt has an incomplete or repeated index region. Leave one <!-- dewey:begin index --> … <!-- dewey:end index --> pair, or none, then run dewey init again.')
+  const front = await optional(join(root, 'AGENTS.md'))
+  if (front !== null && regionState(front, 'observed') === 'broken') throw new Error('AGENTS.md has an incomplete or repeated observed region. Leave one <!-- dewey:begin observed --> … <!-- dewey:end observed --> pair, or none, then run dewey init again.')
+  const adopted: Record<string, string> = {}
+  const maps: string[][] = []
+  for (const path of (await walk(root, 'docs')).filter(path => path.endsWith('.md'))) {
+    const raw = await readFile(safePath(root, path), 'utf8')
+    let data: Record<string, unknown>
+    try { data = matter(raw).data } catch { throw new Error(`${path}: the frontmatter is not valid YAML. Fix it and run dewey init again.`) }
+    if (data.kind === 'map' && Array.isArray(data.covers)) maps.push(data.covers.filter((pattern): pattern is string => typeof pattern === 'string'))
+    if (data.kind !== undefined) continue
+    adopted[path] = guessKind(path)
+  }
+  const covered = (area: string) => maps.some(covers => sources.filter(path => sourceArea(path) === area).every(path => covers.some(pattern => matches(path, pattern))))
+  const fresh = (scripts: Record<string, string>) => `# ${project.name}\n\n${purpose}\n\n## Hard rules\n\n${rules.length ? rules.map(rule => `- ${rule}`).join('\n') : 'No project-specific hard rules declared.'}\n\n${region('observed', observed(scripts, areas))}\n`
   const scaffolds: Record<string, string> = {
     [STATE]: json(project),
-    'AGENTS.md': `# ${project.name}\n\n${purpose}\n\n## Hard rules\n\n${rules.length ? rules.map(rule => `- ${rule}`).join('\n') : 'No project-specific hard rules declared.'}\n\n${region('observed', observed(pkg.scripts, areas))}\n`,
+    'AGENTS.md': front === null ? fresh(pkg.scripts) : regionState(front, 'observed') === 'one' ? front : `${front.trimEnd()}\n\n${region('observed', observed(pkg.scripts, areas))}\n`,
     ...Object.fromEntries(hosts.map(host => [host, HOST_POINTER])),
     'docs/quickstart.md': `---\nkind: guide\ntitle: Get started\ncovers: []\ndraft: true\n---\n\n# Get started\n\n<!-- Author the task, prerequisites, and a verified success condition. Remove draft: true when reviewed. -->\n\n${Object.keys(pkg.scripts).map(script => `- Run \`bun run ${script}\`.`).join('\n')}\n`,
     'SKILL.md': `---\nname: ${yaml(project.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}\ndescription: ${yaml(`Use ${project.name} from another project. ${purpose}`)}\n---\n\n# Use ${project.name}\n\nRead [Get started](docs/quickstart.md) for verified setup and task instructions.\n\n- Use [llms.txt](llms.txt) to find the public guides and reference.\n- Follow the project's constraints:\n${rules.map(rule => `  - ${rule}`).join('\n') || '  - No additional constraints declared.'}\n- Verify prerequisites and the documented success condition before reporting completion.\n- Do not treat internal maps or historical plans as the public interface.\n`,
     '.agents/skills/dewey-author/SKILL.md': AUTHOR_SKILL,
   }
-  for (const area of areas) scaffolds[`docs/${mapName(area)}.agent.md`] = mapScaffold(area, sources)
-  if (lineCount(scaffolds['AGENTS.md']) > BUDGET.lines) throw new Error('Observed project exceeds the front-door budget; narrow the project scope before init')
-  // Init is for fresh projects; preflight conflicts before creating anything.
-  for (const path of [...Object.keys(scaffolds), 'llms.txt', '.dewey/outputs.json', '.dewey/site']) {
+  for (const area of areas) if (!covered(area)) scaffolds[`docs/${mapName(area)}.agent.md`] = mapScaffold(area, sources)
+  if (front === null && lineCount(scaffolds['AGENTS.md']) > BUDGET.lines) throw new Error('Observed project exceeds the front-door budget; narrow the project scope before init')
+  const writes: Record<string, string> = {}
+  const kept: string[] = []
+  for (const [path, content] of Object.entries(scaffolds)) {
     await assertWritable(root, path)
-    try { await lstat(safePath(root, path)); throw new Error(`Refusing existing init target: ${path}`) } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+    const existing = path === 'AGENTS.md' ? null : await optional(safePath(root, path))
+    if (existing === null) writes[path] = content
+    else kept.push(path)
   }
-  for (const [path, content] of Object.entries(scaffolds)) await writeSafe(root, path, content)
-  await freshBuild(root)
-  console.log('Initialized front door, draft maps/guide, SKILL.md, and .dewey/site/index.html. Author the drafts, review maps, then build and check.')
+  if (llms !== null && regionState(llms, 'index') === 'none') writes['llms.txt'] = `${llms.trimEnd()}\n\n${region('index', '')}\n`
+  for (const [path, kind] of Object.entries(adopted)) {
+    const raw = await readFile(safePath(root, path), 'utf8')
+    writes[path] = /^---\r?\n/.test(raw) ? raw.replace(/^---\r?\n/, `---\nkind: ${kind}\n`) : `---\nkind: ${kind}\n---\n\n${raw}`
+  }
+
+  // All or nothing: if any write or the first build fails, put every file back.
+  const before: Record<string, string | null> = {}
+  for (const path of new Set([...Object.keys(writes), 'llms.txt'])) before[path] = await optional(safePath(root, path))
+  const absent: string[] = []
+  for (const dir of ['.dewey', '.agents', 'docs']) if (!await lstat(safePath(root, dir)).catch(() => null)) absent.push(dir)
+  try {
+    for (const [path, content] of Object.entries(writes)) await writeSafe(root, path, content)
+    await freshBuild(root)
+  } catch (error) {
+    for (const [path, content] of Object.entries(before)) {
+      if (content === null) await rm(safePath(root, path), { force: true })
+      else await writeFile(safePath(root, path), content)
+    }
+    for (const dir of absent) await rm(safePath(root, dir), { recursive: true, force: true })
+    throw new Error(`dewey init made no changes: ${(error as Error).message}`)
+  }
+  const notes = [
+    ...(Object.keys(adopted).length ? [`  Added a kind to ${Object.keys(adopted).length} docs (${(['guide', 'reference', 'history'] as const).map(kind => [kind, Object.values(adopted).filter(value => value === kind).length] as const).filter(([, count]) => count).map(([kind, count]) => `${count} ${kind}`).join(', ')}), guessed from the path. Check them with git diff.`] : []),
+    ...kept.map(path => `  ${path}: kept as is`),
+    ...(front !== null ? ['  AGENTS.md: kept your text; Dewey updates only the observed region'] : []),
+    ...(llms !== null ? ['  llms.txt: kept your text; Dewey updates only the index region'] : []),
+  ]
+  console.log(`Initialized front door, draft maps/guide, SKILL.md, and .dewey/site/index.html. Author the drafts, review maps, then build and check.${notes.length ? `\nAdopted existing files:\n${notes.join('\n')}` : ''}`)
+}
+// A kind for a doc that has none, from where it lives. Plans and decisions are history.
+function guessKind(path: string): 'guide' | 'reference' | 'history' {
+  const lower = path.toLowerCase()
+  if (/(^|\/)(history|archive|plans?|proposals?|decisions?|adrs?|rfcs?|specs?|reports?|briefs?)\//.test(lower)) return 'history'
+  if (/(^|\/)(reference|api)\//.test(lower) || /(^|[-_/])(reference|api|cli|config|schema)[-_.]/.test(lower)) return 'reference'
+  return 'guide'
 }
 const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 // Skeletons for each kind. The comments say what belongs in each section; nothing is invented.

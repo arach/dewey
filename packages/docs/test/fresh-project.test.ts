@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from 'bun:test'
-import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { checkProject, freshBuild, freshInit, newDocument, reviewDocument } from '../src/cli/fresh/commands'
@@ -304,12 +304,53 @@ describe('fresh-project loop', () => {
     expect(result.code).toBe(1)
     expect(JSON.parse(result.out).issues[0].code).toBe('PROJECT_INVALID')
   })
+  test('init adopts existing docs and keeps authored text', async () => {
+    const root = await fixture()
+    await writeFile(join(root, 'AGENTS.md'), '# Widget\n\nNever ship on Fridays.\n')
+    await writeFile(join(root, 'llms.txt'), '# Widget\n\n> Hand written.\n')
+    await mkdir(join(root, 'docs/reference'), { recursive: true })
+    await mkdir(join(root, 'docs/plans'), { recursive: true })
+    await writeFile(join(root, 'docs/install.md'), '# Install\n\nRun `bun run test`.\n')
+    await writeFile(join(root, 'docs/reference/options.md'), '---\ntitle: Options\n---\n\n# Options\n\nNone yet.\n')
+    await writeFile(join(root, 'docs/plans/v2.md'), '# The v2 plan\n\nLater.\n')
+    await writeFile(join(root, 'docs/source.md'), '---\nkind: map\ntitle: Source\ncovers: ["src/*"]\n---\n\n# Source\n\n`src/index.ts` exports the mode.\n')
+    await writeFile(join(root, 'docs/quickstart.md'), '---\nkind: guide\ntitle: Start\n---\n\n# Start\n\nRun `bun run test`.\n')
+    await freshInit({ rules: false }, root)
+    const front = await readFile(join(root, 'AGENTS.md'), 'utf8')
+    expect(front.startsWith('# Widget\n\nNever ship on Fridays.\n')).toBe(true)
+    expect(front).toContain('<!-- dewey:begin observed -->')
+    const llms = await readFile(join(root, 'llms.txt'), 'utf8')
+    expect(llms).toStartWith('# Widget\n\n> Hand written.\n')
+    expect(llms).toContain('[Install](docs/install.md)')
+    expect(await readFile(join(root, 'docs/install.md'), 'utf8')).toBe('---\nkind: guide\n---\n\n# Install\n\nRun `bun run test`.\n')
+    expect(await readFile(join(root, 'docs/reference/options.md'), 'utf8')).toStartWith('---\nkind: reference\ntitle: Options\n')
+    expect(await readFile(join(root, 'docs/plans/v2.md'), 'utf8')).toStartWith('---\nkind: history\n')
+    expect(await readFile(join(root, 'docs/quickstart.md'), 'utf8')).toContain('title: Start')
+    // src/ already has a map, so init does not draft another.
+    expect(await Bun.file(join(root, 'docs/src.agent.md')).exists()).toBe(false)
+    expect(await Bun.file(join(root, '.dewey/site/docs/install.html')).exists()).toBe(true)
+    expect(await Bun.file(join(root, '.dewey/site/docs/plans/v2.html')).exists()).toBe(false)
+  })
+  test('init that fails leaves the project as it was', async () => {
+    const root = await fixture()
+    await writeFile(join(root, 'AGENTS.md'), '# Widget\n')
+    await writeFile(join(root, 'llms.txt'), '# Widget\n')
+    await mkdir(join(root, 'docs'))
+    await writeFile(join(root, 'docs/install.md'), '# Install\n')
+    await writeFile(join(root, 'docs/broken.md'), '---\nkind: guide\nstatus: someday\n---\n\n# Broken\n')
+    await expect(freshInit({ rules: false }, root)).rejects.toThrow('dewey init made no changes')
+    expect(await readFile(join(root, 'AGENTS.md'), 'utf8')).toBe('# Widget\n')
+    expect(await readFile(join(root, 'docs/install.md'), 'utf8')).toBe('# Install\n')
+    expect(await readFile(join(root, 'llms.txt'), 'utf8')).toBe('# Widget\n')
+    expect((await readdir(root)).sort()).toEqual(['AGENTS.md', 'docs', 'llms.txt', 'package.json', 'src'])
+    expect((await readdir(join(root, 'docs'))).sort()).toEqual(['broken.md', 'install.md'])
+  })
   test('refuses existing authored targets and symlink writes; validates metadata and coverage globs', async () => {
     const root = await fixture()
-    await writeFile(join(root, 'AGENTS.md'), '# Hand authored\n')
-    await expect(freshInit({ rules: false }, root)).rejects.toThrow('existing init target')
+    await writeFile(join(root, 'llms.txt'), '<!-- dewey:begin index -->\n# Hand authored\n')
+    await expect(freshInit({ rules: false }, root)).rejects.toThrow('llms.txt has an incomplete or repeated index region')
     expect(await Bun.file(join(root, '.dewey/project.json')).exists()).toBe(false)
-    await rm(join(root, 'AGENTS.md'))
+    await rm(join(root, 'llms.txt'))
     await symlink(join(root, 'src'), join(root, '.dewey'))
     await expect(freshInit({ rules: false }, root)).rejects.toThrow('symlink')
     expect(matches('src/a.ts', 'src/*')).toBe(true)

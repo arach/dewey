@@ -72,11 +72,11 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
 
   // Highlight the code
   const code = typeof children === 'string' ? children.trim() : String(children).trim()
-  let highlighted: string
-  try {
-    highlighted = hljs.highlight(code, { language }).value
-  } catch {
-    highlighted = code
+  // Unregistered languages (text, mermaid, …) render as escaped plain code.
+  const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  let highlighted = escaped
+  if (hljs.getLanguage(language)) {
+    try { highlighted = hljs.highlight(code, { language }).value } catch { highlighted = escaped }
   }
 
   return (

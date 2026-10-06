@@ -125,7 +125,9 @@ Each issue carries the file, the line when it has one, and a `fix`. Text output 
 
 It does not execute documentation commands. External links are not fetched. Source changes request review; they are not proof that prose is false.
 
-Init refuses existing scaffold targets. Rerunning it in an initialized project updates only the observed front-door region and generated outputs. Build updates only the marked region in root `llms.txt`; surrounding authored text survives. Generated site files have hash-based ownership: modified/unowned targets block a build before writes. Obsolete unchanged owned pages are pruned. Symlink output paths are refused.
+Init adopts a repo that already has docs. It keeps existing files: `AGENTS.md` and `llms.txt` get a marked region appended, and existing guides, maps, `SKILL.md` and host files are left alone. A doc in `docs/` with no `kind` gets one guessed from its path (`history` under plans, specs, reports, proposals or decisions; `reference` under reference or api; otherwise `guide`), and init lists how many it changed. Areas an existing map already covers get no draft map. If anything fails, including the first build, init restores every file it touched and says it made no changes. It refuses an existing `.dewey/site/` or `.dewey/outputs.json`. Without `--purpose` or a package description, it uses the README's first paragraph.
+
+Rerunning it in an initialized project updates only the observed front-door region and generated outputs. Build updates only the marked region in root `llms.txt`; surrounding authored text survives. Generated site files have hash-based ownership: modified/unowned targets block a build before writes. Obsolete unchanged owned pages are pruned. Symlink output paths are refused.
 
 ## First-slice boundaries
 

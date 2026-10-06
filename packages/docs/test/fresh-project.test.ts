@@ -1,0 +1,179 @@
+import { afterEach, describe, expect, test } from 'bun:test'
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { checkProject, freshBuild, freshInit, reviewDocument } from '../src/cli/fresh/commands'
+import { matches } from '../src/cli/fresh/model'
+import { updateRegion } from '../src/cli/fresh/storage'
+
+const roots: string[] = []
+const cli = resolve(import.meta.dir, '../src/cli/index.ts')
+afterEach(async () => { for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true }) })
+async function fixture(): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), 'dewey-fresh-'))
+  roots.push(root)
+  await mkdir(join(root, 'src'))
+  await writeFile(join(root, 'src/index.ts'), "export const mode = 'safe'\n")
+  await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'scratch-widget', description: 'A tiny widget.', scripts: { test: 'echo verified' } }))
+  return root
+}
+async function authored(root: string): Promise<void> {
+  await writeFile(join(root, 'docs/src.agent.md'), '---\nkind: map\ntitle: Source map\ncovers: ["src/*"]\n---\n\n# Source map\n\n`src/index.ts` exports the mode.\n\n## Invariants\n\nThe default mode is safe.\n')
+  await writeFile(join(root, 'docs/quickstart.md'), '---\nkind: guide\ntitle: Get started\ncovers: []\n---\n\n# Get started\n\nRun `bun run test`. Expect verified.\n\n## Verify\n\nThe test is a smoke check.\n\n[Verification](#verify)\n')
+  await reviewDocument('docs/src.agent.md', root)
+  await freshBuild(root)
+}
+async function ready(): Promise<string> { const root = await fixture(); await freshInit({ rules: false }, root); await authored(root); return root }
+async function codes(root: string): Promise<string[]> { return (await checkProject(root)).issues.map(issue => issue.code) }
+function run(root: string, args: string[]) {
+  const result = Bun.spawnSync([process.execPath, cli, ...args], { cwd: root, stdout: 'pipe', stderr: 'pipe' })
+  return { code: result.exitCode, out: result.stdout.toString(), err: result.stderr.toString() }
+}
+
+describe('fresh-project loop', () => {
+  test('actual CLI initializes without TS config, authors, reviews, builds, and checks', async () => {
+    const root = await fixture()
+    const initialized = run(root, ['init', '--rule', 'Preserve mode semantics.'])
+    expect(initialized.code).toBe(0)
+    expect(await readFile(join(root, 'AGENTS.md'), 'utf8')).toContain('Preserve mode semantics.')
+    expect(await readFile(join(root, '.dewey/site/index.html'), 'utf8')).toContain('Get started')
+    expect(await Bun.file(join(root, 'dewey.config.ts')).exists()).toBe(false)
+    expect(run(root, ['check', '--json']).code).toBe(1)
+    expect(await codes(root)).toContain('DOC_DRAFT')
+    await authored(root)
+    expect(run(root, ['review', 'docs/src.agent.md']).code).toBe(0)
+    expect(run(root, ['build']).code).toBe(0)
+    const checked = run(root, ['check', '--json'])
+    expect(checked.code).toBe(0)
+    expect(JSON.parse(checked.out)).toEqual({ passed: true, issues: [] })
+    expect((await readFile(join(root, 'AGENTS.md'), 'utf8')).split('\n').length).toBeLessThanOrEqual(150)
+    expect(await readFile(join(root, 'SKILL.md'), 'utf8')).toContain('from another project')
+    expect(await readFile(join(root, '.agents/skills/dewey-author/SKILL.md'), 'utf8')).toContain('dewey review')
+  })
+  test('asks only for missing purpose/rules and makes no partial writes on missing input', async () => {
+    const root = await fixture()
+    await writeFile(join(root, 'package.json'), '{"name":"empty"}')
+    expect(run(root, ['init', '--no-rules']).code).toBe(1)
+    expect(await Bun.file(join(root, '.dewey/project.json')).exists()).toBe(false)
+    expect(run(root, ['init', '--purpose', 'Test a tool.', '--no-rules']).code).toBe(0)
+  })
+  test('source additions require maps and source edits require explicit review, never just build', async () => {
+    const root = await ready()
+    await mkdir(join(root, 'src/sync'))
+    await writeFile(join(root, 'src/sync/index.ts'), 'export const sync = true\n')
+    expect(await codes(root)).toContain('MAP_MISSING')
+    await writeFile(join(root, 'docs/sync.agent.md'), '---\nkind: map\ncovers: ["src/sync/**"]\n---\n# Sync map\n\n`src/sync/index.ts` declares sync.\n')
+    await reviewDocument('docs/sync.agent.md', root)
+    await freshBuild(root)
+    expect(await codes(root)).toEqual([])
+    await writeFile(join(root, 'src/index.ts'), "export const mode = 'fast'\n")
+    await freshBuild(root)
+    expect(await codes(root)).toContain('REVIEW_REQUIRED')
+    await writeFile(join(root, 'docs/src.agent.md'), (await readFile(join(root, 'docs/src.agent.md'), 'utf8')).replace('default mode is safe', 'default mode is fast'))
+    expect(await codes(root)).toContain('REVIEW_REQUIRED')
+    await reviewDocument('docs/src.agent.md', root)
+    await freshBuild(root)
+    expect(await codes(root)).toEqual([])
+  })
+  test('catches missing paths/scripts/commands, bad links and anchors, then recovers', async () => {
+    const root = await ready()
+    const path = join(root, 'docs/quickstart.md')
+    const original = await readFile(path, 'utf8')
+    for (const [text, code] of [
+      ['`src/missing.ts`', 'MISSING_PATH'], ['`bun run absent`', 'MISSING_SCRIPT'],
+      ['```sh\ndewey_nonexistent_command_87\n```', 'MISSING_COMMAND'],
+      ['[Missing](missing.md)', 'BROKEN_LINK'], ['[Missing](#absent)', 'BROKEN_ANCHOR'],
+    ]) {
+      await writeFile(path, original + '\n' + text + '\n')
+      expect(await codes(root)).toContain(code)
+      expect(run(root, ['check', '--json']).code).toBe(1)
+      await writeFile(path, original)
+      expect(await codes(root)).toEqual([])
+    }
+  })
+  test('checks front-door budget, generated freshness, actual navigation and rendered links', async () => {
+    const root = await ready()
+    const front = join(root, 'AGENTS.md'); const original = await readFile(front, 'utf8')
+    await writeFile(front, original + '\nExtra rule\n'.repeat(150))
+    expect(await codes(root)).toContain('FRONT_DOOR_BUDGET')
+    await writeFile(front, original)
+    const guide = join(root, 'docs/quickstart.md')
+    await writeFile(guide, await readFile(guide, 'utf8') + '\nA new verified step.\n')
+    expect(await codes(root)).toContain('STALE_OUTPUT')
+    await freshBuild(root)
+    const home = join(root, '.dewey/site/index.html'); const homeText = await readFile(home, 'utf8')
+    await writeFile(home, homeText.replace(/<nav[\s\S]*?<\/nav>/, '<nav><a href="absent.html">Broken</a></nav>'))
+    expect(await codes(root)).toContain('NAV_MISSING')
+    expect(await codes(root)).toContain('SITE_LINK')
+    await expect(freshBuild(root)).rejects.toThrow('modified or unowned')
+    await writeFile(home, homeText)
+    expect(await codes(root)).toEqual([])
+  })
+  test('manual regions survive reruns; maps/history stay out; generated stale pages are pruned', async () => {
+    const root = await ready()
+    const front = join(root, 'AGENTS.md'); const manual = '\n## Manual rule\n\nNever delete local state.\n'
+    await writeFile(front, await readFile(front, 'utf8') + manual)
+    await writeFile(join(root, 'llms.txt'), 'Manual preface.\n' + await readFile(join(root, 'llms.txt'), 'utf8') + 'Manual footer.\n')
+    await writeFile(join(root, 'docs/old-plan.md'), '---\nkind: history\n---\n# OLD HISTORY SECRET\n')
+    await freshInit({ rules: false }, root)
+    expect((await readFile(front, 'utf8')).endsWith(manual)).toBe(true)
+    expect(await readFile(join(root, 'llms.txt'), 'utf8')).toStartWith('Manual preface.')
+    expect(await readFile(join(root, 'llms.txt'), 'utf8')).toEndWith('Manual footer.\n')
+    const home = await readFile(join(root, '.dewey/site/index.html'), 'utf8')
+    expect(home).not.toContain('OLD HISTORY SECRET')
+    expect(home).not.toContain('Source map')
+    expect(await Bun.file(join(root, '.dewey/site/docs/old-plan.html')).exists()).toBe(false)
+    await writeFile(join(root, 'docs/extra.md'), '---\nkind: reference\ncovers: []\nnav: false\n---\n# Extra reference\n')
+    await freshBuild(root)
+    expect(await codes(root)).toEqual([])
+    expect(await Bun.file(join(root, '.dewey/site/docs/extra.html')).exists()).toBe(true)
+    await rm(join(root, 'docs/extra.md'))
+    expect(await codes(root)).toContain('STALE_OUTPUT')
+    await freshBuild(root)
+    expect(await Bun.file(join(root, '.dewey/site/docs/extra.html')).exists()).toBe(false)
+  })
+  test('README, nested relative links, references and assets share the rendered model', async () => {
+    const root = await ready()
+    await mkdir(join(root, 'docs/reference'))
+    await writeFile(join(root, 'README.md'), '# Project overview\n\n[Start](docs/quickstart.md#verify)\n')
+    await writeFile(join(root, 'docs/reference/api.md'), '---\nkind: reference\nnav: false\ncovers: []\n---\n# API\n\n[Start][guide]\n\n[guide]: ../quickstart.md#verify\n')
+    await writeFile(join(root, 'docs/sample.txt'), 'plain text sample\n')
+    const guide = join(root, 'docs/quickstart.md')
+    await writeFile(guide, await readFile(guide, 'utf8') + '\n[Sample](sample.txt) and [API](reference/api.md)\n')
+    await freshBuild(root)
+    expect(await codes(root)).toEqual([])
+    expect(await readFile(join(root, '.dewey/site/assets/docs/sample.txt'), 'utf8')).toBe('plain text sample\n')
+    const original = await readFile(join(root, '.dewey/site/index.html'), 'utf8')
+    await writeFile(join(root, 'llms.txt'), 'Unmarked authored content\n')
+    await expect(freshBuild(root)).rejects.toThrow('unmarked')
+    expect(await readFile(join(root, '.dewey/site/index.html'), 'utf8')).toBe(original)
+    expect(await readFile(join(root, 'llms.txt'), 'utf8')).toBe('Unmarked authored content\n')
+  })
+  test('invalid state and metadata yield structured failures without executing config', async () => {
+    const root = await ready()
+    await writeFile(join(root, 'dewey.config.ts'), 'throw new Error("must not execute")')
+    const notExecuted = run(root, ['check', '--json'])
+    expect(notExecuted.err).not.toContain('must not execute')
+    expect(JSON.parse(notExecuted.out).issues.map((issue: { code: string }) => issue.code)).toContain('MAP_MISSING')
+    await writeFile(join(root, 'docs/bad.md'), '---\nkind: unknown\ncovers: []\n---\n# Invalid\n')
+    expect(await codes(root)).toContain('DOC_KIND')
+    await writeFile(join(root, '.dewey/project.json'), '{}')
+    const result = run(root, ['check', '--json'])
+    expect(result.code).toBe(1)
+    expect(JSON.parse(result.out).issues[0].code).toBe('PROJECT_INVALID')
+  })
+  test('refuses existing authored targets and symlink writes; validates metadata and coverage globs', async () => {
+    const root = await fixture()
+    await writeFile(join(root, 'AGENTS.md'), '# Hand authored\n')
+    await expect(freshInit({ rules: false }, root)).rejects.toThrow('existing init target')
+    expect(await Bun.file(join(root, '.dewey/project.json')).exists()).toBe(false)
+    await rm(join(root, 'AGENTS.md'))
+    await symlink(join(root, 'src'), join(root, '.dewey'))
+    await expect(freshInit({ rules: false }, root)).rejects.toThrow('symlink')
+    expect(matches('src/a.ts', 'src/*')).toBe(true)
+    expect(matches('src/sync/a.ts', 'src/*')).toBe(false)
+    expect(matches('src/sync/a.ts', 'src/**')).toBe(true)
+    expect(() => matches('src/a.ts', '../**')).toThrow('Unsafe')
+    expect(() => updateRegion('unmarked notes', 'observed', 'replacement')).toThrow('unmarked')
+  })
+})

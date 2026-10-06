@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { initCommand } from './commands/init.js'
+import { freshInit, freshBuild, freshCheck, reviewDocument } from './fresh/commands.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
 import { agentCoachCommand } from './commands/agent-coach.js'
@@ -19,10 +19,24 @@ program
 
 program
   .command('init')
-  .description('Initialize docs structure and dewey.config.ts')
-  .option('-t, --type <type>', 'Project type (macos-app, npm-package, cli-tool, react-library, monorepo)', 'generic')
-  .option('-f, --force', 'Overwrite existing files')
-  .action(initCommand)
+  .description('Start a fresh project: front door, maps, guides, skill, and docs site')
+  .option('--purpose <text>', 'Project purpose (defaults to package description)')
+  .option('--rule <text>', 'Hard rule; repeat for multiple rules', (value: string, previous: string[]) => [...(previous ?? []), value], undefined)
+  .option('--no-rules', 'Explicitly declare no project-specific hard rules')
+  .action(options => freshInit(options))
+
+program.command('build')
+  .description('Build the human docs site and llms.txt from the same Markdown')
+  .action(() => freshBuild())
+
+program.command('check')
+  .description('Check maps, review state, references, front door, site links, navigation, and freshness')
+  .option('--json', 'Output structured issues')
+  .action(freshCheck)
+
+program.command('review <document>')
+  .description('Acknowledge that a covered document was reviewed against current source')
+  .action(document => reviewDocument(document))
 
 program
   .command('audit')
@@ -77,7 +91,10 @@ program
   .option('--full', 'Full eject (no default import, complete replacement)')
   .action(ejectCommand)
 
-program.parse()
+program.parseAsync().catch(error => {
+  console.error(error instanceof Error ? error.message : String(error))
+  process.exitCode = 1
+})
 
 // Export for programmatic use
 export { defineConfig } from './schema.js'

@@ -76,6 +76,16 @@ button,select,input{font:inherit}
   .dw-fresh-theme{border:0;background-color:transparent;padding-right:1.3rem;background-position:right .3rem center}
 }
 
+/* Without JavaScript these controls would do nothing, so they are not shown. */
+html:not(.js) .dw-fresh-tools,html:not(.js) .dw-header-theme-toggle,html:not(.js) .dw-header-menu-btn{display:none!important}
+
+.dw-markdown-table-scroll{margin:1.25rem 0 1.5rem;border:1px solid var(--dw-border);border-radius:.6rem}
+.dw-prose .dw-markdown-table-scroll table{margin:0;font-size:.875rem}
+.dw-prose th,.dw-prose td{border:0;border-bottom:1px solid var(--dw-border);padding:.55rem .9rem;vertical-align:top;line-height:1.5}
+.dw-prose th{background:var(--dw-muted);color:var(--dw-muted-foreground);font-size:.75rem;font-weight:600;letter-spacing:.02em}
+.dw-prose tr:nth-child(even){background:none}
+.dw-prose tbody tr:last-child td{border-bottom:0}
+
 .dw-cmd-result{text-decoration:none}
 .dw-cmd-result[aria-selected=true]{background:var(--dw-muted)}
 .dw-cmd-result-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15rem}

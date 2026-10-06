@@ -19,8 +19,8 @@ Use this skill after adding or changing a source area, command, public API, or t
 
 1. Read AGENTS.md and the affected docs map. Do not load history by default.
 2. Run dewey check --json. Treat covered-code changes as a request for review, not proof the prose is false.
-3. For a new area, add docs/<area>.agent.md with kind: map and covers: [src/<area>/**]. Describe files, data flow, invariants, and traps. Give it a real title. Do not pair every guide with a map.
-4. Write task-shaped guides with kind: guide, and API/CLI/config contracts with kind: reference. Use relative Markdown links. Set nav: false only for intentionally unlisted human pages. Keep history at kind: history.
+3. Before changing code, run dewey which <path> to find the docs that cover it. For a new area, run dewey new map <area> (dewey uncovered lists them). Describe files, data flow, invariants, and traps. Give it a real title. Do not pair every guide with a map.
+4. Start new docs with dewey new guide|reference|history <title>. Write task-shaped guides with kind: guide, and API/CLI/config contracts with kind: reference. Use relative Markdown links. Set nav: false only for intentionally unlisted human pages. Keep history at kind: history.
 5. Finish scaffold drafts and remove draft: true only after review. Never invent behavior. Verify cited paths and package scripts without executing untrusted doc commands.
 6. After reviewing a covered document against current code, run dewey review docs/<area>.agent.md. This explicitly records content hashes; build never acknowledges review for you.
 7. Run dewey build, then dewey check. Repair broken links, missing navigation, and stale outputs. Site and llms.txt come from the same Markdown.
@@ -38,6 +38,14 @@ const HOST_POINTER = 'Read [AGENTS.md](./AGENTS.md) for this project’s instruc
 function yaml(value: string): string { return JSON.stringify(value) }
 function observed(scripts: Record<string, string>, areas: string[], mapPaths?: Record<string, string>): string {
   return ['## Commands', '', ...(Object.keys(scripts).length ? Object.keys(scripts).sort().map(script => `- \`bun run ${script}\``) : ['No package scripts were found.']), '', '## Where to work', '', ...areas.map(area => `- Working on \`${area}\` → read \`${mapPaths?.[area] ?? `docs/${mapName(area)}.agent.md`}\`.`), '', '## Documentation loop', '', '- Read `.agents/skills/dewey-author/SKILL.md` when maintaining docs.', '- Run `dewey build`, then `dewey check`.', '- Review covered-code changes with `dewey review <document>`.', '- Site output: `.dewey/site/`; agent index: `llms.txt`.'].join('\n')
+}
+// A draft map for one source area, or a single file. Lists the files it covers.
+function mapScaffold(area: string, sources: string[]): string {
+  // Prefer the files Dewey assigns to this area, so sibling areas keep their own maps.
+  const own = sources.filter(path => sourceArea(path) === area)
+  const files = own.length ? own : sources.filter(path => path === area || path.startsWith(`${area}/`))
+  const glob = area === '.' ? '*' : files.includes(area) ? area : files.some(path => path.slice(area.length + 1).includes('/')) ? `${area}/**` : `${area}/*`
+  return `---\nkind: map\ntitle: ${yaml(`${area} map`)}\ncovers: [${yaml(glob)}]\ndraft: true\n---\n\n# ${area} map\n\n## Files\n\n${files.map(path => `- \`${path}\``).join('\n')}\n\n## Data flow\n\n<!-- Describe the actual flow. -->\n\n## Invariants and traps\n\n<!-- Record constraints and failure cases; then remove draft: true. -->\n`
 }
 function mapName(area: string): string { return area === '.' ? 'root' : area.replace(/\//g, '-') }
 export async function freshInit(options: InitOptions = {}, directory = process.cwd()): Promise<void> {
@@ -73,10 +81,7 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
     'SKILL.md': `---\nname: ${yaml(project.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}\ndescription: ${yaml(`Use ${project.name} from another project. ${purpose}`)}\n---\n\n# Use ${project.name}\n\nRead [Get started](docs/quickstart.md) for verified setup and task instructions.\n\n- Use [llms.txt](llms.txt) to find the public guides and reference.\n- Follow the project's constraints:\n${rules.map(rule => `  - ${rule}`).join('\n') || '  - No additional constraints declared.'}\n- Verify prerequisites and the documented success condition before reporting completion.\n- Do not treat internal maps or historical plans as the public interface.\n`,
     '.agents/skills/dewey-author/SKILL.md': AUTHOR_SKILL,
   }
-  for (const area of areas) {
-    const glob = area === '.' ? '*' : sources.some(path => sourceArea(path) === area && path.slice(area.length + 1).includes('/')) ? `${area}/**` : `${area}/*`
-    scaffolds[`docs/${mapName(area)}.agent.md`] = `---\nkind: map\ntitle: ${yaml(`${area} map`)}\ncovers: [${yaml(glob)}]\ndraft: true\n---\n\n# ${area} map\n\n## Files\n\n${sources.filter(path => sourceArea(path) === area).map(path => `- \`${path}\``).join('\n')}\n\n## Data flow\n\n<!-- Describe the actual flow. -->\n\n## Invariants and traps\n\n<!-- Record constraints and failure cases; then remove draft: true. -->\n`
-  }
+  for (const area of areas) scaffolds[`docs/${mapName(area)}.agent.md`] = mapScaffold(area, sources)
   if (scaffolds['AGENTS.md'].trimEnd().split('\n').length > 150) throw new Error('Observed project exceeds the front-door budget; narrow the project scope before init')
   // Init is for fresh projects; preflight conflicts before creating anything.
   for (const path of [...Object.keys(scaffolds), 'llms.txt', '.dewey/outputs.json', '.dewey/site']) {
@@ -86,6 +91,37 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
   for (const [path, content] of Object.entries(scaffolds)) await writeSafe(root, path, content)
   await freshBuild(root)
   console.log('Initialized front door, draft maps/guide, SKILL.md, and .dewey/site/index.html. Author the drafts, review maps, then build and check.')
+}
+const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+// Skeletons for each kind. The comments say what belongs in each section; nothing is invented.
+const SKELETONS: Record<'guide' | 'reference' | 'history', (title: string) => string> = {
+  guide: title => `---\nkind: guide\ntitle: ${yaml(title)}\ncovers: []\ndraft: true\n---\n\n# ${title}\n\n<!-- One sentence: what the reader will have done at the end. -->\n\n## Before you start\n\n<!-- Prerequisites, with the working directory. -->\n\n## Steps\n\n1. <!-- One action per step, with the exact command. -->\n\n## Check it worked\n\n<!-- The command to run, the expected result, and what that check does not prove. -->\n`,
+  reference: title => `---\nkind: reference\ntitle: ${yaml(title)}\ncovers: []\ndraft: true\n---\n\n# ${title}\n\n<!-- One sentence: what this reference covers. Add the source files it describes to covers. -->\n\n## Options\n\n| Name | Type | Default | Meaning |\n|---|---|---|---|\n\n## Errors\n\n<!-- Each error, what causes it, and the fix. -->\n`,
+  history: title => `---\nkind: history\ntitle: ${yaml(title)}\n---\n\n# ${title}\n\n<!-- Date, decision, why, and what it replaced. History is kept out of the site and agent indexes. -->\n`,
+}
+export async function newDocument(kind: string, name: string, directory = process.cwd()): Promise<string> {
+  const model = await loadModel(await realpath(directory))
+  let path: string
+  let content: string
+  if (kind === 'map') {
+    const area = name.replace(/^\.\//, '').replace(/\/+$/, '') || '.'
+    if (!model.sources.some(path => sourceArea(path) === area || path === area || path.startsWith(`${area}/`))) throw new Error(`No source files under ${area}. Run dewey uncovered to list areas that need a map.`)
+    path = `docs/${mapName(area)}.agent.md`
+    content = mapScaffold(area, model.sources)
+  } else if (kind === 'guide' || kind === 'reference' || kind === 'history') {
+    const base = slug(name)
+    if (!base) throw new Error('Give the document a name, for example: dewey new guide "Deploy to staging"')
+    path = kind === 'guide' ? `docs/${base}.md` : kind === 'reference' ? `docs/reference/${base}.md` : `docs/history/${new Date().toISOString().slice(0, 10)}-${base}.md`
+    content = SKELETONS[kind](name)
+  } else throw new Error(`Unknown kind: ${kind}. Use map, guide, reference or history.`)
+  await assertWritable(model.root, path)
+  if (await lstat(safePath(model.root, path)).catch(() => null)) throw new Error(`${path} already exists`)
+  await writeSafe(model.root, path, content)
+  return path
+}
+export async function freshNew(kind: string, name: string): Promise<void> {
+  const path = await newDocument(kind, name)
+  console.log(`Created ${path}. Fill it in${kind === 'history' ? '' : ', remove draft: true'}, then run dewey build and dewey check.`)
 }
 async function expectedOutputs(model: Model): Promise<Record<string, string | Buffer>> {
   const site = siteFiles(model)

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
-import { checkProject, freshBuild, freshInit, reviewDocument } from '../src/cli/fresh/commands'
+import { checkProject, freshBuild, freshInit, newDocument, reviewDocument } from '../src/cli/fresh/commands'
 import { matches } from '../src/cli/fresh/model'
 import { uncoveredSources, whichDocs } from '../src/cli/fresh/query'
 import { updateRegion } from '../src/cli/fresh/storage'
@@ -143,6 +143,27 @@ describe('fresh-project loop', () => {
     expect(repo).toContain('[Home](README.md)')
     expect(repo).not.toContain('.html')
     expect(await codes(root)).toEqual([])
+  })
+  test('dewey new scaffolds each kind and refuses to overwrite', async () => {
+    const root = await ready()
+    await mkdir(join(root, 'src/sync'))
+    await writeFile(join(root, 'src/sync/index.ts'), 'export {}\n')
+    expect(await newDocument('map', 'src/sync', root)).toBe('docs/src-sync.agent.md')
+    const map = await readFile(join(root, 'docs/src-sync.agent.md'), 'utf8')
+    expect(map).toContain('covers: ["src/sync/*"]')
+    expect(map).toContain('- `src/sync/index.ts`')
+    expect(await codes(root)).not.toContain('MAP_MISSING')
+    expect(await newDocument('guide', 'Deploy to staging', root)).toBe('docs/deploy-to-staging.md')
+    expect(await readFile(join(root, 'docs/deploy-to-staging.md'), 'utf8')).toContain('## Check it worked')
+    expect(await newDocument('reference', 'CLI flags', root)).toBe('docs/reference/cli-flags.md')
+    expect(await newDocument('history', 'Why JSONL', root)).toMatch(/^docs\/history\/\d{4}-\d{2}-\d{2}-why-jsonl\.md$/)
+    await expect(newDocument('guide', 'Deploy to staging', root)).rejects.toThrow('already exists')
+    await expect(newDocument('map', 'src/nowhere', root)).rejects.toThrow('No source files')
+    await expect(newDocument('concept', 'x', root)).rejects.toThrow('Unknown kind')
+    expect(run(root, ['new', 'guide', 'Rotate keys']).out).toContain('Created docs/rotate-keys.md')
+    const issues = await codes(root)
+    expect(issues).toContain('DOC_DRAFT')
+    expect(issues).not.toContain('DOC_KIND')
   })
   test('host pointer files are opt-in and must redirect to the front door', async () => {
     const root = await fixture()

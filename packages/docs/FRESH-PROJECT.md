@@ -79,6 +79,17 @@ Kinds: `guide`, `reference`, `map`, `history`. Maps declare coverage. Guides and
 
 Coverage accepts `*`, `**`, and `?`, with project-relative paths. `src/*` does not cover `src/sync/index.ts`. Adding that area requires a map. A guide does not need a paired agent file.
 
+## Start a new doc
+
+```sh
+dewey new map src/sync              # docs/src-sync.agent.md, covering that area's files
+dewey new guide "Deploy to staging" # docs/deploy-to-staging.md
+dewey new reference "CLI flags"     # docs/reference/cli-flags.md
+dewey new history "Why JSONL"       # docs/history/<date>-why-jsonl.md
+```
+
+Each starts as a draft with section prompts. `new` refuses to overwrite an existing file.
+
 ## Find docs by code
 
 ```sh

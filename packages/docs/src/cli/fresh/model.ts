@@ -24,7 +24,7 @@ export const FIXES: Record<string, string> = {
   SUPERSEDES_MISSING: 'Point supersedes and superseded_by at doc paths from the project root, such as docs/old-guide.md.',
   DOC_COVERS: 'Set covers to a project-relative path or glob, or a list of them, using *, ** or ?.',
   FRONT_DOOR_MISSING: 'Run dewey init, or restore AGENTS.md.',
-  FRONT_DOOR_BUDGET: 'Move tutorials and reference into docs/ and link to them from AGENTS.md.',
+  FRONT_DOOR_BUDGET: 'Move tutorials and reference into docs/ and link to them from AGENTS.md. Keep host files to a one-line pointer.',
   FRONT_DOOR_POINTER: 'Replace the file with one line that links to AGENTS.md.',
   SKILL_MISSING: 'Add SKILL.md that tells another project how to use this one.',
   MAP_MISSING: 'Run dewey new map <area>, then describe its files, data flow and traps.',
@@ -158,7 +158,11 @@ export async function loadModel(root: string): Promise<Model> {
   return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
 }
 // Same rough estimate as agent-artifacts: whitespace-separated words × 1.33.
-export function tokens(text: string): number { return Math.ceil(text.split(/\s+/).filter(Boolean).length * 1.33) }
+// Rough token estimate: the larger of a word count and a character count, so dense lines can't hide.
+export function tokens(text: string): number { return Math.ceil(Math.max(text.split(/\s+/).filter(Boolean).length * 1.33, text.length / 4)) }
+// Everything an agent loads automatically: AGENTS.md plus the host files.
+export const BUDGET = { lines: 150, tokens: 2000 }
+export function lineCount(text: string): number { return text.trimEnd().split('\n').length }
 // Published as a page: guides and reference, unless abandoned.
 export function human(doc: Doc): boolean { return (doc.kind === 'guide' || doc.kind === 'reference') && doc.status !== 'abandoned' }
 // What an agent should trust as today's behavior: shipped and not replaced.

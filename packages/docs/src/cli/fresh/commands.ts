@@ -2,7 +2,7 @@ import { access, constants, lstat, readFile, realpath } from 'node:fs/promises'
 import { basename, delimiter, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
-import { assertWritable, coverageHash, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
+import { assertWritable, BUDGET, coverageHash, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
 import { attributes, llmsIndex, markdown, siteFiles } from './site.js'
 import { region, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
@@ -24,7 +24,7 @@ Use this skill after adding or changing a source area, command, public API, or t
 5. Finish scaffold drafts and remove draft: true only after review. Never invent behavior. Verify cited paths and package scripts without executing untrusted doc commands.
 6. After reviewing a covered document against current code, run dewey review docs/<area>.agent.md. This explicitly records content hashes; build never acknowledges review for you.
 7. Run dewey build, then dewey check. Repair broken links, missing navigation, and stale outputs. Site and llms.txt come from the same Markdown.
-8. Keep AGENTS.md at 150 lines or fewer. Put hard rules outside its observed generated region. Dewey may only update marked regions; do not overwrite authored text.
+8. Keep AGENTS.md plus any host files at 150 lines and about 2,000 tokens or fewer, together. Put hard rules outside its observed generated region. Dewey may only update marked regions; do not overwrite authored text.
 9. Update root SKILL.md for agents using this project from outside. It is not this authoring skill.
 
 Coverage supports *, **, and ?. A src/* map does not cover a new nested area such as src/sync/. No external-link network checks or command execution are performed by check. Root README.md is treated as a guide when it has no kind declaration.
@@ -62,7 +62,7 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
     }))
     const current = await optional(join(root, 'AGENTS.md'))
     const next = updateRegion(current, 'observed', observed(pkg.scripts, areas, mapPaths))
-    if (next.trimEnd().split('\n').length > 150) throw new Error('AGENTS.md would exceed 150 lines; shorten its authored text first')
+    if (lineCount(next) > BUDGET.lines) throw new Error('AGENTS.md would exceed 150 lines; shorten its authored text first')
     await writeSafe(root, 'AGENTS.md', next)
     await freshBuild(root)
     return
@@ -82,7 +82,7 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
     '.agents/skills/dewey-author/SKILL.md': AUTHOR_SKILL,
   }
   for (const area of areas) scaffolds[`docs/${mapName(area)}.agent.md`] = mapScaffold(area, sources)
-  if (scaffolds['AGENTS.md'].trimEnd().split('\n').length > 150) throw new Error('Observed project exceeds the front-door budget; narrow the project scope before init')
+  if (lineCount(scaffolds['AGENTS.md']) > BUDGET.lines) throw new Error('Observed project exceeds the front-door budget; narrow the project scope before init')
   // Init is for fresh projects; preflight conflicts before creating anything.
   for (const path of [...Object.keys(scaffolds), 'llms.txt', '.dewey/outputs.json', '.dewey/site']) {
     await assertWritable(root, path)
@@ -191,10 +191,14 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   const issue = (code: string, path: string, message: string, line?: number, fix?: string) => issues.push({ code, path, ...(line ? { line } : {}), message, ...(fix ? { fix } : {}) })
   const front = await optional(join(model.root, 'AGENTS.md'))
   if (front === null) issue('FRONT_DOOR_MISSING', 'AGENTS.md', 'Front door is missing')
-  else if (front.trimEnd().split('\n').length > 150) issue('FRONT_DOOR_BUDGET', 'AGENTS.md', 'Front door exceeds 150 lines', 151)
+  const loaded: Array<[string, string]> = front === null ? [] : [['AGENTS.md', front]]
   for (const host of model.project.hosts ?? []) {
-    if (!(await optional(join(model.root, host)))?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', host, `Point ${host} to AGENTS.md`)
+    const text = await optional(join(model.root, host))
+    if (text !== null) loaded.push([host, text])
+    if (!text?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', host, `Point ${host} to AGENTS.md`)
   }
+  const size = { lines: loaded.reduce((sum, [, text]) => sum + lineCount(text), 0), tokens: loaded.reduce((sum, [, text]) => sum + tokens(text), 0) }
+  if (size.lines > BUDGET.lines || size.tokens > BUDGET.tokens) issue('FRONT_DOOR_BUDGET', 'AGENTS.md', `Front door is ${size.lines} lines and about ${size.tokens} tokens (${loaded.map(([path, text]) => `${path}: ${lineCount(text)} lines`).join(', ')}); the limit is ${BUDGET.lines} lines and ${BUDGET.tokens} tokens`, front && lineCount(front) > BUDGET.lines ? BUDGET.lines + 1 : undefined)
   if (await optional(join(model.root, 'SKILL.md')) === null) issue('SKILL_MISSING', 'SKILL.md', 'External consumer skill is missing')
   const omitted = await unpublished(model)
   if (omitted.length) issue('PUBLISH_MISSING', 'package.json', `The published package would leave out: ${omitted.join(', ')}`)

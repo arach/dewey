@@ -36,7 +36,7 @@ Repeat `--rule` as needed. Use `--no-rules` to explicitly declare none. Purpose 
 
 Init creates:
 
-- `AGENTS.md`, with authored rules and a marked observed-facts region, capped at 150 lines.
+- `AGENTS.md`, with authored rules and a marked observed-facts region. With any host files, it is capped at 150 lines and about 2,000 tokens in total.
 - One pointer file per `--host <file>`, each redirecting to that front door. Use it for tools that read their own instruction file instead of `AGENTS.md`.
 - Draft task guide and source-area maps in `docs/`.
 - `SKILL.md`, for agents using the project from outside.
@@ -111,7 +111,7 @@ Both take `--json`. Results list maps first, then reference, guides and history.
 `check` exits 1 and emits issue codes for:
 
 - Drafts, invalid metadata, uncovered source, empty coverage patterns, or review-required source/document changes.
-- Missing front door/skill/pointer, or a front door over 150 lines.
+- Missing front door/skill/pointer, or a front door (AGENTS.md plus host files) over 150 lines or about 2,000 tokens.
 - A published package (named, not `private`) whose `files` list or `.npmignore` would leave out `AGENTS.md`, `SKILL.md` or a guide/reference under `docs/`. Agents in other projects read docs from `node_modules/<pkg>/`, so they must ship with the version they describe.
 - Missing cited conventional paths, nonexistent package scripts, and missing simple shell commands.
 - Missing local Markdown links/anchors, unpublished map/history links from human pages, stale outputs, broken rendered links, and human pages absent from navigation.

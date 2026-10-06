@@ -373,4 +373,17 @@ describe('fresh-project loop', () => {
     await writeFile(state, JSON.stringify({ ...JSON.parse(await readFile(state, 'utf8')), commands: ['mystery-tool'] }))
     expect(await codes(root)).not.toContain('UNKNOWN_COMMAND')
   })
+  test('path#symbol citations must name a declaration, following export *', async () => {
+    const root = await ready()
+    await writeFile(join(root, 'src/shapes.ts'), "export interface Shape { sides: number }\nexport class Square { area() { return 1 } }\nexport enum Mode { Safe }\nconst hidden = 1\nexport { hidden as visible }\n")
+    await writeFile(join(root, 'src/barrel.ts'), "export * from './shapes'\n")
+    const path = join(root, 'docs/src.agent.md')
+    const original = await readFile(path, 'utf8')
+    await writeFile(path, original + '\n`src/index.ts#mode`, `src/shapes.ts#Shape.sides`, `src/shapes.ts#Square.area`, `src/shapes.ts#Mode.Safe`, `src/shapes.ts#visible`, `src/barrel.ts#Square` and [the shape](../src/shapes.ts#Shape).\n')
+    expect(await codes(root)).not.toContain('MISSING_SYMBOL')
+    await writeFile(path, original + '\n`src/index.ts#mode`\n\n`src/barrel.ts#Circle`\n\n[gone](../src/shapes.ts#Triangle)\n\n`src/nope.ts#x`\n')
+    const issues = (await checkProject(root)).issues
+    expect(issues.filter(issue => issue.code === 'MISSING_SYMBOL').map(issue => issue.message).sort()).toEqual(['src/barrel.ts does not declare Circle', 'src/shapes.ts does not declare Triangle'])
+    expect(issues.find(issue => issue.code === 'MISSING_PATH')?.message).toContain('src/nope.ts')
+  })
 })

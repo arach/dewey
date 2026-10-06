@@ -117,6 +117,7 @@ Both take `--json`. Results list maps first, then reference, guides and history.
 - Drafts, invalid metadata, uncovered source, empty coverage patterns, or review-required source/document changes.
 - Missing front door/skill/pointer, or a front door (AGENTS.md plus host files) over 150 lines or about 2,000 tokens.
 - A published package (named, not `private`) whose `files` list or `.npmignore` would leave out `AGENTS.md`, `SKILL.md` or a guide/reference under `docs/`. Agents in other projects read docs from `node_modules/<pkg>/`, so they must ship with the version they describe.
+- Symbol citations in JS or TS files, written `` `src/model.ts#loadModel` `` or `[loadModel](../src/model.ts#loadModel)`. The file must declare the name at top level, as an export alias, or as `Class.member`, `Interface.member` or `Enum.member`. Relative `export *` is followed. Other languages and bare names in backticks are not checked.
 - Missing cited conventional paths, nonexistent package scripts, and unknown shell commands. A command in a `sh` fence must be a package bin, a common tool (bun, node, git and similar), a `./` script, or listed in `commands` in `.dewey/project.json`. Mark a fence ```` ```sh ignore ```` to skip it.
 - Missing local Markdown links/anchors, unpublished map/history links from human pages, stale outputs, broken rendered links, and human pages absent from navigation.
 

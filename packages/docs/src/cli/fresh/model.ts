@@ -41,6 +41,7 @@ export const FIXES: Record<string, string> = {
   BROKEN_ANCHOR: 'Use a heading that exists in the target file.',
   MISSING_PATH: 'Update the path to where the file lives now, or remove the reference.',
   MISSING_SCRIPT: 'Use a script from package.json, or add the script.',
+  MISSING_SYMBOL: 'Cite a name the file declares, such as `src/model.ts#loadModel` or `src/model.ts#Model.docs`, or update the doc.',
   MISSING_COMMAND: 'Restore the local script, or make it executable.',
   UNKNOWN_COMMAND: 'Use a package bin or script, add the command to commands in .dewey/project.json, or mark the fence ```sh ignore.',
   PUBLISH_MISSING: 'Add "docs", "AGENTS.md" and "SKILL.md" to the files list in package.json, or drop the .npmignore entry.',

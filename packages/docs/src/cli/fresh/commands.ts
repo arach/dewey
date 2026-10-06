@@ -4,6 +4,7 @@ import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { assertWritable, BUDGET, coverageHash, coverageHashes, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
 import { attributes, llmsIndex, markdown, siteFiles } from './site.js'
+import { hasSymbol, readText, SYMBOL_FILE } from './symbols.js'
 import { region, regionState, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
 interface InitOptions { purpose?: string; rule?: string[]; rules?: boolean; host?: string[] }
@@ -21,7 +22,7 @@ Use this skill after adding or changing a source area, command, public API, or t
 2. Run dewey check --json. Treat covered-code changes as a request for review, not proof the prose is false.
 3. Before changing code, run dewey which <path> to find the docs that cover it. For a new area, run dewey new map <area> (dewey uncovered lists them). Describe files, data flow, invariants, and traps. Give it a real title. Do not pair every guide with a map.
 4. Start new docs with dewey new guide|reference|history <title>. Write task-shaped guides with kind: guide, and API/CLI/config contracts with kind: reference. Use relative Markdown links. Set nav: false only for intentionally unlisted human pages. Keep history at kind: history.
-5. Finish scaffold drafts and remove draft: true only after review. Never invent behavior. Verify cited paths and package scripts without executing untrusted doc commands.
+5. Finish scaffold drafts and remove draft: true only after review. Never invent behavior. Cite code as path#symbol, for example src/model.ts#loadModel, so check can confirm the name still exists. Verify cited paths and package scripts without executing untrusted doc commands.
 6. After reviewing a covered document against current code, run dewey review docs/<area>.agent.md. This explicitly records content hashes; build never acknowledges review for you.
 7. Run dewey build, then dewey check. Repair broken links, missing navigation, and stale outputs. Site and llms.txt come from the same Markdown.
 8. Keep AGENTS.md plus any host files at 150 lines and about 2,000 tokens or fewer, together. Put hard rules outside its observed generated region. Dewey may only update marked regions; do not overwrite authored text.
@@ -233,6 +234,7 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
     for (const target of [...doc.supersedes, ...doc.supersededBy]) if (!model.docs.some(other => other.path === target)) issue('SUPERSEDES_MISSING', doc.path, `No doc at ${target}`, lineAt(doc.raw, doc.raw.indexOf(target)))
     for (const pattern of doc.covers) if (!model.sources.some(path => matches(path, pattern))) issue('COVERAGE_EMPTY', doc.path, `Coverage pattern matches no source files: ${pattern}`, lineAt(doc.raw, doc.raw.indexOf(pattern)))
   }
+  const read = async (path: string) => { try { return await readText(safePath(model.root, path)) } catch { return null } }
   const texts = [...model.docs.map(doc => ({ path: doc.path, body: doc.body, offset: doc.offset })), ...await Promise.all(['AGENTS.md', 'SKILL.md'].map(async path => ({ path, body: await optional(join(model.root, path)) ?? '', offset: 0 })))]
   for (const doc of texts) {
     const at = (index: number) => index < 0 ? undefined : doc.offset + lineAt(doc.body, index)
@@ -249,10 +251,16 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
         else if (target.fragment && target.path.endsWith('.md')) {
           const body = other?.body ?? await readFile(absolute, 'utf8')
           if (!attributes(markdown(body), 'id').includes(target.fragment)) issue('BROKEN_ANCHOR', doc.path, `Missing heading: ${href}`, line)
-        }
+        } else if (target.fragment && SYMBOL_FILE.test(target.path) && !await hasSymbol(read, target.path, target.fragment)) issue('MISSING_SYMBOL', doc.path, `${target.path} does not declare ${target.fragment}`, line)
       } catch (error) { issue('BROKEN_LINK', doc.path, `${href}: ${String(error)}`, line) }
     }
     for (const match of doc.body.matchAll(/`([^`\n]+)`/g)) {
+      const symbol = match[1].match(/^([\w./-]+)#([\w$]+(?:\.[\w$]+)?)$/)
+      if (symbol && SYMBOL_FILE.test(symbol[1])) {
+        if (!(await lstat(safePath(model.root, symbol[1])).catch(() => null))) issue('MISSING_PATH', doc.path, `Cited path does not exist: ${symbol[1]}`, at(match.index))
+        else if (!await hasSymbol(read, symbol[1], symbol[2])) issue('MISSING_SYMBOL', doc.path, `${symbol[1]} does not declare ${symbol[2]}`, at(match.index))
+        continue
+      }
       const path = match[1].replace(/:\d+(?::\d+)?$/, '')
       if (/^(src|lib|Sources|packages|apps|scripts|docs|\.agents)\/[\w./-]+\/?$/.test(path) || /^[\w.-]+\.(?:md|json|ya?ml|toml|[cm]?[jt]sx?|swift|py|go|rs|sh)$/.test(path)) {
         if (!(await lstat(safePath(model.root, path)).catch(() => null))) issue('MISSING_PATH', doc.path, `Cited path does not exist: ${path}`, at(match.index))

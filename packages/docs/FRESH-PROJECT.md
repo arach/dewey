@@ -83,6 +83,10 @@ Optional status fields:
 - `applies`: what the doc covers, such as a package, version or platform. A string or a list.
 - `supersedes` and `superseded_by`: doc paths from the project root. A replaced page links to its replacement and leaves both indexes. `check` fails with `SUPERSEDES_MISSING` if a target doesn't exist.
 
+Each file belongs to one map. `check` fails with `COVERAGE_OVERLAP` when two maps cover the same file, and with `COVERAGE_BROAD` when a map pattern starts with `**`. When covered code moves, `REVIEW_REQUIRED` names the files that changed, were added or were removed since the last review.
+
+`dewey build` refreshes the observed region of `AGENTS.md` (scripts, areas and maps). Text outside the markers is never touched. `check` reports `REGION_STALE` when the region is out of date and `REGION_INVALID` when the markers are duplicated.
+
 Coverage accepts `*`, `**`, and `?`, with project-relative paths. `src/*` does not cover `src/sync/index.ts`. Adding that area requires a map. A guide does not need a paired agent file.
 
 ## Start a new doc

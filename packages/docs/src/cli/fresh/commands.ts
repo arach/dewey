@@ -2,12 +2,12 @@ import { access, constants, lstat, readFile, realpath } from 'node:fs/promises'
 import { basename, delimiter, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
-import { assertWritable, BUDGET, coverageHash, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
+import { assertWritable, BUDGET, coverageHash, coverageHashes, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
 import { attributes, llmsIndex, markdown, siteFiles } from './site.js'
-import { region, updateRegion, writeOutputs, writeSafe } from './storage.js'
+import { region, regionState, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
 interface InitOptions { purpose?: string; rule?: string[]; rules?: boolean; host?: string[] }
-interface Review { sourceHash: string; docHash: string }
+interface Review { sourceHash: string; docHash: string; files?: Record<string, string> }
 type Reviews = Record<string, Review>
 const AUTHOR_SKILL = `---
 name: dewey-author
@@ -47,6 +47,15 @@ function mapScaffold(area: string, sources: string[]): string {
   const glob = area === '.' ? '*' : files.includes(area) ? area : files.some(path => path.slice(area.length + 1).includes('/')) ? `${area}/**` : `${area}/*`
   return `---\nkind: map\ntitle: ${yaml(`${area} map`)}\ncovers: [${yaml(glob)}]\ndraft: true\n---\n\n# ${area} map\n\n## Files\n\n${files.map(path => `- \`${path}\``).join('\n')}\n\n## Data flow\n\n<!-- Describe the actual flow. -->\n\n## Invariants and traps\n\n<!-- Record constraints and failure cases; then remove draft: true. -->\n`
 }
+// The observed region as the current model sees it: scripts, areas and the map for each.
+function observedFor(model: Model): string {
+  const areas = [...new Set(model.sources.map(sourceArea))].sort()
+  const mapPaths = Object.fromEntries(areas.flatMap(area => {
+    const map = model.docs.find(doc => doc.kind === 'map' && model.sources.filter(path => sourceArea(path) === area).every(path => doc.covers.some(pattern => matches(path, pattern))))
+    return map ? [[area, map.path]] : []
+  }))
+  return observed(model.scripts, areas, mapPaths)
+}
 function mapName(area: string): string { return area === '.' ? 'root' : area.replace(/\//g, '-') }
 export async function freshInit(options: InitOptions = {}, directory = process.cwd()): Promise<void> {
   const root = await realpath(directory)
@@ -56,12 +65,8 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
   const areas = [...new Set(sources.map(sourceArea))].sort()
   if (existing) {
     const model = await loadModel(root) // Never replace existing authored scaffolds.
-    const mapPaths = Object.fromEntries(areas.flatMap(area => {
-      const map = model.docs.find(doc => doc.kind === 'map' && sources.filter(path => sourceArea(path) === area).every(path => doc.covers.some(pattern => matches(path, pattern))))
-      return map ? [[area, map.path]] : []
-    }))
     const current = await optional(join(root, 'AGENTS.md'))
-    const next = updateRegion(current, 'observed', observed(pkg.scripts, areas, mapPaths))
+    const next = updateRegion(current, 'observed', observedFor(model))
     if (lineCount(next) > BUDGET.lines) throw new Error('AGENTS.md would exceed 150 lines; shorten its authored text first')
     await writeSafe(root, 'AGENTS.md', next)
     await freshBuild(root)
@@ -127,6 +132,9 @@ async function expectedOutputs(model: Model): Promise<Record<string, string | Bu
   const site = siteFiles(model)
   const outputs: Record<string, string | Buffer> = Object.fromEntries(Object.entries(site).map(([path, content]) => [`${OUTPUT}/${path}`, content]))
   outputs['llms.txt'] = updateRegion(await optional(join(model.root, 'llms.txt')), 'index', llmsIndex(model, 'repo'))
+  // AGENTS.md is authored; build refreshes only its observed region, and only when it has one.
+  const front = await optional(join(model.root, 'AGENTS.md'))
+  if (front !== null && regionState(front, 'observed') === 'one') outputs['AGENTS.md'] = updateRegion(front, 'observed', observedFor(model))
   // Materialize referenced project assets, not raw maps/history or arbitrary files.
   for (const doc of model.docs.filter(human)) {
     const rendered = markdown(doc.body)
@@ -147,6 +155,16 @@ export async function freshBuild(directory = process.cwd()): Promise<void> {
   await writeOutputs(model, await expectedOutputs(model))
   console.log(`Built ${model.docs.filter(human).length} human pages, site navigation, and llms.txt → ${OUTPUT}`)
 }
+// Name what moved, so a review is a reading list rather than a rubber stamp.
+function reviewMessage(review: Review | undefined, now: Record<string, string>, docSame: boolean): string {
+  if (!review) return 'This doc has never been reviewed against its covered code'
+  if (!review.files) return 'Covered code or this doc changed since the last review'
+  const changed = Object.keys(now).filter(path => path in review.files! && review.files![path] !== now[path])
+  const added = Object.keys(now).filter(path => !(path in review.files!))
+  const removed = Object.keys(review.files).filter(path => !(path in now))
+  const parts = [[changed, 'changed'], [added, 'added'], [removed, 'removed']].filter(([paths]) => paths.length).map(([paths, verb]) => `${verb}: ${(paths as string[]).join(', ')}`)
+  return [...parts.length ? [`Covered files moved since the last review (${parts.join('; ')})`] : [], ...docSame ? [] : ['This doc changed since the last review']].join('. ')
+}
 export async function reviewDocument(path: string, directory = process.cwd()): Promise<void> {
   const model = await loadModel(await realpath(directory))
   const doc = model.docs.find(doc => doc.path === path)
@@ -154,7 +172,7 @@ export async function reviewDocument(path: string, directory = process.cwd()): P
   if (doc.draft) throw new Error(`Finish the draft before reviewing ${path}`)
   if (model.issues.length) throw new Error('Repair document metadata before recording review')
   const reviews: Reviews = JSON.parse(await optional(join(model.root, '.dewey/reviews.json')) ?? '{}')
-  reviews[path] = { sourceHash: await coverageHash(model, doc), docHash: hash(doc.raw) }
+  reviews[path] = { sourceHash: await coverageHash(model, doc), docHash: hash(doc.raw), files: await coverageHashes(model, doc) }
   await writeSafe(model.root, '.dewey/reviews.json', json(reviews))
   console.log(`Recorded explicit review of ${path} against current covered source`)
 }
@@ -205,10 +223,17 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   const reviews: Reviews = JSON.parse(await optional(join(model.root, '.dewey/reviews.json')) ?? '{}')
   const maps = model.docs.filter(doc => doc.kind === 'map')
   const uncovered = model.sources.filter(path => !maps.some(doc => doc.covers.some(pattern => matches(path, pattern))))
+  for (const [index, map] of maps.entries()) for (const other of maps.slice(index + 1)) {
+    const shared = model.sources.filter(path => [map, other].every(doc => doc.covers.some(pattern => matches(path, pattern))))
+    if (shared.length) issue('COVERAGE_OVERLAP', other.path, `${map.path} also covers ${shared.length} of these files: ${shared.slice(0, 5).join(', ')}${shared.length > 5 ? ', …' : ''}`, lineAt(other.raw, other.raw.search(/^covers:/m)))
+  }
+  if (front !== null && regionState(front, 'observed') === 'broken') issue('REGION_INVALID', 'AGENTS.md', 'The observed region markers are duplicated or out of order', lineAt(front, front.indexOf('<!-- dewey:')))
   for (const area of new Set(uncovered.map(sourceArea))) issue('MAP_MISSING', area, `${area} has no map for: ${uncovered.filter(path => sourceArea(path) === area).join(', ')}`)
   for (const doc of model.docs) {
     if (doc.draft) issue('DOC_DRAFT', doc.path, 'This doc is still a scaffold', lineAt(doc.raw, doc.raw.search(/^draft:/m)))
-    if (doc.covers.length && (reviews[doc.path]?.sourceHash !== await coverageHash(model, doc) || reviews[doc.path]?.docHash !== hash(doc.raw))) issue('REVIEW_REQUIRED', doc.path, 'Covered code or this doc changed since the last review', undefined, `Re-read the covered code, correct the doc, then run dewey review ${doc.path}.`)
+    const review = reviews[doc.path]
+    if (doc.covers.length && (review?.sourceHash !== await coverageHash(model, doc) || review?.docHash !== hash(doc.raw))) issue('REVIEW_REQUIRED', doc.path, reviewMessage(review, await coverageHashes(model, doc), review?.docHash === hash(doc.raw)), undefined, `Re-read the covered code, correct the doc, then run dewey review ${doc.path}.`)
+    for (const pattern of doc.kind === 'map' ? doc.covers : []) if (pattern.startsWith('**')) issue('COVERAGE_BROAD', doc.path, `Coverage pattern covers the whole repo: ${pattern}`, lineAt(doc.raw, doc.raw.indexOf(pattern)))
     for (const target of [...doc.supersedes, ...doc.supersededBy]) if (!model.docs.some(other => other.path === target)) issue('SUPERSEDES_MISSING', doc.path, `No doc at ${target}`, lineAt(doc.raw, doc.raw.indexOf(target)))
     for (const pattern of doc.covers) if (!model.sources.some(path => matches(path, pattern))) issue('COVERAGE_EMPTY', doc.path, `Coverage pattern matches no source files: ${pattern}`, lineAt(doc.raw, doc.raw.indexOf(pattern)))
   }
@@ -258,7 +283,10 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   for (const [path, value] of Object.entries(expected)) {
     let actual: Buffer | null = null
     try { actual = await readFile(safePath(model.root, path)) } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
-    if (actual === null || hash(actual) !== hash(value)) issue('STALE_OUTPUT', path, 'Generated output is missing or stale; run dewey build')
+    if (actual === null || hash(actual) !== hash(value)) {
+      if (path === 'AGENTS.md') issue('REGION_STALE', path, 'The observed region does not match the project; run dewey build', lineAt(String(actual), String(actual).indexOf('<!-- dewey:begin observed')))
+      else issue('STALE_OUTPUT', path, 'Generated output is missing or stale; run dewey build')
+    }
   }
   for (const path of await walk(model.root, OUTPUT)) {
     if (!(path in expected)) issue('STALE_OUTPUT', path, 'Unexpected or obsolete site output; build prunes unchanged owned files only')

@@ -31,6 +31,10 @@ export const FIXES: Record<string, string> = {
   DOC_DRAFT: 'Finish the doc, then delete the draft: true line.',
   REVIEW_REQUIRED: 'Re-read the covered code, correct the doc, then run dewey review <doc>.',
   COVERAGE_EMPTY: 'Fix the pattern or remove it.',
+  COVERAGE_OVERLAP: 'Give each file one map: narrow one pattern, or merge the two maps.',
+  COVERAGE_BROAD: 'Cover one area, such as src/sync/**, instead of every file in the repo.',
+  REGION_STALE: 'Run dewey build. Keep hand edits outside the dewey:begin and dewey:end markers.',
+  REGION_INVALID: 'Leave exactly one dewey:begin observed and one dewey:end observed marker in AGENTS.md, or remove both.',
   NON_PUBLIC_LINK: 'Link to a guide or reference instead, or cite the path in backticks.',
   BROKEN_LINK: 'Point the link at a file that exists, or remove it.',
   BROKEN_ANCHOR: 'Use a heading that exists in the target file.',
@@ -167,10 +171,11 @@ export function lineCount(text: string): number { return text.trimEnd().split('\
 export function human(doc: Doc): boolean { return (doc.kind === 'guide' || doc.kind === 'reference') && doc.status !== 'abandoned' }
 // What an agent should trust as today's behavior: shipped and not replaced.
 export function current(doc: Doc): boolean { return human(doc) && doc.status === 'shipped' && !doc.supersededBy.length }
-export async function coverageHash(model: Model, doc: Doc): Promise<string> {
+export async function coverageHashes(model: Model, doc: Doc): Promise<Record<string, string>> {
   const files = model.sources.filter(path => doc.covers.some(pattern => matches(path, pattern)))
-  return hash(json(await Promise.all(files.map(async path => [path, hash(await readFile(join(model.root, path), 'utf8'))]))))
+  return Object.fromEntries(await Promise.all(files.map(async path => [path, hash(await readFile(join(model.root, path), 'utf8'))])))
 }
+export async function coverageHash(model: Model, doc: Doc): Promise<string> { return hash(json(Object.entries(await coverageHashes(model, doc)))) }
 export function resolveReference(from: string, href: string): { path: string; fragment: string } | null {
   if (/^(?:[a-z][\w+.-]*:|\/\/)/i.test(href)) return null
   const [withoutFragment, fragment = ''] = href.split('#', 2)

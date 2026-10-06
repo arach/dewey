@@ -82,7 +82,7 @@ describe('fresh-project loop', () => {
     const script = issues.find(issue => issue.code === 'MISSING_SCRIPT')!
     expect(script.line).toBe(original.split('\n').findIndex(line => line.includes('bun run test')) + 1)
     expect(script.fix).toContain('package.json')
-    const command = issues.find(issue => issue.code === 'MISSING_COMMAND')!
+    const command = issues.find(issue => issue.code === 'UNKNOWN_COMMAND')!
     expect(command.line).toBe(original.split('\n').length + 3)
     const text = run(root, ['check'])
     expect(text.out).toContain(`docs/quickstart.md:${script.line} MISSING_SCRIPT`)
@@ -205,7 +205,7 @@ describe('fresh-project loop', () => {
     const original = await readFile(path, 'utf8')
     for (const [text, code] of [
       ['`src/missing.ts`', 'MISSING_PATH'], ['`bun run absent`', 'MISSING_SCRIPT'],
-      ['```sh\ndewey_nonexistent_command_87\n```', 'MISSING_COMMAND'],
+      ['```sh\ndewey_nonexistent_command_87\n```', 'UNKNOWN_COMMAND'],
       ['[Missing](missing.md)', 'BROKEN_LINK'], ['[Missing](#absent)', 'BROKEN_ANCHOR'],
     ]) {
       await writeFile(path, original + '\n' + text + '\n')
@@ -359,5 +359,18 @@ describe('fresh-project loop', () => {
     expect(review?.message).toContain('added: src/extra.ts')
     await writeFile(agents, front + '\n<!-- dewey:begin observed -->\n')
     expect(await codes(root)).toContain('REGION_INVALID')
+  })
+  test('commands resolve from package bins, the allowlist and project commands, never PATH', async () => {
+    const root = await ready()
+    const path = join(root, 'docs/quickstart.md')
+    const original = await readFile(path, 'utf8')
+    await writeFile(join(root, 'package.json'), JSON.stringify({ name: '@scope/scratch-widget', description: 'A tiny widget.', bin: 'src/index.ts', scripts: { test: 'echo verified' } }))
+    await writeFile(path, original + '\n```sh\nscratch-widget --help\nDEBUG=1 bun run test\n# a comment\n```\n\n```sh ignore\nmystery-tool\n```\n')
+    expect(await codes(root)).not.toContain('UNKNOWN_COMMAND')
+    await writeFile(path, original + '\n```sh\nmystery-tool --run\n```\n')
+    expect(await codes(root)).toContain('UNKNOWN_COMMAND')
+    const state = join(root, '.dewey/project.json')
+    await writeFile(state, JSON.stringify({ ...JSON.parse(await readFile(state, 'utf8')), commands: ['mystery-tool'] }))
+    expect(await codes(root)).not.toContain('UNKNOWN_COMMAND')
   })
 })

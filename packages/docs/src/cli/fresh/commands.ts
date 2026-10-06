@@ -1,5 +1,5 @@
 import { access, constants, lstat, readFile, realpath } from 'node:fs/promises'
-import { basename, delimiter, join } from 'node:path'
+import { basename, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { assertWritable, BUDGET, coverageHash, coverageHashes, lineCount, tokens, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
@@ -196,13 +196,9 @@ async function unpublished(model: Model): Promise<string[]> {
   const ignore = (await optional(join(model.root, '.npmignore')))?.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#') && !line.startsWith('!')) ?? []
   return wanted.filter(path => ignore.some(entry => listed(path, entry.replace(/^\//, ''))))
 }
-async function executable(command: string): Promise<boolean> {
-  if (['dewey', 'cd', 'echo', 'export', 'printf', 'true', 'false', 'test', 'set', 'pwd'].includes(command)) return true
-  for (const directory of (process.env.PATH ?? '').split(delimiter)) {
-    try { await access(join(directory, command), constants.X_OK); return true } catch { /* next PATH entry */ }
-  }
-  return false
-}
+// Commands a doc may run without saying more. The machine's PATH is not consulted: it passes on a laptop and fails in CI.
+const ALLOWED = new Set(['bun', 'bunx', 'node', 'npm', 'npx', 'pnpm', 'yarn', 'deno', 'git', 'dewey', 'cd', 'echo', 'export', 'printf', 'true', 'false', 'test', 'set', 'pwd', 'ls', 'cat', 'mkdir', 'cp', 'mv', 'rm', 'touch', 'curl', 'tar', 'chmod', 'source', 'swift', 'xcodebuild', 'cargo', 'go', 'python3', 'pip', 'make', 'docker'])
+function known(model: Model, command: string): boolean { return ALLOWED.has(command) || model.bins.includes(command) || (model.project.commands ?? []).includes(command) }
 export async function checkProject(directory = process.cwd()): Promise<{ passed: boolean; issues: Issue[] }> {
   const model = await loadModel(await realpath(directory))
   const issues = [...model.issues]
@@ -270,11 +266,11 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
       for (const line of fence[1].split('\n')) {
         const lineNumber = at(position)
         position += line.length + 1
-        const command = line.trim().replace(/^\$\s+/, '').match(/^([\w./-]+)(?:\s|$)/)?.[1]
+        const command = line.trim().replace(/^\$\s+/, '').replace(/^(?:\w+=\S*\s+)+/, '').match(/^([\w./-]+)(?:\s|$)/)?.[1]
         if (!command) continue
         if (command.startsWith('./')) {
           try { await access(safePath(model.root, command), constants.X_OK) } catch { issue('MISSING_COMMAND', doc.path, `Local command is missing or not executable: ${command}`, lineNumber) }
-        } else if (!await executable(command)) issue('MISSING_COMMAND', doc.path, `Command not found on PATH: ${command}`, lineNumber)
+        } else if (!known(model, command)) issue('UNKNOWN_COMMAND', doc.path, `Not a package bin, script runner or allowed command: ${command}`, lineNumber)
       }
     }
   }

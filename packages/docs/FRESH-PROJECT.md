@@ -117,7 +117,7 @@ Both take `--json`. Results list maps first, then reference, guides and history.
 - Drafts, invalid metadata, uncovered source, empty coverage patterns, or review-required source/document changes.
 - Missing front door/skill/pointer, or a front door (AGENTS.md plus host files) over 150 lines or about 2,000 tokens.
 - A published package (named, not `private`) whose `files` list or `.npmignore` would leave out `AGENTS.md`, `SKILL.md` or a guide/reference under `docs/`. Agents in other projects read docs from `node_modules/<pkg>/`, so they must ship with the version they describe.
-- Missing cited conventional paths, nonexistent package scripts, and missing simple shell commands.
+- Missing cited conventional paths, nonexistent package scripts, and unknown shell commands. A command in a `sh` fence must be a package bin, a common tool (bun, node, git and similar), a `./` script, or listed in `commands` in `.dewey/project.json`. Mark a fence ```` ```sh ignore ```` to skip it.
 - Missing local Markdown links/anchors, unpublished map/history links from human pages, stale outputs, broken rendered links, and human pages absent from navigation.
 
 Each issue carries the file, the line when it has one, and a `fix`. Text output prints `path:line CODE message` followed by the fix. A pass means references, coverage, reviews and outputs are consistent; it does not prove the prose is true.
@@ -131,7 +131,7 @@ Init refuses existing scaffold targets. Rerunning it in an initialized project u
 - Source discovery covers conventional `src/`, `lib/`, `Sources/`, package/app `src` or `Sources` trees, root code files, and existing package main/module/types/bin entry files. It excludes dependency/build/test directories and symlinks. Arbitrary source-root policy is not implemented.
 - Markdown `.md` is supported; MDX, remote assets, generated API extraction, and arbitrary renderer configuration are not implemented.
 - Referenced local PNG/JPEG/GIF/WebP/AVIF/ICO/PDF/TXT assets are copied. Other local downloads are reported as broken rendered links until supported.
-- Script checks validate named root package scripts; shell-fence command checks inspect simple line-leading executables against this host's PATH. This is not a shell parser, dependency resolver, or proof that a command succeeds.
+- Script checks validate named root package scripts; shell-fence command checks inspect the first word of each line (after any `VAR=value`). They never look at this machine's PATH, so the result is the same on a laptop and in CI. This is not a shell parser, dependency resolver, or proof that a command succeeds.
 - Review is an explicit author acknowledgment, not an automated semantic judgment. Deleting the review baseline cannot silently make a covered document pass.
 - No deployment, cross-project discovery, migration, compatibility program, or automatic prose generation is included.
 

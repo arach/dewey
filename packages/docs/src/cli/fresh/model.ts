@@ -10,7 +10,8 @@ export const KINDS = ['guide', 'map', 'reference', 'history'] as const
 // shipped: describes what ships today. proposal: planned. abandoned: kept for the record, never published.
 export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
-export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[] }
+// commands: extra shell commands docs may use, beyond the package's bins and the built-in allowlist.
+export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
 export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string
   status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[] }
@@ -40,7 +41,8 @@ export const FIXES: Record<string, string> = {
   BROKEN_ANCHOR: 'Use a heading that exists in the target file.',
   MISSING_PATH: 'Update the path to where the file lives now, or remove the reference.',
   MISSING_SCRIPT: 'Use a script from package.json, or add the script.',
-  MISSING_COMMAND: 'Use a command the project provides, or change the fence language.',
+  MISSING_COMMAND: 'Restore the local script, or make it executable.',
+  UNKNOWN_COMMAND: 'Use a package bin or script, add the command to commands in .dewey/project.json, or mark the fence ```sh ignore.',
   PUBLISH_MISSING: 'Add "docs", "AGENTS.md" and "SKILL.md" to the files list in package.json, or drop the .npmignore entry.',
   OUTPUT_OWNERSHIP: 'Move hand edits out of the generated file, delete it, then run dewey build.',
   STALE_OUTPUT: 'Run dewey build.',
@@ -48,7 +50,7 @@ export const FIXES: Record<string, string> = {
   SITE_LINK: 'Fix the link in the source Markdown, then run dewey build.',
 }
 export function lineAt(text: string, index: number): number { return text.slice(0, Math.max(0, index)).split('\n').length }
-export interface Model { root: string; project: Project; docs: Doc[]; sources: string[]; scripts: Record<string, string>; issues: Issue[] }
+export interface Model { root: string; project: Project; docs: Doc[]; sources: string[]; scripts: Record<string, string>; bins: string[]; issues: Issue[] }
 const IGNORED = new Set(['node_modules', 'dist', 'build', 'coverage', 'vendor', 'docs', 'test', 'tests', '__tests__'])
 export const hash = (value: string | Uint8Array) => createHash('sha256').update(value).digest('hex')
 export const json = (value: unknown) => `${JSON.stringify(value, null, 2)}\n`
@@ -105,12 +107,13 @@ export function matches(path: string, pattern: string): boolean {
   }
   return new RegExp(`^${expression}$`).test(path)
 }
-export async function packageInfo(root: string): Promise<{ name?: string; description?: string; scripts: Record<string, string>; entries: string[] }> {
+export async function packageInfo(root: string): Promise<{ name?: string; description?: string; scripts: Record<string, string>; entries: string[]; bins: string[] }> {
   const raw = await optional(join(root, 'package.json'))
   const pkg = raw ? JSON.parse(raw) : {}
   const scripts = Object.fromEntries(Object.entries(pkg.scripts ?? {}).filter(([, value]) => typeof value === 'string')) as Record<string, string>
   const entries = [pkg.main, pkg.module, pkg.types, ...(typeof pkg.bin === 'string' ? [pkg.bin] : Object.values(pkg.bin ?? {}))].filter((value): value is string => typeof value === 'string')
-  return { name: pkg.name, description: pkg.description, scripts, entries }
+  const bins = typeof pkg.bin === 'string' ? (typeof pkg.name === 'string' ? [pkg.name.replace(/^@[^/]+\//, '')] : []) : Object.keys(pkg.bin ?? {})
+  return { name: pkg.name, description: pkg.description, scripts, entries, bins }
 }
 export async function sourceFiles(root: string): Promise<string[]> {
   const files = await walk(root, '', true)
@@ -128,7 +131,7 @@ export async function loadModel(root: string): Promise<Model> {
   const state = await optional(join(root, STATE))
   if (!state) throw new Error('Run dewey init in this project first.')
   const project = JSON.parse(state) as Project
-  if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string') || (project.hosts !== undefined && (!Array.isArray(project.hosts) || project.hosts.some(host => typeof host !== 'string' || !/^[\w.-]+\.md$/.test(host))))) throw new Error(`Invalid ${STATE}`)
+  if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string') || (project.hosts !== undefined && (!Array.isArray(project.hosts) || project.hosts.some(host => typeof host !== 'string' || !/^[\w.-]+\.md$/.test(host)))) || (project.commands !== undefined && (!Array.isArray(project.commands) || project.commands.some(command => typeof command !== 'string')))) throw new Error(`Invalid ${STATE}`)
   const issues: Issue[] = []
   const files = (await walk(root, 'docs')).filter(path => path.endsWith('.md'))
   if (await optional(join(root, 'README.md')) !== null) files.unshift('README.md')
@@ -159,7 +162,7 @@ export async function loadModel(root: string): Promise<Model> {
     const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path)
     docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy })
   }
-  return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
+  return { root, project, docs, sources: await sourceFiles(root), ...await packageInfo(root).then(({ scripts, bins }) => ({ scripts, bins })), issues }
 }
 // Same rough estimate as agent-artifacts: whitespace-separated words × 1.33.
 // Rough token estimate: the larger of a word count and a character count, so dense lines can't hide.

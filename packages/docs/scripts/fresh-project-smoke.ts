@@ -45,7 +45,7 @@ await writeFile(join(root, 'docs/src.agent.md'), await readFile(join(root, 'docs
 pass('review', 'docs/src.agent.md'); pass('build'); pass('check', '--json')
 for (const [extra, code] of [
   ['`src/not-found.ts`', 'MISSING_PATH'], ['`bun run no-such-script`', 'MISSING_SCRIPT'],
-  ['```sh\ndewey_missing_binary_smoke_42\n```', 'MISSING_COMMAND'],
+  ['```sh\ndewey_missing_binary_smoke_42\n```', 'UNKNOWN_COMMAND'],
   ['[Broken page](missing.md)', 'BROKEN_LINK'], ['[Broken heading](#missing)', 'BROKEN_ANCHOR'],
 ]) {
   await writeFile(join(root, 'docs/quickstart.md'), guide + '\n' + extra + '\n')

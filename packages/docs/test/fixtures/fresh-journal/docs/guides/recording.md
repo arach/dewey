@@ -27,7 +27,7 @@ Validation happens before a write. A rejected type leaves the journal unchanged.
 | durationMs | An elapsed duration, with an explicit unit | 840 |
 | reason | A stable reason code | health-check |
 
-These are conventions, not reserved schema fields. Relaylog accepts any JSON object as `data`. Arrays, null, and scalar payloads are rejected.
+These are conventions, not reserved schema fields. Relaylog accepts any JSON object as `data`. Arrays, null, and single-value payloads are rejected.
 
 ## Append from TypeScript
 

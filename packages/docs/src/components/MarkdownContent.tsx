@@ -36,25 +36,25 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         rehypePlugins={split ? [rehypeSlug, rehypeDwSplit] : [rehypeSlug]}
         components={{
         // Headings with anchor links
-        h1: ({ children, id, ...props }) => (
+        h1: ({ children, id, node: _node, ...props }) => (
           <h1 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="lg" />}
           </h1>
         ),
-        h2: ({ children, id, ...props }) => (
+        h2: ({ children, id, node: _node, ...props }) => (
           <h2 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="lg" />}
           </h2>
         ),
-        h3: ({ children, id, ...props }) => (
+        h3: ({ children, id, node: _node, ...props }) => (
           <h3 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="md" />}
           </h3>
         ),
-        h4: ({ children, id, ...props }) => (
+        h4: ({ children, id, node: _node, ...props }) => (
           <h4 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="sm" />}
@@ -82,14 +82,14 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         },
 
         // Blockquotes
-        blockquote: ({ children, ...props }) => (
+        blockquote: ({ children, node: _node, ...props }) => (
           <blockquote className="dw-markdown-blockquote" {...props}>
             {children}
           </blockquote>
         ),
 
         // Links
-        a: ({ href, children, ...props }) => {
+        a: ({ href, children, node: _node, ...props }) => {
           const isExternal = href?.startsWith('http')
 
           // Convert internal .md links to clean routes
@@ -112,7 +112,7 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         },
 
         // Tables
-        table: ({ children, ...props }) => (
+        table: ({ children, node: _node, ...props }) => (
           <div className="dw-markdown-table-scroll">
             <table {...props}>
               {children}
@@ -121,7 +121,7 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         ),
 
         // Images
-        img: ({ src, alt, ...props }) => (
+        img: ({ src, alt, node: _node, ...props }) => (
           <img
             src={src}
             alt={alt}

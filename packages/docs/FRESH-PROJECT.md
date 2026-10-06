@@ -37,7 +37,7 @@ Repeat `--rule` as needed. Use `--no-rules` to explicitly declare none. Purpose 
 Init creates:
 
 - `AGENTS.md`, with authored rules and a marked observed-facts region, capped at 150 lines.
-- `CLAUDE.md`, pointing to that front door.
+- One pointer file per `--host <file>`, each redirecting to that front door. Use it for tools that read their own instruction file instead of `AGENTS.md`.
 - Draft task guide and source-area maps in `docs/`.
 - `SKILL.md`, for agents using the project from outside.
 - `.agents/skills/dewey-author/SKILL.md`, for agents maintaining the docs.

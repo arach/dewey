@@ -6,7 +6,8 @@ import matter from 'gray-matter'
 export const STATE = '.dewey/project.json'
 export const OUTPUT = '.dewey/site'
 export const KINDS = ['guide', 'map', 'reference', 'history'] as const
-export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[] }
+// hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
+export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[] }
 export interface Doc { path: string; title: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; draft: boolean; hidden: boolean; route: string }
 export interface Issue { code: string; path: string; message: string }
 export interface Model { root: string; project: Project; docs: Doc[]; sources: string[]; scripts: Record<string, string>; issues: Issue[] }
@@ -89,7 +90,7 @@ export async function loadModel(root: string): Promise<Model> {
   const state = await optional(join(root, STATE))
   if (!state) throw new Error('Run dewey init in this project first.')
   const project = JSON.parse(state) as Project
-  if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string')) throw new Error(`Invalid ${STATE}`)
+  if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string') || (project.hosts !== undefined && (!Array.isArray(project.hosts) || project.hosts.some(host => typeof host !== 'string' || !/^[\w.-]+\.md$/.test(host))))) throw new Error(`Invalid ${STATE}`)
   const issues: Issue[] = []
   const files = (await walk(root, 'docs')).filter(path => path.endsWith('.md'))
   if (await optional(join(root, 'README.md')) !== null) files.unshift('README.md')

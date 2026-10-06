@@ -58,6 +58,7 @@ describe('fresh-project loop', () => {
     await freshBuild(root)
     const html = await readFile(join(root, '.dewey/site/docs/quickstart.html'), 'utf8')
     expect(html).toContain('dw-sidebar')
+    expect(html).not.toContain('[object Object]')
     expect(html).toContain('dewey-data')
     expect(html).toContain('client.js')
     expect(html).toContain('themes/ocean.css')
@@ -69,6 +70,15 @@ describe('fresh-project loop', () => {
     expect(Object.keys(data.docs).some(path => path.includes('.agent'))).toBe(false)
     expect((await readFile(join(root, '.dewey/site/client.js'), 'utf8')).length).toBeGreaterThan(10000)
     expect(await codes(root)).not.toContain('SITE_NAV_MISSING')
+  })
+  test('host pointer files are opt-in and must redirect to the front door', async () => {
+    const root = await fixture()
+    expect(run(root, ['init', '--no-rules', '--host', 'TOOL.md']).code).toBe(0)
+    expect(await readFile(join(root, 'TOOL.md'), 'utf8')).toContain('AGENTS.md')
+    await authored(root)
+    expect(await codes(root)).toEqual([])
+    await writeFile(join(root, 'TOOL.md'), 'Local notes only.\n')
+    expect(await codes(root)).toContain('FRONT_DOOR_POINTER')
   })
   test('asks only for missing purpose/rules and makes no partial writes on missing input', async () => {
     const root = await fixture()
@@ -114,7 +124,7 @@ describe('fresh-project loop', () => {
   test('checks front-door budget, generated freshness, actual navigation and rendered links', async () => {
     const root = await ready()
     const front = join(root, 'AGENTS.md'); const original = await readFile(front, 'utf8')
-    await writeFile(front, original + '\nExtra rule\n'.repeat(150))
+    await writeFile(front, original + '\nAnother rule\n'.repeat(150))
     expect(await codes(root)).toContain('FRONT_DOOR_BUDGET')
     await writeFile(front, original)
     const guide = join(root, 'docs/quickstart.md')

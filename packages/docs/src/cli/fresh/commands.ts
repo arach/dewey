@@ -6,7 +6,7 @@ import { assertWritable, coverageHash, hash, human, json, loadModel, matches, op
 import { attributes, markdown, siteFiles } from './site.js'
 import { region, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
-interface InitOptions { purpose?: string; rule?: string[]; rules?: boolean }
+interface InitOptions { purpose?: string; rule?: string[]; rules?: boolean; host?: string[] }
 interface Review { sourceHash: string; docHash: string }
 type Reviews = Record<string, Review>
 const AUTHOR_SKILL = `---
@@ -34,6 +34,7 @@ async function answer(question: string): Promise<string> {
   const reader = createInterface({ input: stdin, output: stdout })
   try { return (await reader.question(`${question} `)).trim() } finally { reader.close() }
 }
+const HOST_POINTER = 'Read [AGENTS.md](./AGENTS.md) for this project’s instructions.\n'
 function yaml(value: string): string { return JSON.stringify(value) }
 function observed(scripts: Record<string, string>, areas: string[], mapPaths?: Record<string, string>): string {
   return ['## Commands', '', ...(Object.keys(scripts).length ? Object.keys(scripts).sort().map(script => `- \`bun run ${script}\``) : ['No package scripts were found.']), '', '## Where to work', '', ...areas.map(area => `- Working on \`${area}\` → read \`${mapPaths?.[area] ?? `docs/${mapName(area)}.agent.md`}\`.`), '', '## Documentation loop', '', '- Read `.agents/skills/dewey-author/SKILL.md` when maintaining docs.', '- Run `dewey build`, then `dewey check`.', '- Review covered-code changes with `dewey review <document>`.', '- Site output: `.dewey/site/`; agent index: `llms.txt`.'].join('\n')
@@ -61,11 +62,13 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
   const purpose = options.purpose?.trim() || pkg.description?.trim() || await answer('What is this project for?')
   if (!purpose) throw new Error('A project purpose is required')
   const rules = options.rule ?? (options.rules === false ? [] : (await answer('Which hard rules must agents follow? (empty means none)')).split('\n').filter(Boolean))
-  const project: Project = { schemaVersion: 1, name: pkg.name || basename(root), purpose, rules }
+  const hosts = options.host ?? []
+  for (const host of hosts) if (!/^[\w.-]+\.md$/.test(host) || host === 'AGENTS.md') throw new Error(`Invalid host file: ${host}; use a root Markdown file name`)
+  const project: Project = { schemaVersion: 1, name: pkg.name || basename(root), purpose, rules, ...(hosts.length ? { hosts } : {}) }
   const scaffolds: Record<string, string> = {
     [STATE]: json(project),
     'AGENTS.md': `# ${project.name}\n\n${purpose}\n\n## Hard rules\n\n${rules.length ? rules.map(rule => `- ${rule}`).join('\n') : 'No project-specific hard rules declared.'}\n\n${region('observed', observed(pkg.scripts, areas))}\n`,
-    'CLAUDE.md': 'Read [AGENTS.md](./AGENTS.md) for this project’s instructions.\n',
+    ...Object.fromEntries(hosts.map(host => [host, HOST_POINTER])),
     'docs/quickstart.md': `---\nkind: guide\ntitle: Get started\ncovers: []\ndraft: true\n---\n\n# Get started\n\n<!-- Author the task, prerequisites, and a verified success condition. Remove draft: true when reviewed. -->\n\n${Object.keys(pkg.scripts).map(script => `- Run \`bun run ${script}\`.`).join('\n')}\n`,
     'SKILL.md': `---\nname: ${yaml(project.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}\ndescription: ${yaml(`Use ${project.name} from another project. ${purpose}`)}\n---\n\n# Use ${project.name}\n\nRead [Get started](docs/quickstart.md) for verified setup and task instructions.\n\n- Use [llms.txt](llms.txt) to find the public guides and reference.\n- Follow the project's constraints:\n${rules.map(rule => `  - ${rule}`).join('\n') || '  - No additional constraints declared.'}\n- Verify prerequisites and the documented success condition before reporting completion.\n- Do not treat internal maps or historical plans as the public interface.\n`,
     '.agents/skills/dewey-author/SKILL.md': AUTHOR_SKILL,
@@ -133,8 +136,9 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   const front = await optional(join(model.root, 'AGENTS.md'))
   if (front === null) issue('FRONT_DOOR_MISSING', 'AGENTS.md', 'Front door is missing')
   else if (front.trimEnd().split('\n').length > 150) issue('FRONT_DOOR_BUDGET', 'AGENTS.md', 'Front door exceeds 150 lines')
-  const claude = await optional(join(model.root, 'CLAUDE.md'))
-  if (!claude?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', 'CLAUDE.md', 'Point CLAUDE.md to AGENTS.md')
+  for (const host of model.project.hosts ?? []) {
+    if (!(await optional(join(model.root, host)))?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', host, `Point ${host} to AGENTS.md`)
+  }
   if (await optional(join(model.root, 'SKILL.md')) === null) issue('SKILL_MISSING', 'SKILL.md', 'External consumer skill is missing')
   const reviews: Reviews = JSON.parse(await optional(join(model.root, '.dewey/reviews.json')) ?? '{}')
   const maps = model.docs.filter(doc => doc.kind === 'map')

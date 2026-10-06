@@ -5,6 +5,7 @@ import { join } from 'path'
 import { agentCoachCommand } from '../src/cli/commands/agent-coach'
 import { auditCommand } from '../src/cli/commands/audit'
 import { initCommand } from '../src/cli/commands/init'
+import { analyzeDocumentationDrift } from '../src/cli/drift'
 import { PROJECT_TYPE_PROFILES, checkProjectTypeDocumentation } from '../src/cli/project-types'
 import { ProjectType, type ProjectType as ProjectTypeName } from '../src/cli/schema'
 import { improveAIPrompts, improveAIPromptsSkill } from '../src/index'
@@ -95,6 +96,50 @@ describe('project type validation and scaffolds', () => {
 })
 
 describe('deterministic drift evidence', () => {
+  test('audit and agent accept non-source file entry points without traversing them', async () => {
+    const root = await makeTemporaryDirectory()
+    await mkdir(join(root, 'docs'), { recursive: true })
+    await mkdir(join(root, 'implementation'), { recursive: true })
+    await writeFile(join(root, 'package.json'), '{}')
+    await writeFile(join(root, 'README.md'), '# Fixture')
+    await writeFile(join(root, 'run'), '#!/bin/sh\n')
+    await writeFile(join(root, 'implementation', 'main.ts'), "export type Mode = 'safe' | 'fast'\n")
+    await writeFile(join(root, 'dewey.config.json'), JSON.stringify({
+      project: { name: 'fixture' },
+      docs: { path: './docs', required: [] },
+      agent: { entryPoints: {
+        package: 'package.json', guide: 'README.md', executable: 'run',
+        main: 'implementation/main.ts', directory: 'implementation', missing: 'absent',
+      } },
+    }))
+    process.chdir(root)
+    for (const command of [auditCommand, agentCoachCommand]) {
+      const report = await captureJson(() => command({ json: true }))
+      expect(report.drift).toMatchObject({ checkedSourceFiles: 1, issues: [] })
+    }
+  })
+
+  test('classifies roots by file type, not suffix, and deduplicates source files', async () => {
+    const root = await makeTemporaryDirectory()
+    for (const path of ['src', 'lib', 'Sources', 'packages', 'apps']) {
+      await writeFile(join(root, path), 'not a directory')
+    }
+    await mkdir(join(root, 'custom.ts'))
+    await writeFile(join(root, 'custom.ts', 'main.ts'), "export type Mode = 'safe' | 'fast'\n")
+    const report = await analyzeDocumentationDrift({
+      projectRoot: root,
+      configuredSourcePaths: ['custom.ts', 'custom.ts/main.ts', 'src/absent.ts'],
+      documents: [
+        { path: 'api.md', body: "export type Mode = 'safe' | 'slow'" },
+        { path: 'api.agent.md', body: "export type Mode = 'safe' | 'slow'" },
+      ],
+    })
+    expect(report.checkedSourceFiles).toBe(1)
+    expect(report.issues).toContainEqual(expect.objectContaining({
+      code: 'DOC_SOURCE_CONTRACT_MISMATCH', symbol: 'Mode', sourcePath: 'custom.ts/main.ts',
+    }))
+  })
+
   test('reports source path, human-agent, and source-contract drift with exact evidence', async () => {
     const root = await makeTemporaryDirectory()
     await mkdir(join(root, 'docs', 'agent'), { recursive: true })

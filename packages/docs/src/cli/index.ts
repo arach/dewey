@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { freshInit, freshBuild, freshCheck, reviewDocument } from './fresh/commands.js'
+import { freshUncovered, freshWhich } from './fresh/query.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
 import { agentCoachCommand } from './commands/agent-coach.js'
@@ -43,6 +44,16 @@ program.command('check')
 program.command('review <document>')
   .description('Acknowledge that a covered document was reviewed against current source')
   .action(document => reviewDocument(document))
+
+program.command('which <path>')
+  .description('List the docs that cover a file or directory, with their size')
+  .option('--json', 'Output structured results')
+  .action((path, options) => freshWhich(path, options))
+
+program.command('uncovered')
+  .description('List source files that no map covers, by area')
+  .option('--json', 'Output structured results')
+  .action(freshUncovered)
 
 program
   .command('audit')

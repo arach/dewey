@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { checkProject, freshBuild, freshInit, reviewDocument } from '../src/cli/fresh/commands'
 import { matches } from '../src/cli/fresh/model'
+import { uncoveredSources, whichDocs } from '../src/cli/fresh/query'
 import { updateRegion } from '../src/cli/fresh/storage'
 
 const roots: string[] = []
@@ -87,6 +88,22 @@ describe('fresh-project loop', () => {
     expect(text.out).toContain(`docs/quickstart.md:${script.line} MISSING_SCRIPT`)
     expect(text.out).toContain('  fix: ')
     expect(issues.every(issue => issue.fix)).toBe(true)
+  })
+  test('which and uncovered route by code', async () => {
+    const root = await ready()
+    const which = await whichDocs('src/index.ts', root)
+    expect(which.docs.map(doc => [doc.path, doc.kind, doc.pattern])).toEqual([['docs/src.agent.md', 'map', 'src/*']])
+    expect(which.docs[0].tokens).toBeGreaterThan(0)
+    expect((await whichDocs('src', root)).docs.map(doc => doc.path)).toEqual(['docs/src.agent.md'])
+    expect((await whichDocs('package.json', root)).docs).toEqual([])
+    await expect(whichDocs('../elsewhere.ts', root)).rejects.toThrow('outside the project')
+    expect((await uncoveredSources(root)).areas).toEqual([])
+    await mkdir(join(root, 'src/sync'))
+    await writeFile(join(root, 'src/sync/index.ts'), 'export {}\n')
+    expect((await uncoveredSources(root)).areas).toEqual([{ area: 'src/sync', files: ['src/sync/index.ts'] }])
+    const cli = run(root, ['which', 'src/index.ts', '--json'])
+    expect(JSON.parse(cli.out).docs[0].path).toBe('docs/src.agent.md')
+    expect(run(root, ['uncovered']).out).toContain('dewey new map src/sync')
   })
   test('host pointer files are opt-in and must redirect to the front door', async () => {
     const root = await fixture()

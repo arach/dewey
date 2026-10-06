@@ -139,6 +139,8 @@ export async function loadModel(root: string): Promise<Model> {
   }
   return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
 }
+// Same rough estimate as agent-artifacts: whitespace-separated words × 1.33.
+export function tokens(text: string): number { return Math.ceil(text.split(/\s+/).filter(Boolean).length * 1.33) }
 export function human(doc: Doc): boolean { return doc.kind === 'guide' || doc.kind === 'reference' }
 export async function coverageHash(model: Model, doc: Doc): Promise<string> {
   const files = model.sources.filter(path => doc.covers.some(pattern => matches(path, pattern)))

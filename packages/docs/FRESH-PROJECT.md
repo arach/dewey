@@ -69,6 +69,16 @@ Kinds: `guide`, `reference`, `map`, `history`. Maps declare coverage. Guides and
 
 Coverage accepts `*`, `**`, and `?`, with project-relative paths. `src/*` does not cover `src/sync/index.ts`. Adding that area requires a map. A guide does not need a paired agent file.
 
+## Find docs by code
+
+```sh
+dewey which src/sync/index.ts   # docs whose covers match the file, with lines and token estimate
+dewey which src/sync            # docs covering anything under a directory
+dewey uncovered                 # source files no map covers, grouped by area
+```
+
+Both take `--json`. Results list maps first, then reference, guides and history.
+
 ## Checks and safety
 
 `check` exits 1 and emits issue codes for:

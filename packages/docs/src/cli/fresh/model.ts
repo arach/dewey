@@ -14,14 +14,14 @@ export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
 export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string
-  status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[] }
+  status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[]; order?: number; group?: string }
 export interface Issue { code: string; path: string; line?: number; message: string; fix?: string }
 // One default repair per issue code; an issue may carry a more specific fix.
 export const FIXES: Record<string, string> = {
   PROJECT_INVALID: 'Run dewey init, or repair .dewey/project.json.',
   DOC_KIND: 'Add kind: guide, reference, map or history to the frontmatter.',
   DOC_STATUS: 'Set status to shipped, proposal or abandoned, or remove it (shipped is the default).',
-  DOC_META: 'Set applies, supersedes and superseded_by to a string or a list of strings.',
+  DOC_META: 'Set applies, supersedes and superseded_by to a string or a list of strings, order to a number and group to a string.',
   SUPERSEDES_MISSING: 'Point supersedes and superseded_by at doc paths from the project root, such as docs/old-guide.md.',
   DOC_COVERS: 'Set covers to a project-relative path or glob, or a list of them, using *, ** or ?.',
   FRONT_DOOR_MISSING: 'Run dewey init, or restore AGENTS.md.',
@@ -158,10 +158,11 @@ export async function loadModel(root: string): Promise<Model> {
       return Array.isArray(items) && items.every(item => typeof item === 'string') ? items : null
     }
     const [applies, supersedes, supersededBy] = [list('applies'), list('supersedes'), list('superseded_by')]
+    if ((data.order !== undefined && typeof data.order !== 'number') || (data.group !== undefined && typeof data.group !== 'string')) { issues.push({ code: 'DOC_META', path, line: 1, message: 'order must be a number and group a string' }); continue }
     if (!applies || !supersedes || !supersededBy) { issues.push({ code: 'DOC_META', path, line: 1, message: 'applies, supersedes and superseded_by must be strings or lists of strings' }); continue }
     const route = path === 'README.md' ? 'readme.html' : `${path.replace(/\.md$/, '')}.html`
     const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path)
-    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy })
+    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy, ...(data.order !== undefined ? { order: data.order } : {}), ...(data.group ? { group: data.group } : {}) })
   }
   return { root, project, docs, sources: await sourceFiles(root), ...await packageInfo(root).then(({ scripts, bins }) => ({ scripts, bins })), issues }
 }

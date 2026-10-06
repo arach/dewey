@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
-import { execFileSync } from 'node:child_process'
 import { copyFileSync, mkdirSync, readdirSync, watch } from 'fs'
 
 // Copy all CSS files from src to dist
@@ -127,15 +126,6 @@ export default defineConfig({
       outDir: 'dist',
     }),
     copyCssPlugin(),
-    {
-      name: 'fresh-docs-browser-runtime',
-      closeBundle() {
-        // Bundle the real renderer and React for a standalone, offline static site.
-        // Runtime consumers never need a bundler or a framework installation.
-        execFileSync('bun', ['build', 'src/cli/fresh/client.tsx', '--target=browser', '--minify',
-          '--define', 'process.env.NODE_ENV="production"', '--outfile', 'dist/fresh/client.js'], { stdio: 'inherit' })
-      },
-    },
   ],
   build: {
     lib: {

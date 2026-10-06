@@ -138,17 +138,22 @@ Init refuses existing scaffold targets. Rerunning it in an initialized project u
 
 ## Real docs renderer
 
-`build` server-renders Dewey's `DocsApp` and ships its browser runtime: sidebar,
-search, highlighted code with copy buttons, table of contents, previous/next
-navigation, persistent dark mode, and four color presets. The same guide/reference
-Markdown feeds the site and `llms.txt`. Maps and history are excluded from the
-browser payload as well as navigation. No Next.js server or runtime install is required.
+`build` renders each page to static HTML with Dewey's `DocsApp` components: sidebar,
+highlighted code, table of contents and previous/next links. Pages work with
+JavaScript off, and each page holds only its own doc.
 
-Build the Dewey package before running the source CLI. The package build bundles
-the browser runtime; published CLI builds only copy that runtime and CSS.
+One script, `site.js` (about 10 KB), adds search, dark mode, the four color
+themes, the phone menu, copy buttons and collapsible groups. Search loads
+`search.js` on first use: titles, headings and up to 6,000 characters of each
+listed page. Maps and history are left out of both. Nothing needs to be built
+before the source CLI runs.
+
+Sidebar groups: Start here (`README.md`, `docs/quickstart.md`), Guides, then
+Reference. Set `group: <name>` to put a page in another group and `order: <n>`
+to sort it; pages without `order` sort by path.
 
 The browser proof uses Playwright Chromium and checks search navigation, code copy,
-color themes, dark-mode persistence, mobile overflow, and browser/HTTP errors.
+color themes, dark-mode persistence, the phone menu, pages with JavaScript off, mobile overflow, and browser/HTTP errors.
 It writes light, dark, and mobile screenshots under the scratch project's
 `browser-proof/`. Pass a scratch root and screenshot directory as optional arguments.
 Serve `.dewey/site` with any static HTTP server to inspect it yourself.

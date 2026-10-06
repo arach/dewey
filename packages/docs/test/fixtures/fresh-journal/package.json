@@ -1,0 +1,7 @@
+{
+  "name": "relaylog",
+  "private": true,
+  "type": "module",
+  "description": "A local, append-only event journal for development workflows.",
+  "scripts": { "journal": "bun src/cli.ts", "test": "bun test test/" }
+}

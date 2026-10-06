@@ -7,10 +7,12 @@ Dewey now has a fresh-project CLI path. It does not load or execute `dewey.confi
 From the Dewey checkout:
 
 ```sh
+bun run --cwd packages/docs build
 bun packages/docs/scripts/fresh-project-smoke.ts
+bun packages/docs/scripts/fresh-site-browser-smoke.ts
 ```
 
-This creates a new temporary project, authors its scaffold, runs the full CLI loop, verifies deliberate failures and recovery, and retrieves the generated site over HTTP. It leaves the project and `proof.log` in place and prints their absolute paths. The temporary HTTP server stops after verification.
+This creates Relaylog, a working append-only JSONL journal with eight authored overview, guide, and reference pages, authors its scaffold, runs the full CLI loop, verifies deliberate failures and recovery, and retrieves the generated site over HTTP. It leaves the project and `proof.log` in place and prints their absolute paths. The temporary HTTP server stops after verification.
 
 To exercise the built CLI under Node:
 
@@ -88,3 +90,20 @@ Init refuses existing scaffold targets. Rerunning it in an initialized project u
 - Script checks validate named root package scripts; shell-fence command checks inspect simple line-leading executables against this host's PATH. This is not a shell parser, dependency resolver, or proof that a command succeeds.
 - Review is an explicit author acknowledgment, not an automated semantic judgment. Deleting the review baseline cannot silently make a covered document pass.
 - No deployment, cross-project discovery, migration, compatibility program, or automatic prose generation is included.
+
+## Real docs renderer
+
+`build` server-renders Dewey's `DocsApp` and ships its browser runtime: sidebar,
+search, highlighted code with copy buttons, table of contents, previous/next
+navigation, persistent dark mode, and four color presets. The same guide/reference
+Markdown feeds the site and `llms.txt`. Maps and history are excluded from the
+browser payload as well as navigation. No Next.js server or runtime install is required.
+
+Build the Dewey package before running the source CLI. The package build bundles
+the browser runtime; published CLI builds only copy that runtime and CSS.
+
+The browser proof uses Playwright Chromium and checks search navigation, code copy,
+color themes, dark-mode persistence, mobile overflow, and browser/HTTP errors.
+It writes light, dark, and mobile screenshots under the scratch project's
+`browser-proof/`. Pass a scratch root and screenshot directory as optional arguments.
+Serve `.dewey/site` with any static HTTP server to inspect it yourself.

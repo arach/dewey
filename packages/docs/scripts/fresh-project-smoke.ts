@@ -1,5 +1,5 @@
 /** Run with Bun. Creates a new scratch project; never changes an existing project. */
-import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, cp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
@@ -21,16 +21,12 @@ function fail(code: string) {
   assert(JSON.parse(result.out).issues.some((issue: { code: string }) => issue.code === code), `Missing ${code}: ${result.out}`)
   transcript.push(`Verified deliberate failure: ${code}\n`)
 }
-await mkdir(join(root, 'src'))
-await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'scratch-counter', description: 'Count a list of items.', scripts: { test: 'bun test', count: 'bun src/index.ts' } }, null, 2))
-await writeFile(join(root, 'src/index.ts'), 'export const count = (items: unknown[]) => items.length\n')
-await writeFile(join(root, 'src/index.test.ts'), "import { test, expect } from 'bun:test'\nimport { count } from './index'\ntest('counts items', () => expect(count([1, 2])).toBe(2))\n")
-await writeFile(join(root, 'README.md'), '---\nkind: guide\ntitle: Counter\ncovers: []\n---\n# Counter\n\nCount a list of items. Read [Get started](docs/quickstart.md).\n')
-pass('init', '--rule', 'The counter must not mutate its input.')
+const fixture = resolve(import.meta.dir, '../test/fixtures/fresh-journal')
+for (const name of ['src', 'test', 'package.json', 'README.md']) await cp(join(fixture, name), join(root, name), { recursive: true })
+pass('init', '--rule', 'Never rewrite existing journal records during an append.')
 fail('DOC_DRAFT')
-await writeFile(join(root, 'docs/src.agent.md'), '---\nkind: map\ntitle: Counter implementation\ncovers: ["src/*"]\n---\n# Counter implementation\n\n## Files and flow\n\n`src/index.ts` exports count; `src/index.test.ts` verifies it. Input list → length → numeric result.\n\n## Invariants and traps\n\nNever mutate the input. Empty lists return zero. This is a synchronous in-memory count, not a stream API.\n')
-const guide = '---\nkind: guide\ntitle: Get started\ncovers: []\n---\n# Get started\n\nUse Bun to run this small TypeScript project.\n\n## Verify\n\n```sh\nbun run test\n```\n\nExpect the counts-items test to pass. Read the [project overview](../README.md) or return to [Verify](#verify).\n'
-await writeFile(join(root, 'docs/quickstart.md'), guide)
+await cp(join(fixture, 'docs'), join(root, 'docs'), { recursive: true })
+const guide = await readFile(join(root, 'docs/quickstart.md'), 'utf8')
 pass('review', 'docs/src.agent.md')
 pass('build')
 pass('check', '--json')
@@ -43,9 +39,9 @@ await writeFile(join(root, 'src/sync/index.ts'), 'export const enabled = true\n'
 fail('MAP_MISSING')
 await writeFile(join(root, 'docs/sync.agent.md'), '---\nkind: map\ntitle: Sync feature\ncovers: ["src/sync/**"]\n---\n# Sync feature\n\n`src/sync/index.ts` exports the feature flag; no I/O occurs.\n')
 pass('review', 'docs/sync.agent.md'); pass('build'); pass('check', '--json')
-await writeFile(join(root, 'src/index.ts'), 'export const count = (items: readonly unknown[]) => items.length\n')
+await writeFile(join(root, 'src/index.ts'), await readFile(join(root, 'src/index.ts'), 'utf8') + '\n// Journal envelopes preserve append order.\n')
 pass('build'); fail('REVIEW_REQUIRED')
-await writeFile(join(root, 'docs/src.agent.md'), await readFile(join(root, 'docs/src.agent.md'), 'utf8') + '\nThe type signature now accepts readonly input.\n')
+await writeFile(join(root, 'docs/src.agent.md'), await readFile(join(root, 'docs/src.agent.md'), 'utf8') + '\nReviewed the append-order comment; runtime behavior is unchanged.\n')
 pass('review', 'docs/src.agent.md'); pass('build'); pass('check', '--json')
 for (const [extra, code] of [
   ['`src/not-found.ts`', 'MISSING_PATH'], ['`bun run no-such-script`', 'MISSING_SCRIPT'],
@@ -60,7 +56,7 @@ for (const [extra, code] of [
 const front = await readFile(join(root, 'AGENTS.md'), 'utf8')
 await writeFile(join(root, 'AGENTS.md'), front + '\nOverflow\n'.repeat(150)); fail('FRONT_DOOR_BUDGET')
 await writeFile(join(root, 'AGENTS.md'), front)
-await writeFile(join(root, 'docs/quickstart.md'), guide + '\nCount does not modify the input.\n'); fail('STALE_OUTPUT'); pass('build')
+await writeFile(join(root, 'docs/quickstart.md'), guide + '\nA successful append does not rewrite previous records.\n'); fail('STALE_OUTPUT'); pass('build')
 const homePath = join(root, '.dewey/site/index.html'); const home = await readFile(homePath, 'utf8')
 await writeFile(homePath, home.replace(/<nav[\s\S]*?<\/nav>/, '<nav><a href="missing.html">Broken</a></nav>'))
 fail('NAV_MISSING'); fail('SITE_LINK')
@@ -74,7 +70,7 @@ pass('init', '--no-rules'); pass('build'); pass('check', '--json')
 assert((await readFile(join(root, 'AGENTS.md'), 'utf8')).endsWith(manual), 'Manual front-door rule lost')
 assert((await readFile(join(root, 'llms.txt'), 'utf8')).startsWith('Manual index preface.'), 'Manual index preface lost')
 const finalHome = await readFile(homePath, 'utf8')
-assert(!finalHome.includes('Historical direction') && !finalHome.includes('Counter implementation'), 'Maps/history leaked to navigation')
+assert(!finalHome.includes('Historical direction') && !finalHome.includes('Journal implementation'), 'Maps/history leaked to navigation')
 
 const site = join(root, '.dewey/site')
 const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
@@ -85,7 +81,7 @@ const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) 
   return await file.exists() ? new Response(file) : new Response('Not found', { status: 404 })
 } })
 try {
-  for (const route of ['/', '/docs/quickstart.html', '/readme.html', '/llms.txt', '/style.css']) {
+  for (const route of ['/', '/docs/quickstart.html', '/readme.html', '/docs/reference/api.html', '/client.js', '/themes/ocean.css', '/llms.txt', '/style.css']) {
     const response = await fetch(`http://127.0.0.1:${server.port}${route}`)
     assert(response.status === 200, `HTTP smoke failed: ${route}`)
     transcript.push(`GET ${route} → ${response.status}\n`)

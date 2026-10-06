@@ -3,7 +3,10 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import Markdown, { defaultUrlTransform } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
-import { posix } from 'node:path'
+import { dirname, join, posix } from 'node:path'
+import { readFileSync, existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { FreshDocs, SITE_THEMES, type RendererData } from './renderer.js'
 import { human, resolveReference, type Doc, type Model } from './model.js'
 
 export const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
@@ -21,16 +24,73 @@ export function renderBody(model: Model, doc: Doc): string {
     return relativeUrl(doc.route, route) + (target.fragment ? `#${encodeURIComponent(target.fragment)}` : '')
   })
 }
-const CSS = `:root{color-scheme:light dark;--dw-background:light-dark(#fff,#15171a);--dw-foreground:light-dark(#202329,#e6e8eb);--dw-muted:light-dark(#58616d,#a8b0bb);--dw-border:light-dark(#dce0e5,#3b414b);--dw-link:light-dark(#1558a6,#8fc2ff);font:16px/1.75 ui-sans-serif,system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--dw-background);color:var(--dw-foreground)}a{color:var(--dw-link);text-underline-offset:.2em}a:focus-visible{outline:3px solid currentColor;outline-offset:4px}header{padding:1.2rem 2rem;border-bottom:1px solid var(--dw-border)}header a{color:inherit;font-weight:650}header span{margin-left:1rem;color:var(--dw-muted)}.layout{display:grid;grid-template-columns:16rem minmax(0,80ch);gap:3rem;max-width:1200px;margin:auto;padding:2rem}nav{font-size:.95rem}nav ul{padding:0;list-style:none}nav li{margin:.6rem 0}nav a[aria-current]{font-weight:700;color:var(--dw-foreground)}main{min-width:0}h1{font-size:2.2rem;line-height:1.2;letter-spacing:-.035em}h2{margin-top:2rem;line-height:1.3}pre{padding:1rem;background:light-dark(#f3f5f7,#20242a);overflow:auto;border-radius:.3rem}code{font-family:ui-monospace,monospace;font-size:.9em}table{display:block;max-width:100%;overflow:auto;border-collapse:collapse}th,td{padding:.5rem .8rem;text-align:left;border-bottom:1px solid var(--dw-border)}img{max-width:100%;height:auto}blockquote{margin-left:0;padding-left:1rem;border-left:3px solid var(--dw-border);color:var(--dw-muted)}.skip{position:absolute;left:1rem;top:-5rem}.skip:focus{top:1rem;background:var(--dw-background);padding:.5rem}footer{margin-top:3rem;color:var(--dw-muted);font-size:.9rem}@media(max-width:720px){.layout{grid-template-columns:1fr;gap:1rem;padding:1rem}nav{border-bottom:1px solid var(--dw-border)}header{padding:1rem}header span{display:block;margin:0}h1{font-size:1.8rem}}`
-export function shell(model: Model, route: string, title: string, body: string): string {
-  const nav = model.docs.filter(doc => human(doc) && !doc.hidden).map(doc => `<li><a href="${escape(relativeUrl(route, doc.route))}"${route === doc.route ? ' aria-current="page"' : ''}>${escape(doc.title)}</a></li>`).join('')
-  return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · ${escape(model.project.name)}</title><link rel="stylesheet" href="${relativeUrl(route, 'style.css')}"></head><body><a class="skip" href="#content">Skip to content</a><header><a href="${relativeUrl(route, 'index.html')}">${escape(model.project.name)}</a><span>Documentation</span></header><div class="layout"><nav aria-label="Documentation"><ul>${nav}</ul><a href="${relativeUrl(route, 'llms.txt')}">Agent index</a></nav><main id="content">${body}<footer>Documentation from this project’s Markdown.</footer></main></div></body></html>\n`
+
+function packageRoot(): string {
+  let directory = dirname(fileURLToPath(import.meta.url))
+  while (dirname(directory) !== directory) {
+    const path = join(directory, 'package.json')
+    if (existsSync(path) && JSON.parse(readFileSync(path, 'utf8')).name === '@arach/dewey') return directory
+    directory = dirname(directory)
+  }
+  throw new Error('Cannot locate the Dewey renderer assets')
+}
+// Only adapter/reset rules. Layout, typography, code, dark mode, and themes are library CSS.
+const ADAPTER_CSS = `html{scroll-behavior:smooth}body{margin:0;font-family:var(--dw-font-sans);background:var(--dw-background);color:var(--dw-foreground)}*{box-sizing:border-box}button,select,input{font:inherit}.dw-fresh-tools{position:fixed;top:.7rem;right:8rem;z-index:51;display:flex;align-items:center;gap:1rem;max-width:42vw}.dw-fresh-tools .dw-cmd-trigger{width:240px;margin:0}.dw-fresh-theme{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--dw-muted-foreground)}.dw-fresh-theme select{background:var(--dw-background);color:var(--dw-foreground);border:1px solid var(--dw-border);border-radius:var(--dw-radius);padding:.3rem}.dw-fresh-skip{position:fixed;left:1rem;top:-5rem;z-index:100}.dw-fresh-skip:focus{top:1rem;background:var(--dw-background);padding:.5rem}@media(max-width:1000px){.dw-fresh-theme span{display:none}.dw-fresh-tools{right:7rem;gap:.5rem}.dw-fresh-tools .dw-cmd-trigger{width:160px}}@media(max-width:720px){.dw-fresh-tools{top:auto;bottom:0;left:0;right:0;max-width:none;padding:.6rem 1rem;background:var(--dw-background);border-top:1px solid var(--dw-border);justify-content:space-between}.dw-fresh-tools .dw-cmd-trigger{width:190px}body{padding-bottom:4rem}}`
+
+function runtimeFiles(): Record<string, string> {
+  const root = packageRoot()
+  const client = join(root, 'dist/fresh/client.js')
+  if (!existsSync(client)) throw new Error('Dewey browser renderer is not built. Run bun run --cwd packages/docs build in the Dewey checkout first.')
+  const css = existsSync(join(root, 'src/css/base.css')) ? join(root, 'src/css') : join(root, 'dist/css')
+  return {
+    'client.js': readFileSync(client, 'utf8'),
+    'style.css': [readFileSync(join(css, 'tokens.css'), 'utf8'), readFileSync(join(css, 'base.css'), 'utf8'), ADAPTER_CSS].join('\n'),
+    ...Object.fromEntries(SITE_THEMES.map(theme => [`themes/${theme}.css`, readFileSync(join(css, `colors/${theme}.css`), 'utf8')])),
+  }
+}
+function rootPrefix(route: string): string { return '../'.repeat(route.split('/').length - 1) || './' }
+export function rewriteMarkdown(model: Model, doc: Doc): string {
+  // Rewrite rendered link targets back into Markdown destinations, including reference links.
+  // Keep all Markdown intact for the actual MarkdownContent / CodeBlock renderer.
+  const urls = new Map<string, string>()
+  const html = markdown(doc.body)
+  for (const href of [...attributes(html, 'href'), ...attributes(html, 'src')]) {
+    const target = resolveReference(doc.path, href)
+    if (!target) continue
+    const page = model.docs.find(candidate => candidate.path === target.path)
+    const route = page && human(page) ? page.route : `assets/${target.path}`
+    const next = relativeUrl(doc.route, route) + (target.fragment ? `#${encodeURIComponent(target.fragment)}` : '')
+    urls.set(href, next)
+  }
+  // Mask fenced and inline code before rewriting destinations: examples are source, not links.
+  const code: string[] = []
+  const masked = doc.body.replace(/(^[ \t]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t]*\2[ \t]*$)|(`+)[^`]*?\3/gm, value => {
+    code.push(value)
+    return `\u0000DEWEY_CODE_${code.length - 1}\u0000`
+  })
+  return masked.replace(/(\]\(<?)([^\s)>]+)(>?)/g, (all, before, href, after) => urls.has(href) ? `${before}${urls.get(href)}${after}` : all)
+    .replace(/^(\s*\[[^\]]+\]:\s*<?)([^\s>]+)(>?)/gm, (all, before, href, after) => urls.has(href) ? `${before}${urls.get(href)}${after}` : all)
+    .replace(/\u0000DEWEY_CODE_(\d+)\u0000/g, (_, index) => code[Number(index)])
 }
 export function siteFiles(model: Model): Record<string, string> {
   const pages = model.docs.filter(human)
-  const index = [`# ${model.project.name}`, '', `> ${model.project.purpose}`, '', '## Documentation', '', ...pages.filter(doc => !doc.hidden).map(doc => `- [${doc.title}](${doc.route})`), ''].join('\n')
-  const files: Record<string, string> = { 'style.css': CSS, 'llms.txt': index }
-  files['index.html'] = shell(model, 'index.html', 'Documentation', `<h1>${escape(model.project.name)}</h1><p>${escape(model.project.purpose)}</p><ul>${pages.filter(doc => !doc.hidden).map(doc => `<li><a href="${escape(doc.route)}">${escape(doc.title)}</a></li>`).join('')}</ul>`)
-  for (const doc of pages) files[doc.route] = shell(model, doc.route, doc.title, renderBody(model, doc))
+  const publicPages = pages.filter(doc => !doc.hidden)
+  const index = [`# ${model.project.name}`, '', `> ${model.project.purpose}`, '', '## Documentation', '', ...publicPages.map(doc => `- [${doc.title}](${doc.route})`), ''].join('\n')
+  const navigation = [
+    { title: 'Start here', items: publicPages.filter(doc => doc.path === 'README.md' || doc.path === 'docs/quickstart.md') },
+    { title: 'Guides', items: publicPages.filter(doc => doc.kind === 'guide' && doc.path !== 'README.md' && doc.path !== 'docs/quickstart.md') },
+    { title: 'Reference', items: publicPages.filter(doc => doc.kind === 'reference') },
+  ].filter(group => group.items.length).map(group => ({ title: group.title, items: group.items.map(doc => ({ id: doc.route, title: doc.title })) }))
+  const docs = Object.fromEntries(pages.map(doc => [doc.route, rewriteMarkdown(model, doc)]))
+  const files: Record<string, string> = { ...runtimeFiles(), 'llms.txt': index }
+  const entry = publicPages.find(doc => doc.path === 'README.md') ?? publicPages[0] ?? pages[0]
+  for (const [route, currentPage, title] of [['index.html', entry?.route ?? '', model.project.name], ...pages.map(doc => [doc.route, doc.route, doc.title])]) {
+    // The landing alias needs body-relative links rebased to its own location.
+    const entryDocs = route === 'index.html' && entry ? { ...docs, [entry.route]: rewriteMarkdown(model, { ...entry, route }) } : docs
+    const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage, rootPrefix: rootPrefix(route), docs: entryDocs, navigation }
+    const body = renderToStaticMarkup(createElement(FreshDocs, { data }))
+    const payload = JSON.stringify(data).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')
+    files[route] = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · ${escape(model.project.name)}</title><link rel="stylesheet" href="${data.rootPrefix}style.css"><link id="dewey-preset" rel="stylesheet" href="${data.rootPrefix}themes/ocean.css"></head><body><a class="dw-fresh-skip" href="#dewey-root">Skip to documentation</a><div id="dewey-root">${body}</div><script id="dewey-data" type="application/json">${payload}</script><script defer src="${data.rootPrefix}client.js"></script></body></html>\n`
+  }
   return files
 }

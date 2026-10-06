@@ -205,6 +205,7 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
   for (const doc of model.docs) {
     if (doc.draft) issue('DOC_DRAFT', doc.path, 'This doc is still a scaffold', lineAt(doc.raw, doc.raw.search(/^draft:/m)))
     if (doc.covers.length && (reviews[doc.path]?.sourceHash !== await coverageHash(model, doc) || reviews[doc.path]?.docHash !== hash(doc.raw))) issue('REVIEW_REQUIRED', doc.path, 'Covered code or this doc changed since the last review', undefined, `Re-read the covered code, correct the doc, then run dewey review ${doc.path}.`)
+    for (const target of [...doc.supersedes, ...doc.supersededBy]) if (!model.docs.some(other => other.path === target)) issue('SUPERSEDES_MISSING', doc.path, `No doc at ${target}`, lineAt(doc.raw, doc.raw.indexOf(target)))
     for (const pattern of doc.covers) if (!model.sources.some(path => matches(path, pattern))) issue('COVERAGE_EMPTY', doc.path, `Coverage pattern matches no source files: ${pattern}`, lineAt(doc.raw, doc.raw.indexOf(pattern)))
   }
   const texts = [...model.docs.map(doc => ({ path: doc.path, body: doc.body, offset: doc.offset })), ...await Promise.all(['AGENTS.md', 'SKILL.md'].map(async path => ({ path, body: await optional(join(model.root, path)) ?? '', offset: 0 })))]

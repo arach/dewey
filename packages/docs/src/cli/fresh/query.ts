@@ -2,7 +2,7 @@ import { realpath } from 'node:fs/promises'
 import { isAbsolute, relative, resolve, sep } from 'node:path'
 import { json, loadModel, matches, sourceArea, tokens, type Doc } from './model.js'
 
-export interface Covering { path: string; kind: Doc['kind']; title: string; pattern: string; lines: number; tokens: number }
+export interface Covering { path: string; kind: Doc['kind']; status: Doc['status']; title: string; pattern: string; lines: number; tokens: number }
 const ORDER: Doc['kind'][] = ['map', 'reference', 'guide', 'history']
 
 function projectPath(root: string, target: string): string {
@@ -17,7 +17,7 @@ export async function whichDocs(target: string, directory = process.cwd()): Prom
   const files = [path, ...model.sources.filter(source => path === '' || source.startsWith(`${path}/`))]
   const docs = model.docs.flatMap(doc => {
     const pattern = doc.covers.find(pattern => files.some(file => matches(file, pattern)))
-    return pattern ? [{ path: doc.path, kind: doc.kind, title: doc.title, pattern, lines: doc.raw.trimEnd().split('\n').length, tokens: tokens(doc.raw) }] : []
+    return pattern ? [{ path: doc.path, kind: doc.kind, status: doc.status, title: doc.title, pattern, lines: doc.raw.trimEnd().split('\n').length, tokens: tokens(doc.raw) }] : []
   })
   return { path, docs: docs.sort((a, b) => ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind) || a.path.localeCompare(b.path)) }
 }

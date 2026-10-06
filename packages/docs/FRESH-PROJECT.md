@@ -77,6 +77,12 @@ title: Sync implementation
 
 Kinds: `guide`, `reference`, `map`, `history`. Maps declare coverage. Guides and references produce human pages. Maps and history do not appear in the site or default agent index. Root `README.md` is a guide by default. `nav: false` explicitly marks an intentionally unlisted human page. Relative Markdown links and heading anchors are rewritten into site links.
 
+Optional status fields:
+
+- `status`: `shipped` (the default), `proposal` or `abandoned`. Proposal pages open with a notice and stay out of `llms-full.txt`; `llms.txt` tags them `[proposal]`. Abandoned docs are never published.
+- `applies`: what the doc covers, such as a package, version or platform. A string or a list.
+- `supersedes` and `superseded_by`: doc paths from the project root. A replaced page links to its replacement and leaves both indexes. `check` fails with `SUPERSEDES_MISSING` if a target doesn't exist.
+
 Coverage accepts `*`, `**`, and `?`, with project-relative paths. `src/*` does not cover `src/sync/index.ts`. Adding that area requires a map. A guide does not need a paired agent file.
 
 ## Start a new doc

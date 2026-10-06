@@ -7,15 +7,21 @@ import { extractLlmsSummary } from './summary.js'
 export const STATE = '.dewey/project.json'
 export const OUTPUT = '.dewey/site'
 export const KINDS = ['guide', 'map', 'reference', 'history'] as const
+// shipped: describes what ships today. proposal: planned. abandoned: kept for the record, never published.
+export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
 export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
-export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string }
+export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string
+  status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[] }
 export interface Issue { code: string; path: string; line?: number; message: string; fix?: string }
 // One default repair per issue code; an issue may carry a more specific fix.
 export const FIXES: Record<string, string> = {
   PROJECT_INVALID: 'Run dewey init, or repair .dewey/project.json.',
   DOC_KIND: 'Add kind: guide, reference, map or history to the frontmatter.',
+  DOC_STATUS: 'Set status to shipped, proposal or abandoned, or remove it (shipped is the default).',
+  DOC_META: 'Set applies, supersedes and superseded_by to a string or a list of strings.',
+  SUPERSEDES_MISSING: 'Point supersedes and superseded_by at doc paths from the project root, such as docs/old-guide.md.',
   DOC_COVERS: 'Set covers to a project-relative path or glob, or a list of them, using *, ** or ?.',
   FRONT_DOOR_MISSING: 'Run dewey init, or restore AGENTS.md.',
   FRONT_DOOR_BUDGET: 'Move tutorials and reference into docs/ and link to them from AGENTS.md.',
@@ -136,15 +142,27 @@ export async function loadModel(root: string): Promise<Model> {
     }
     if (!valid) continue
     if (kind === 'map' && !covers.length) issues.push({ code: 'DOC_COVERS', path, message: 'A map must declare the code it covers' })
+    const status = data.status ?? 'shipped'
+    if (!STATUSES.includes(status)) { issues.push({ code: 'DOC_STATUS', path, line: lineAt(raw, raw.search(/^status:/m)), message: `Unknown status: ${String(status)}` }); continue }
+    const list = (key: string): string[] | null => {
+      const value = data[key] ?? []
+      const items = typeof value === 'string' ? [value] : value
+      return Array.isArray(items) && items.every(item => typeof item === 'string') ? items : null
+    }
+    const [applies, supersedes, supersededBy] = [list('applies'), list('supersedes'), list('superseded_by')]
+    if (!applies || !supersedes || !supersededBy) { issues.push({ code: 'DOC_META', path, line: 1, message: 'applies, supersedes and superseded_by must be strings or lists of strings' }); continue }
     const route = path === 'README.md' ? 'readme.html' : `${path.replace(/\.md$/, '')}.html`
     const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path)
-    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route })
+    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy })
   }
   return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
 }
 // Same rough estimate as agent-artifacts: whitespace-separated words × 1.33.
 export function tokens(text: string): number { return Math.ceil(text.split(/\s+/).filter(Boolean).length * 1.33) }
-export function human(doc: Doc): boolean { return doc.kind === 'guide' || doc.kind === 'reference' }
+// Published as a page: guides and reference, unless abandoned.
+export function human(doc: Doc): boolean { return (doc.kind === 'guide' || doc.kind === 'reference') && doc.status !== 'abandoned' }
+// What an agent should trust as today's behavior: shipped and not replaced.
+export function current(doc: Doc): boolean { return human(doc) && doc.status === 'shipped' && !doc.supersededBy.length }
 export async function coverageHash(model: Model, doc: Doc): Promise<string> {
   const files = model.sources.filter(path => doc.covers.some(pattern => matches(path, pattern)))
   return hash(json(await Promise.all(files.map(async path => [path, hash(await readFile(join(model.root, path), 'utf8'))]))))

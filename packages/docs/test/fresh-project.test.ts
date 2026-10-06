@@ -77,6 +77,17 @@ describe('fresh-project loop', () => {
     expect(search).not.toContain('.agent')
     expect(await codes(root)).not.toContain('SITE_NAV_MISSING')
   })
+  test('plain fences stay blocks, a README without a heading takes the project name, image links get no arrow', async () => {
+    const root = await ready()
+    await writeFile(join(root, 'README.md'), '[![Logo](docs/logo.svg)](https://example.com)\n\nA widget.\n\n```\nsrc/\n  index.ts   # entry\n```\n')
+    await writeFile(join(root, 'docs/logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>\n')
+    await freshBuild(root)
+    const html = await readFile(join(root, '.dewey/site/readme.html'), 'utf8')
+    expect(html).toContain('<code class="dw-code-block-code">src/\n  index.ts   # entry</code>')
+    expect(html).toContain('<title>scratch-widget</title>')
+    expect(html).not.toContain('dw-markdown-external')
+    expect(await Bun.file(join(root, '.dewey/site/assets/docs/logo.svg')).exists()).toBe(true)
+  })
   test('order and group frontmatter arrange the sidebar', async () => {
     const root = await ready()
     await writeFile(join(root, 'README.md'), '# Home\n\nA widget.\n')

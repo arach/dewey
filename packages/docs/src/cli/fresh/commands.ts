@@ -205,7 +205,7 @@ async function expectedOutputs(model: Model): Promise<Record<string, string | Bu
     for (const href of [...attributes(rendered, 'href'), ...attributes(rendered, 'src')]) {
       const target = resolveReference(doc.path, href)
       if (!target || model.docs.some(candidate => candidate.path === target.path)) continue
-      if (!/\.(png|jpe?g|gif|webp|avif|ico|pdf|txt)$/i.test(target.path)) continue
+      if (!/\.(png|jpe?g|gif|svg|webp|avif|ico|pdf|txt)$/i.test(target.path)) continue
       const absolute = safePath(model.root, target.path)
       await assertWritable(model.root, target.path) // also refuses symlink asset reads
       try { outputs[`${OUTPUT}/assets/${target.path}`] = await readFile(absolute) } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }

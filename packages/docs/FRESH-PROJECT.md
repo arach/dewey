@@ -137,7 +137,7 @@ Rerunning it in an initialized project updates only the observed front-door regi
 
 - Source discovery covers conventional `src/`, `lib/`, `Sources/`, package/app `src` or `Sources` trees, root code files, and existing package main/module/types/bin entry files. It excludes dependency/build/test directories and symlinks. Arbitrary source-root policy is not implemented.
 - Markdown `.md` is supported; MDX, remote assets, generated API extraction, and arbitrary renderer configuration are not implemented.
-- Referenced local PNG/JPEG/GIF/WebP/AVIF/ICO/PDF/TXT assets are copied. Other local downloads are reported as broken rendered links until supported.
+- Referenced local PNG/JPEG/GIF/SVG/WebP/AVIF/ICO/PDF/TXT assets are copied. Other local downloads are reported as broken rendered links until supported.
 - Script checks validate named root package scripts; shell-fence command checks inspect the first word of each line (after any `VAR=value`). They never look at this machine's PATH, so the result is the same on a laptop and in CI. This is not a shell parser, dependency resolver, or proof that a command succeeds.
 - Review is an explicit author acknowledgment, not an automated semantic judgment. Deleting the review baseline cannot silently make a covered document pass.
 - No deployment, cross-project discovery, migration, compatibility program, or automatic prose generation is included.

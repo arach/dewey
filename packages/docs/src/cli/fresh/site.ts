@@ -76,6 +76,10 @@ button,select,input{font:inherit}
   .dw-fresh-theme{border:0;background-color:transparent;padding-right:1.3rem;background-position:right .3rem center}
 }
 
+.dw-prose .dw-code-block-pre{padding:.9rem 3rem .9rem 1rem}
+.dw-prose .dw-code-block-language~.dw-code-block-pre{padding-top:1.9rem}
+.dw-prose .dw-inline-code,.dw-prose :not(pre)>code{padding:.1em .35em;font-size:.85em;font-weight:450;background:color-mix(in srgb,var(--dw-foreground) 7%,transparent);border-radius:.3rem}
+
 /* Without JavaScript these controls would do nothing, so they are not shown. */
 html:not(.js) .dw-fresh-tools,html:not(.js) .dw-header-theme-toggle,html:not(.js) .dw-header-menu-btn{display:none!important}
 
@@ -194,7 +198,7 @@ export function siteFiles(model: Model): Record<string, string> {
     const content = page ? rewriteMarkdown(model, route === 'index.html' ? { ...page, route } : page) : ''
     const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage: page?.route ?? '', rootPrefix: rootPrefix(route), content, navigation }
     const body = renderToStaticMarkup(createElement(FreshDocs, { data }))
-    const title = route === 'index.html' || !page ? model.project.name : `${page.title} · ${model.project.name}`
+    const title = route === 'index.html' || !page || page.title === model.project.name ? model.project.name : `${page.title} · ${model.project.name}`
     const description = page?.summary ? `<meta name="description" content="${escape(page.summary)}">` : ''
     const alternate = page ? `<link rel="alternate" type="text/markdown" href="${escape(relativeUrl(route, markdownRoute(page.route)))}">` : ''
     files[route] = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="dewey-root" content="${data.rootPrefix}"><title>${escape(title)}</title>${description}${alternate}<link rel="stylesheet" href="${data.rootPrefix}style.css"><link id="dewey-preset" rel="stylesheet" href="${data.rootPrefix}themes/ocean.css"><script>${PREFERENCES}</script></head><body><a class="dw-fresh-skip" href="#dewey-root">Skip to documentation</a><div id="dewey-root">${body}</div><script defer src="${data.rootPrefix}site.js"></script></body></html>\n`

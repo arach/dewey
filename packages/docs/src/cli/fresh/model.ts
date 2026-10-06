@@ -161,7 +161,9 @@ export async function loadModel(root: string): Promise<Model> {
     if ((data.order !== undefined && typeof data.order !== 'number') || (data.group !== undefined && typeof data.group !== 'string')) { issues.push({ code: 'DOC_META', path, line: 1, message: 'order must be a number and group a string' }); continue }
     if (!applies || !supersedes || !supersededBy) { issues.push({ code: 'DOC_META', path, line: 1, message: 'applies, supersedes and superseded_by must be strings or lists of strings' }); continue }
     const route = path === 'README.md' ? 'readme.html' : `${path.replace(/\.md$/, '')}.html`
-    const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path)
+    // No title or H1: the README stands for the project, other files are named after themselves.
+    const fallback = path === 'README.md' ? project.name : (path.split('/').pop() ?? path).replace(/\.md$/, '').replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase())
+    const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? fallback)
     docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy, ...(data.order !== undefined ? { order: data.order } : {}), ...(data.group ? { group: data.group } : {}) })
   }
   return { root, project, docs, sources: await sourceFiles(root), ...await packageInfo(root).then(({ scripts, bins }) => ({ scripts, bins })), issues }

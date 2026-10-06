@@ -85,6 +85,7 @@ Both take `--json`. Results list maps first, then reference, guides and history.
 
 - Drafts, invalid metadata, uncovered source, empty coverage patterns, or review-required source/document changes.
 - Missing front door/skill/pointer, or a front door over 150 lines.
+- A published package (named, not `private`) whose `files` list or `.npmignore` would leave out `AGENTS.md`, `SKILL.md` or a guide/reference under `docs/`. Agents in other projects read docs from `node_modules/<pkg>/`, so they must ship with the version they describe.
 - Missing cited conventional paths, nonexistent package scripts, and missing simple shell commands.
 - Missing local Markdown links/anchors, unpublished map/history links from human pages, stale outputs, broken rendered links, and human pages absent from navigation.
 

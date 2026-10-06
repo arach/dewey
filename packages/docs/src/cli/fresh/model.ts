@@ -30,6 +30,7 @@ export const FIXES: Record<string, string> = {
   MISSING_PATH: 'Update the path to where the file lives now, or remove the reference.',
   MISSING_SCRIPT: 'Use a script from package.json, or add the script.',
   MISSING_COMMAND: 'Use a command the project provides, or change the fence language.',
+  PUBLISH_MISSING: 'Add "docs", "AGENTS.md" and "SKILL.md" to the files list in package.json, or drop the .npmignore entry.',
   OUTPUT_OWNERSHIP: 'Move hand edits out of the generated file, delete it, then run dewey build.',
   STALE_OUTPUT: 'Run dewey build.',
   NAV_MISSING: 'Run dewey build; if it persists, remove nav: false.',

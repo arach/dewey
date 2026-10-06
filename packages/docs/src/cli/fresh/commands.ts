@@ -122,6 +122,26 @@ export async function reviewDocument(path: string, directory = process.cwd()): P
   await writeSafe(model.root, '.dewey/reviews.json', json(reviews))
   console.log(`Recorded explicit review of ${path} against current covered source`)
 }
+// Which project files npm would publish, judged from package.json files and .npmignore.
+// Rough on purpose: it reads the two lists, not npm's full packing rules.
+function listed(path: string, entry: string): boolean {
+  const pattern = entry.replace(/^\.\//, '').replace(/\/+$/, '')
+  if (!pattern) return false
+  if (path === pattern || path.startsWith(`${pattern}/`)) return true
+  try { return matches(path, pattern) } catch { return false }
+}
+async function unpublished(model: Model): Promise<string[]> {
+  const raw = await optional(join(model.root, 'package.json'))
+  const pkg = raw ? JSON.parse(raw) : null
+  if (!pkg?.name || pkg.private === true) return []
+  const wanted = ['AGENTS.md', 'SKILL.md', ...model.docs.filter(doc => human(doc) && doc.path.startsWith('docs/')).map(doc => doc.path)]
+  if (Array.isArray(pkg.files)) {
+    const entries = pkg.files.filter((entry: unknown): entry is string => typeof entry === 'string')
+    return wanted.filter(path => !entries.some((entry: string) => !entry.startsWith('!') && listed(path, entry)) || entries.some((entry: string) => entry.startsWith('!') && listed(path, entry.slice(1))))
+  }
+  const ignore = (await optional(join(model.root, '.npmignore')))?.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#') && !line.startsWith('!')) ?? []
+  return wanted.filter(path => ignore.some(entry => listed(path, entry.replace(/^\//, ''))))
+}
 async function executable(command: string): Promise<boolean> {
   if (['dewey', 'cd', 'echo', 'export', 'printf', 'true', 'false', 'test', 'set', 'pwd'].includes(command)) return true
   for (const directory of (process.env.PATH ?? '').split(delimiter)) {
@@ -140,6 +160,8 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
     if (!(await optional(join(model.root, host)))?.includes('AGENTS.md')) issue('FRONT_DOOR_POINTER', host, `Point ${host} to AGENTS.md`)
   }
   if (await optional(join(model.root, 'SKILL.md')) === null) issue('SKILL_MISSING', 'SKILL.md', 'External consumer skill is missing')
+  const omitted = await unpublished(model)
+  if (omitted.length) issue('PUBLISH_MISSING', 'package.json', `The published package would leave out: ${omitted.join(', ')}`)
   const reviews: Reviews = JSON.parse(await optional(join(model.root, '.dewey/reviews.json')) ?? '{}')
   const maps = model.docs.filter(doc => doc.kind === 'map')
   const uncovered = model.sources.filter(path => !maps.some(doc => doc.covers.some(pattern => matches(path, pattern))))

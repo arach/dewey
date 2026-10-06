@@ -105,6 +105,23 @@ describe('fresh-project loop', () => {
     expect(JSON.parse(cli.out).docs[0].path).toBe('docs/src.agent.md')
     expect(run(root, ['uncovered']).out).toContain('dewey new map src/sync')
   })
+  test('published packages must ship the docs downstream agents read', async () => {
+    const root = await ready()
+    const pkgPath = join(root, 'package.json')
+    const pkg = JSON.parse(await readFile(pkgPath, 'utf8'))
+    await writeFile(pkgPath, JSON.stringify({ ...pkg, files: ['dist'] }))
+    const missing = (await checkProject(root)).issues.find(issue => issue.code === 'PUBLISH_MISSING')!
+    expect(missing.message).toContain('AGENTS.md, SKILL.md, docs/quickstart.md')
+    await writeFile(pkgPath, JSON.stringify({ ...pkg, files: ['dist', 'docs/', 'AGENTS.md', 'SKILL.md', '!docs/quickstart.md'] }))
+    expect((await checkProject(root)).issues.find(issue => issue.code === 'PUBLISH_MISSING')?.message).toContain('docs/quickstart.md')
+    await writeFile(pkgPath, JSON.stringify({ ...pkg, files: ['dist', 'docs', '*.md'] }))
+    expect(await codes(root)).not.toContain('PUBLISH_MISSING')
+    await writeFile(pkgPath, JSON.stringify(pkg))
+    await writeFile(join(root, '.npmignore'), 'docs/\n')
+    expect(await codes(root)).toContain('PUBLISH_MISSING')
+    await writeFile(pkgPath, JSON.stringify({ ...pkg, private: true }))
+    expect(await codes(root)).not.toContain('PUBLISH_MISSING')
+  })
   test('host pointer files are opt-in and must redirect to the front door', async () => {
     const root = await fixture()
     expect(run(root, ['init', '--no-rules', '--host', 'TOOL.md']).code).toBe(0)

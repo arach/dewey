@@ -3,7 +3,7 @@ import { basename, delimiter, join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { assertWritable, coverageHash, FIXES, lineAt, hash, human, json, loadModel, matches, optional, OUTPUT, packageInfo, resolveReference, safePath, sourceArea, sourceFiles, STATE, walk, type Issue, type Model, type Project } from './model.js'
-import { attributes, markdown, siteFiles } from './site.js'
+import { attributes, llmsIndex, markdown, siteFiles } from './site.js'
 import { region, updateRegion, writeOutputs, writeSafe } from './storage.js'
 
 interface InitOptions { purpose?: string; rule?: string[]; rules?: boolean; host?: string[] }
@@ -90,7 +90,7 @@ export async function freshInit(options: InitOptions = {}, directory = process.c
 async function expectedOutputs(model: Model): Promise<Record<string, string | Buffer>> {
   const site = siteFiles(model)
   const outputs: Record<string, string | Buffer> = Object.fromEntries(Object.entries(site).map(([path, content]) => [`${OUTPUT}/${path}`, content]))
-  outputs['llms.txt'] = updateRegion(await optional(join(model.root, 'llms.txt')), 'index', site['llms.txt'])
+  outputs['llms.txt'] = updateRegion(await optional(join(model.root, 'llms.txt')), 'index', llmsIndex(model, 'repo'))
   // Materialize referenced project assets, not raw maps/history or arbitrary files.
   for (const doc of model.docs.filter(human)) {
     const rendered = markdown(doc.body)

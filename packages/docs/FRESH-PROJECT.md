@@ -55,6 +55,16 @@ python3 -m http.server 4387 --bind 127.0.0.1 --directory .dewey/site
 
 Review each document that declares `covers`. `review` explicitly records document/source hashes after the author has checked the document. `build` never records review or clears source drift. Keep `.dewey/project.json` and `.dewey/reviews.json` with the project if CI will use the same reviewed baseline.
 
+## Agent outputs
+
+`build` writes, next to each HTML page in `.dewey/site/`, a `.md` copy whose links point at the other `.md` copies. It also writes:
+
+- `.dewey/site/llms.txt`: one line per published page with its summary and size (lines, estimated tokens), linking to the `.md` copies, plus a pointer to the full bundle.
+- `.dewey/site/llms-full.txt`: every guide and reference page in one file. Maps and history are left out.
+- The marked `index` region of root `llms.txt`: the same list, linking to the source files so it works from the repo root.
+
+A page's summary is its `description` frontmatter, else its first paragraph.
+
 ## Source contract
 
 ```yaml

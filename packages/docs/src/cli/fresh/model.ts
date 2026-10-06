@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { lstat, readdir, readFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, posix, resolve, sep } from 'node:path'
 import matter from 'gray-matter'
+import { extractLlmsSummary } from './summary.js'
 
 export const STATE = '.dewey/project.json'
 export const OUTPUT = '.dewey/site'
@@ -9,7 +10,7 @@ export const KINDS = ['guide', 'map', 'reference', 'history'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
 export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
-export interface Doc { path: string; title: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string }
+export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string }
 export interface Issue { code: string; path: string; line?: number; message: string; fix?: string }
 // One default repair per issue code; an issue may carry a more specific fix.
 export const FIXES: Record<string, string> = {
@@ -136,7 +137,8 @@ export async function loadModel(root: string): Promise<Model> {
     if (!valid) continue
     if (kind === 'map' && !covers.length) issues.push({ code: 'DOC_COVERS', path, message: 'A map must declare the code it covers' })
     const route = path === 'README.md' ? 'readme.html' : `${path.replace(/\.md$/, '')}.html`
-    docs.push({ path, title: String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route })
+    const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? path)
+    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route })
   }
   return { root, project, docs, sources: await sourceFiles(root), scripts: (await packageInfo(root)).scripts, issues }
 }

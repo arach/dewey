@@ -7,7 +7,7 @@ import { dirname, join, posix } from 'node:path'
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { FreshDocs, SITE_THEMES, type RendererData } from './renderer.js'
-import { human, resolveReference, type Doc, type Model } from './model.js'
+import { human, resolveReference, tokens, type Doc, type Model } from './model.js'
 
 export const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 export function markdown(body: string, transform?: (url: string) => string): string {
@@ -49,7 +49,9 @@ function runtimeFiles(): Record<string, string> {
   }
 }
 function rootPrefix(route: string): string { return '../'.repeat(route.split('/').length - 1) || './' }
-export function rewriteMarkdown(model: Model, doc: Doc): string {
+export const markdownRoute = (route: string) => route.replace(/\.html$/, '.md')
+// format 'md' points page links at the .md copies, for agents reading the published site.
+export function rewriteMarkdown(model: Model, doc: Doc, format: 'html' | 'md' = 'html'): string {
   // Rewrite rendered link targets back into Markdown destinations, including reference links.
   // Keep all Markdown intact for the actual MarkdownContent / CodeBlock renderer.
   const urls = new Map<string, string>()
@@ -58,7 +60,7 @@ export function rewriteMarkdown(model: Model, doc: Doc): string {
     const target = resolveReference(doc.path, href)
     if (!target) continue
     const page = model.docs.find(candidate => candidate.path === target.path)
-    const route = page && human(page) ? page.route : `assets/${target.path}`
+    const route = page && human(page) ? format === 'md' ? markdownRoute(page.route) : page.route : `assets/${target.path}`
     const next = relativeUrl(doc.route, route) + (target.fragment ? `#${encodeURIComponent(target.fragment)}` : '')
     urls.set(href, next)
   }
@@ -72,17 +74,32 @@ export function rewriteMarkdown(model: Model, doc: Doc): string {
     .replace(/^(\s*\[[^\]]+\]:\s*<?)([^\s>]+)(>?)/gm, (all, before, href, after) => urls.has(href) ? `${before}${urls.get(href)}${after}` : all)
     .replace(/\u0000DEWEY_CODE_(\d+)\u0000/g, (_, index) => code[Number(index)])
 }
+const size = (text: string) => `${text.trimEnd().split('\n').length} lines, ~${tokens(text)} tokens`
+// The site copy of a page for agents: links point at other .md copies.
+const pageMarkdown = (model: Model, doc: Doc) => rewriteMarkdown(model, doc, 'md')
+// llms-full.txt: every published page, history and maps excluded. Links are relative to the site root.
+export function fullBundle(model: Model): string {
+  const pages = model.docs.filter(human)
+  return [`# ${model.project.name}`, '', `> ${model.project.purpose}`, '', ...pages.flatMap(doc => ['---', '', `<!-- ${markdownRoute(doc.route)} -->`, '', rewriteMarkdown(model, { ...doc, route: 'index.html' }, 'md').trim(), ''])].join('\n')
+}
+// The llms.txt index. 'site' links to the .md copies; 'repo' links to the source files from the repo root.
+export function llmsIndex(model: Model, target: 'site' | 'repo'): string {
+  const pages = model.docs.filter(doc => human(doc) && !doc.hidden)
+  const entries = pages.map(doc => `- [${doc.title}](${target === 'site' ? markdownRoute(doc.route) : doc.path}): ${doc.summary} (${size(target === 'site' ? pageMarkdown(model, doc) : doc.raw)})`)
+  const full = target === 'site' ? ['', '## Everything', '', `- [llms-full.txt](llms-full.txt): every page above in one file (${size(fullBundle(model))}). Load it only when you need all of it.`] : []
+  return [`# ${model.project.name}`, '', `> ${model.project.purpose}`, '', '## Documentation', '', ...entries, ...full, ''].join('\n')
+}
 export function siteFiles(model: Model): Record<string, string> {
   const pages = model.docs.filter(human)
   const publicPages = pages.filter(doc => !doc.hidden)
-  const index = [`# ${model.project.name}`, '', `> ${model.project.purpose}`, '', '## Documentation', '', ...publicPages.map(doc => `- [${doc.title}](${doc.route})`), ''].join('\n')
   const navigation = [
     { title: 'Start here', items: publicPages.filter(doc => doc.path === 'README.md' || doc.path === 'docs/quickstart.md') },
     { title: 'Guides', items: publicPages.filter(doc => doc.kind === 'guide' && doc.path !== 'README.md' && doc.path !== 'docs/quickstart.md') },
     { title: 'Reference', items: publicPages.filter(doc => doc.kind === 'reference') },
   ].filter(group => group.items.length).map(group => ({ title: group.title, items: group.items.map(doc => ({ id: doc.route, title: doc.title })) }))
   const docs = Object.fromEntries(pages.map(doc => [doc.route, rewriteMarkdown(model, doc)]))
-  const files: Record<string, string> = { ...runtimeFiles(), 'llms.txt': index }
+  const files: Record<string, string> = { ...runtimeFiles(), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model) }
+  for (const doc of pages) files[markdownRoute(doc.route)] = pageMarkdown(model, doc)
   const entry = publicPages.find(doc => doc.path === 'README.md') ?? publicPages[0] ?? pages[0]
   for (const [route, currentPage, title] of [['index.html', entry?.route ?? '', model.project.name], ...pages.map(doc => [doc.route, doc.route, doc.title])]) {
     // The landing alias needs body-relative links rebased to its own location.

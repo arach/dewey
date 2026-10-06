@@ -35,8 +35,55 @@ function packageRoot(): string {
   }
   throw new Error('Cannot locate the Dewey renderer assets')
 }
-// Only adapter/reset rules. Layout, typography, code, dark mode, and themes are library CSS.
-const ADAPTER_CSS = `html{scroll-behavior:smooth}body{margin:0;font-family:var(--dw-font-sans);background:var(--dw-background);color:var(--dw-foreground)}*{box-sizing:border-box}button,select,input{font:inherit}.dw-fresh-tools{position:fixed;top:.7rem;right:8rem;z-index:51;display:flex;align-items:center;gap:1rem;max-width:42vw}.dw-fresh-tools .dw-cmd-trigger{width:240px;margin:0}.dw-fresh-theme{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--dw-muted-foreground)}.dw-fresh-theme select{background:var(--dw-background);color:var(--dw-foreground);border:1px solid var(--dw-border);border-radius:var(--dw-radius);padding:.3rem}.dw-fresh-skip{position:fixed;left:1rem;top:-5rem;z-index:100}.dw-fresh-skip:focus{top:1rem;background:var(--dw-background);padding:.5rem}@media(max-width:1000px){.dw-fresh-theme span{display:none}.dw-fresh-tools{right:7rem;gap:.5rem}.dw-fresh-tools .dw-cmd-trigger{width:160px}}@media(max-width:720px){.dw-fresh-tools{top:auto;bottom:0;left:0;right:0;max-width:none;padding:.6rem 1rem;background:var(--dw-background);border-top:1px solid var(--dw-border);justify-content:space-between}.dw-fresh-tools .dw-cmd-trigger{width:190px}body{padding-bottom:4rem}}@media(max-width:768px){.dw-header-menu-btn{display:flex!important;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;padding:0;background:none;border:0;border-radius:var(--dw-radius);color:var(--dw-foreground);cursor:pointer}}.dw-cmd-result{text-decoration:none}.dw-cmd-result[aria-selected=true]{background:var(--dw-muted)}.dw-cmd-result-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15rem}.dw-cmd-result-body .dw-cmd-result-title{flex:none}.dw-cmd-result-heading{color:var(--dw-muted-foreground);font-weight:400}.dw-cmd-result-snippet{font-size:.75rem;line-height:1.4;color:var(--dw-muted-foreground);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dw-cmd-result-snippet mark{background:color-mix(in srgb,var(--dw-primary) 22%,transparent);color:var(--dw-foreground);border-radius:2px;padding:0 1px}`
+// Site-specific polish on top of the library's base.css: sans headings, a quiet sidebar,
+// search and theme in the header, and the phone layout.
+const ADAPTER_CSS = `
+:root{--dw-font-serif:var(--dw-font-sans)}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--dw-font-sans);background:var(--dw-background);color:var(--dw-foreground);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,select,input{font:inherit}
+.dw-fresh-skip{position:fixed;left:1rem;top:-5rem;z-index:100}
+.dw-fresh-skip:focus{top:1rem;background:var(--dw-background);padding:.5rem}
+
+.dw-header-brand{font-weight:650;letter-spacing:-.01em}
+.dw-shell-page-title,.dw-prose h1{font-weight:700;letter-spacing:-.025em}
+.dw-prose h2{font-weight:650;letter-spacing:-.015em}
+.dw-prose h3,.dw-prose h4{font-weight:600;letter-spacing:-.01em}
+
+.dw-fresh-tools{display:flex;align-items:center;gap:.5rem}
+.dw-fresh-tools .dw-cmd-trigger{width:15rem;margin:0;height:2rem}
+.dw-fresh-theme{height:2rem;padding:0 1.6rem 0 .6rem;border:1px solid var(--dw-border);border-radius:.5rem;background:var(--dw-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23888' stroke-width='1.5'%3E%3Cpath d='m1 1 4 4 4-4'/%3E%3C/svg%3E") no-repeat right .55rem center;color:var(--dw-muted-foreground);font-size:.8125rem;cursor:pointer;-webkit-appearance:none;appearance:none}
+.dw-fresh-theme:hover,.dw-fresh-theme:focus-visible{color:var(--dw-foreground);border-color:var(--dw-muted-foreground)}
+
+.dw-sidebar-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.dw-sidebar-group{margin-top:1.5rem;padding-top:0;border-top:0}
+.dw-sidebar-group-title{margin-bottom:.35rem}
+.dw-sidebar-item{padding:.4rem .75rem;border-radius:.5rem}
+.dw-sidebar-item.active{background:color-mix(in srgb,var(--dw-primary) 11%,transparent);color:var(--dw-primary);font-weight:600}
+@media(min-width:1024px){.dw-sidebar-header{display:none}.dw-sidebar-nav{padding-top:1.5rem}}
+
+@media(max-width:1000px){.dw-fresh-tools .dw-cmd-trigger{width:11rem}}
+@media(max-width:768px){
+  .dw-header-menu-btn{display:flex!important;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;padding:0;background:none;border:0;border-radius:var(--dw-radius);color:var(--dw-foreground);cursor:pointer}
+  .dw-header-left{gap:.5rem}
+  .dw-header-right{gap:.25rem}
+  .dw-fresh-tools{gap:.25rem}
+  .dw-fresh-tools .dw-cmd-trigger{width:2.25rem;height:2.25rem;padding:0;justify-content:center;border:0;background:none;color:var(--dw-foreground)}
+  .dw-fresh-tools .dw-cmd-trigger-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .dw-fresh-tools .dw-cmd-kbd{display:none}
+  .dw-fresh-tools .dw-cmd-trigger-icon{width:1rem;height:1rem}
+  .dw-fresh-theme{border:0;background-color:transparent;padding-right:1.3rem;background-position:right .3rem center}
+}
+
+.dw-cmd-result{text-decoration:none}
+.dw-cmd-result[aria-selected=true]{background:var(--dw-muted)}
+.dw-cmd-result-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15rem}
+.dw-cmd-result-body .dw-cmd-result-title{flex:none}
+.dw-cmd-result-heading{color:var(--dw-muted-foreground);font-weight:400}
+.dw-cmd-result-snippet{font-size:.75rem;line-height:1.4;color:var(--dw-muted-foreground);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dw-cmd-result-snippet mark{background:color-mix(in srgb,var(--dw-primary) 22%,transparent);color:var(--dw-foreground);border-radius:2px;padding:0 1px}
+`
 
 function runtimeFiles(): Record<string, string> {
   const root = packageRoot()

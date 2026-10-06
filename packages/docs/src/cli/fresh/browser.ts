@@ -25,7 +25,7 @@ export const SITE_SCRIPT = `(function () {
   paint()
 
   // Color theme.
-  var select = d.querySelector('.dw-fresh-theme select'), preset = d.getElementById('dewey-preset')
+  var select = d.querySelector('select.dw-fresh-theme'), preset = d.getElementById('dewey-preset')
   if (select && preset) {
     var saved = get('dewey-site-theme')
     if (saved && [].some.call(select.options, function (option) { return option.value === saved })) select.value = saved
@@ -110,7 +110,9 @@ export const SITE_SCRIPT = `(function () {
   function snippet(page, query) {
     var word = query.toLowerCase().split(/\\s+/).filter(Boolean)[0], text = page.x, at = word ? text.toLowerCase().indexOf(word) : -1
     if (at < 0) return escape(page.s)
-    var start = Math.max(0, at - 40), part = text.slice(start, at + 90)
+    var start = Math.max(0, at - 40)
+    if (start) { var space = text.indexOf(' ', start); start = space >= 0 && space < at ? space + 1 : start }
+    var part = text.slice(start, at + 90).replace(/\\s+\\S*$/, '')
     return (start ? '…' : '') + escape(part).replace(new RegExp('(' + word.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&') + ')', 'ig'), '<mark>$1</mark>') + '…'
   }
   function open() {

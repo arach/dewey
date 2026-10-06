@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { freshInit, freshBuild, freshCheck, reviewDocument } from './fresh/commands.js'
+import { freshInit, freshBuild, freshCheck, freshNew, reviewDocument } from './fresh/commands.js'
 import { freshUncovered, freshWhich } from './fresh/query.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
@@ -15,7 +15,8 @@ const program = new Command()
 // The v2 commands are frozen: they still run, but new work goes into init/build/check.
 const FROZEN = new Set(['audit', 'generate', 'agent', 'create', 'update', 'eject'])
 program.hook('preAction', (_, command) => {
-  if (FROZEN.has(command.name())) console.error(`dewey ${command.name()} is frozen and will be removed. Use dewey init, build and check instead.`)
+  // JSON callers get clean stderr.
+  if (FROZEN.has(command.name()) && !command.opts().json) console.error(`dewey ${command.name()} is frozen and will be removed. Use dewey init, build and check instead.`)
 })
 
 program
@@ -44,6 +45,10 @@ program.command('check')
 program.command('review <document>')
   .description('Acknowledge that a covered document was reviewed against current source')
   .action(document => reviewDocument(document))
+
+program.command('new <kind> <name>')
+  .description('Create a draft doc: map <source area>, guide <title>, reference <title> or history <title>')
+  .action((kind, name) => freshNew(kind, name))
 
 program.command('which <path>')
   .description('List the docs that cover a file or directory, with their size')

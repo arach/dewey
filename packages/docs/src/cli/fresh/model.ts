@@ -11,9 +11,11 @@ export const KINDS = ['guide', 'map', 'reference', 'history'] as const
 export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
 // commands: extra shell commands docs may use, beyond the package's bins and the built-in allowlist.
-export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[] }
+// skin: one of SKINS, the look of a house docs site; the generated site's default look without one.
+export const SKINS = ['openscout', 'talkie', 'lattices', 'hudsonkit'] as const
+export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[]; skin?: typeof SKINS[number] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
-export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string
+export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string; description?: string
   status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[]; order?: number; group?: string }
 export interface Issue { code: string; path: string; line?: number; message: string; fix?: string }
 // One default repair per issue code; an issue may carry a more specific fix.
@@ -133,6 +135,7 @@ export async function loadModel(root: string): Promise<Model> {
   if (!state) throw new Error('Run dewey init in this project first.')
   const project = JSON.parse(state) as Project
   if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string') || (project.hosts !== undefined && (!Array.isArray(project.hosts) || project.hosts.some(host => typeof host !== 'string' || !/^[\w.-]+\.md$/.test(host)))) || (project.commands !== undefined && (!Array.isArray(project.commands) || project.commands.some(command => typeof command !== 'string')))) throw new Error(`Invalid ${STATE}`)
+  if (project.skin !== undefined && !SKINS.includes(project.skin)) throw new Error(`Invalid ${STATE}: skin must be one of ${SKINS.join(', ')}`)
   const issues: Issue[] = []
   const files = (await walk(root, 'docs')).filter(path => path.endsWith('.md'))
   if (await optional(join(root, 'README.md')) !== null) files.unshift('README.md')
@@ -164,7 +167,7 @@ export async function loadModel(root: string): Promise<Model> {
     // No title or H1: the README stands for the project, other files are named after themselves.
     const fallback = path === 'README.md' ? project.name : (path.split('/').pop() ?? path).replace(/\.md$/, '').replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase())
     const title = String(data.title ?? content.match(/^#\s+(.+)$/m)?.[1] ?? fallback)
-    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, status, applies, supersedes, supersededBy, ...(data.order !== undefined ? { order: data.order } : {}), ...(data.group ? { group: data.group } : {}) })
+    docs.push({ path, title, summary: extractLlmsSummary({ title, content, description: typeof data.description === 'string' ? data.description : undefined }), kind, covers, body: content, raw, offset: lineAt(raw, raw.lastIndexOf(content)) - 1, draft: data.draft === true, hidden: data.nav === false, route, ...(typeof data.description === 'string' ? { description: data.description } : {}), status, applies, supersedes, supersededBy, ...(data.order !== undefined ? { order: data.order } : {}), ...(data.group ? { group: data.group } : {}) })
   }
   return { root, project, docs, sources: await sourceFiles(root), ...await packageInfo(root).then(({ scripts, bins }) => ({ scripts, bins })), issues }
 }

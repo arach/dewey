@@ -81,7 +81,7 @@ const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) 
   return await file.exists() ? new Response(file) : new Response('Not found', { status: 404 })
 } })
 try {
-  for (const route of ['/', '/docs/quickstart.html', '/readme.html', '/docs/reference/api.html', '/site.js', '/search.js', '/themes/ocean.css', '/llms.txt', '/style.css']) {
+  for (const route of ['/', '/docs/quickstart.html', '/readme.html', '/docs/reference/api.html', '/site.js', '/search.js', '/themes/ink.css', '/llms.txt', '/style.css']) {
     const response = await fetch(`http://127.0.0.1:${server.port}${route}`)
     assert(response.status === 200, `HTTP smoke failed: ${route}`)
     transcript.push(`GET ${route} → ${response.status}\n`)

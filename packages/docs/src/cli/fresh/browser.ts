@@ -1,7 +1,7 @@
 // PREFERENCES runs in <head> before paint: it marks the page as scripted and applies saved choices.
 // The site's only script. Pages are complete without it; it adds dark mode, themes, search,
 // the phone menu, collapsible groups, copy buttons and the active heading. Plain DOM, no framework.
-export const PREFERENCES = `(function(){document.documentElement.classList.add('js');try{var s=localStorage,d=s.getItem('dewey-dark-mode');if(d==='true'||(d===null&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark');var t=s.getItem('dewey-site-theme'),l=document.getElementById('dewey-preset');if(t&&/^[a-z]+$/.test(t)&&l)l.href=l.href.replace(/[a-z]+\\.css$/,t+'.css')}catch(e){}})()`
+export const PREFERENCES = `(function(){document.documentElement.classList.add('js');try{var s=localStorage,d=s.getItem('dewey-dark-mode');if(d==='true'||(d===null&&(document.documentElement.getAttribute('data-dw-default')==='dark'||matchMedia('(prefers-color-scheme: dark)').matches)))document.documentElement.classList.add('dark');var t=s.getItem('dewey-site-theme'),l=document.getElementById('dewey-preset');if(t&&/^[a-z]+$/.test(t)&&l)l.href=l.href.replace(/[a-z]+\\.css$/,t+'.css')}catch(e){}})()`
 
 export const SITE_SCRIPT = `(function () {
   var d = document, root = d.documentElement
@@ -62,6 +62,16 @@ export const SITE_SCRIPT = `(function () {
     navigator.clipboard.writeText(code.innerText.replace(/\\n$/, '')).then(function () {
       button.innerHTML = CHECK; button.setAttribute('aria-label', 'Copied')
       setTimeout(function () { button.innerHTML = before; button.setAttribute('aria-label', 'Copy code') }, 1500)
+    })
+  })
+
+  // Copy the page's Markdown copy from the page head.
+  on('[data-dw-copy-markdown]', 'click', function () {
+    var button = this, label = button.textContent
+    if (!navigator.clipboard) return
+    fetch(button.getAttribute('data-dw-copy-markdown')).then(function (response) { return response.text() }).then(function (text) { return navigator.clipboard.writeText(text) }).then(function () {
+      button.textContent = 'Copied'
+      setTimeout(function () { button.textContent = label }, 1500)
     })
   })
 

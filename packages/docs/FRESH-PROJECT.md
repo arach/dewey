@@ -158,6 +158,11 @@ Sidebar groups: Start here (`README.md`, `docs/quickstart.md`), Guides, then
 Reference. Without a quickstart, the README leads Guides instead. Set `group: <name>` to put a page in another group and `order: <n>`
 to sort it; pages without `order` sort by path.
 
+To match an existing docs site, set `"skin"` in `.dewey/project.json` to `openscout`, `talkie`,
+`lattices` or `hudsonkit`. A skin replaces the color themes with that site's fonts, colors,
+header, sidebar, page head and code blocks. Each skin is also exported as
+`@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
+
 The browser proof uses Playwright Chromium and checks search navigation, code copy,
 color themes, dark-mode persistence, the phone menu, pages with JavaScript off, mobile overflow, and browser/HTTP errors.
 It writes light, dark, and mobile screenshots under the scratch project's

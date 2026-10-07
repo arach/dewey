@@ -208,6 +208,25 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
     --color-accent-strong: #34d399;`,
   ),
 
+  ink: buildTokens(
+    `    --color-bg: #fafaf8;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f1f0ec;
+    --color-border: rgba(22, 22, 21, 0.1);
+    --color-text: #161615;
+    --color-text-muted: #6f6d68;
+    --color-accent: #047857;
+    --color-accent-strong: #065f46;`,
+    `    --color-bg: #0b0b0c;
+    --color-surface: #111112;
+    --color-surface-muted: #161617;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-text: #ecebe6;
+    --color-text-muted: #8e8c86;
+    --color-accent: #34d399;
+    --color-accent-strong: #34d399;`,
+  ),
+
   purple: buildTokens(
     `    --color-bg: #f3f0fa;
     --color-surface: #ffffff;

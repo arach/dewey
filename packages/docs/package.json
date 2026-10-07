@@ -50,6 +50,10 @@
       "style": "./dist/css/colors/emerald.css",
       "default": "./dist/css/colors/emerald.css"
     },
+    "./css/colors/ink.css": {
+      "style": "./dist/css/colors/ink.css",
+      "default": "./dist/css/colors/ink.css"
+    },
     "./css/colors/purple.css": {
       "style": "./dist/css/colors/purple.css",
       "default": "./dist/css/colors/purple.css"
@@ -93,6 +97,22 @@
     "./css/skins/terminal.css": {
       "style": "./dist/css/skins/terminal.css",
       "default": "./dist/css/skins/terminal.css"
+    },
+    "./css/skins/openscout.css": {
+      "style": "./dist/css/skins/openscout.css",
+      "default": "./dist/css/skins/openscout.css"
+    },
+    "./css/skins/talkie.css": {
+      "style": "./dist/css/skins/talkie.css",
+      "default": "./dist/css/skins/talkie.css"
+    },
+    "./css/skins/lattices.css": {
+      "style": "./dist/css/skins/lattices.css",
+      "default": "./dist/css/skins/lattices.css"
+    },
+    "./css/skins/hudsonkit.css": {
+      "style": "./dist/css/skins/hudsonkit.css",
+      "default": "./dist/css/skins/hudsonkit.css"
     },
     "./css/colors/hudson.css": {
       "style": "./dist/css/colors/hudson.css",

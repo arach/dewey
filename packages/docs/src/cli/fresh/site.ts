@@ -283,7 +283,7 @@ function pageMenu(markdownHref: string, promptHead: string, llmsHref: string): s
     + `</div></details></div>`
 }
 // deweydocs.com's frame around the generated layout: a Docs / page bar in the header, the search box at
-// the top of the sidebar, a footer line, and on the front page a card for every listed page.
+// the top of the sidebar, a footer line with a Powered by Dewey badge, and on the front page a card for every listed page.
 function houseChrome(html: string, doc: Doc | undefined, route: string, project: Model['project'], groups: Array<{ title: string; items: Doc[] }>): string {
   const home = escape(relativeUrl(route, 'index.html'))
   const crumbs = `<nav class="dw-topbar-crumbs" aria-label="Breadcrumb"><a class="dw-topbar-crumb" href="${home}">Docs</a>${doc ? `<span class="dw-topbar-sep">/</span><span class="dw-topbar-current">${escape(doc.title)}</span>` : ''}</nav>`
@@ -291,7 +291,8 @@ function houseChrome(html: string, doc: Doc | undefined, route: string, project:
   const search = html.match(/<button type="button" class="dw-cmd-trigger">[\s\S]*?<\/button>/)
   // The sidebar holds the search box; the header keeps its copy for phones, where the sidebar is a drawer.
   if (search) html = html.replace('<nav class="dw-sidebar-nav">', `<nav class="dw-sidebar-nav"><div class="dw-sidebar-search">${search[0]}</div>`)
-  const foot = `<footer class="dw-site-foot"><a href="${home}">${escape(project.name)}</a> — ${escape(project.purpose)}</footer>`
+  const foot = `<footer class="dw-site-foot"><p class="dw-site-foot-line"><a href="${home}">${escape(project.name)}</a> — ${escape(project.purpose)}</p>`
+    + `<a class="dw-powered" href="https://deweydocs.com" target="_blank" rel="noopener noreferrer">Powered by <span class="dw-powered-mark">dewey</span></a></footer>`
   html = html.replace(/<\/div><\/main>/, `${foot}</div></main>`)
   if (doc) return html
   // The front page: the project's name and purpose, then each sidebar group as a grid of cards.

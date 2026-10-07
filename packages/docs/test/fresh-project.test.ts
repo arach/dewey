@@ -73,6 +73,7 @@ describe('fresh-project loop', () => {
     expect(html).toContain('<a class="dw-ctx-item" href="../llms.txt">')
     expect(html.match(/data-dw-open="/g)).toHaveLength(2)
     expect(html).toContain('<footer class="dw-site-foot">')
+    expect(html).toContain('<a class="dw-powered" href="https://deweydocs.com"')
     // The front page is a card for each listed page, grouped like the sidebar.
     const home = await readFile(join(root, '.dewey/site/index.html'), 'utf8')
     expect(home).toContain('<a class="dw-home-card" href="docs/quickstart.html">')

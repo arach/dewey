@@ -262,6 +262,10 @@ describe('fresh-project loop', () => {
       await writeFile(path, original)
       expect(await codes(root)).toEqual([])
     }
+    // Flags on a continuation line are not commands; the next line after it is checked again.
+    await writeFile(path, original + '\n```sh\nbun run test \\\n  --watch \\\n  --bail\ndewey_nonexistent_command_87\n```\n')
+    expect((await checkProject(root)).issues.filter(issue => issue.code === 'UNKNOWN_COMMAND').map(issue => issue.message)).toEqual(['Not a package bin, script runner or allowed command: dewey_nonexistent_command_87'])
+    await writeFile(path, original)
   })
   test('checks front-door budget, generated freshness, actual navigation and rendered links', async () => {
     const root = await ready()

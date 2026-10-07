@@ -333,10 +333,14 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
       if (!(match[1] in model.scripts)) issue('MISSING_SCRIPT', doc.path, `No package script named ${match[1]}`, at(match.index))
     }
     for (const fence of doc.body.matchAll(/```(?:sh|bash|zsh|shell)\s*\n([\s\S]*?)```/g)) {
-      let position = fence.index + fence[0].indexOf('\n') + 1
+      let position = fence.index + fence[0].indexOf('\n') + 1, continued = false
       for (const line of fence[1].split('\n')) {
         const lineNumber = at(position)
         position += line.length + 1
+        // A line after a trailing backslash continues the previous command: its flags are not commands.
+        const continuation = continued
+        continued = /\\\s*$/.test(line)
+        if (continuation) continue
         const command = line.trim().replace(/^\$\s+/, '').replace(/^(?:\w+=\S*\s+)+/, '').match(/^([\w./-]+)(?:\s|$)/)?.[1]
         if (!command) continue
         if (command.startsWith('./')) {

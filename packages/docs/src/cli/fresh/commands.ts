@@ -211,6 +211,16 @@ async function expectedOutputs(model: Model): Promise<Record<string, string | Bu
       try { outputs[`${OUTPUT}/assets/${target.path}`] = await readFile(absolute) } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
     }
   }
+  // The site's own logo and stylesheet ship with it; a missing one fails the build.
+  for (const path of [model.project.site?.logo, model.project.site?.css]) {
+    if (!path) continue
+    const absolute = safePath(model.root, path)
+    await assertWritable(model.root, path)
+    try { outputs[`${OUTPUT}/assets/${path}`] = await readFile(absolute) } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') throw new Error(`Missing ${path}, named by site in ${STATE}`)
+      throw error
+    }
+  }
   return outputs
 }
 export async function freshBuild(directory = process.cwd()): Promise<void> {

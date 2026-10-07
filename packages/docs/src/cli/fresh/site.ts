@@ -8,7 +8,8 @@ import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { FreshDocs, SITE_THEMES, type RendererData } from './renderer.js'
 import { PREFERENCES, SITE_SCRIPT } from './browser.js'
-import { current, human, resolveReference, SKINS, tokens, type Doc, type Model } from './model.js'
+import { current, human, resolveReference, SKINS, tokens, type Doc, type Model, type SiteConfig } from './model.js'
+import { THEME_REGISTRY, type ThemeName } from '../../themes.js'
 
 export const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 export function markdown(body: string, transform?: (url: string) => string): string {
@@ -123,6 +124,13 @@ button,select,input{font:inherit}
 .dw-prose .dw-inline-code,.dw-prose :not(pre)>code{padding:.08em .38em;font-family:var(--dw-font-mono);font-size:.84em;font-weight:450;color:var(--dw-foreground);background:color-mix(in srgb,var(--dw-foreground) 4.5%,transparent);border:1px solid var(--dw-hair);border-radius:.3rem}
 .dw-prose a .dw-inline-code{color:inherit}
 
+/* The project's logo and header links. */
+.dw-header-logo{display:block;height:1.5rem;width:auto;max-width:8rem;object-fit:contain}
+.dw-site-links{display:flex;align-items:center;gap:1rem;margin-right:.5rem}
+.dw-site-link{font-size:.8125rem;color:var(--dw-muted-foreground);text-decoration:none;white-space:nowrap;transition:color .15s}
+.dw-site-link:hover{color:var(--dw-foreground)}
+@media(max-width:768px){.dw-site-link:not(.dw-site-link-home){display:none}}
+
 /* Without JavaScript these controls would do nothing, so they are not shown. */
 html:not(.js) .dw-fresh-tools,html:not(.js) .dw-header-theme-toggle,html:not(.js) .dw-header-menu-btn{display:none!important}
 
@@ -190,18 +198,21 @@ html:not(.js) .dw-fresh-tools,html:not(.js) .dw-header-theme-toggle,html:not(.js
 .dw-prose blockquote:not(.dw-markdown-alert){border-left:2px solid var(--dw-hair);padding-left:1.15rem;color:var(--dw-muted-foreground);font-style:normal}
 `
 
-function runtimeFiles(): Record<string, string> {
+function runtimeFiles(chosen?: string): Record<string, string> {
   const root = packageRoot()
   const css = existsSync(join(root, 'src/css/base.css')) ? join(root, 'src/css') : join(root, 'dist/css')
+  const themes = new Set<string>(SITE_THEMES)
+  if (chosen) themes.add(chosen)
   return {
     'site.js': SITE_SCRIPT,
     'style.css': [readFileSync(join(css, 'tokens.css'), 'utf8'), readFileSync(join(css, 'base.css'), 'utf8'), ADAPTER_CSS].join('\n'),
-    ...Object.fromEntries(SITE_THEMES.map(theme => [`themes/${theme}.css`, readFileSync(join(css, `colors/${theme}.css`), 'utf8')])),
+    ...Object.fromEntries([...themes].map(theme => [`themes/${theme}.css`, readFileSync(join(css, `colors/${THEME_REGISTRY[theme as ThemeName].cssFile}`), 'utf8')])),
   }
 }
 // The skin a project's site uses: its own choice, else the deweydocs.com look. 'ink' is no skin, with color themes.
 type Skin = Exclude<typeof SKINS[number], 'ink'>
-export const siteSkin = (project: Model['project']): Skin | undefined => { const skin = project.skin ?? 'dewey'; return skin === 'ink' ? undefined : skin }
+// A site.theme is a color theme for the ink look, so it implies 'ink'.
+export const siteSkin = (project: Model['project']): Skin | undefined => { const skin = project.skin ?? (project.site?.theme ? 'ink' : 'dewey'); return skin === 'ink' ? undefined : skin }
 // What a skin needs besides its stylesheet: its web fonts and the labels of the page's Markdown actions.
 // dark: the site opens in dark mode until the reader picks one.
 // prompt: a button that copies the page as a prompt for an agent. agentPaths: the sidebar block of agent files.
@@ -219,9 +230,32 @@ function skinFiles(): Record<string, string> {
   const css = existsSync(join(root, 'src/css/skins')) ? join(root, 'src/css/skins') : join(root, 'dist/css/skins')
   return Object.fromEntries(SKINS.filter(skin => skin !== 'ink').map(skin => [`skins/${skin}.css`, readFileSync(join(css, `${skin}.css`), 'utf8')]))
 }
-function stylesheets(prefix: string, skin?: Skin): string {
-  if (!skin) return `<link rel="stylesheet" href="${prefix}style.css"><link id="dewey-preset" rel="stylesheet" href="${prefix}themes/ink.css">`
-  return `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?${SKIN_SETUP[skin].fonts}&display=swap"><link rel="stylesheet" href="${prefix}style.css"><link rel="stylesheet" href="${prefix}skins/${skin}.css">`
+function stylesheets(prefix: string, skin: Skin | undefined, site: SiteConfig = {}): string {
+  // A chosen theme is a plain link: without the dewey-preset id, a visitor's saved theme cannot replace it.
+  const base = !skin ? `<link rel="stylesheet" href="${prefix}style.css">${site.theme ? `<link rel="stylesheet" href="${prefix}themes/${site.theme}.css">` : `<link id="dewey-preset" rel="stylesheet" href="${prefix}themes/ink.css">`}`
+    : `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?${SKIN_SETUP[skin].fonts}&display=swap"><link rel="stylesheet" href="${prefix}style.css"><link rel="stylesheet" href="${prefix}skins/${skin}.css">`
+  const fonts = site.fonts?.stylesheet ? `<link rel="stylesheet" href="${escape(site.fonts.stylesheet)}">` : ''
+  const own = siteCss(site)
+  const custom = site.css ? `<link rel="stylesheet" href="${escape(`${prefix}assets/${site.css}`)}">` : ''
+  return base + fonts + (own ? `<style>${own}</style>` : '') + custom
+}
+// The project's accent and fonts, over any theme or skin: :root:root:root outranks a skin's :root:has(...).
+function siteCss(site: SiteConfig): string {
+  const accent = typeof site.accent === 'string' ? { light: site.accent, dark: site.accent } : site.accent
+  const fonts = site.fonts ?? {}
+  const light = [
+    ...accent ? [`--dw-primary:${accent.light}`, `--dw-ring:${accent.light}`, `--dd-accent:${accent.light}`] : [],
+    ...fonts.sans ? [`--dw-font-sans:${fonts.sans}`] : [],
+    ...fonts.heading ?? fonts.sans ? [`--dw-font-serif:${fonts.heading ?? fonts.sans}`] : [],
+    ...fonts.mono ? [`--dw-font-mono:${fonts.mono}`] : [],
+  ]
+  const dark = accent ? [`--dw-primary:${accent.dark}`, `--dw-ring:${accent.dark}`, `--dd-accent:${accent.dark}`] : []
+  return (light.length ? `:root:root:root{${light.join(';')}}` : '') + (dark.length ? `:root:root:root.dark{${dark.join(';')}}` : '')
+}
+// The project's logo in place of the header's brand mark.
+function brandLogo(html: string, route: string, logo?: string): string {
+  if (!logo) return html
+  return html.replace('<span class="dw-header-brand-dot" aria-hidden="true"></span>', `<img class="dw-header-logo" src="${escape(relativeUrl(route, `assets/${logo}`))}" alt="">`)
 }
 const SHELL = new Set(['sh', 'bash', 'shell', 'zsh', 'console'])
 // The page head and code-block hooks, added to the rendered page: the article's h1 moves into a
@@ -426,18 +460,21 @@ export function siteFiles(model: Model): Record<string, string> {
   const groups = navigationGroups(pages.filter(doc => !doc.hidden))
   const navigation = groups.map(group => ({ title: group.title, items: group.items.map(doc => ({ id: doc.route, title: doc.title })) }))
   const skin = siteSkin(model.project)
-  const files: Record<string, string> = { ...runtimeFiles(), ...skin ? skinFiles() : {}, 'search.js': searchIndex(model, groups), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model), 'nav.json': navJson(model, groups) }
+  const site = model.project.site ?? {}
+  // The product home leads the header links; it opens on the product site, not the docs.
+  const links = [...site.home ? [{ label: site.home.label ?? model.project.name, href: site.home.href, home: true }] : [], ...site.links ?? []]
+  const files: Record<string, string> = { ...runtimeFiles(site.theme), ...skin ? skinFiles() : {}, 'search.js': searchIndex(model, groups), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model), 'nav.json': navJson(model, groups) }
   for (const doc of pages) files[markdownRoute(doc.route)] = pageMarkdown(model, doc)
   const entry = groups.flatMap(group => group.items).find(doc => doc.path === 'README.md') ?? groups[0]?.items[0] ?? pages[0]
   for (const [route, page] of [['index.html', entry], ...pages.map(doc => [doc.route, doc] as const)] as Array<[string, Doc | undefined]>) {
     // The landing alias needs body-relative links rebased to its own location.
     const content = page ? rewriteMarkdown(model, route === 'index.html' ? { ...page, route } : page) : ''
-    const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage: page?.route ?? '', rootPrefix: rootPrefix(route), content, navigation, skin }
-    const body = decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, model.project, groups)
+    const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage: page?.route ?? '', rootPrefix: rootPrefix(route), content, navigation, skin, theme: site.theme, links }
+    const body = brandLogo(decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, model.project, groups), route, site.logo)
     const title = route === 'index.html' || !page || page.title === model.project.name ? model.project.name : `${page.title} · ${model.project.name}`
     const description = page?.summary ? `<meta name="description" content="${escape(page.summary)}">` : ''
     const alternate = page ? `<link rel="alternate" type="text/markdown" href="${escape(relativeUrl(route, markdownRoute(page.route)))}">` : ''
-    files[route] = `<!doctype html>\n<html lang="en"${skin && SKIN_SETUP[skin].dark ? ' data-dw-default="dark"' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="dewey-root" content="${data.rootPrefix}"><title>${escape(title)}</title>${description}${alternate}${stylesheets(data.rootPrefix, skin)}<script>${PREFERENCES}</script></head><body><a class="dw-fresh-skip" href="#dewey-root">Skip to documentation</a><div id="dewey-root">${body}</div><script defer src="${data.rootPrefix}site.js"></script></body></html>\n`
+    files[route] = `<!doctype html>\n<html lang="en"${skin && SKIN_SETUP[skin].dark ? ' data-dw-default="dark"' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="dewey-root" content="${data.rootPrefix}"><title>${escape(title)}</title>${description}${alternate}${stylesheets(data.rootPrefix, skin, site)}<script>${PREFERENCES}</script></head><body><a class="dw-fresh-skip" href="#dewey-root">Skip to documentation</a><div id="dewey-root">${body}</div><script defer src="${data.rootPrefix}site.js"></script></body></html>\n`
   }
   return files
 }

@@ -170,8 +170,27 @@ to sort it; pages without `order` sort by path.
 
 To match another docs site, set `"skin"` in `.dewey/project.json` to `openscout`, `talkie`,
 `lattices` or `hudsonkit`. A skin brings that site's fonts, colors, header, sidebar, page head
-and code blocks. The default is `dewey`. Set `ink` for a plain look with a menu of four color
-themes. Each skin is also exported as `@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
+and code blocks. The default is `dewey`. Set `ink` for a plain look with a menu of color
+themes (ink, ocean, neutral, emerald, editorial, slate). Each skin is also exported as `@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
+
+A `"site"` block in `.dewey/project.json` fits the site to the product. Every field is optional:
+
+```json
+"site": {
+  "theme": "slate",
+  "accent": { "light": "#3d5fb0", "dark": "#9fb8e6" },
+  "fonts": { "sans": "Inter, system-ui, sans-serif", "mono": "ui-monospace, monospace", "stylesheet": "https://…" },
+  "logo": "brand/logo.svg",
+  "css": "brand/docs.css",
+  "home": { "href": "https://example.com", "label": "Example" },
+  "links": [{ "label": "GitHub", "href": "https://github.com/example/example" }]
+}
+```
+
+`theme` fixes one color theme for the ink look and drops the visitor's theme menu; it implies
+`"skin": "ink"` and is refused with a house skin, which owns its colors. `accent` and `fonts` apply
+over any skin. `logo` replaces the header's brand mark and `css` loads after Dewey's styles; both are
+project paths, copied into `assets/`. `home` and `links` sit at the right of the header.
 
 The browser proof uses Playwright Chromium and checks search navigation, code copy,
 the Copy page menu, dark-mode persistence, the phone menu, pages with JavaScript off, mobile overflow, and browser/HTTP errors.

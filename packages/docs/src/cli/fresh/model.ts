@@ -3,6 +3,7 @@ import { lstat, readdir, readFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, posix, resolve, sep } from 'node:path'
 import matter from 'gray-matter'
 import { extractLlmsSummary } from './summary.js'
+import { isThemeName, VALID_THEMES } from '../../themes.js'
 
 export const STATE = '.dewey/project.json'
 export const OUTPUT = '.dewey/site'
@@ -14,7 +15,24 @@ export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 // skin: one of SKINS, the look of a house docs site. Without one the site looks like deweydocs.com ('dewey');
 // 'ink' is a plain look with a menu of color themes.
 export const SKINS = ['dewey', 'openscout', 'talkie', 'lattices', 'hudsonkit', 'ink'] as const
-export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[]; skin?: typeof SKINS[number] }
+// site: how the published site presents the project. Every field is optional.
+export interface SiteConfig {
+  /** A color theme for the ink look; setting one implies skin 'ink' and drops the visitor theme menu */
+  theme?: string
+  /** One CSS color, or separate light and dark values */
+  accent?: string | { light: string; dark: string }
+  /** CSS font stacks; heading defaults to sans. stylesheet loads web fonts. */
+  fonts?: { sans?: string; heading?: string; mono?: string; stylesheet?: string }
+  /** Project-relative logo image, shown in place of the header's brand mark */
+  logo?: string
+  /** Project-relative stylesheet, loaded after Dewey's */
+  css?: string
+  /** A header link back to the product site */
+  home?: { href: string; label?: string }
+  /** Header links, such as GitHub */
+  links?: { label: string; href: string }[]
+}
+export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[]; skin?: typeof SKINS[number]; site?: SiteConfig }
 // offset: lines of frontmatter before body, so body positions map to file lines.
 export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string; description?: string
   status: typeof STATUSES[number]; applies: string[]; supersedes: string[]; supersededBy: string[]; order?: number; group?: string }
@@ -131,12 +149,50 @@ export function sourceArea(path: string): string {
   if (parts.length === 1) return '.'
   return parts.slice(0, parts.length > start + 1 ? start + 1 : start).join('/')
 }
+function validateSite(site: unknown, skin: Project['skin']): asserts site is SiteConfig | undefined {
+  if (site === undefined) return
+  const fail = (field: string, expected: string): never => { throw new Error(`Invalid ${STATE}: site${field ? `.${field}` : ''} must be ${expected}`) }
+  if (!site || typeof site !== 'object' || Array.isArray(site)) fail('', 'an object')
+  const value = site as Record<string, unknown>
+  const string = (field: string, input: unknown) => { if (input !== undefined && (typeof input !== 'string' || !input.trim())) fail(field, 'a non-empty string') }
+  // Links land in href attributes: web, mail or relative addresses only.
+  const href = (field: string, input: unknown) => { string(field, input); if (typeof input === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(input) && !/^(https?|mailto):/i.test(input)) fail(field, 'an http(s), mailto or relative URL') }
+  for (const field of ['theme', 'logo', 'css']) string(field, value[field])
+  if (typeof value.theme === 'string' && !isThemeName(value.theme)) fail('theme', `one of ${VALID_THEMES.join(', ')}`)
+  if (value.theme !== undefined && skin !== undefined && skin !== 'ink') fail('theme', `left out with skin '${skin}', which owns its colors`)
+  for (const field of ['logo', 'css'] as const) if (typeof value[field] === 'string') safePath('/dewey-root', value[field] as string)
+  const accent = value.accent
+  if (accent !== undefined && typeof accent !== 'string' && !(accent && typeof accent === 'object' && typeof (accent as { light?: unknown }).light === 'string' && typeof (accent as { dark?: unknown }).dark === 'string')) fail('accent', 'a color or { light, dark }')
+  if (value.fonts !== undefined) {
+    if (!value.fonts || typeof value.fonts !== 'object' || Array.isArray(value.fonts)) fail('fonts', 'an object')
+    for (const [key, font] of Object.entries(value.fonts as object)) {
+      if (!['sans', 'heading', 'mono', 'stylesheet'].includes(key)) fail(`fonts.${key}`, 'one of sans, heading, mono, stylesheet')
+      if (key === 'stylesheet') href('fonts.stylesheet', font); else string(`fonts.${key}`, font)
+    }
+  }
+  if (value.home !== undefined) {
+    if (!value.home || typeof value.home !== 'object') fail('home', '{ href, label? }')
+    href('home.href', (value.home as { href?: unknown }).href ?? '')
+    string('home.label', (value.home as { label?: unknown }).label)
+  }
+  if (value.links !== undefined) {
+    if (!Array.isArray(value.links)) fail('links', 'an array of { label, href }')
+    for (const link of value.links as unknown[]) {
+      if (!link || typeof link !== 'object') fail('links', 'an array of { label, href }')
+      string('links.label', (link as { label?: unknown }).label ?? ''); href('links.href', (link as { href?: unknown }).href ?? '')
+    }
+  }
+  // Accent and font values land in generated CSS; refuse anything that could close the declaration.
+  const css = [accent && typeof accent === 'object' ? Object.values(accent) : accent, value.fonts && Object.entries(value.fonts as object).filter(([key]) => key !== 'stylesheet').map(([, font]) => font)].flat()
+  for (const text of css) if (typeof text === 'string' && /[;{}<>]/.test(text)) fail('accent and site.fonts', 'plain CSS values without ; { } < >')
+}
 export async function loadModel(root: string): Promise<Model> {
   const state = await optional(join(root, STATE))
   if (!state) throw new Error('Run dewey init in this project first.')
   const project = JSON.parse(state) as Project
   if (project.schemaVersion !== 1 || typeof project.name !== 'string' || typeof project.purpose !== 'string' || !Array.isArray(project.rules) || project.rules.some(rule => typeof rule !== 'string') || (project.hosts !== undefined && (!Array.isArray(project.hosts) || project.hosts.some(host => typeof host !== 'string' || !/^[\w.-]+\.md$/.test(host)))) || (project.commands !== undefined && (!Array.isArray(project.commands) || project.commands.some(command => typeof command !== 'string')))) throw new Error(`Invalid ${STATE}`)
   if (project.skin !== undefined && !SKINS.includes(project.skin)) throw new Error(`Invalid ${STATE}: skin must be one of ${SKINS.join(', ')}`)
+  validateSite(project.site, project.skin)
   const issues: Issue[] = []
   const files = (await walk(root, 'docs')).filter(path => path.endsWith('.md'))
   if (await optional(join(root, 'README.md')) !== null) files.unshift('README.md')

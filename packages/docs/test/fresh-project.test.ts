@@ -474,6 +474,51 @@ describe('fresh-project loop', () => {
     expect(ink).not.toContain('dw-skin-')
     expect(ink).not.toContain('dw-topbar-crumbs')
   })
+  test('a site block sets theme, accent, fonts, logo, stylesheet and header links', async () => {
+    const root = await ready()
+    const state = join(root, '.dewey/project.json')
+    const project = JSON.parse(await readFile(state, 'utf8'))
+    await mkdir(join(root, 'brand'))
+    await writeFile(join(root, 'brand/logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    await writeFile(join(root, 'brand/site.css'), '.dw-prose{letter-spacing:0}')
+    const site = {
+      theme: 'slate', accent: { light: '#3d5fb0', dark: '#9fb8e6' }, logo: 'brand/logo.svg', css: 'brand/site.css',
+      fonts: { sans: '"Inter", system-ui, sans-serif', stylesheet: 'https://fonts.example.com/inter.css' },
+      home: { href: 'https://widget.example.com' }, links: [{ label: 'GitHub', href: 'https://github.com/example/widget' }],
+    }
+    await writeFile(state, JSON.stringify({ ...project, site }))
+    await freshBuild(root)
+    const html = await readFile(join(root, '.dewey/site/docs/quickstart.html'), 'utf8')
+    // The chosen theme is fixed: no visitor menu, and no dewey-preset link a saved choice could swap.
+    expect(html).toContain('<link rel="stylesheet" href="../themes/slate.css">')
+    expect(html).not.toContain('id="dewey-preset"')
+    expect(html).not.toContain('dw-fresh-theme')
+    expect(html).not.toContain('dw-skin-')
+    expect(html).toContain(':root:root:root{--dw-primary:#3d5fb0;--dw-ring:#3d5fb0;--dd-accent:#3d5fb0;--dw-font-sans:"Inter", system-ui, sans-serif')
+    expect(html).toContain(':root:root:root.dark{--dw-primary:#9fb8e6')
+    expect(html).toContain('<link rel="stylesheet" href="https://fonts.example.com/inter.css">')
+    expect(html).toContain('<link rel="stylesheet" href="../assets/brand/site.css">')
+    expect(html).toContain('<img class="dw-header-logo" src="../assets/brand/logo.svg" alt="">')
+    expect(html).toContain(`<a class="dw-site-link dw-site-link-home" href="https://widget.example.com">${project.name}</a>`)
+    expect(html).toContain('<a class="dw-site-link" href="https://github.com/example/widget">GitHub</a>')
+    expect(await Bun.file(join(root, '.dewey/site/assets/brand/logo.svg')).exists()).toBe(true)
+    expect(await Bun.file(join(root, '.dewey/site/themes/slate.css')).exists()).toBe(true)
+    expect(await codes(root)).toEqual([])
+    // Without a theme the deweydocs.com look stays the default, and the accent reaches its --dd-accent.
+    await writeFile(state, JSON.stringify({ ...project, site: { accent: '#0a7' } }))
+    await freshBuild(root)
+    const house = await readFile(join(root, '.dewey/site/docs/quickstart.html'), 'utf8')
+    expect(house).toContain('dw-skin-dewey')
+    expect(house).toContain('--dd-accent:#0a7')
+    // A house skin owns its colors; CSS injection, unsafe links and missing files are refused.
+    for (const [bad, message] of [
+      [{ theme: 'slate' }, 'skin'], [{ theme: 'nope' }, 'site.theme'], [{ accent: 'red;}body{display:none' }, 'site.accent'],
+      [{ links: [{ label: 'x', href: 'javascript:alert(1)' }] }, 'site.links'], [{ logo: '../outside.svg' }, 'Unsafe project path'], [{ logo: 'brand/missing.svg' }, 'Missing brand/missing.svg'],
+    ] as const) {
+      await writeFile(state, JSON.stringify({ ...project, ...'theme' in bad && bad.theme === 'slate' ? { skin: 'lattices' } : {}, site: bad }))
+      await expect(freshBuild(root)).rejects.toThrow(message)
+    }
+  })
   test('agents get a prompt button, agent paths in the sidebar and nav.json', async () => {
     const root = await ready()
     const state = join(root, '.dewey/project.json')

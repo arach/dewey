@@ -79,7 +79,7 @@ title: Sync implementation
 ---
 ```
 
-Kinds: `guide`, `reference`, `map`, `history`. Maps declare coverage. Guides and references produce human pages. Maps and history do not appear in the site or default agent index. Root `README.md` is a guide by default. `nav: false` explicitly marks an intentionally unlisted human page. Relative Markdown links and heading anchors are rewritten into site links.
+Kinds: `guide`, `reference`, `map`, `history`. Maps declare coverage. Guides and references produce human pages. Maps and history do not appear in the site or default agent index. Root `README.md` is a guide by default. `nav: false` explicitly marks an intentionally unlisted human page. Relative Markdown links and heading anchors are rewritten into site links. Raw HTML renders the way GitHub shows it, through the same allow-list (a centered `<div align="center">` hero, `<br>`, `<img>`); scripts and event handlers are removed. GitHub alerts (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) render as callouts.
 
 Optional status fields:
 
@@ -155,7 +155,7 @@ listed page. Maps and history are left out of both. Nothing needs to be built
 before the source CLI runs.
 
 Sidebar groups: Start here (`README.md`, `docs/quickstart.md`), Guides, then
-Reference. Set `group: <name>` to put a page in another group and `order: <n>`
+Reference. Without a quickstart, the README leads Guides instead. Set `group: <name>` to put a page in another group and `order: <n>`
 to sort it; pages without `order` sort by path.
 
 The browser proof uses Playwright Chromium and checks search navigation, code copy,

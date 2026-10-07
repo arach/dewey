@@ -32,6 +32,6 @@ export function FreshDocs({ data }: { data: RendererData }) {
   </div>
   return <DocsApp docs={docs} currentPage={data.currentPage} providerProps={providerProps} config={{
     name: data.name, tagline: data.purpose, basePath: '', homeUrl: false, headerLabel: false, headerActions: actions, navigation: data.navigation,
-    layout: { nav: 'sidebar', toc: 'right', header: true, prevNext: true, breadcrumbs: true },
+    layout: { nav: 'sidebar', toc: 'right', header: true, prevNext: true, breadcrumbs: data.currentPage !== data.navigation[0]?.items[0]?.id },
   }} />
 }

@@ -1,11 +1,11 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeSlug from 'rehype-slug'
 import matter from 'gray-matter'
 import { Children, isValidElement, useMemo, type ReactNode } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { HeadingLink } from './HeadingLink'
 import { rehypeDwSplit } from '../utils/rehype-split'
+import { markdownRehype } from '../utils/rehype-html'
 
 export interface MarkdownContentProps {
   content: string
@@ -33,7 +33,7 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
     <div className={`dw-prose${isDark ? ' dark' : ''}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={split ? [rehypeSlug, rehypeDwSplit] : [rehypeSlug]}
+        rehypePlugins={split ? [...markdownRehype, rehypeDwSplit] : markdownRehype}
         components={{
         // Headings with anchor links
         h1: ({ children, id, node: _node, ...props }) => (
@@ -79,8 +79,8 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         ),
 
         // Blockquotes
-        blockquote: ({ children, node: _node, ...props }) => (
-          <blockquote className="dw-markdown-blockquote" {...props}>
+        blockquote: ({ children, className, node: _node, ...props }) => (
+          <blockquote className={className ? `dw-markdown-blockquote ${className}` : 'dw-markdown-blockquote'} {...props}>
             {children}
           </blockquote>
         ),

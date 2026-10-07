@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import Markdown, { defaultUrlTransform } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeSlug from 'rehype-slug'
+import { markdownRehype } from '../../utils/rehype-html.js'
 import { dirname, join, posix } from 'node:path'
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -12,7 +12,7 @@ import { current, human, resolveReference, tokens, type Doc, type Model } from '
 
 export const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!)
 export function markdown(body: string, transform?: (url: string) => string): string {
-  return renderToStaticMarkup(createElement(Markdown, { remarkPlugins: [remarkGfm], rehypePlugins: [rehypeSlug], urlTransform: url => defaultUrlTransform(transform ? transform(url) : url), children: body }))
+  return renderToStaticMarkup(createElement(Markdown, { remarkPlugins: [remarkGfm], rehypePlugins: markdownRehype, urlTransform: url => defaultUrlTransform(transform ? transform(url) : url), children: body }))
 }
 export const attributes = (html: string, name: string): string[] => [...html.matchAll(new RegExp(`\\b${name}="([^"]*)"`, 'g'))].map(match => match[1].replace(/&amp;/g, '&'))
 export function relativeUrl(from: string, to: string): string { return posix.relative(posix.dirname(from), to) || posix.basename(to) }
@@ -97,6 +97,18 @@ html:not(.js) .dw-fresh-tools,html:not(.js) .dw-header-theme-toggle,html:not(.js
 .dw-cmd-result-heading{color:var(--dw-muted-foreground);font-weight:400}
 .dw-cmd-result-snippet{font-size:.75rem;line-height:1.4;color:var(--dw-muted-foreground);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dw-cmd-result-snippet mark{background:color-mix(in srgb,var(--dw-primary) 22%,transparent);color:var(--dw-foreground);border-radius:2px;padding:0 1px}
+/* Raw HTML from READMEs: centered heroes and full-width images. */
+.dw-prose [align=center]{text-align:center}
+.dw-prose [align=center] img{margin-inline:auto}
+.dw-prose [align=center] .dw-markdown-heading{justify-content:center}
+.dw-prose img{max-width:100%;height:auto;border-radius:.5rem}
+.dw-prose a:has(> img){display:inline-block}
+/* GitHub alerts: [!NOTE], [!TIP], [!IMPORTANT], [!WARNING], [!CAUTION]. */
+.dw-prose .dw-markdown-alert{--dw-alert:var(--dw-primary);font-style:normal;color:var(--dw-foreground);border-left:3px solid var(--dw-alert);background:color-mix(in srgb,var(--dw-alert) 6%,transparent);border-radius:0 .5rem .5rem 0;padding:.75rem 1rem}
+.dw-prose .dw-markdown-alert>p{margin:.25rem 0}
+.dw-prose .dw-markdown-alert-title{font-size:.75rem;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--dw-alert)}
+.dw-prose .dw-markdown-alert-warning{--dw-alert:#d97706}
+.dw-prose .dw-markdown-alert-caution{--dw-alert:#dc2626}
 `
 
 function runtimeFiles(): Record<string, string> {
@@ -143,6 +155,8 @@ export function rewriteMarkdown(model: Model, doc: Doc, format: 'html' | 'md' = 
   })
   return masked.replace(/(\]\(<?)([^\s)>]+)(>?)/g, (all, before, href, after) => urls.has(href) ? `${before}${urls.get(href)}${after}` : all)
     .replace(/^(\s*\[[^\]]+\]:\s*<?)([^\s>]+)(>?)/gm, (all, before, href, after) => urls.has(href) ? `${before}${urls.get(href)}${after}` : all)
+    // Raw HTML in the Markdown, such as a README's <img src="docs/hero.png">.
+    .replace(/(<[a-z][^>]*?\s(?:href|src)=)(["'])([^"']+)\2/gi, (all, before, quote, href) => urls.has(href) ? `${before}${quote}${urls.get(href)}${quote}` : all)
     .replace(/\u0000DEWEY_CODE_(\d+)\u0000/g, (_, index) => code[Number(index)])
 }
 const size = (text: string) => `${text.trimEnd().split('\n').length} lines, ~${tokens(text)} tokens`
@@ -164,7 +178,9 @@ export function llmsIndex(model: Model, target: 'site' | 'repo'): string {
 // Sidebar groups. `group` frontmatter names one; otherwise Start here, Guides or Reference.
 // Pages sort by `order`, then by path. Groups appear in the order of their first page.
 export function navigationGroups(pages: Doc[]): Array<{ title: string; items: Doc[] }> {
-  const start = (doc: Doc) => doc.path === 'README.md' || doc.path === 'docs/quickstart.md'
+  // Start here needs a quickstart; a README on its own leads Guides instead of a one-page group.
+  const quickstart = pages.some(doc => doc.path === 'docs/quickstart.md' && !doc.group)
+  const start = (doc: Doc) => quickstart && (doc.path === 'README.md' || doc.path === 'docs/quickstart.md')
   const groupOf = (doc: Doc) => doc.group ?? (start(doc) ? 'Start here' : doc.kind === 'reference' ? 'Reference' : 'Guides')
   const rank = (doc: Doc) => doc.order ?? (doc.path === 'README.md' ? 0 : doc.path === 'docs/quickstart.md' ? 1 : doc.kind === 'reference' ? 200 : 100)
   const sorted = [...pages].sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path))

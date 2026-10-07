@@ -303,6 +303,25 @@ export const THEME_TOKENS: Record<ThemeName, string> = {
     --color-accent-strong: #58a6ff;`,
   ),
 
+  slate: buildTokens(
+    `    --color-bg: #f9fafb;
+    --color-surface: #f1f3f6;
+    --color-surface-muted: #eceff3;
+    --color-border: rgba(22, 28, 40, 0.1);
+    --color-text: #1a2130;
+    --color-text-muted: #5b6475;
+    --color-accent: #3d5fb0;
+    --color-accent-strong: #2f4d97;`,
+    `    --color-bg: #1f2430;
+    --color-surface: #262c39;
+    --color-surface-muted: #2b3240;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-text: #e8ebf0;
+    --color-text-muted: #b3bac6;
+    --color-accent: #9fb8e6;
+    --color-accent-strong: #bccdf0;`,
+  ),
+
   hudson: buildTokens(
     `    --color-bg: #fafafa;
     --color-surface: #ffffff;

@@ -54,6 +54,10 @@
       "style": "./dist/css/colors/ink.css",
       "default": "./dist/css/colors/ink.css"
     },
+    "./css/colors/slate.css": {
+      "style": "./dist/css/colors/slate.css",
+      "default": "./dist/css/colors/slate.css"
+    },
     "./css/colors/purple.css": {
       "style": "./dist/css/colors/purple.css",
       "default": "./dist/css/colors/purple.css"

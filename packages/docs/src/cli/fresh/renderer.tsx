@@ -3,7 +3,7 @@ import { DocsApp } from '../../components/DocsApp'
 import { CommandPalette } from '../../components/CommandPalette'
 import type { NavigationConfig, PageNode } from '../../types/page-tree'
 
-export const SITE_THEMES = ['ink', 'ocean', 'neutral', 'emerald', 'editorial'] as const
+export const SITE_THEMES = ['ink', 'ocean', 'neutral', 'emerald', 'editorial', 'slate'] as const
 export interface RendererData {
   name: string
   purpose: string

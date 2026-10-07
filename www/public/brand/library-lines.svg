@@ -1,0 +1,252 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<!-- Dewey library line set, hairline weight. Copy of sprite-fine.svg with all stroke widths reduced ~20%. -->
+  <symbol id="cabinet" viewBox="0 0 260 230">
+   <title>Six-drawer card catalogue cabinet with one drawer pulled open</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M36 44 L64 28 H222 L194 44 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="36" y="44" width="158" height="8" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M194 44 L222 28 V36 L194 52 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="40" y="52" width="150" height="144" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M190 52 L218 36 V180 L190 196 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M197 60 V176 M204 56 V172 M211 52 V168"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+    <rect x="36" y="196" width="158" height="8" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M194 196 L222 180 V188 L194 204 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M18 212 H244"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+    <rect x="48" y="60" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <path d="M69 68 H91 L93 70 V75 L91 77 H69 L67 75 V70 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="70.5" y="70.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M71 83 h5 M84 83 h5 M74 83 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="118" y="60" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <rect x="48" y="105" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <path d="M69 113 H91 L93 115 V120 L91 122 H69 L67 120 V115 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="70.5" y="115.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M71 128 h5 M84 128 h5 M74 128 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="118" y="105" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <path d="M139 113 H161 L163 115 V120 L161 122 H139 L137 120 V115 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="140.5" y="115.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M141 128 h5 M154 128 h5 M144 128 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="48" y="150" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <path d="M69 158 H91 L93 160 V165 L91 167 H69 L67 165 V160 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="70.5" y="160.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M71 173 h5 M84 173 h5 M74 173 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="118" y="150" width="64" height="40"  vector-effect="non-scaling-stroke"/>
+    <path d="M139 158 H161 L163 160 V165 L161 167 H139 L137 165 V160 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="140.5" y="160.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M141 173 h5 M154 173 h5 M144 173 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="118" y="60" width="64" height="40"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+<g style="transform:translate(var(--drawer-x,0px),var(--drawer-y,0px));transition:transform var(--motion-duration,360ms) cubic-bezier(.16,1,.3,1);">
+    <path d="M118.9 61.2 V53.2 H176.9 V61.2 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M116.38 62.64 V54.64 H123.34 l3 -7 h10.44 l3 7 H174.38 V62.64 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M113.86 64.08 V56.08 H171.86 V64.08 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M111.34 65.52 V57.52 H169.34 V65.52 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M108.82 66.96 V58.96 H166.82 V66.96 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M106.3 68.4 V60.4 H130.66 l3 -7 h10.44 l3 7 H164.3 V68.4 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M103.78 69.84 V61.84 H161.78 V69.84 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M101.26 71.28 V63.28 H159.26 V71.28 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M161 72 L182 60 V100 L161 112 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="97" y="72" width="64" height="40" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M118 80 H140 L142 82 V87 L140 89 H118 L116 87 V82 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="119.5" y="82.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M120 95 h5 M133 95 h5 M123 95 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+</g>
+   </g>
+  </symbol>
+  <symbol id="bureau" viewBox="0 0 220 260">
+   <title>Twenty-drawer library bureau on a turned-leg table</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 24 H210"  vector-effect="non-scaling-stroke"/>
+    <rect x="10" y="24" width="200" height="8" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="18" y="32" width="184" height="6" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="24" y="38" width="172" height="138" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="44" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="40.5" y="48" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M45 58 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="71" y="44" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="81.5" y="48" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M86 58 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="112" y="44" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="122.5" y="48" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M127 58 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="153" y="44" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="163.5" y="48" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M168 58 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="70" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="40.5" y="74" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M45 84 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="71" y="70" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="81.5" y="74" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M86 84 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="112" y="70" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="122.5" y="74" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M127 84 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="153" y="70" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="163.5" y="74" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M168 84 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="96" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="40.5" y="100" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M45 110 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="71" y="96" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="81.5" y="100" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M86 110 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="112" y="96" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="122.5" y="100" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M127 110 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="153" y="96" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="163.5" y="100" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M168 110 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="122" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="40.5" y="126" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M45 136 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="71" y="122" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="81.5" y="126" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M86 136 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="112" y="122" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="122.5" y="126" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M127 136 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="153" y="122" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="163.5" y="126" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M168 136 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="148" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="40.5" y="152" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M45 162 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="71" y="148" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="81.5" y="152" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M86 162 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="112" y="148" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="122.5" y="152" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M127 162 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="153" y="148" width="37" height="22"  vector-effect="non-scaling-stroke"/>
+    <rect x="163.5" y="152" width="16" height="6"  vector-effect="non-scaling-stroke"/>
+    <path d="M168 162 q3.5 5 7 0"  vector-effect="non-scaling-stroke"/>
+    <rect x="16" y="176" width="188" height="8" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="22" y="184" width="176" height="14" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="82" y="187" width="56" height="8"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M26 198 V206 Q24 210 27 214 L29 244 H31 L33 214 Q36 210 34 206 V198" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M186 198 V206 Q184 210 187 214 L189 244 H191 L193 214 Q196 210 194 206 V198" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M34 228 H186"  vector-effect="non-scaling-stroke"/>
+    <path d="M6 247 H214"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+   </g>
+  </symbol>
+  <symbol id="drawer" viewBox="0 0 280 170">
+   <title>A long card drawer with guide cards, rod and label holder</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 70 L170 20 H240 L90 70 Z"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <path d="M158 25 V11 H222 V25 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M147.5 28.5 V14.5 H155.18 l3 -7 h11.52 l3 7 H211.5 V28.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M137 32 V18 H201 V32 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M126.5 35.5 V21.5 H190.5 V35.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M116 39 V25 H180 V39 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M105.5 42.5 V28.5 H132.38 l3 -7 h11.52 l3 7 H169.5 V42.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M95 46 V32 H159 V46 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M84.5 49.5 V35.5 H148.5 V49.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M74 53 V39 H138 V53 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M63.5 56.5 V42.5 H109.58 l3 -7 h11.52 l3 7 H127.5 V56.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M53 60 V46 H117 V60 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M42.5 63.5 V49.5 H106.5 V63.5 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M32 67 V53 H96 V67 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M90 70 L240 20 V80 L90 130 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="20" y="70" width="70" height="60" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M44 80 H66 L68 82 V87 L66 89 H44 L42 87 V82 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="45.5" y="82.5" width="19" height="4"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M46 95 h5 M59 95 h5 M49 95 c0 7 12 7 12 0"  vector-effect="non-scaling-stroke"/>
+    <circle cx="55" cy="118" r="4.5"  vector-effect="non-scaling-stroke"/>
+    <circle cx="55" cy="118" r="1.6"  vector-effect="non-scaling-stroke"/>
+    <path d="M10 140 H262"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+   </g>
+  </symbol>
+  <symbol id="card" viewBox="0 0 240 160">
+   <title>A ruled catalogue card with double margin and rod hole</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26 140 V146 H226 V26 H220" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="20" y="20" width="200" height="120" rx="2" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M20 44 H220"  vector-effect="non-scaling-stroke" stroke-width="0.77"/>
+    <path d="M52 20 V140 M60 20 V140"  vector-effect="non-scaling-stroke"/>
+    <path d="M20 62 H220"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <path d="M20 80 H220"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <path d="M20 98 H220"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <path d="M20 116 H220"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <circle cx="120" cy="128" r="5"  vector-effect="non-scaling-stroke"/>
+   </g>
+  </symbol>
+  <symbol id="dater" viewBox="0 0 240 200">
+   <title>A library date stamp beside an open ink pad and a stamped impression</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+<g style="transform:translateY(var(--stamp-y,0px));transition:transform var(--motion-duration,360ms) cubic-bezier(.16,1,.3,1);">
+    <path d="M100 42 c0 -16 40 -16 40 0 c0 8 -10 12 -14 16 h-12 c-4 -4 -14 -8 -14 -16 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M114 58 V72 M126 58 V72"  vector-effect="non-scaling-stroke"/>
+    <rect x="106" y="72" width="28" height="6" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="92" y="78" width="56" height="34" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="100" y="86" width="40" height="18"  vector-effect="non-scaling-stroke" stroke-width="0.43"/>
+    <path d="M110 86 V104 M120 86 V104 M130 86 V104"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M104 95 h2 M114 95 h2 M124 95 h2 M134 95 h2"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <rect x="88" y="112" width="64" height="8" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M86 120 H154"  vector-effect="non-scaling-stroke"/>
+</g>
+    <path d="M160 140 L164 110 H234 L230 140" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M144 152 L160 140 H230 L214 152 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="144" y="152" width="70" height="16" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M214 152 L230 140 V156 L214 168 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M156 150 L166 143 H222 L212 150 Z"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <rect x="22" y="150" width="52" height="22"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M30 158 H66 M30 165 H52"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M12 176 H234"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+   </g>
+  </symbol>
+  <symbol id="bookend" viewBox="0 0 240 180">
+   <title>Library book support holding catalogued books</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+<g style="transform:rotate(var(--book-turn,0deg));transition:transform var(--motion-duration,360ms) cubic-bezier(.16,1,.3,1);transform-origin:110px 156px;">
+    <g transform="rotate(16 110 156)"><rect x="110" y="76" width="20" height="80" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/><path d="M110 88 H130 M110 144 H130"  vector-effect="non-scaling-stroke" stroke-width="0.38"/><rect x="114" y="128" width="12" height="10"  vector-effect="non-scaling-stroke" stroke-width="0.38"/></g>
+</g>
+    <rect x="152" y="64" width="22" height="92" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M152 76 H174 M152 80 H174 M152 146 H174"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <rect x="156" y="128" width="14" height="12"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <rect x="176" y="80" width="22" height="76" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M176 92 H198 M176 96 H198 M176 146 H198"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <rect x="180" y="128" width="14" height="12"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M150 160 V156 H200 V70 Q200 66 203 66 Q206 66 206 70 V156 H214 V160 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M203 82 V140"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <path d="M16 162 H230"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+   </g>
+  </symbol>
+  <symbol id="tray" viewBox="0 0 260 170">
+   <title>A desk card tray with guide cards and a pencil</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 110 L70 88 H210 L170 110 Z"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+<g style="transform:translateY(var(--cards-y,0px));transition:transform var(--motion-duration,360ms) cubic-bezier(.16,1,.3,1);">
+    <path d="M69 90.2 V68.2 H203 V90.2 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M64.2 92.84 V70.84 H198.2 V92.84 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M59.4 95.48 V73.48 H75.48 l3 -7 h24.12 l3 7 H193.4 V95.48 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M54.6 98.12 V76.12 H188.6 V98.12 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M49.8 100.76 V78.76 H183.8 V100.76 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M45 103.4 V81.4 H101.28 l3 -7 h24.12 l3 7 H179 V103.4 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M40.2 106.04 V84.04 H174.2 V106.04 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M35.4 108.68 V86.68 H169.4 V108.68 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+</g>
+    <path d="M170 110 L210 88 V114 L170 136 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="30" y="110" width="140" height="26" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M87 115 H113 L115 117 V123 L113 125 H87 L85 123 V117 Z"  vector-effect="non-scaling-stroke"/>
+    <rect x="88.5" y="117.5" width="23" height="5"  vector-effect="non-scaling-stroke" stroke-width="0.38"/>
+    <path d="M60 156 L196 148 L206 151 L196 155 L60 162 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M186 148.6 L186 155.6 M70 155.4 L70 161.4"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+    <path d="M14 164 H246"  vector-effect="non-scaling-stroke" stroke-width="0.34"/>
+   </g>
+  </symbol>
+  <symbol id="holder" viewBox="0 0 200 120">
+   <title>A brass card holder and bow pull on a drawer front</title>
+   <g fill="none" stroke="currentColor" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="10" y="10" width="180" height="100" rx="2" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <path d="M18 22 C60 20 120 26 182 22 M18 98 C70 100 130 94 182 98"  vector-effect="non-scaling-stroke" stroke-width="0.24"/>
+    <path d="M62 26 H138 L146 34 V54 L138 62 H62 L54 54 V34 Z" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="66" y="34" width="68" height="20"  vector-effect="non-scaling-stroke" stroke-width="0.43"/>
+    <path d="M76 41 H124 M84 47 H116"  vector-effect="non-scaling-stroke" stroke-width="0.29"/>
+    <circle cx="58.5" cy="44" r="1.6"  vector-effect="non-scaling-stroke"/>
+    <circle cx="141.5" cy="44" r="1.6"  vector-effect="non-scaling-stroke"/>
+    <rect x="74" y="76" width="16" height="8" rx="1" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+    <rect x="110" y="76" width="16" height="8" rx="1" style="fill:var(--art-fill,none)" vector-effect="non-scaling-stroke"/>
+<g style="transform:scaleY(var(--pull-scale,1));transition:transform var(--motion-duration,360ms) cubic-bezier(.16,1,.3,1);transform-origin:100px 84px;">
+    <path d="M82 84 v2 c0 18 36 18 36 0 v-2"  vector-effect="non-scaling-stroke"/>
+</g>
+   </g>
+  </symbol>
+</svg>

@@ -154,8 +154,8 @@ JavaScript off, and each page holds only its own doc.
 By default the site looks like deweydocs.com: Noto Serif Display titles, Geist
 text, a warm paper background, a Docs / page bar over the content, the search
 box at the top of the sidebar, a Copy page menu, boxed tables and dark code
-blocks. The front page is a card for each listed page, grouped like the sidebar. The footer
-ends with a Powered by Dewey badge linking to deweydocs.com: the ticket from deweydocs.com/brand,
+blocks. The front page is a card for each listed page, grouped like the sidebar. The foot of
+the sidebar holds a Powered by Dewey badge linking to deweydocs.com: the ticket from deweydocs.com/brand,
 redrawn to stay sharp at footer size.
 
 One script, `site.js` (about 10 KB), adds search, dark mode, the phone menu,

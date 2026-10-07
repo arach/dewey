@@ -255,8 +255,11 @@ html:not(.js) .dw-skin-dewey .dw-ctx-toggle { border-left: 1px solid var(--dd-bo
 .dw-skin-dewey .dw-home ~ .dw-site-foot, .dw-skin-dewey .dw-site-foot:only-child { max-width: 1100px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--dd-border); }
 .dw-skin-dewey .dw-site-foot a { color: var(--dd-muted); text-decoration: underline; text-underline-offset: 2px; }
 .dw-skin-dewey .dw-site-foot a:hover { color: var(--dd-text); }
-.dw-skin-dewey .dw-site-foot a.dw-powered { display: inline-flex; align-items: center; gap: 7px; color: var(--dd-muted); text-decoration: none; transition: color 0.15s; }
-.dw-skin-dewey .dw-site-foot a.dw-powered:hover { color: var(--dd-text); }
+.dw-skin-dewey .dw-sidebar { display: flex; flex-direction: column; }
+.dw-skin-dewey .dw-sidebar-nav { flex: 1 0 auto; }
+.dw-skin-dewey .dw-sidebar-foot { position: sticky; bottom: 0; flex: none; padding: 12px 26px 14px; border-top: 1px solid var(--dd-border); background: var(--dd-bg); }
+.dw-skin-dewey a.dw-powered { display: inline-flex; align-items: center; gap: 7px; font-family: var(--dw-font-mono); font-size: 11px; font-weight: 300; color: var(--dd-muted); text-decoration: none; transition: color 0.15s; }
+.dw-skin-dewey a.dw-powered:hover { color: var(--dd-text); }
 .dw-skin-dewey .dw-powered-ticket { display: block; flex: none; }
 /* The wordmark's hairlines vanish at one device pixel per CSS pixel; a thin stroke keeps them. Light on dark reads
    heavier, so dark mode gets less. Units are the glyph's. */

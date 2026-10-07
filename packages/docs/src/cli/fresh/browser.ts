@@ -66,13 +66,20 @@ export const SITE_SCRIPT = `(function () {
   })
 
   // Copy the page's Markdown copy from the page head, as it is or wrapped as a prompt for an agent.
+  // Safari only allows a copy during the click, so the clipboard gets the pending text when it can.
   var copyPage = function (button, href, wrap) {
     var target = button.querySelector('.dw-action-label') || button, label = target.textContent, menu = button.closest('details')
-    if (!navigator.clipboard) return
-    fetch(href).then(function (response) { return response.text() }).then(function (text) { return navigator.clipboard.writeText(wrap(text)) }).then(function () {
-      target.textContent = 'Copied'
-      setTimeout(function () { target.textContent = label; if (menu) menu.open = false }, 900)
-    })
+    var status = button.closest('.dw-ctx') && button.closest('.dw-ctx').querySelector('.dw-ctx-status')
+    var text = fetch(href).then(function (response) { if (!response.ok) throw new Error(response.status); return response.text() }).then(wrap)
+    var copied = !navigator.clipboard ? Promise.reject(new Error('no clipboard'))
+      : window.ClipboardItem ? navigator.clipboard.write([new ClipboardItem({ 'text/plain': text.then(function (value) { return new Blob([value], { type: 'text/plain' }) }) })])
+      : text.then(function (value) { return navigator.clipboard.writeText(value) })
+    var done = function (message) {
+      target.textContent = message
+      if (status) status.textContent = message
+      setTimeout(function () { target.textContent = label; if (status) status.textContent = ''; if (menu) menu.open = false }, 1200)
+    }
+    copied.then(function () { done('Copied') }, function () { done('Copy failed') })
   }
   on('[data-dw-copy-markdown]', 'click', function () { copyPage(this, this.getAttribute('data-dw-copy-markdown'), function (text) { return text }) })
   on('[data-dw-copy-prompt]', 'click', function () {
@@ -83,7 +90,7 @@ export const SITE_SCRIPT = `(function () {
   })
 
   // The Copy page menu: chat links ask the assistant to read this page's Markdown; outside clicks and Escape close it.
-  var CHATS = { chatgpt: 'https://chatgpt.com/?q=', claude: 'https://claude.ai/new?q=' }
+  var CHATS = { chatgpt: 'https://chatgpt.com/?hints=search&q=', claude: 'https://claude.ai/new?q=' }
   d.querySelectorAll('[data-dw-open]').forEach(function (link) {
     var url = new URL(link.getAttribute('data-dw-markdown'), location.href).href
     link.href = CHATS[link.getAttribute('data-dw-open')] + encodeURIComponent('Read ' + url + ' so you can answer questions about it.')

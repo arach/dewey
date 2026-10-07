@@ -11,8 +11,9 @@ export const KINDS = ['guide', 'map', 'reference', 'history'] as const
 export const STATUSES = ['shipped', 'proposal', 'abandoned'] as const
 // hosts: tool-specific instruction files (named by the project) that must redirect to AGENTS.md.
 // commands: extra shell commands docs may use, beyond the package's bins and the built-in allowlist.
-// skin: one of SKINS, the look of a house docs site; the generated site's default look without one.
-export const SKINS = ['openscout', 'talkie', 'lattices', 'hudsonkit'] as const
+// skin: one of SKINS, the look of a house docs site. Without one the site looks like deweydocs.com ('dewey');
+// 'ink' is a plain look with a menu of color themes.
+export const SKINS = ['dewey', 'openscout', 'talkie', 'lattices', 'hudsonkit', 'ink'] as const
 export interface Project { schemaVersion: 1; name: string; purpose: string; rules: string[]; hosts?: string[]; commands?: string[]; skin?: typeof SKINS[number] }
 // offset: lines of frontmatter before body, so body positions map to file lines.
 export interface Doc { path: string; title: string; summary: string; kind: typeof KINDS[number]; covers: string[]; body: string; raw: string; offset: number; draft: boolean; hidden: boolean; route: string; description?: string

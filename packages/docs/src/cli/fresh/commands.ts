@@ -363,7 +363,7 @@ export async function checkProject(directory = process.cwd()): Promise<{ passed:
     if (!(path in expected)) issue('STALE_OUTPUT', path, 'Unexpected or obsolete site output; build prunes unchanged owned files only')
   }
   const homepage = await optional(join(model.root, OUTPUT, 'index.html'))
-  const navigation = homepage?.match(/<nav\b[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? ''
+  const navigation = homepage?.match(/<nav class="dw-sidebar-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? ''
   const links = attributes(navigation, 'href').map(href => resolveReference(`${OUTPUT}/index.html`, href)?.path)
   for (const doc of model.docs.filter(doc => human(doc) && !doc.hidden)) if (!links.includes(`${OUTPUT}/${doc.route}`)) issue('NAV_MISSING', doc.path, 'Human page is missing from generated site navigation')
   // Check actual rendered outputs too, not just the expected Markdown model.

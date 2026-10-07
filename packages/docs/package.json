@@ -98,6 +98,10 @@
       "style": "./dist/css/skins/terminal.css",
       "default": "./dist/css/skins/terminal.css"
     },
+    "./css/skins/dewey.css": {
+      "style": "./dist/css/skins/dewey.css",
+      "default": "./dist/css/skins/dewey.css"
+    },
     "./css/skins/openscout.css": {
       "style": "./dist/css/skins/openscout.css",
       "default": "./dist/css/skins/openscout.css"

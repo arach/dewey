@@ -199,11 +199,16 @@ function runtimeFiles(): Record<string, string> {
     ...Object.fromEntries(SITE_THEMES.map(theme => [`themes/${theme}.css`, readFileSync(join(css, `colors/${theme}.css`), 'utf8')])),
   }
 }
-type Skin = typeof SKINS[number]
+// The skin a project's site uses: its own choice, else the deweydocs.com look. 'ink' is no skin, with color themes.
+type Skin = Exclude<typeof SKINS[number], 'ink'>
+export const siteSkin = (project: Model['project']): Skin | undefined => { const skin = project.skin ?? 'dewey'; return skin === 'ink' ? undefined : skin }
 // What a skin needs besides its stylesheet: its web fonts and the labels of the page's Markdown actions.
 // dark: the site opens in dark mode until the reader picks one.
 // prompt: a button that copies the page as a prompt for an agent. agentPaths: the sidebar block of agent files.
-const SKIN_SETUP: Record<Skin, { fonts: string; dark?: boolean; copy?: string; view?: string; prompt?: string; agentPaths?: boolean }> = {
+// house: deweydocs.com's chrome — a Docs / page bar, search in the sidebar, a Copy page menu, a card index
+// as the site's front page and a footer line.
+const SKIN_SETUP: Record<Skin, { fonts: string; dark?: boolean; copy?: string; view?: string; prompt?: string; agentPaths?: boolean; house?: boolean }> = {
+  dewey: { fonts: 'family=Noto+Serif+Display:wght@100..600&family=Geist:wght@100..900&family=Geist+Mono:wght@100..900', agentPaths: true, house: true },
   openscout: { fonts: 'family=Archivo:wght@400;500;600;700', dark: true, copy: 'Copy MD', view: 'View MD', prompt: 'Prompt', agentPaths: true },
   talkie: { fonts: 'family=Cormorant+Garamond:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500' },
   lattices: { fonts: 'family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600' },
@@ -212,7 +217,7 @@ const SKIN_SETUP: Record<Skin, { fonts: string; dark?: boolean; copy?: string; v
 function skinFiles(): Record<string, string> {
   const root = packageRoot()
   const css = existsSync(join(root, 'src/css/skins')) ? join(root, 'src/css/skins') : join(root, 'dist/css/skins')
-  return Object.fromEntries(SKINS.map(skin => [`skins/${skin}.css`, readFileSync(join(css, `${skin}.css`), 'utf8')]))
+  return Object.fromEntries(SKINS.filter(skin => skin !== 'ink').map(skin => [`skins/${skin}.css`, readFileSync(join(css, `${skin}.css`), 'utf8')]))
 }
 function stylesheets(prefix: string, skin?: Skin): string {
   if (!skin) return `<link rel="stylesheet" href="${prefix}style.css"><link id="dewey-preset" rel="stylesheet" href="${prefix}themes/ink.css">`
@@ -223,14 +228,16 @@ const SHELL = new Set(['sh', 'bash', 'shell', 'zsh', 'console'])
 // header with the page's path, its description and Markdown actions, and code blocks carry their
 // language. Shell blocks get one span per line so a skin can show prompts. Skins choose what shows.
 // Links an agent can start from, at the foot of the sidebar: the indexes, nav.json and this page's Markdown.
-function agentPaths(html: string, route: string, doc: Doc | undefined): string {
+function agentPaths(html: string, route: string, doc: Doc | undefined, title = 'Agent paths'): string {
   const links = [['llms.txt', 'llms.txt'], ['llms-full.txt', 'llms-full.txt'], ['nav.json', 'nav.json'], ...doc ? [[markdownRoute(doc.route), 'this page.md']] : []]
-  const block = `<div class="dw-agent-paths"><p class="dw-agent-paths-title">Agent paths</p><ul class="dw-agent-paths-list">${links.map(([target, label]) => `<li><a class="dw-agent-path" href="${escape(relativeUrl(route, target))}">${label}</a></li>`).join('')}</ul></div>`
+  const block = `<div class="dw-agent-paths"><p class="dw-agent-paths-title">${title}</p><ul class="dw-agent-paths-list">${links.map(([target, label]) => `<li><a class="dw-agent-path" href="${escape(relativeUrl(route, target))}">${label}</a></li>`).join('')}</ul></div>`
   return html.replace('</ul></nav></aside>', `</ul>${block}</nav></aside>`)
 }
-function decorate(html: string, doc: Doc | undefined, route: string, project: Model['project']): string {
-  const skin = project.skin
-  if (!skin || SKIN_SETUP[skin].agentPaths) html = agentPaths(html, route, doc)
+function decorate(html: string, doc: Doc | undefined, route: string, project: Model['project'], groups: Array<{ title: string; items: Doc[] }>): string {
+  const skin = siteSkin(project)
+  const house = skin ? SKIN_SETUP[skin].house : false
+  if (!skin || SKIN_SETUP[skin].agentPaths) html = agentPaths(html, route, doc, house ? 'Agent files' : undefined)
+  if (house) html = houseChrome(html, route === 'index.html' ? undefined : doc, route, project, groups)
   if (!doc) return html
   const article = '<article class="dw-prose"><div class="dw-prose">'
   const at = html.indexOf(article)
@@ -240,10 +247,10 @@ function decorate(html: string, doc: Doc | undefined, route: string, project: Mo
   const title = h1 ? h1[1] : `<h1 class="dw-markdown-heading">${escape(doc.title)}</h1>`
   const path = doc.route === 'readme.html' ? '/' : `/${doc.route.replace(/\.html$/, '')}`
   const markdownHref = escape(relativeUrl(route, markdownRoute(doc.route)))
-  const setup: { copy?: string; view?: string; prompt?: string } = skin ? SKIN_SETUP[skin] : {}
+  const setup: { copy?: string; view?: string; prompt?: string; house?: boolean } = skin ? SKIN_SETUP[skin] : {}
   // The prompt's opening lines; site.js adds the Markdown's address and the Markdown itself.
   const promptHead = [`You are working with ${project.name} documentation.`, '', `Page: ${doc.title}`, ...doc.summary ? [`Summary: ${doc.summary}`] : []].join('\n')
-  const actions = [
+  const actions = setup.house ? pageMenu(markdownHref, escape(promptHead), escape(relativeUrl(route, 'llms.txt'))) : [
     setup.copy ? `<button type="button" class="dw-page-action" data-dw-copy-markdown="${markdownHref}">${setup.copy}</button>` : '',
     setup.view ? `<a class="dw-page-action" href="${markdownHref}">${setup.view}</a>` : '',
     setup.prompt ? `<button type="button" class="dw-page-action" data-dw-copy-prompt="${markdownHref}" data-dw-prompt-head="${escape(promptHead)}" title="Copy a prompt for an agent with this page">${setup.prompt}</button>` : '',
@@ -253,6 +260,42 @@ function decorate(html: string, doc: Doc | undefined, route: string, project: Mo
     .replace(/<div class="dw-code-block group"><div class="dw-code-block-frame"><div class="dw-code-block-scroll"><span class="dw-code-block-language">([\w+-]+)<\/span>/g, (all, language) => all.replace('class="dw-code-block group"', `class="dw-code-block group" data-language="${language}"`))
     .replace(/(<div class="dw-code-block group" data-language="([\w+-]+)"[\s\S]*?<code class="dw-code-block-code">)([\s\S]*?)(<\/code>)/g, (all, before, language, code, after) => SHELL.has(language) ? before + shellLines(code) + after : all)
   return html.slice(0, at) + article.replace('<div class="dw-prose">', head + '<div class="dw-prose">') + body
+}
+const svg = (paths: string) => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`
+const COPY_ICON = svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>')
+const FILE_ICON = svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>')
+const AGENT_ICON = svg('<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/>')
+const LIST_ICON = svg('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>')
+const CHEVRON = svg('<polyline points="6 9 12 15 18 9"/>')
+// deweydocs.com's Copy page split button. The menu is a <details>, so View as Markdown and llms.txt
+// work without JavaScript.
+function pageMenu(markdownHref: string, promptHead: string, llmsHref: string): string {
+  return `<div class="dw-ctx"><button type="button" class="dw-action-btn dw-ctx-primary" data-dw-copy-markdown="${markdownHref}">${COPY_ICON}<span class="dw-action-label">Copy page</span></button>`
+    + `<details class="dw-ctx-more"><summary class="dw-action-btn dw-ctx-toggle" aria-label="More page actions">${CHEVRON}</summary><div class="dw-ctx-menu">`
+    + `<button type="button" class="dw-ctx-item" data-dw-copy-prompt="${markdownHref}" data-dw-prompt-head="${promptHead}">${AGENT_ICON}<span class="dw-action-label">Copy page for agent</span></button>`
+    + `<button type="button" class="dw-ctx-item" data-dw-copy-markdown="${markdownHref}">${FILE_ICON}<span class="dw-action-label">Copy as Markdown</span></button>`
+    + `<div class="dw-ctx-sep"></div><a class="dw-ctx-item" href="${markdownHref}">${FILE_ICON}View as Markdown</a>`
+    + `<a class="dw-ctx-item" href="${llmsHref}">${LIST_ICON}llms.txt</a>`
+    + `</div></details></div>`
+}
+// deweydocs.com's frame around the generated layout: a Docs / page bar in the header, the search box at
+// the top of the sidebar, a footer line, and on the front page a card for every listed page.
+function houseChrome(html: string, doc: Doc | undefined, route: string, project: Model['project'], groups: Array<{ title: string; items: Doc[] }>): string {
+  const home = escape(relativeUrl(route, 'index.html'))
+  const crumbs = `<nav class="dw-topbar-crumbs" aria-label="Breadcrumb"><a class="dw-topbar-crumb" href="${home}">Docs</a>${doc ? `<span class="dw-topbar-sep">/</span><span class="dw-topbar-current">${escape(doc.title)}</span>` : ''}</nav>`
+  html = html.replace('<div class="dw-header-right">', `${crumbs}<div class="dw-header-right">`)
+  const search = html.match(/<button type="button" class="dw-cmd-trigger">[\s\S]*?<\/button>/)
+  // The sidebar holds the search box; the header keeps its copy for phones, where the sidebar is a drawer.
+  if (search) html = html.replace('<nav class="dw-sidebar-nav">', `<nav class="dw-sidebar-nav"><div class="dw-sidebar-search">${search[0]}</div>`)
+  const foot = `<footer class="dw-site-foot"><a href="${home}">${escape(project.name)}</a> — ${escape(project.purpose)}</footer>`
+  html = html.replace(/<\/div><\/main>/, `${foot}</div></main>`)
+  if (doc) return html
+  // The front page: the project's name and purpose, then each sidebar group as a grid of cards.
+  const cards = groups.map(group => `<section class="dw-home-group"><h2 class="dw-home-group-title">${escape(group.title)}</h2><div class="dw-home-grid">${group.items.map(item => `<a class="dw-home-card" href="${escape(relativeUrl(route, item.route))}"><div><h3 class="dw-home-card-title">${escape(item.title)}</h3>${item.summary ? `<p class="dw-home-card-desc">${escape(item.summary)}</p>` : ''}</div><p class="dw-home-card-cta">Read page ${svg('<path d="M5 12h14M12 5l7 7-7 7"/>')}</p></a>`).join('')}</div></section>`).join('')
+  const head = `<header class="dw-page-head"><div class="dw-page-title"><h1 class="dw-markdown-heading">${escape(project.name)}</h1></div><p class="dw-page-description">${escape(project.purpose)}</p></header>`
+  const start = html.indexOf('<article class="dw-prose">'), end = html.lastIndexOf('</article>')
+  if (start >= 0 && end > start) html = html.slice(0, start) + `<article class="dw-home">${head}${cards}</article>` + html.slice(end + '</article>'.length)
+  return html.replace(/<nav class="dw-breadcrumbs"[\s\S]*?<\/nav>/, '').replace(/<nav class="dw-prev-next"[\s\S]*?<\/nav>/, '').replace(/<aside class="dw-toc[\s\S]*?<\/aside>/, '')
 }
 // One span per line: a command, a comment, or the continuation of a command ending in a backslash.
 // Highlighted spans that cross a line break are left as they are.
@@ -362,7 +405,7 @@ export function siteFiles(model: Model): Record<string, string> {
   const pages = model.docs.filter(human)
   const groups = navigationGroups(pages.filter(doc => !doc.hidden))
   const navigation = groups.map(group => ({ title: group.title, items: group.items.map(doc => ({ id: doc.route, title: doc.title })) }))
-  const skin = model.project.skin
+  const skin = siteSkin(model.project)
   const files: Record<string, string> = { ...runtimeFiles(), ...skin ? skinFiles() : {}, 'search.js': searchIndex(model, groups), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model), 'nav.json': navJson(model, groups) }
   for (const doc of pages) files[markdownRoute(doc.route)] = pageMarkdown(model, doc)
   const entry = groups.flatMap(group => group.items).find(doc => doc.path === 'README.md') ?? groups[0]?.items[0] ?? pages[0]
@@ -370,7 +413,7 @@ export function siteFiles(model: Model): Record<string, string> {
     // The landing alias needs body-relative links rebased to its own location.
     const content = page ? rewriteMarkdown(model, route === 'index.html' ? { ...page, route } : page) : ''
     const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage: page?.route ?? '', rootPrefix: rootPrefix(route), content, navigation, skin }
-    const body = decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, model.project)
+    const body = decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, model.project, groups)
     const title = route === 'index.html' || !page || page.title === model.project.name ? model.project.name : `${page.title} · ${model.project.name}`
     const description = page?.summary ? `<meta name="description" content="${escape(page.summary)}">` : ''
     const alternate = page ? `<link rel="alternate" type="text/markdown" href="${escape(relativeUrl(route, markdownRoute(page.route)))}">` : ''

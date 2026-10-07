@@ -67,11 +67,11 @@ export const SITE_SCRIPT = `(function () {
 
   // Copy the page's Markdown copy from the page head, as it is or wrapped as a prompt for an agent.
   var copyPage = function (button, href, wrap) {
-    var label = button.textContent
+    var target = button.querySelector('.dw-action-label') || button, label = target.textContent, menu = button.closest('details')
     if (!navigator.clipboard) return
     fetch(href).then(function (response) { return response.text() }).then(function (text) { return navigator.clipboard.writeText(wrap(text)) }).then(function () {
-      button.textContent = 'Copied'
-      setTimeout(function () { button.textContent = label }, 1500)
+      target.textContent = 'Copied'
+      setTimeout(function () { target.textContent = label; if (menu) menu.open = false }, 900)
     })
   }
   on('[data-dw-copy-markdown]', 'click', function () { copyPage(this, this.getAttribute('data-dw-copy-markdown'), function (text) { return text }) })
@@ -81,6 +81,14 @@ export const SITE_SCRIPT = `(function () {
       return button.getAttribute('data-dw-prompt-head') + '\\nMarkdown: ' + url + '\\n\\nUse the Markdown below as source context.\\n\\n<doc>\\n' + text.trim() + '\\n</doc>\\n'
     })
   })
+
+  // The Copy page menu: outside clicks and Escape close it.
+  var menus = [].slice.call(d.querySelectorAll('details.dw-ctx-more'))
+  if (menus.length) {
+    d.addEventListener('click', function (event) { menus.forEach(function (menu) { if (menu.open && !menu.contains(event.target)) menu.open = false }) })
+    d.addEventListener('keydown', function (event) { if (event.key === 'Escape') menus.forEach(function (menu) { if (menu.open) { menu.open = false; menu.querySelector('summary').focus() } }) })
+    on('.dw-ctx-menu a', 'click', function () { var menu = this.closest('details'); setTimeout(function () { menu.open = false }, 0) })
+  }
 
   // Active heading in "On this page".
   var links = [].slice.call(d.querySelectorAll('.dw-toc-link'))
@@ -97,7 +105,7 @@ export const SITE_SCRIPT = `(function () {
   }
 
   // Search. The index is a script, not JSON, so it also loads from file://.
-  var trigger = d.querySelector('.dw-cmd-trigger'), overlayEl = null, loading = null
+  var triggers = [].slice.call(d.querySelectorAll('.dw-cmd-trigger')), trigger = null, overlayEl = null, loading = null
   function load() {
     if (window.DEWEY_SEARCH) return Promise.resolve(window.DEWEY_SEARCH)
     if (!loading) loading = new Promise(function (resolve, reject) {
@@ -160,7 +168,7 @@ export const SITE_SCRIPT = `(function () {
     input.focus(); render()
   }
   function close() { if (overlayEl) { overlayEl.remove(); overlayEl = null; if (trigger) trigger.focus() } }
-  if (trigger) { trigger.addEventListener('click', open); trigger.addEventListener('mouseenter', load, { once: true }) }
+  triggers.forEach(function (button) { button.addEventListener('click', function () { trigger = button; open() }); button.addEventListener('mouseenter', load, { once: true }) })
   d.addEventListener('keydown', function (event) {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); overlayEl ? close() : open() }
     else if (event.key === '/' && !overlayEl && !/INPUT|TEXTAREA|SELECT/.test((d.activeElement || {}).tagName || '')) { event.preventDefault(); open() }

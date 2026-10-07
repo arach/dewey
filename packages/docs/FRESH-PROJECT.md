@@ -68,7 +68,7 @@ Review each document that declares `covers`. `review` explicitly records documen
 - The marked `index` region of root `llms.txt`: the same list, linking to the source files so it works from the repo root.
 - `.dewey/site/nav.json`: the sidebar as data. Each page has its title, summary, HTML and `.md` paths and source file.
 
-The sidebar ends with an Agent paths block linking `llms.txt`, `llms-full.txt`, `nav.json` and the current page's `.md`. The openscout skin also adds a Prompt button next to Copy MD and View MD. It copies the page's Markdown wrapped as a prompt, with the page title, summary and the Markdown's address on top.
+The sidebar ends with an Agent files block linking `llms.txt`, `llms-full.txt`, `nav.json` and the current page's `.md`. Each page has a Copy page button with a menu: Copy page for agent, Copy as Markdown, View as Markdown and `llms.txt`. Copy page for agent copies the page's Markdown wrapped as a prompt, with the page title, summary and the Markdown's address on top. The openscout skin shows the same actions as Copy MD, View MD and Prompt buttons.
 
 A page's summary is its `description` frontmatter, else its first paragraph.
 
@@ -151,8 +151,13 @@ Rerunning it in an initialized project updates only the observed front-door regi
 highlighted code, table of contents and previous/next links. Pages work with
 JavaScript off, and each page holds only its own doc.
 
-One script, `site.js` (about 10 KB), adds search, dark mode, the four color
-themes, the phone menu, copy buttons and collapsible groups. Search loads
+By default the site looks like deweydocs.com: Noto Serif Display titles, Geist
+text, a warm paper background, a Docs / page bar over the content, the search
+box at the top of the sidebar, a Copy page menu, boxed tables and dark code
+blocks. The front page is a card for each listed page, grouped like the sidebar.
+
+One script, `site.js` (about 10 KB), adds search, dark mode, the phone menu,
+copy buttons and the Copy page menu. Search loads
 `search.js` on first use: titles, headings and up to 6,000 characters of each
 listed page. Maps and history are left out of both. Nothing needs to be built
 before the source CLI runs.
@@ -161,13 +166,13 @@ Sidebar groups: Start here (`README.md`, `docs/quickstart.md`), Guides, then
 Reference. Without a quickstart, the README leads Guides instead. Set `group: <name>` to put a page in another group and `order: <n>`
 to sort it; pages without `order` sort by path.
 
-To match an existing docs site, set `"skin"` in `.dewey/project.json` to `openscout`, `talkie`,
-`lattices` or `hudsonkit`. A skin replaces the color themes with that site's fonts, colors,
-header, sidebar, page head and code blocks. Each skin is also exported as
-`@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
+To match another docs site, set `"skin"` in `.dewey/project.json` to `openscout`, `talkie`,
+`lattices` or `hudsonkit`. A skin brings that site's fonts, colors, header, sidebar, page head
+and code blocks. The default is `dewey`. Set `ink` for a plain look with a menu of four color
+themes. Each skin is also exported as `@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
 
 The browser proof uses Playwright Chromium and checks search navigation, code copy,
-color themes, dark-mode persistence, the phone menu, pages with JavaScript off, mobile overflow, and browser/HTTP errors.
+the Copy page menu, dark-mode persistence, the phone menu, pages with JavaScript off, mobile overflow, and browser/HTTP errors.
 It writes light, dark, and mobile screenshots under the scratch project's
 `browser-proof/`. Pass a scratch root and screenshot directory as optional arguments.
 Serve `.dewey/site` with any static HTTP server to inspect it yourself.

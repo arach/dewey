@@ -58,7 +58,7 @@ await writeFile(join(root, 'AGENTS.md'), front + '\nOverflow\n'.repeat(150)); fa
 await writeFile(join(root, 'AGENTS.md'), front)
 await writeFile(join(root, 'docs/quickstart.md'), guide + '\nA successful append does not rewrite previous records.\n'); fail('STALE_OUTPUT'); pass('build')
 const homePath = join(root, '.dewey/site/index.html'); const home = await readFile(homePath, 'utf8')
-await writeFile(homePath, home.replace(/<nav[\s\S]*?<\/nav>/, '<nav><a href="missing.html">Broken</a></nav>'))
+await writeFile(homePath, home.replace(/<nav class="dw-sidebar-nav">[\s\S]*?<\/nav>/, '<nav class="dw-sidebar-nav"><a href="missing.html">Broken</a></nav>'))
 fail('NAV_MISSING'); fail('SITE_LINK')
 assert(run('build').code !== 0, 'Build must refuse a modified generated file')
 await writeFile(homePath, home)

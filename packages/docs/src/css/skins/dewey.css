@@ -135,7 +135,7 @@ body:has(.dw-skin-dewey) { background: var(--dd-bg); color: var(--dd-text); font
 .dw-skin-dewey .dw-ctx a.dw-ctx-item { color: var(--dd-muted); text-decoration: none; }
 .dw-skin-dewey .dw-ctx a.dw-ctx-item:hover { color: var(--dd-text); opacity: 1; }
 .dw-skin-dewey .dw-ctx-sep { height: 1px; margin: 4px 6px; background: var(--dd-border); }
-html:not(.js) .dw-skin-dewey .dw-ctx-primary, html:not(.js) .dw-skin-dewey [data-dw-copy-prompt], html:not(.js) .dw-skin-dewey [data-dw-copy-markdown] { display: none; }
+html:not(.js) .dw-skin-dewey .dw-ctx-primary, html:not(.js) .dw-skin-dewey [data-dw-copy-prompt], html:not(.js) .dw-skin-dewey [data-dw-copy-markdown], html:not(.js) .dw-skin-dewey .dw-ctx-chat { display: none; }
 html:not(.js) .dw-skin-dewey .dw-ctx-toggle { border-left: 1px solid var(--dd-border); border-radius: 6px; }
 
 /* Prose: deweydocs.com's markdown.css. */

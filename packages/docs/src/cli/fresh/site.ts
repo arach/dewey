@@ -266,9 +266,12 @@ const COPY_ICON = svg('<rect x="9" y="9" width="13" height="13" rx="2"/><path d=
 const FILE_ICON = svg('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>')
 const AGENT_ICON = svg('<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/>')
 const LIST_ICON = svg('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>')
+const OUT_ICON = svg('<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>')
+// The assistants the menu can open with this page. site.js fills in each link with the page's address.
+const CHATS = [['chatgpt', 'Open in ChatGPT'], ['claude', 'Open in Claude']]
 const CHEVRON = svg('<polyline points="6 9 12 15 18 9"/>')
 // deweydocs.com's Copy page split button. The menu is a <details>, so View as Markdown and llms.txt
-// work without JavaScript.
+// work without JavaScript; the copy and chat items need it.
 function pageMenu(markdownHref: string, promptHead: string, llmsHref: string): string {
   return `<div class="dw-ctx"><button type="button" class="dw-action-btn dw-ctx-primary" data-dw-copy-markdown="${markdownHref}">${COPY_ICON}<span class="dw-action-label">Copy page</span></button>`
     + `<details class="dw-ctx-more"><summary class="dw-action-btn dw-ctx-toggle" aria-label="More page actions">${CHEVRON}</summary><div class="dw-ctx-menu">`
@@ -276,6 +279,7 @@ function pageMenu(markdownHref: string, promptHead: string, llmsHref: string): s
     + `<button type="button" class="dw-ctx-item" data-dw-copy-markdown="${markdownHref}">${FILE_ICON}<span class="dw-action-label">Copy as Markdown</span></button>`
     + `<div class="dw-ctx-sep"></div><a class="dw-ctx-item" href="${markdownHref}">${FILE_ICON}View as Markdown</a>`
     + `<a class="dw-ctx-item" href="${llmsHref}">${LIST_ICON}llms.txt</a>`
+    + `<div class="dw-ctx-sep dw-ctx-chat"></div>${CHATS.map(([target, label]) => `<a class="dw-ctx-item dw-ctx-chat" data-dw-open="${target}" data-dw-markdown="${markdownHref}" href="#" target="_blank" rel="noopener noreferrer">${OUT_ICON}${label}</a>`).join('')}`
     + `</div></details></div>`
 }
 // deweydocs.com's frame around the generated layout: a Docs / page bar in the header, the search box at

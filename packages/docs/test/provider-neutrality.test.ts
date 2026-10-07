@@ -39,6 +39,12 @@ const forbiddenNames = [
   [120, 97, 105],
 ].map(points => String.fromCharCode(...points))
 
+// The page menu's Open in … links name two assistants on purpose; nothing else may.
+const allowed: Record<string, string[]> = {
+  'packages/docs/src/cli/fresh/site.ts': [[99, 104, 97, 116, 103, 112, 116], [99, 108, 97, 117, 100, 101]].map(points => String.fromCharCode(...points)),
+  'packages/docs/src/cli/fresh/browser.ts': [[99, 104, 97, 116, 103, 112, 116], [99, 108, 97, 117, 100, 101]].map(points => String.fromCharCode(...points)),
+}
+
 test('tracked content stays vendor-neutral', async () => {
   const tracked = Bun.spawnSync(['git', 'ls-files', '-z'], { cwd: repositoryRoot })
   expect(tracked.exitCode).toBe(0)
@@ -58,7 +64,7 @@ test('tracked content stays vendor-neutral', async () => {
     const text = content.toString('utf8')
     for (const name of forbiddenNames) {
       const pattern = new RegExp(`(^|[^a-z0-9_])${name}([^a-z0-9_]|$)`, 'i')
-      if (pattern.test(text)) violations.push(`${path}: ${name}`)
+      if (pattern.test(text) && !allowed[path]?.includes(name)) violations.push(`${path}: ${name}`)
     }
   }
 

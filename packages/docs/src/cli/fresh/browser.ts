@@ -82,7 +82,12 @@ export const SITE_SCRIPT = `(function () {
     })
   })
 
-  // The Copy page menu: outside clicks and Escape close it.
+  // The Copy page menu: chat links ask the assistant to read this page's Markdown; outside clicks and Escape close it.
+  var CHATS = { chatgpt: 'https://chatgpt.com/?q=', claude: 'https://claude.ai/new?q=' }
+  d.querySelectorAll('[data-dw-open]').forEach(function (link) {
+    var url = new URL(link.getAttribute('data-dw-markdown'), location.href).href
+    link.href = CHATS[link.getAttribute('data-dw-open')] + encodeURIComponent('Read ' + url + ' so you can answer questions about it.')
+  })
   var menus = [].slice.call(d.querySelectorAll('details.dw-ctx-more'))
   if (menus.length) {
     d.addEventListener('click', function (event) { menus.forEach(function (menu) { if (menu.open && !menu.contains(event.target)) menu.open = false }) })

@@ -31,6 +31,7 @@ try {
   await page.screenshot({ path: resolve(output, 'dewey-renderer-dark.png') })
   // The Copy page menu copies the page for an agent and closes again.
   await page.getByLabel('More page actions').click()
+  await expect(page.locator('[data-dw-open]').first()).toHaveAttribute('href', /^https:\/\/.*\?q=Read%20http.*api\.md/)
   await page.getByRole('button', { name: 'Copy page for agent' }).click()
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('Page: ')
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('appendEvent')

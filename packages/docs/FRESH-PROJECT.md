@@ -66,6 +66,9 @@ Review each document that declares `covers`. `review` explicitly records documen
 - `.dewey/site/llms.txt`: one line per published page with its summary and size (lines, estimated tokens), linking to the `.md` copies, plus a pointer to the full bundle.
 - `.dewey/site/llms-full.txt`: every guide and reference page in one file. Maps and history are left out.
 - The marked `index` region of root `llms.txt`: the same list, linking to the source files so it works from the repo root.
+- `.dewey/site/nav.json`: the sidebar as data. Each page has its title, summary, HTML and `.md` paths and source file.
+
+The sidebar ends with an Agent paths block linking `llms.txt`, `llms-full.txt`, `nav.json` and the current page's `.md`. The openscout skin also adds a Prompt button next to Copy MD and View MD. It copies the page's Markdown wrapped as a prompt, with the page title, summary and the Markdown's address on top.
 
 A page's summary is its `description` frontmatter, else its first paragraph.
 

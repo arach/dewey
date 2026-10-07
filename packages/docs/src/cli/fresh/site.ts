@@ -74,6 +74,11 @@ button,select,input{font:inherit}
 .dw-sidebar-item{position:relative;display:block;margin-left:-1px;padding:.32rem .9rem;border-left:1px solid transparent;border-radius:0;font-size:.875rem;line-height:1.45;color:var(--dw-muted-foreground);text-decoration:none;transition:color .15s,border-color .15s}
 .dw-sidebar-item:hover{color:var(--dw-foreground);background:none;border-left-color:color-mix(in srgb,var(--dw-foreground) 30%,transparent)}
 .dw-sidebar-item.active{background:none;color:var(--dw-foreground);font-weight:550;border-left:2px solid var(--dw-primary);padding-left:calc(.9rem - 1px)}
+.dw-agent-paths{margin-top:2rem}
+.dw-agent-paths-title{margin:0 0 .75rem;font-family:var(--dw-font-mono);font-size:.6875rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--dw-muted-foreground)}
+.dw-agent-paths-list{list-style:none;margin:0 0 0 .1rem;padding:0;border-left:1px solid var(--dw-hair)}
+.dw-agent-path{display:block;margin-left:-1px;padding:.28rem .9rem;border-left:1px solid transparent;font-family:var(--dw-font-mono);font-size:.78rem;color:var(--dw-muted-foreground);text-decoration:none}
+.dw-agent-path:hover{color:var(--dw-foreground);border-left-color:color-mix(in srgb,var(--dw-foreground) 30%,transparent)}
 @media(min-width:1024px){.dw-sidebar-header{display:none}.dw-sidebar-nav{padding-top:3rem}}
 
 /* Page head: a mono eyebrow, then a big tight title and a softer lede. */
@@ -197,8 +202,9 @@ function runtimeFiles(): Record<string, string> {
 type Skin = typeof SKINS[number]
 // What a skin needs besides its stylesheet: its web fonts and the labels of the page's Markdown actions.
 // dark: the site opens in dark mode until the reader picks one.
-const SKIN_SETUP: Record<Skin, { fonts: string; dark?: boolean; copy?: string; view?: string }> = {
-  openscout: { fonts: 'family=Archivo:wght@400;500;600;700', dark: true, copy: 'Copy MD', view: 'View MD' },
+// prompt: a button that copies the page as a prompt for an agent. agentPaths: the sidebar block of agent files.
+const SKIN_SETUP: Record<Skin, { fonts: string; dark?: boolean; copy?: string; view?: string; prompt?: string; agentPaths?: boolean }> = {
+  openscout: { fonts: 'family=Archivo:wght@400;500;600;700', dark: true, copy: 'Copy MD', view: 'View MD', prompt: 'Prompt', agentPaths: true },
   talkie: { fonts: 'family=Cormorant+Garamond:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500' },
   lattices: { fonts: 'family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600' },
   hudsonkit: { fonts: 'family=JetBrains+Mono:wght@400;500;600;700', copy: 'Copy markdown' },
@@ -216,7 +222,15 @@ const SHELL = new Set(['sh', 'bash', 'shell', 'zsh', 'console'])
 // The page head and code-block hooks, added to the rendered page: the article's h1 moves into a
 // header with the page's path, its description and Markdown actions, and code blocks carry their
 // language. Shell blocks get one span per line so a skin can show prompts. Skins choose what shows.
-function decorate(html: string, doc: Doc | undefined, route: string, skin?: Skin): string {
+// Links an agent can start from, at the foot of the sidebar: the indexes, nav.json and this page's Markdown.
+function agentPaths(html: string, route: string, doc: Doc | undefined): string {
+  const links = [['llms.txt', 'llms.txt'], ['llms-full.txt', 'llms-full.txt'], ['nav.json', 'nav.json'], ...doc ? [[markdownRoute(doc.route), 'this page.md']] : []]
+  const block = `<div class="dw-agent-paths"><p class="dw-agent-paths-title">Agent paths</p><ul class="dw-agent-paths-list">${links.map(([target, label]) => `<li><a class="dw-agent-path" href="${escape(relativeUrl(route, target))}">${label}</a></li>`).join('')}</ul></div>`
+  return html.replace('</ul></nav></aside>', `</ul>${block}</nav></aside>`)
+}
+function decorate(html: string, doc: Doc | undefined, route: string, project: Model['project']): string {
+  const skin = project.skin
+  if (!skin || SKIN_SETUP[skin].agentPaths) html = agentPaths(html, route, doc)
   if (!doc) return html
   const article = '<article class="dw-prose"><div class="dw-prose">'
   const at = html.indexOf(article)
@@ -226,10 +240,13 @@ function decorate(html: string, doc: Doc | undefined, route: string, skin?: Skin
   const title = h1 ? h1[1] : `<h1 class="dw-markdown-heading">${escape(doc.title)}</h1>`
   const path = doc.route === 'readme.html' ? '/' : `/${doc.route.replace(/\.html$/, '')}`
   const markdownHref = escape(relativeUrl(route, markdownRoute(doc.route)))
-  const setup: { copy?: string; view?: string } = skin ? SKIN_SETUP[skin] : {}
+  const setup: { copy?: string; view?: string; prompt?: string } = skin ? SKIN_SETUP[skin] : {}
+  // The prompt's opening lines; site.js adds the Markdown's address and the Markdown itself.
+  const promptHead = [`You are working with ${project.name} documentation.`, '', `Page: ${doc.title}`, ...doc.summary ? [`Summary: ${doc.summary}`] : []].join('\n')
   const actions = [
     setup.copy ? `<button type="button" class="dw-page-action" data-dw-copy-markdown="${markdownHref}">${setup.copy}</button>` : '',
     setup.view ? `<a class="dw-page-action" href="${markdownHref}">${setup.view}</a>` : '',
+    setup.prompt ? `<button type="button" class="dw-page-action" data-dw-copy-prompt="${markdownHref}" data-dw-prompt-head="${escape(promptHead)}" title="Copy a prompt for an agent with this page">${setup.prompt}</button>` : '',
   ].join('')
   const head = `<header class="dw-page-head"><p class="dw-page-path">${escape(path)}</p><div class="dw-page-title">${title}${actions ? `<div class="dw-page-actions">${actions}</div>` : ''}</div>${doc.description ? `<p class="dw-page-description">${escape(doc.description)}</p>` : ''}</header>`
   const body = (h1 ? rest.slice(h1[0].length) : rest)
@@ -332,19 +349,28 @@ export function searchIndex(model: Model, groups: Array<{ title: string; items: 
   }))
   return `window.DEWEY_SEARCH=${JSON.stringify(entries).replace(/</g, '\\u003c')}\n`
 }
+// nav.json: the sidebar as data, for agents and tools. Paths are relative to the site root.
+export function navJson(model: Model, groups: Array<{ title: string; items: Doc[] }>): string {
+  return `${JSON.stringify({
+    name: model.project.name,
+    purpose: model.project.purpose,
+    entrypoints: { llms: 'llms.txt', llmsFull: 'llms-full.txt', nav: 'nav.json' },
+    groups: groups.map(group => ({ title: group.title, items: group.items.map(doc => ({ title: doc.title, summary: doc.summary, url: doc.route, markdown: markdownRoute(doc.route), source: doc.path })) })),
+  }, null, 2)}\n`
+}
 export function siteFiles(model: Model): Record<string, string> {
   const pages = model.docs.filter(human)
   const groups = navigationGroups(pages.filter(doc => !doc.hidden))
   const navigation = groups.map(group => ({ title: group.title, items: group.items.map(doc => ({ id: doc.route, title: doc.title })) }))
   const skin = model.project.skin
-  const files: Record<string, string> = { ...runtimeFiles(), ...skin ? skinFiles() : {}, 'search.js': searchIndex(model, groups), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model) }
+  const files: Record<string, string> = { ...runtimeFiles(), ...skin ? skinFiles() : {}, 'search.js': searchIndex(model, groups), 'llms.txt': llmsIndex(model, 'site'), 'llms-full.txt': fullBundle(model), 'nav.json': navJson(model, groups) }
   for (const doc of pages) files[markdownRoute(doc.route)] = pageMarkdown(model, doc)
   const entry = groups.flatMap(group => group.items).find(doc => doc.path === 'README.md') ?? groups[0]?.items[0] ?? pages[0]
   for (const [route, page] of [['index.html', entry], ...pages.map(doc => [doc.route, doc] as const)] as Array<[string, Doc | undefined]>) {
     // The landing alias needs body-relative links rebased to its own location.
     const content = page ? rewriteMarkdown(model, route === 'index.html' ? { ...page, route } : page) : ''
     const data: RendererData = { name: model.project.name, purpose: model.project.purpose, route, currentPage: page?.route ?? '', rootPrefix: rootPrefix(route), content, navigation, skin }
-    const body = decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, skin)
+    const body = decorate(renderToStaticMarkup(createElement(FreshDocs, { data })), page, route, model.project)
     const title = route === 'index.html' || !page || page.title === model.project.name ? model.project.name : `${page.title} · ${model.project.name}`
     const description = page?.summary ? `<meta name="description" content="${escape(page.summary)}">` : ''
     const alternate = page ? `<link rel="alternate" type="text/markdown" href="${escape(relativeUrl(route, markdownRoute(page.route)))}">` : ''

@@ -65,13 +65,20 @@ export const SITE_SCRIPT = `(function () {
     })
   })
 
-  // Copy the page's Markdown copy from the page head.
-  on('[data-dw-copy-markdown]', 'click', function () {
-    var button = this, label = button.textContent
+  // Copy the page's Markdown copy from the page head, as it is or wrapped as a prompt for an agent.
+  var copyPage = function (button, href, wrap) {
+    var label = button.textContent
     if (!navigator.clipboard) return
-    fetch(button.getAttribute('data-dw-copy-markdown')).then(function (response) { return response.text() }).then(function (text) { return navigator.clipboard.writeText(text) }).then(function () {
+    fetch(href).then(function (response) { return response.text() }).then(function (text) { return navigator.clipboard.writeText(wrap(text)) }).then(function () {
       button.textContent = 'Copied'
       setTimeout(function () { button.textContent = label }, 1500)
+    })
+  }
+  on('[data-dw-copy-markdown]', 'click', function () { copyPage(this, this.getAttribute('data-dw-copy-markdown'), function (text) { return text }) })
+  on('[data-dw-copy-prompt]', 'click', function () {
+    var button = this, href = button.getAttribute('data-dw-copy-prompt'), url = new URL(href, location.href).href
+    copyPage(button, href, function (text) {
+      return button.getAttribute('data-dw-prompt-head') + '\\nMarkdown: ' + url + '\\n\\nUse the Markdown below as source context.\\n\\n<doc>\\n' + text.trim() + '\\n</doc>\\n'
     })
   })
 

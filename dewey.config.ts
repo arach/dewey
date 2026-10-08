@@ -14,6 +14,7 @@ export default {
       'Each doc page should have TWO versions: .md for humans, .agent.md for AI agents',
       'Agent versions should be dense, structured, self-contained - prefer tables over prose',
       'The www/ folder is the canonical Next.js site; www-astro/ is archived Astro reference only',
+      'The primary CLI commands are init, build and check; audit, generate, agent, create, update and eject are frozen and print a warning',
     ],
 
     entryPoints: {
@@ -40,11 +41,11 @@ export default {
   },
 
   install: {
-    objective: 'Install Dewey and generate agent-ready documentation for your project.',
+    objective: 'Install Dewey, set up a project, and get a passing dewey check.',
 
     doneWhen: {
-      command: 'bunx @arach/dewey agent',
-      expectedOutput: 'Agent Readiness Report with score',
+      command: 'bunx dewey check',
+      expectedOutput: 'Dewey check passed',
     },
 
     prerequisites: [
@@ -54,11 +55,11 @@ export default {
 
     steps: [
       { description: 'Install the package', command: 'bun add -d @arach/dewey' },
-      { description: 'Initialize documentation structure', command: 'bunx @arach/dewey init' },
-      { description: 'Edit dewey.config.ts with your project context' },
-      { description: 'Write documentation in docs/', command: 'ls docs/' },
-      { description: 'Generate agent files', command: 'bunx @arach/dewey generate' },
-      { description: 'Check agent-readiness score', command: 'bunx @arach/dewey agent' },
+      { description: 'Set up the project; repeat --rule for each hard rule, or pass --no-rules', command: 'bunx dewey init --purpose "What this project is for" --rule "A hard rule for agents"' },
+      { description: 'Finish the drafts in docs/ and remove draft: true from each' },
+      { description: 'Record a review for each map after checking it against the code', command: 'bunx dewey review docs/src.agent.md' },
+      { description: 'Build the site and llms.txt', command: 'bunx dewey build' },
+      { description: 'Check docs against the code', command: 'bunx dewey check' },
     ],
   },
 }

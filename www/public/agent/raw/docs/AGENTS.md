@@ -1,15 +1,14 @@
 # dewey
 
-> Documentation toolkit for AI-agent-ready docs and retrieval artifacts
+> Keeps docs usable by people and coding agents, and checks they still match the code
 
 ## Critical Context
 
 **IMPORTANT:** Read these rules before making any changes:
 
-- Dewey generates standard files plus the `agent/` retrieval surface: manifests, raw markdown, prompts, and bundles
+- The primary commands are `init`, `build` and `check`; `audit`, `generate`, `agent`, `create`, `update` and `eject` are frozen (they warn and read `dewey.config.ts`)
+- Settings live in `.dewey/project.json`; `build` writes the site to `.dewey/site/`
 - Skills are LLM prompts, NOT deterministic code - they guide agents
-- Each doc page should have TWO versions: human (.md) and agent (.agent.md)
-- The `.dewey/` folder contains generated artifacts (reviews, prompts, drift reports)
 - Never hardcode values that exist in source code - always cross-reference
 
 ## Project Structure
@@ -17,7 +16,8 @@
 | Component | Path | Purpose |
 |-----------|------|---------|
 | React Components | `packages/docs/src/components/` | Optional docs UI components |
-| CLI Commands | `packages/docs/src/cli/commands/` | init, audit, generate, agent |
+| CLI Commands | `packages/docs/src/cli/fresh/` | init, build, check, review, new, which, uncovered |
+| Frozen CLI Commands | `packages/docs/src/cli/commands/` | audit, generate, agent, create, update, eject |
 | Skills | `packages/docs/src/skills/` | LLM prompt templates |
 | Documentation Site | `www/src/app/` | Live docs at dewey site |
 
@@ -32,13 +32,15 @@
 
 | Command | Purpose |
 |---------|---------|
-| `dewey init` | Scaffold docs structure + dewey.config.ts |
-| `dewey audit` | Validate documentation completeness |
-| `dewey generate` | Create AGENTS.md, llms.txt, docs.json, install.md, and `agent/` artifacts |
-| `dewey create` | Optional static docs site from markdown |
-| `dewey agent` | Score agent-readiness (100 pts scale) |
-| `dewey update` | Refresh Dewey-owned generated-site files |
-| `dewey eject` | Transfer a component to consumer ownership |
+| `dewey init` | Front door, skills, `.dewey/project.json`, draft guide and maps, first build |
+| `dewey build` | Site in `.dewey/site/`, `llms.txt`, `llms-full.txt`, `.md` copies |
+| `dewey check` | Exit 1 on drafts, coverage gaps, stale reviews, broken references, stale outputs |
+| `dewey review <doc>` | Record that a covered doc was reviewed |
+| `dewey new <kind> <name>` | Draft map, guide, reference or history doc |
+| `dewey which <path>` | Docs that cover a path |
+| `dewey uncovered` | Source files no map covers |
+
+Frozen: `audit`, `generate`, `agent`, `create`, `update`, `eject`.
 
 ## Skills System
 
@@ -96,7 +98,7 @@ const prompt = docsReviewAgent.reviewPage
 ### Provider
 - `DeweyProvider` - Theme and component context
 
-## Configuration (dewey.config.ts)
+## Configuration (dewey.config.ts, frozen commands only)
 
 ```typescript
 export default {
@@ -134,11 +136,11 @@ export default {
 `'default'` | `'success'` | `'warning'` | `'danger'` | `'info'` | `'purple'`
 
 ### ThemePreset
-`'neutral'` | `'ocean'` | `'emerald'` | `'purple'` | `'dusk'` | `'rose'` | `'github'` | `'warm'` | `'midnight'` | `'editorial'` | `'mono'` | `'hudson'`
+`'neutral'` | `'ocean'` | `'emerald'` | `'purple'` | `'dusk'` | `'rose'` | `'github'` | `'warm'` | `'midnight'` | `'editorial'` | `'mono'` | `'hudson'` | `'ink'` | `'slate'`
 
 ## File Generation
 
-`dewey generate` creates:
+The frozen `dewey generate` creates:
 
 | File | Format | Purpose |
 |------|--------|---------|
@@ -148,9 +150,11 @@ export default {
 | install.md | Markdown | LLM-executable installation (installmd.org) |
 | agent/ | Markdown + JSON | Recursive retrieval manifests, raw docs, prompts, and bundles |
 
-## Agent Content Pattern
+## Agent Content Pattern (frozen pipeline)
 
-Each doc page should have two versions:
+This repo's docs pair each page with a dense `.agent.md` copy for the frozen `generate`. With `dewey build`, a `*.agent.md` file is usually a map (`kind: map`) instead.
+
+Layout:
 
 ```
 docs/

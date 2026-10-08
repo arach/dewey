@@ -13,7 +13,7 @@
 7. Run `bun packages/docs/src/cli/index.ts generate`, then verify `.dewey-generated.json`, `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` have no uncommitted drift.
 8. Run `bun run verify:package` to inspect the exact packed file/export/CLI contract.
 9. Commit the release candidate so the checkout is clean and the package under test has a reviewable commit.
-10. Run `bun run verify:release-smoke`. It creates a real tarball, installs it in an isolated consumer, imports the public API, runs the packed CLI through `init` and `generate`, and builds a generated Next.js site against that tarball. If it fails, fix and commit the candidate, then rerun the smoke.
+10. Run `bun run verify:release-smoke`. It creates a real tarball, installs it in an isolated consumer, imports the public API, runs the packed CLI through `init` and `build`, then `create`, and builds that generated Next.js site against the tarball. If it fails, fix and commit the candidate, then rerun the smoke.
 11. After the smoke passes, create and push the exact matching tag: `v<version>`.
 12. Let the tag-triggered publish workflow repeat package verification and smoke coverage before publishing.
 

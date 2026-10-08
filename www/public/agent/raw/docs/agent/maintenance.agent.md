@@ -8,6 +8,8 @@ groupId: guides
 
 # Dewey generated-site maintenance contract
 
+`create`, `update`, `eject`, `generate` are frozen in 0.5.0: run, warn, removal planned. New sites: `dewey build` → `.dewey/site/`. This contract covers existing `create` sites.
+
 ## Ownership manifests
 
 | Surface | Manifest | Owner |
@@ -90,6 +92,6 @@ mode: wrap | full
 | 6 | `bun run verify:release-smoke`; fix + commit + rerun on failure |
 | 7 | Exact `v<version>` tag only after smoke; publish workflow repeats verification |
 
-Release smoke: real tarball; isolated consumer install/import; packed CLI `init` + `generate`; generated Next.js build; clean-checkout precondition; temporary directory removed on pass/fail.
+Release smoke: real tarball; isolated consumer install/import; packed CLI `init` + `build` in a fixture, then `create` + generated Next.js build; clean-checkout precondition; temporary directory removed on pass/fail.
 
 Authoritative repository procedure: `RELEASING.md`.

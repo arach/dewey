@@ -1,24 +1,24 @@
 ---
 title: Integrate into an existing site
-description: Embed Dewey docs components in an existing React or Next.js app while keeping agent generation as the core contract
+description: Embed Dewey docs components in an existing React or Next.js app while dewey build and check keep the docs honest
 order: 6
 group: Guides
 groupId: guides
 ---
 
-Dewey is a **docs agent** first: it audits, scores, and generates agent-ready artifacts (`AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and the `agent/` retrieval surface). The React components are an **optional presentation layer** so the same Markdown can power a human-facing docs UI inside a site you already own.
+Dewey's CLI (`init`, `build`, `check`) keeps your Markdown, `AGENTS.md` and `llms.txt` in step with the code, and `build` writes its own static site to `.dewey/site/`. The React components are an **optional presentation layer** for rendering the same Markdown inside a site you already own.
 
-This guide is for teams that already have a React or Next.js app and want docs under a route such as `/docs` — without running `dewey create` as a separate site. For a greenfield docs site, see [Quickstart](./quickstart.md) and `dewey create`.
+This guide is for teams that already have a React or Next.js app and want docs under a route such as `/docs`. If a standalone static site is enough, `dewey build` already makes one; see [Quickstart](./quickstart.md).
 
-## When to embed vs scaffold
+## When to embed
 
 | Path | Use when |
 |------|----------|
 | **Embed components** (this guide) | You already have React/Next.js routing, layout, design system, or deploy pipeline |
-| **`dewey create`** | You want a standalone docs site generated from Markdown |
-| **Generate only** | You need agent artifacts and no docs UI |
+| **`dewey build`** | A static site in `.dewey/site/` is enough; serve that folder |
+| **`dewey create`** (frozen) | Existing scaffolded Next.js or Astro sites only; see [Maintaining generated sites](./maintenance.md) |
 
-Embedding does not replace `dewey init` / `audit` / `generate` / `agent`. Keep the CLI pipeline for judgment and retrieval; use components only to render Markdown for humans.
+Embedding does not replace `dewey build` and `dewey check`. Keep running them; use components only to render Markdown for people.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Embedding does not replace `dewey init` / `audit` / `generate` / `agent`. Keep t
 | Bun 1.3+ (recommended) | Examples below use Bun |
 | React 18 or 19 | Peer dependency of `@arach/dewey` |
 | Next.js App Router | Patterns below target App Router; adapt for Pages Router if needed |
-| Existing Markdown under `docs/` | Prefer the [agent content pattern](./overview.md#agent-content-pattern): `.md` + `.agent.md` |
+| Existing Markdown under `docs/` | With a `kind` in each file's frontmatter; see [Kinds of doc](./overview.md#kinds-of-doc) |
 
 ## Package and CSS installation
 
@@ -37,7 +37,7 @@ bun add @arach/dewey gray-matter
 ```
 
 - Runtime dependency (not only `-d`) when the site imports Dewey components.
-- `gray-matter` is the usual choice for frontmatter when you load files from disk (same approach as `dewey create --template nextjs`).
+- `gray-matter` is the usual choice for frontmatter when you load files from disk.
 - No router package is required by Dewey. `react-router-dom` is not a peer dependency; pass a framework link adapter where needed.
 
 ### CSS entry points
@@ -60,11 +60,11 @@ import '@arach/dewey/css/colors/ocean.css'
 | `@arach/dewey/styles` | Alias of the full CSS bundle |
 | `@arach/dewey/tailwind` | Tailwind preset for `--dw-*` utilities |
 
-**Themes:** `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `midnight`, `editorial`, `mono`, `hudson`.
+**Themes:** `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `midnight`, `editorial`, `mono`, `hudson`, `ink`, `slate`.
 
 Tokens use the `--dw-*` prefix so they rarely collide with a host design system. Dark mode follows a `.dark` class on an ancestor (DeweyProvider manages this when you use the provider).
 
-The complete semantic contract covers surfaces and foregrounds; primary, secondary, and accent pairs; border/ring; info, warning, error, and success pairs; code and syntax colors; sidebar/header colors; typography, radii, shadows, and motion. Every public component and generated theme consumes this contract. The package verifies WCAG AA pairs, focus and reduced motion, plus 24 representative Playwright screenshots (12 themes × light/dark).
+The complete semantic contract covers surfaces and foregrounds; primary, secondary, and accent pairs; border/ring; info, warning, error, and success pairs; code and syntax colors; sidebar/header colors; typography, radii, shadows, and motion. Every public component and generated theme consumes this contract. The package verifies WCAG AA pairs, focus and reduced motion, plus 28 representative Playwright screenshots (14 themes × light/dark).
 
 ### Import path note
 
@@ -101,7 +101,7 @@ lib/
 docs/                     # source markdown (project root or monorepo package)
 ```
 
-This mirrors what `dewey create --template nextjs` scaffolds, without forcing a separate project.
+This mirrors the layout of the frozen `dewey create --template nextjs` scaffold, without a separate project.
 
 ## Server-to-client wrapper
 
@@ -326,11 +326,11 @@ export function getDocBySlug(slug: string): DocData | null {
 | Nested agent folder | `docs/agent/guides/install.agent.md` (or `docs/agent/overview.agent.md` for top-level pages) |
 | Nested routes | Slug `guides/install` → URL `/docs/guides/install` |
 
-Match Dewey’s generate behavior: an empty `agent.sections` array includes every human-readable Markdown document recursively.
+In 0.5.0 a `*.agent.md` file under `docs/` is usually a map (`kind: map`): an internal doc about a source area, not an agent copy of a human page. `dewey build` leaves maps off its site. Filter on the `kind` frontmatter if you only want guides and references in the UI.
 
 ### Optional navigation from `docs.json`
 
-After `bunx dewey generate`, import the generated manifest for sidebar groups:
+`docs.json` comes from the frozen `dewey generate`. `dewey build` writes `.dewey/site/nav.json` instead, with a different shape: groups of `{ title, summary, url, markdown, source }`. With the frozen pipeline, import the generated manifest for sidebar groups:
 
 ```ts
 // lib/navigation.ts
@@ -353,7 +353,7 @@ export function getNavTree(): PageNode[] {
 }
 ```
 
-Regenerate `docs.json` whenever nav or page set changes so the UI and agent artifacts stay aligned.
+With the frozen pipeline, regenerate `docs.json` whenever nav or page set changes so the UI and agent artifacts stay aligned.
 
 ## Themes at runtime
 
@@ -448,69 +448,58 @@ import { DocsLayout, MarkdownContent } from '@arach/dewey'
 </DocsLayout>
 ```
 
-## Dewey generation alongside the site
+## Dewey alongside the site
 
-Keep agent generation in the **same repository** as the host app. Components render Markdown; generation produces retrieval artifacts for agents and CI.
+Keep Dewey in the **same repository** as the host app. Components render Markdown; `build` and `check` keep it consistent with the code and write the agent files.
 
-### Onboarding sequence (shared with greenfield)
+### Onboarding sequence
 
 | Step | Command | Role |
 |------|---------|------|
 | 1. Install | `bun add @arach/dewey gray-matter` | Package on the site; CLI available via `bunx` |
-| 2. Init (once) | `bunx dewey init` | `docs/` + `dewey.config.ts` if missing |
-| 3. Author | Write `.md` + `.agent.md` | Human and agent sources |
-| 4. Generate | `bunx dewey generate` | Artifacts + `docs.json` for nav/retrieval |
-| 5. Audit | `bunx dewey audit` | Deterministic structure/completeness checks |
-| 6. Score | `bunx dewey agent` | Agent-readiness judgment (0–100) |
-| 7. Render | Your Next/React routes | Optional human UI (this guide) |
-| 8. Optional scaffold | `bunx dewey create …` | Only if you want a **separate** generated site |
+| 2. Init (once) | `bunx dewey init --purpose "…" --no-rules` | Front door, draft maps and guide, `.dewey/project.json` |
+| 3. Author | Finish the drafts in `docs/` | Guides, references and maps |
+| 4. Review | `bunx dewey review docs/<area>.agent.md` | Record each map as checked against the code |
+| 5. Build | `bunx dewey build` | `AGENTS.md` and `llms.txt` regions, `.dewey/site/` |
+| 6. Check | `bunx dewey check` | Fails on drafts, stale reviews, broken links, stale outputs |
+| 7. Render | Your Next/React routes | Human UI (this guide) |
 
 Suggested `package.json` scripts:
 
 ```json
 {
   "scripts": {
-    "docs:generate": "bunx dewey generate",
-    "docs:audit": "bunx dewey audit",
-    "docs:agent": "bunx dewey agent",
-    "prebuild": "bun run docs:generate",
+    "docs:build": "dewey build",
+    "docs:check": "dewey check",
+    "prebuild": "bun run docs:build",
     "dev": "next dev",
     "build": "next build"
   }
 }
 ```
 
-Custom paths:
-
-```bash
-bunx dewey generate --source ./content/docs --output ./public
-```
-
-`--source` overrides `docs.path` for one run. Empty `agent.sections: []` includes all human Markdown recursively.
-
 ### Serve agent files from the static host
 
-Copy or generate into `public/` (or your static asset root) so agents can fetch:
+`dewey build` writes these under `.dewey/site/`. Copy the ones you want into `public/` (or your static asset root) in a build step:
 
 | Artifact | Typical public URL |
 |----------|-------------------|
-| `llms.txt` | `/llms.txt` |
-| `AGENTS.md` | `/AGENTS.md` |
-| `install.md` | `/install.md` |
-| `agent/**` | `/agent/**` |
+| `.dewey/site/llms.txt` | `/llms.txt` |
+| `.dewey/site/llms-full.txt` | `/llms-full.txt` |
+| `.dewey/site/**/*.md` | Markdown copy of each page |
+| `AGENTS.md` (repo root) | `/AGENTS.md` |
 
-Example: set `docs.output` (or `--output`) to `public` for files you want deployed with the site, or add a small copy step after generate.
+The `.md` links in `.dewey/site/llms.txt` are relative to `.dewey/site/`. Keep the same layout when you copy them, or serve `.dewey/site/` as its own path.
 
 ## CI
 
-Enforce documentation quality without blocking only on the UI build:
+Check the docs without depending on the UI build:
 
 ```yaml
 # .github/workflows/docs.yml (illustrative)
 name: docs
 on:
   pull_request:
-    paths: ['docs/**', 'dewey.config.ts', 'package.json']
 
 jobs:
   dewey:
@@ -519,27 +508,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install
-      - run: bunx dewey generate
-      - run: bunx dewey audit --json
-      - run: bunx dewey agent --json
-      # Optional: fail if score below policy by parsing agent JSON in a follow-up step
+      - run: bunx dewey build
+      - run: bunx dewey check
 ```
 
 | Command | CI use |
 |---------|--------|
-| `dewey generate` | Ensure artifacts are reproducible and committed or built in-pipeline |
-| `dewey audit --json` | Machine-readable structure checks |
-| `dewey agent --json` | Machine-readable readiness score |
+| `dewey build` | Refresh the site and agent files |
+| `dewey check` | Exit 1 on drafts, uncovered code, stale reviews, broken references or stale outputs |
+| `dewey check --json` | The same, as `{ passed, issues[] }` |
 
-Run generate **before** `next build` when the app imports `docs.json` or serves files from `public/`.
+Commit `.dewey/project.json` and `.dewey/reviews.json` so CI checks against the same reviewed baseline. Run `build` **before** `next build` when the app serves files from `.dewey/site/`.
 
 ## Monorepo notes
 
 | Setup | Approach |
 |-------|----------|
-| Docs package + app package | Point `--source` at the docs package path; depend on `@arach/dewey` from the app |
+| Docs package + app package | Run `dewey init` in the package whose `docs/` you render; depend on `@arach/dewey` from the app |
 | Shared `docs/` at repo root | `process.cwd()` in Next is the app package — set `docsDirectory` to a path relative to the monorepo root (or symlink `docs` into the app) |
-| Generate once for many apps | Run `dewey generate` at the repo root; publish `agent/` and `docs.json` as static assets |
+| One docs set for many apps | Run `dewey build` at the repo root; copy files from `.dewey/site/` into each app's static assets |
 
 ## Checklist
 
@@ -548,20 +535,15 @@ Run generate **before** `next build` when the app imports `docs.json` or serves 
 - [ ] Server `page.tsx` + client `content.tsx` split
 - [ ] `generateStaticParams` covers recursive slugs (if static export)
 - [ ] Recursive loader skips `.agent.md` for routes but loads agent siblings for `CopyButtons` / agent view
-- [ ] `bunx dewey generate` (and optional audit/agent) in local and CI pipelines
+- [ ] `bunx dewey build` and `bunx dewey check` in local and CI pipelines
 - [ ] Agent artifacts reachable at stable URLs if you expose them publicly
 
 ## Related
 
-- [Quickstart](./quickstart.md) — full init → generate → optional create sequence
-- [CLI Reference](./cli.md) — flags for generate, audit, agent, create
-- [Overview](./overview.md) — product positioning and agent content pattern
+- [Quickstart](./quickstart.md) — init, author, review, build, check
+- [CLI Reference](./cli.md) — every command, `.dewey/project.json` and site settings
+- [Overview](./overview.md) — the docs loop and kinds of doc
 - [Skills](./skills.md) — LLM prompt skills for review and install.md
-- [Maintaining generated sites](./maintenance.md) — update/eject ownership, adoption, backups, recovery, and release checks
+- [Maintaining generated sites](./maintenance.md) — frozen `create`/`update`/`eject` sites and release checks
 
-For a ready-made Next.js project instead of embedding, use:
-
-```bash
-bunx dewey create my-docs --source ./docs --template nextjs --theme ocean
-cd my-docs && bun install && bun run dev
-```
+For a static site without embedding, run `bunx dewey build` and serve `.dewey/site/`.

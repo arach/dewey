@@ -39,6 +39,6 @@ Documentation toolkit for AI-agent-ready docs
 | agent | Maintaining generated sites | `docs/agent/maintenance.agent.md` | /agent/raw/docs/agent/maintenance.agent.md |
 | agent | dewey - Agent Context | `docs/agent/overview.agent.md` | /agent/raw/docs/agent/overview.agent.md |
 | agent | Quickstart for agents | `docs/agent/quickstart.agent.md` | /agent/raw/docs/agent/quickstart.agent.md |
-| agent | Skills for agents | `docs/agent/skills.agent.md` | /agent/raw/docs/agent/skills.agent.md |
+| agent | Agent Skills.agent | `docs/agent/skills.agent.md` | /agent/raw/docs/agent/skills.agent.md |
 
 <!-- dewey:generated owner=dewey -->

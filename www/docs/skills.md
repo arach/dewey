@@ -1,12 +1,25 @@
 ---
 title: Skills
-description: Expert instructions that guide AI agents through specific documentation tasks
+description: The skill files dewey init writes, and the prompt templates the package exports
 order: 4
 ---
 
-Skills are LLM prompts, not code. They're expert instructions that tell AI agents exactly how to perform a task — what to check, what to produce, and what success looks like.
+Skills are instructions for agents, not code. They say how to do a task, what to check and what counts as done.
 
-## Built-in Skills
+## Skills init writes
+
+`dewey init` writes two skill files. It leaves either alone if it already exists.
+
+| File | For | Contents |
+|------|-----|----------|
+| `SKILL.md` | Agents using the project from outside | Points to the quickstart and `llms.txt`, lists the project's rules, and says not to treat maps or history as the public interface |
+| `.agents/skills/dewey-author/SKILL.md` | Agents maintaining the docs | The authoring loop: `dewey check --json`, `which`, `new`, `review`, `build`, then `check`; keeping the front door within 150 lines |
+
+`dewey check` reports `SKILL_MISSING` if `SKILL.md` is missing. Edit `SKILL.md` to suit the project; the authoring skill works as written.
+
+## Prompt templates
+
+The package also exports prompt templates. They do not inspect a repository or change files; you paste them into an agent with the context they ask for.
 
 | Skill | Purpose | Usage |
 |-------|---------|-------|
@@ -14,6 +27,19 @@ Skills are LLM prompts, not code. They're expert instructions that tell AI agent
 | `promptSlideoutGenerator` | Generates AI-consumable prompt configurations for documentation pages | `Use promptSlideoutGenerator to create prompt config for the API page` |
 | `docsDesignCritic` | Critiques page structure and visual design — heading hierarchy, component usage, information density | `Use docsDesignCritic to critique docs/quickstart.md` |
 | `installMdGenerator` | Creates install.md files following the [installmd.org](https://installmd.org) spec | `Use installMdGenerator to create install.md from dewey.config.ts` |
+| `improveAIPrompts` | Iteratively discovers prompt opportunities, drafts self-contained contracts, reviews them, and refines the result | `Use improveAIPrompts.passes.discovery.prompt`, then draft/review/refine passes |
+
+`improveAIPrompts` is the public name. `improveAIPromptsSkill` is exported only as a deprecated compatibility alias and references the same object.
+
+```ts
+import { improveAIPrompts } from '@arach/dewey'
+
+const discovery = improveAIPrompts.passes.discovery.prompt
+const review = improveAIPrompts.passes.review.prompt
+  .replace('{PASTE_DRAFT}', draft)
+```
+
+The pass prompts guide an LLM; they do not inspect a repository or rewrite files by themselves. Supply the requested context, evaluate the model output against the included quality criteria, and retain human review for project-specific constraints.
 
 ---
 

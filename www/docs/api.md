@@ -6,20 +6,21 @@ group: Reference
 groupId: reference
 ---
 
-Dewey’s primary product surface is the CLI: use it to audit documentation and generate agent-ready artifacts. The TypeScript API supports typed configuration, programmatic artifact retrieval, and an optional React presentation layer. The public module is defined by `packages/docs/src/index.ts`; package subpaths are defined by `packages/docs/package.json`.
+Dewey’s primary product surface is the CLI: `dewey init`, `build` and `check` (see [CLI Reference](./cli.md)). The TypeScript API supports typed configuration for the frozen 0.4 pipeline, programmatic artifact retrieval, theme CSS, prompt templates, and an optional React presentation layer. The public module is defined by `packages/docs/src/index.ts`; package subpaths are defined by `packages/docs/package.json`.
 
 ## Choose the right surface
 
 | Goal | Surface | Import or command |
 |---|---|---|
-| Generate `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` | CLI | `bunx dewey generate` |
-| Validate structure or score readiness | CLI | `bunx dewey audit` / `bunx dewey agent` |
-| Author a type-checked `dewey.config.ts` | Main TypeScript module | `@arach/dewey` |
-| Collect or build retrieval artifacts in code | Artifact subpath | `@arach/dewey/agent-artifacts` |
+| Set up docs, front door and site | CLI | `bunx dewey init` |
+| Build the site, `llms.txt`, `.md` copies and `llms-full.txt` | CLI | `bunx dewey build` |
+| Check maps, reviews, references and outputs | CLI | `bunx dewey check` |
+| Collect or build 0.4 retrieval artifacts in code | Artifact subpath | `@arach/dewey/agent-artifacts` |
 | Render Markdown in an existing React app | Optional UI | `@arach/dewey` + CSS subpaths |
-| Scaffold a standalone docs site | Optional UI | `bunx dewey create` |
+| Style a site with a house skin | CSS subpath | `@arach/dewey/css/skins/<name>.css` |
+| Type-check a `dewey.config.ts` for the frozen commands | Main TypeScript module | `@arach/dewey` |
 
-The React components do not replace generation. Keep `.md` and `.agent.md` source pairs, run the CLI pipeline, and add UI only when humans need a rendered site.
+The React components render Markdown for people inside an app you already have. They do not replace `dewey build`, which writes its own static site.
 
 ## Package entry points
 
@@ -34,13 +35,14 @@ The React components do not replace generation. Keep `.md` and `.agent.md` sourc
 | `@arach/dewey/css/tokens` | Semantic `--dw-*` tokens |
 | `@arach/dewey/css/tailwind` | Tailwind-oriented CSS |
 | `@arach/dewey/css/colors/<theme>.css` | One published color preset |
+| `@arach/dewey/css/skins/<name>.css` | One site skin: `dewey`, `openscout`, `talkie`, `lattices`, `hudsonkit`, `atlas`, `endpoint`, `terminal` |
 | `@arach/dewey/tailwind` | Tailwind preset module |
 
-There is no wildcard color export. `<theme>` must be one of the twelve published names listed under [Themes](#themes).
+There is no wildcard color export. `<theme>` must be one of the fourteen published names listed under [Themes](#themes).
 
 ## Configuration API
 
-`defineConfig` parses and returns a `DeweyConfig`; it is not just a TypeScript identity helper. Invalid values throw a Zod validation error. Its source is `packages/docs/src/cli/schema.ts`.
+`defineConfig` parses and returns a `DeweyConfig`; it is not just a TypeScript identity helper. `dewey.config.ts` is read only by the frozen commands (`audit`, `generate`, `agent`, `create`, `update`, `eject`); `init`, `build` and `check` use `.dewey/project.json` instead. Invalid values throw a Zod validation error. Its source is `packages/docs/src/cli/schema.ts`.
 
 ```ts
 // dewey.config.ts
@@ -270,13 +272,13 @@ console.log(THEME_REGISTRY[theme].cssFile)
 
 `ThemeName` and `ThemePreset` contain the same values:
 
-`'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'`
+`'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson' | 'ink' | 'slate'`
 
 `PUBLISHED_CSS_THEMES` lists presets with CSS exports; `VALID_THEMES` lists presets accepted by generated sites. Every current registry entry belongs to both lists. `resolveTheme` falls back to `'neutral'`.
 
-All twelve presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
+All fourteen presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
 
-Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 12 themes × light/dark and compares 24 Playwright screenshots.
+Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 14 themes × light/dark and compares 28 Playwright screenshots.
 
 ## Skills and structured agent content
 

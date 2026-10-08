@@ -10,94 +10,59 @@ groupId: reference
 
 | Command | Inputs | Writes | Purpose |
 |---|---|---|---|
-| `dewey init` | `--type`, `--force` | `docs/`, `dewey.config.ts` | Initialize Dewey |
-| `dewey audit` | `--verbose`, `--json` | none | Check documentation quality |
-| `dewey generate` | `--source`, `--output`, artifact selectors | root artifacts, `agent/` | Compile docs for humans, agents, and tooling |
-| `dewey agent` | `--verbose`, `--json` | none | Evaluate agent-readiness and recommend improvements |
-| `dewey create <dir>` | `--source`, `--template`, `--theme`, `--name` | generated site | Publish Markdown through Next.js or Astro |
-| `dewey update [dir]` | `--dry-run`, `--force` | Dewey-owned site files | Upgrade or adopt a generated site |
-| `dewey eject <component> [dir]` | `--full` | consumer-owned component | Transfer ownership for customization |
+| `dewey init` | `--purpose`, `--rule` (repeat), `--no-rules`, `--host` (repeat) | front door, skills, `.dewey/project.json`, drafts, first build | Set up a project |
+| `dewey build` | none | `.dewey/site/`, root `llms.txt` `index` region, `AGENTS.md` `observed` region, `.dewey/outputs.json` | Build site and agent index |
+| `dewey check` | `--json` | none | Consistency gate; exit 0/1 |
+| `dewey review <doc>` | doc with `covers` | `.dewey/reviews.json` | Record review |
+| `dewey new <kind> <name>` | kind: map, guide, reference, history | draft doc | Scaffold; refuses existing file |
+| `dewey which <path>` | `--json` | none | Docs covering a path |
+| `dewey uncovered` | `--json` | none | Uncovered source files by area |
 
-## Direct execution
+## init
 
-```bash
-bunx @arach/dewey@latest <command>
-```
+- Non-TTY needs `--purpose` (unless `package.json` description or README supplies it) and `--rule` or `--no-rules`.
+- Refuses when `.dewey/site/` or `.dewey/outputs.json` exists without `.dewey/project.json`.
+- Rerun in an initialized project: refresh `AGENTS.md` marked region + build; authored files never replaced.
+- Adoption: keeps existing files; guesses missing `kind` (plans/specs/reports/proposals/decisions → history; reference/api → reference; else guide); no draft map for covered areas; restores all files on failure.
 
-## Recommended order
+## build outputs
 
-`init` → author → `generate` → `audit` → `agent` → optional UI (`docs/integrate-existing-site.md` or `create`).
+`.dewey/site/*.html`, `.dewey/site/**/*.md`, `.dewey/site/llms.txt`, `.dewey/site/llms-full.txt`, `.dewey/site/nav.json`. Maps and history are not published. Outputs hashed in `.dewey/outputs.json`; build stops if a target was hand-edited or not Dewey's. Build never records reviews.
 
-## Generation selection
+## check JSON
 
-- Default: all standard files plus `agent/` retrieval artifacts.
-- `agent.sections: []`: recursively include every human-readable `.md` file.
-- Non-empty `agent.sections`: exact doc-ID allowlist, including nested IDs such as `guides/install`.
-- `--source <path>`: override `docs.path` for one run.
-- `--output <path>`: override `docs.output`; directory is created recursively.
-- `--dry-run`: print create/update/preserve/delete operations without writing.
-- `--overwrite`: explicitly replace reviewed desired-output conflicts, including modified or unowned targets; use only after `--dry-run`.
+`{ passed: boolean, issues: [{ code, path, line?, message, fix }] }`
 
-## Audit versus agent
-
-| Command | Contract |
+| Area | Codes |
 |---|---|
-| `audit` | Deterministic structural validation of every discovered human page |
-| `agent` | Evidence-based readiness coaching; reports a score and next actions; writes nothing |
+| Doc metadata | DOC_DRAFT, DOC_KIND, DOC_META, DOC_STATUS, DOC_COVERS, SUPERSEDES_MISSING |
+| Coverage | MAP_MISSING, COVERAGE_OVERLAP, COVERAGE_BROAD, COVERAGE_EMPTY |
+| Review | REVIEW_REQUIRED |
+| Front door | FRONT_DOOR_MISSING, FRONT_DOOR_BUDGET, FRONT_DOOR_POINTER, SKILL_MISSING, REGION_STALE, REGION_INVALID |
+| References | MISSING_PATH, MISSING_SCRIPT, MISSING_SYMBOL, UNKNOWN_COMMAND |
+| Links/site | BROKEN_LINK, BROKEN_ANCHOR, NON_PUBLIC_LINK, SITE_LINK, NAV_MISSING |
+| Outputs | STALE_OUTPUT, OUTPUT_OWNERSHIP |
+| Packaging | PUBLISH_MISSING |
 
-## Project type contract
+Front door budget: `AGENTS.md` + hosts ≤ 150 lines and ~2,000 tokens. Symbol citation: `path#symbol` (JS/TS declarations). `sh` fence commands must be a package bin, common tool, `./` script or listed in `commands`; `sh ignore` skips. Check does not run commands or fetch external links.
 
-`ProjectType = 'macos-app' | 'npm-package' | 'cli-tool' | 'react-library' | 'monorepo' | 'generic'`
+## Frontmatter
 
-| Type | `init` focus pair | Evidence required by audit/agent |
-|---|---|---|
-| `generic` | `architecture.md` + agent pair | Architecture/system structure; interface or integration boundary |
-| `npm-package` | `api.md` + agent pair | Package-manager installation; typed public API |
-| `cli-tool` | `commands.md` + agent pair | Commands/options; executable shell usage |
-| `react-library` | `components.md` + agent pair | Components/props; JSX/TSX example |
-| `macos-app` | `architecture.md` + agent pair | macOS lifecycle; Swift/SwiftUI/Xcode evidence |
-| `monorepo` | `packages.md` + agent pair | Workspaces/monorepo; `packages/` or `apps/` paths |
+`kind` (guide|reference|map|history), `covers` (`*`, `**`, `?`; not leading `**`), `title`, `description`, `group`, `order`, `draft`, `status` (shipped|proposal|abandoned), `applies`, `supersedes`, `superseded_by`, `nav: false`.
 
-`init --type` changes required docs, paired scaffold content, install defaults, and verification commands. Invalid values fail and list every valid value.
+## .dewey/project.json
 
-## Canonical generation contract
+`schemaVersion: 1`, `name`, `purpose`, `rules[]`, `hosts[]`, `commands[]`, `skin` (dewey|openscout|talkie|lattices|hudsonkit|ink), `site`:
 
-- One recursive discovery/frontmatter pipeline serves `generate`, `create`, and `@arach/dewey/agent-artifacts`.
-- One `AgentManifest` drives retrieval links, read order, context indexes, and bundle selection.
-- `agent/context.md` + `agent/context.json`: retrieval metadata/indexes; no repeated full document corpus.
-- `agent/docs.json`: content for doc/agent/reference/proposal entries.
-- `agent/prompts.json`: prompt content.
-- `agent/raw/docs/**` + `agent/bundles/**`: intentional full Markdown retrieval surfaces.
-- `llms.txt`: description → prose → list → heading → title summary fallback.
-- Prompt fallback URLs remove exactly one leading `prompts/` segment.
-- Scoped install name such as `@scope/package` remains scoped.
-- `create` composes the artifact writer after scaffold creation.
-- Generated Next.js/Astro dependencies are exact tested versions; Pagefind is declared.
-- Unknown theme: warn, then resolve to `neutral`.
-
-## JSON evidence and drift
-
-Both `audit --json` and `agent --json` contain `projectType` and `drift`.
-
-| Drift field | Contract |
+| Field | Contract |
 |---|---|
-| `status` | `clean` / `issues` / `not-applicable` |
-| Counts | `checkedPairs`, `checkedSourceFiles`, `checkedSourceReferences`, `checkedContracts` |
-| Issue codes | `MISSING_AGENT_COUNTERPART`, `ORPHAN_AGENT_DOCUMENT`, `MISSING_SOURCE_REFERENCE`, `AGENT_CONTRACT_MISSING`, `HUMAN_AGENT_CONTRACT_MISMATCH`, `DOC_SOURCE_CONTRACT_MISMATCH` |
+| theme | ThemePreset; implies skin ink; error with other skins |
+| accent | CSS color or `{light,dark}` |
+| fonts | `sans`, `heading`, `mono`, `stylesheet` |
+| logo, css | project paths |
+| home | `{href,label}` |
+| links | `[{label,href}]` |
 
-Human summary always prints project-type and drift status; `--verbose` prints evidence and issue details. `audit` adds recommendations but retains structural page scoring. `agent` uses project evidence and unresolved contract drift in readiness scoring.
+## Frozen
 
-Limitations: regex/evidence analysis only; conventional/configured TS/TSX/JS/JSX/Swift source trees; no example execution, semantic prose equivalence, or arbitrary computed-type analysis.
-
-## Maintenance contract
-
-- `update` flags: `--dry-run`, `--force`; no `--refresh-nav`.
-- First `update` can adopt manifest-less generated Astro or Next.js sites, writes `.dewey-manifest.json`, then asks for a second run.
-- `eject` supports Next.js `Header`, `Sidebar`, `TableOfContents`, `MarkdownContent`; mode `wrap` or `full`.
-- Exact ownership/recovery/backup behavior: `docs/agent/maintenance.agent.md`.
-
-## Automation error contract
-
-- Invalid configuration or command input is rejected with a non-zero exit status.
-- For `--json`, check process success before parsing stdout.
-- Shell pattern: `if ! report="$(bunx dewey audit --json)"; then echo "Dewey audit failed" >&2; exit 1; fi`.
+`audit`, `generate`, `agent`, `create`, `update`, `eject`: run, warn on stderr (not with `--json`), read `dewey.config.ts`. Replacements: audit/agent → check; generate/create → build; update/eject → none.

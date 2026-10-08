@@ -10,7 +10,7 @@ groupId: reference
 
 ## Purpose
 
-Public contracts for `@arach/dewey`. CLI generation/audit is the primary product; TypeScript artifact APIs enable retrieval automation; React/theme APIs are optional presentation.
+Public contracts for `@arach/dewey`. The CLI (`init`, `build`, `check`) is the primary product; TypeScript artifact APIs enable retrieval automation; React/theme APIs are optional presentation.
 
 ## Source of truth
 
@@ -32,15 +32,15 @@ Public contracts for `@arach/dewey`. CLI generation/audit is the primary product
 
 | Goal | Use |
 |---|---|
-| Generate agent artifacts | `bunx dewey generate` |
-| Deterministic structural validation | `bunx dewey audit` |
-| Evidence-based readiness score | `bunx dewey agent` |
-| Typed config | `defineConfig` from `@arach/dewey` |
+| Set up a project | `bunx dewey init` |
+| Site, `llms.txt`, `AGENTS.md` region | `bunx dewey build` |
+| Consistency gate | `bunx dewey check` / `--json` |
+| Typed config for frozen commands | `defineConfig` from `@arach/dewey` (`dewey.config.ts`) |
 | Programmatic retrieval/build/write | `@arach/dewey/agent-artifacts` |
 | Existing React/Next UI | components from `@arach/dewey` + CSS subpaths |
-| Standalone docs UI | `bunx dewey create` |
+| Standalone docs UI | `bunx dewey build` → `.dewey/site/` (frozen: `dewey create`) |
 
-Invariant: CLI/artifact generation is the product contract. React components and generated sites are optional human-facing layers. Maintain human `.md` + dense `.agent.md` pairs.
+Invariant: the CLI is the product contract. React components and generated sites are optional human-facing layers. Frozen `audit`, `generate`, `agent`, `create`, `update`, `eject` still run with a warning.
 
 ## Package subpaths
 
@@ -172,7 +172,7 @@ Write semantics: `dryRun` never applies; desired unowned outputs block unless `o
 ```text
 ThemeName = ThemePreset =
 'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' |
-'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'
+'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson' | 'ink' | 'slate'
 ```
 
 | Export | Contract |
@@ -297,9 +297,9 @@ legacy DocSection.level = 2 | 3
 
 - `DocsLayout`: no React Router dependency; default plain anchor; optional `LinkComponent`; optional explicit `currentPage`; browser pathname fallback.
 - `react-router-dom`: not a package peer dependency.
-- Twelve themes × light/dark resolve one `--dw-*` semantic contract across runtime CSS, components, Tailwind, and generated sites.
+- Fourteen themes × light/dark resolve one `--dw-*` semantic contract across runtime CSS, components, Tailwind, and generated sites.
 - Required categories: surface/foreground; primary/secondary/accent pairs; border/ring; info/warning/error/success pairs; code/syntax; sidebar/header; fonts/radii/shadows/motion.
-- Automated proof: token completeness/dead-token rejection, WCAG AA text pairs, focus, reduced motion, semantic/component checks, and 24 Playwright screenshots.
+- Automated proof: token completeness/dead-token rejection, WCAG AA text pairs, focus, reduced motion, semantic/component checks, and 28 Playwright screenshots.
 
 ## Structured agent content
 

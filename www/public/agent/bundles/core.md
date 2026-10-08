@@ -12,109 +12,110 @@
 
 # Overview
 
-Dewey is a documentation toolkit that prepares your docs for AI agents. It audits, scores, and exports structured documentation artifacts without requiring a specific rendering framework.
+Dewey keeps a project's docs usable by people and by coding agents, and checks that they still match the code. From one folder of Markdown it writes a front door for agents (`AGENTS.md`), an agent index (`llms.txt`) and a static docs site.
 
-## What Dewey Does
-
-Dewey is a **docs agent**, not a docs framework. It focuses on:
-
-- **Auditing** - Validates documentation completeness and quality
-- **Scoring** - Rates agent-readiness on a 0-100 scale
-- **Generating** - Creates AGENTS.md, llms.txt, docs.json, install.md, and the `agent/` retrieval surface
-- **Exporting** - Publishes recursive raw markdown, manifests, prompt registries, and context bundles
-- **Publishing** - Optionally scaffolds a static doc site from your markdown
-- **Reviewing** - Skills that catch drift between docs and codebase
-
-## Key Concepts
-
-### Agent Content Pattern
-
-Each documentation page should have two versions:
-
-| Version | Audience | Style |
-|---------|----------|-------|
-| `.md` | Humans | Narrative, explanatory |
-| `.agent.md` | AI agents | Dense, structured, self-contained |
-
-### Skills System
-
-Skills are LLM prompts, not code. Built-in skills:
-
-- `docsReviewAgent` - Reviews docs quality page-by-page
-- `docsDesignCritic` - Critiques page structure and visual design
-- `promptSlideoutGenerator` - Generates AI-consumable prompt configs
-- `installMdGenerator` - Creates install.md following installmd.org
-- `improveAIPrompts` - Iterative discovery, drafting, review, and refinement prompts; `improveAIPromptsSkill` remains as a deprecated alias
-
-### install.md Standard
-
-Follows the [installmd.org](https://installmd.org) specification. LLM-executable:
-
-```bash
-curl -fsSL https://your-project.com/install.md
-```
-
-Supply the returned instructions to any compatible AI agent.
-
-## CLI Commands
+## The loop
 
 ```
-dewey init      Create docs/ folder and dewey.config.ts
-dewey audit     Check documentation completeness
-dewey generate  Create agent-ready files and retrieval artifacts
-dewey agent     Score agent-readiness (0-100)
-dewey create    Optional static docs site from markdown
+dewey init     # once: front door, draft maps and guide, skills, first site build
+dewey build    # site in .dewey/site, llms.txt, .md copies, llms-full.txt
+dewey check    # maps, reviews, references, front door, site links, freshness
 ```
 
-## Onboarding path
+`init` sets the project up. After that, you edit Markdown, run `build`, and run `check`. When covered code changes, `check` asks for a review; you reread the doc, fix it, and run `dewey review <doc>`.
 
-Use one sequence for every project (details in [Quickstart](./quickstart.md)):
+## What init creates
 
-**init → author → generate → audit → agent → (optional UI)**
+| Path | Purpose |
+|------|---------|
+| `AGENTS.md` | Front door: purpose, hard rules, and a marked region Dewey keeps up to date (scripts, source areas, maps) |
+| `docs/quickstart.md` | Draft task guide |
+| `docs/<area>.agent.md` | Draft map for each source area, such as `docs/src.agent.md` |
+| `SKILL.md` | For agents using the project from outside |
+| `.agents/skills/dewey-author/SKILL.md` | For agents maintaining the docs |
+| `.dewey/project.json` | Project name, purpose, rules and site settings |
+| `.dewey/site/`, `llms.txt` | The first build |
 
-| Optional UI | Guide |
-|-------------|--------|
-| Embed in an existing React/Next.js app | [Integrate into an existing site](./integrate-existing-site.md) |
-| Scaffold a standalone docs site | `dewey create` (see [CLI](./cli.md)) |
+Drafts carry `draft: true`. The site builds from them right away, but `check` fails until you finish them and remove that line.
 
-Agent artifacts from `generate` are the product contract. Components and `create` are presentation options on top of that contract.
+## Kinds of doc
 
-`init` and the judgment commands are project-aware. The selected project type changes the scaffold and the evidence expected from docs. `audit` and `agent` also report focused source/human/agent drift: paired-file coverage, cited paths, and literal union/enum contracts. These checks are evidence based and do not replace semantic review or executable examples.
+Every doc declares a `kind` in its frontmatter.
 
-Generation and optional site creation share one recursive document model. Retrieval indexes are derived from one manifest, while full content stays in purpose-built document, prompt, raw, and bundle surfaces instead of being cloned into every JSON file.
+| Kind | Audience | On the site | Notes |
+|------|----------|-------------|-------|
+| `guide` | People and agents | Yes | Task-shaped: how to do something |
+| `reference` | People and agents | Yes | API, CLI and config contracts |
+| `map` | Agents | No | Declares `covers`, the source files it describes |
+| `history` | Record | No | Plans, decisions, reports |
 
-## Quick Links
+A map covers part of the source tree:
 
-- [Quickstart](./quickstart.md) - Coherent init → generate → audit → agent sequence
+```yaml
+---
+kind: map
+covers: [src/sync/**]
+title: Sync implementation
+---
+```
+
+Each source file belongs to exactly one map. `dewey uncovered` lists files no map covers, and `dewey which <path>` finds the docs that cover a file.
+
+## What check verifies
+
+`dewey check` exits 1 and lists issues when:
+
+- a doc is still a draft or has invalid frontmatter
+- a source file has no map, or two maps cover the same file
+- covered code changed since the doc was last reviewed
+- `AGENTS.md`, `SKILL.md` or a host pointer file is missing, or the front door is over 150 lines or about 2,000 tokens
+- a cited path, package script, shell command or `path#symbol` does not exist
+- a local link or anchor is broken, or a human page is missing from navigation
+- `llms.txt` or the site is out of date
+
+Each issue has a code, a file, a line when there is one, and a fix. A pass means references, coverage, reviews and outputs agree. It does not prove the prose is true.
+
+## Agent outputs
+
+`build` writes, next to each HTML page, a `.md` copy. It also writes `.dewey/site/llms.txt` (one line per page, with its size), `.dewey/site/llms-full.txt` (every guide and reference in one file), `.dewey/site/nav.json`, and the marked index region of the root `llms.txt`.
+
+## The docs site
+
+The site works with JavaScript off. One small script adds search, dark mode, the phone menu and the Copy page menu. By default it looks like deweydocs.com. A `skin` or a `site` block in `.dewey/project.json` changes the theme, accent, fonts, logo, CSS and header links. See [CLI Reference](./cli.md#site-settings).
+
+## Frozen commands
+
+The 0.4 commands `audit`, `generate`, `agent`, `create`, `update` and `eject` still run, print a warning, and will be removed. See [Frozen commands](./cli.md#frozen-commands).
+
+## Package extras
+
+The `@arach/dewey` package also exports React components for rendering docs inside an existing app ([Integrate into an existing site](./integrate-existing-site.md)), theme CSS, and prompt templates ([Skills](./skills.md)).
+
+## Quick links
+
+- [Quickstart](./quickstart.md) - init, author, review, build, check
+- [CLI Reference](./cli.md) - Every command and its options
+- [API Reference](./api.md) - TypeScript, React, theme and artifact exports
 - [Integrate into an existing site](./integrate-existing-site.md) - React/Next.js embed guide
-- [CLI Reference](./cli.md) - All commands and options
-- [API Reference](./api.md) - Public TypeScript, React, theme, and artifact contracts
-- [Skills](./skills.md) - Built-in LLM prompt templates
-- [Maintaining generated sites](./maintenance.md) - Ownership, upgrades, ejection, recovery, and release verification
+- [Skills](./skills.md) - Prompt templates and the skills init writes
+- [Maintaining generated sites](./maintenance.md) - Frozen site commands and release checks
 
 ---
 
 <!-- source: docs/quickstart.md -->
 
-Requires Node.js 18+ and Bun 1.3+ (recommended) or npm.
+# Quickstart
 
-## Onboarding sequence
+Requires Node.js 18+ or Bun 1.3+.
 
-One path from empty docs to agent-ready artifacts. Optional steps are marked.
-
-| Step | Command / action | What you get |
-|------|------------------|--------------|
-| 1. Install | `bun add -d @arach/dewey` | Local CLI |
-| 2. Init | `bunx dewey init` | `docs/` + `dewey.config.ts` |
-| 3. Configure | Edit `dewey.config.ts` | Project context, agent rules, install steps |
-| 4. Author | Write `.md` and `.agent.md` | Human + agent source pages |
-| 5. Generate | `bunx dewey generate` | `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, `agent/` |
-| 6. Audit | `bunx dewey audit` | Deterministic completeness checks |
-| 7. Score | `bunx dewey agent` | Agent-readiness score (0–100) and recommendations |
-| 8a. Embed (optional) | Components in your React/Next app | Human UI on an **existing** site — [integration guide](./integrate-existing-site.md) |
-| 8b. Create (optional) | `bunx dewey create my-docs --source ./docs --theme ocean` | **Standalone** static docs site |
-
-Core contract is steps 1–7 (especially **generate**). Publishing a site is optional.
+| Step | Command | Result |
+|------|---------|--------|
+| 1. Install | `bun add -d @arach/dewey` | Local `dewey` binary |
+| 2. Init | `bunx dewey init --purpose "…" --rule "…"` | Front door, drafts, skills, first site build |
+| 3. Author | Edit the drafts in `docs/` | Real guide and maps |
+| 4. Review | `bunx dewey review docs/src.agent.md` | Review recorded for each map |
+| 5. Build | `bunx dewey build` | `.dewey/site/` and `llms.txt` |
+| 6. Check | `bunx dewey check` | Pass, or a list of issues with fixes |
 
 ### 1. Install
 
@@ -122,139 +123,99 @@ Core contract is steps 1–7 (especially **generate**). Publishing a site is opt
 bun add -d @arach/dewey
 ```
 
-When you will import React components into an app, install as a runtime dependency instead: `bun add @arach/dewey`. See [Integrate into an existing site](./integrate-existing-site.md).
+`npm install -D @arach/dewey` and `npx dewey` work the same. For a one-off run without installing, use `bunx @arach/dewey <command>`.
 
 ### 2. Initialize
 
-```bash
-bunx dewey init
-```
-
-Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
-
-Choose a project type so the scaffold and later evidence checks match the product:
+Run from the project root:
 
 ```bash
-bunx dewey init --type npm-package
-# generic | npm-package | cli-tool | react-library | macos-app | monorepo
+bunx dewey init \
+  --purpose "Count lines in log files" \
+  --rule "Never write to input files"
 ```
 
-Every type creates paired human and agent pages. The focus page and defaults vary: API for npm packages, command reference for CLIs, component reference for React libraries, architecture for generic/macOS projects, and workspace mapping for monorepos. An invalid type fails instead of silently using `generic`.
+- `--purpose` defaults to the `description` in `package.json`, then to the README's first paragraph.
+- Repeat `--rule` for each hard rule, or pass `--no-rules` to declare none.
+- In a terminal, init asks for anything missing. In CI or a script, it fails and asks for the flags.
+- Pass `--host <file>` (repeatable) to write a pointer file, such as a tool-specific instruction file, that redirects to `AGENTS.md`.
 
-### 3. Configure
-
-<div class="doc-file-block">
-<div class="doc-file-bar">dewey.config.ts</div>
-
-```typescript
-export default {
-  project: {
-    name: 'your-project',
-    tagline: 'What your project does',
-    type: 'npm-package', // or cli-tool, react-library, etc.
-  },
-
-  agent: {
-    criticalContext: [
-      // Rules AI agents MUST know
-      'NEVER do X when Y',
-    ],
-    entryPoints: {
-      'main': 'src/',
-    },
-  },
-
-  install: {
-    objective: 'Install and configure your-project.',
-    steps: [
-      { description: 'Install', command: 'bun add your-project' },
-    ],
-  },
-}
-```
-
-</div>
-
-### 4. Write docs
-
-Create pages in the `docs/` folder:
+For a project with `src/index.ts` and `src/sync/index.ts`, init writes:
 
 ```
-docs/
-  overview.md          # Project introduction
-  quickstart.md        # Getting started guide
-  api.md               # API reference
-  overview.agent.md    # Agent-optimized version (or docs/agent/overview.agent.md)
+AGENTS.md
+SKILL.md
+llms.txt
+.agents/skills/dewey-author/SKILL.md
+.dewey/project.json
+.dewey/site/
+docs/quickstart.md        # draft guide
+docs/src.agent.md         # draft map, covers src/*
+docs/src-sync.agent.md    # draft map, covers src/sync/*
 ```
 
-### 5. Generate agent files
+In a repo that already has docs, init keeps your files. It appends a marked region to an existing `AGENTS.md` and `llms.txt`, leaves existing guides, maps, `SKILL.md` and host files alone, and adds a `kind` to docs that lack one, guessed from the path. If anything fails, it restores every file it touched.
+
+### 3. Author the drafts
+
+Open each draft and replace the comments with what the code does. A map lists its files, data flow, and invariants and traps. The guide states a task, its prerequisites and how to tell it worked. Remove `draft: true` from each file when it is done.
+
+To add docs later:
 
 ```bash
-bunx dewey generate
+bunx dewey new guide "Deploy to staging"   # docs/deploy-to-staging.md
+bunx dewey new reference "CLI flags"       # docs/reference/cli-flags.md
+bunx dewey new history "Why JSONL"         # docs/history/<date>-why-jsonl.md
+bunx dewey new map src/net                 # docs/src-net.agent.md
 ```
 
-Outputs `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and an `agent/` retrieval surface with raw markdown, prompt registries, manifests, and context bundles.
+### 4. Review the maps
 
-The same canonical document discovery powers `generate`, the optional `create` scaffold, and the artifact API. Full content is materialized deliberately: document bodies in `agent/docs.json`, prompts in `agent/prompts.json`, and Markdown in `agent/raw/docs/` plus bundles. Context files remain compact retrieval indexes.
-
-### 6. Audit
+After you have checked a map against the code, record it:
 
 ```bash
-bunx dewey audit
-# CI-friendly:
-bunx dewey audit --json
+bunx dewey review docs/src.agent.md
+bunx dewey review docs/src-sync.agent.md
 ```
 
-Structural and completeness checks plus project-type evidence and focused documentation drift. JSON output includes structured `projectType` and `drift` objects. Prefer fixing audit findings before treating the score as a release gate.
+This stores hashes of the doc and the files it covers in `.dewey/reviews.json`. When covered code changes, `check` reports `REVIEW_REQUIRED` and names the files that changed. `build` never records a review for you.
 
-### 7. Check your score
-
-<div class="doc-file-block">
-<div class="doc-file-bar">bunx dewey agent</div>
-
-```
-Agent Readiness Report
-Overall Score: 75/100 (Grade: C)
-
-Categories:
-✓ Project Context: 20/25
-○ Agent-Optimized Files: 20/30
-...
-```
-
-</div>
+### 5. Build
 
 ```bash
-bunx dewey agent --json   # machine-readable for CI
+bunx dewey build
 ```
 
-### 8. Optional: human-facing docs UI
-
-**Already have a React or Next.js site?** Embed Dewey components under a `/docs` route:
-
-→ [Integrate into an existing site](./integrate-existing-site.md)
-
-**Want a standalone docs site from the same Markdown?**
+Writes the static site to `.dewey/site/`, a `.md` copy of each page, `llms-full.txt`, `nav.json`, and refreshes the marked regions of `AGENTS.md` and `llms.txt`. To look at it:
 
 ```bash
-bunx dewey create my-docs --source ./docs --theme ocean
-cd my-docs && bun install && bun run dev
+python3 -m http.server 4387 --bind 127.0.0.1 --directory .dewey/site
 ```
 
-Generates a static docs site when you want a separate publishing path alongside agent artifacts.
+### 6. Check
 
-The scaffold pins tested Next.js/Astro dependencies and runs the same agent-artifact writer, so it starts with both a human site and the retrieval contract. For later adoption, updates, ejection, backups, and recovery, see [Maintaining generated sites](./maintenance.md).
+```bash
+bunx dewey check
+bunx dewey check --json   # for CI
+```
+
+On a fresh init, check fails with `DOC_DRAFT` and `REVIEW_REQUIRED`. Once the drafts are done and reviewed and the site is built, it prints:
+
+```
+Dewey check passed: references, coverage, reviews and outputs are consistent. It does not prove the prose is true.
+```
+
+Check exits 1 on any issue. Each issue prints `path:line CODE message` followed by a fix.
 
 ---
 
 ## Next steps
 
-- Create `.agent.md` versions of your docs for denser, structured content
-- Add skills to `.agents/skills/` for custom agent-guided reviews
-- Run `bunx dewey audit` and `bunx dewey agent` in CI (`--json`)
-- Embed components or use `dewey create` only when you need a human site
-- [CLI Reference](./cli.md) · [Skills](./skills.md) · [Existing-site guide](./integrate-existing-site.md)
-- [Maintaining generated sites](./maintenance.md) — ownership, update, eject, recovery, and release checks
+- Commit `.dewey/project.json` and `.dewey/reviews.json` so CI checks against the same reviewed baseline.
+- Run `dewey build` and `dewey check` in CI.
+- Use `dewey which <path>` before changing code to find the docs that cover it, and `dewey uncovered` to find files no map covers.
+- Change the site's look with a `skin` or `site` block in `.dewey/project.json` ([site settings](./cli.md#site-settings)).
+- [CLI Reference](./cli.md) · [Skills](./skills.md) · [Integrate into an existing site](./integrate-existing-site.md)
 
 ---
 
@@ -262,20 +223,21 @@ The scaffold pins tested Next.js/Astro dependencies and runs the same agent-arti
 
 # API Reference
 
-Dewey’s primary product surface is the CLI: use it to audit documentation and generate agent-ready artifacts. The TypeScript API supports typed configuration, programmatic artifact retrieval, and an optional React presentation layer. The public module is defined by `packages/docs/src/index.ts`; package subpaths are defined by `packages/docs/package.json`.
+Dewey’s primary product surface is the CLI: `dewey init`, `build` and `check` (see [CLI Reference](./cli.md)). The TypeScript API supports typed configuration for the frozen 0.4 pipeline, programmatic artifact retrieval, theme CSS, prompt templates, and an optional React presentation layer. The public module is defined by `packages/docs/src/index.ts`; package subpaths are defined by `packages/docs/package.json`.
 
 ## Choose the right surface
 
 | Goal | Surface | Import or command |
 |---|---|---|
-| Generate `AGENTS.md`, `llms.txt`, `docs.json`, `install.md`, and `agent/` | CLI | `bunx dewey generate` |
-| Validate structure or score readiness | CLI | `bunx dewey audit` / `bunx dewey agent` |
-| Author a type-checked `dewey.config.ts` | Main TypeScript module | `@arach/dewey` |
-| Collect or build retrieval artifacts in code | Artifact subpath | `@arach/dewey/agent-artifacts` |
+| Set up docs, front door and site | CLI | `bunx dewey init` |
+| Build the site, `llms.txt`, `.md` copies and `llms-full.txt` | CLI | `bunx dewey build` |
+| Check maps, reviews, references and outputs | CLI | `bunx dewey check` |
+| Collect or build 0.4 retrieval artifacts in code | Artifact subpath | `@arach/dewey/agent-artifacts` |
 | Render Markdown in an existing React app | Optional UI | `@arach/dewey` + CSS subpaths |
-| Scaffold a standalone docs site | Optional UI | `bunx dewey create` |
+| Style a site with a house skin | CSS subpath | `@arach/dewey/css/skins/<name>.css` |
+| Type-check a `dewey.config.ts` for the frozen commands | Main TypeScript module | `@arach/dewey` |
 
-The React components do not replace generation. Keep `.md` and `.agent.md` source pairs, run the CLI pipeline, and add UI only when humans need a rendered site.
+The React components render Markdown for people inside an app you already have. They do not replace `dewey build`, which writes its own static site.
 
 ## Package entry points
 
@@ -290,13 +252,14 @@ The React components do not replace generation. Keep `.md` and `.agent.md` sourc
 | `@arach/dewey/css/tokens` | Semantic `--dw-*` tokens |
 | `@arach/dewey/css/tailwind` | Tailwind-oriented CSS |
 | `@arach/dewey/css/colors/<theme>.css` | One published color preset |
+| `@arach/dewey/css/skins/<name>.css` | One site skin: `dewey`, `openscout`, `talkie`, `lattices`, `hudsonkit`, `atlas`, `endpoint`, `terminal` |
 | `@arach/dewey/tailwind` | Tailwind preset module |
 
-There is no wildcard color export. `<theme>` must be one of the twelve published names listed under [Themes](#themes).
+There is no wildcard color export. `<theme>` must be one of the fourteen published names listed under [Themes](#themes).
 
 ## Configuration API
 
-`defineConfig` parses and returns a `DeweyConfig`; it is not just a TypeScript identity helper. Invalid values throw a Zod validation error. Its source is `packages/docs/src/cli/schema.ts`.
+`defineConfig` parses and returns a `DeweyConfig`; it is not just a TypeScript identity helper. `dewey.config.ts` is read only by the frozen commands (`audit`, `generate`, `agent`, `create`, `update`, `eject`); `init`, `build` and `check` use `.dewey/project.json` instead. Invalid values throw a Zod validation error. Its source is `packages/docs/src/cli/schema.ts`.
 
 ```ts
 // dewey.config.ts
@@ -526,13 +489,13 @@ console.log(THEME_REGISTRY[theme].cssFile)
 
 `ThemeName` and `ThemePreset` contain the same values:
 
-`'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson'`
+`'neutral' | 'ocean' | 'emerald' | 'purple' | 'dusk' | 'rose' | 'github' | 'warm' | 'midnight' | 'editorial' | 'mono' | 'hudson' | 'ink' | 'slate'`
 
 `PUBLISHED_CSS_THEMES` lists presets with CSS exports; `VALID_THEMES` lists presets accepted by generated sites. Every current registry entry belongs to both lists. `resolveTheme` falls back to `'neutral'`.
 
-All twelve presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
+All fourteen presets resolve the same semantic contract in light and dark: surfaces/foregrounds, primary/secondary/accent pairs, border/ring, info/warning/error/success pairs, code and syntax colors, sidebar/header colors, typography, radii, shadows, and motion. Runtime components and generated sites consume semantic `--dw-*` variables; public components do not own literal color palettes.
 
-Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 12 themes × light/dark and compares 24 Playwright screenshots.
+Contract tests verify every preset and generated-site theme in both modes, reject missing/dead tokens, require WCAG AA text pairs and visible focus, and check reduced-motion behavior. `bun run --cwd packages/docs test:visual` renders representative navigation, prose, controls, semantic states, code, and tables for 14 themes × light/dark and compares 28 Playwright screenshots.
 
 ## Skills and structured agent content
 

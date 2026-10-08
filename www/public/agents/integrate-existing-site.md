@@ -1,6 +1,6 @@
 ---
 title: Integrate existing site (agent)
-description: Dense contract for embedding Dewey components in React/Next.js while keeping generate/audit/agent as the core path
+description: Dense contract for embedding Dewey components in React/Next.js while dewey build and check stay the core path
 order: 6
 group: Guides
 groupId: guides
@@ -12,19 +12,19 @@ groupId: guides
 
 | Layer | Role | Required? |
 |---|---|---|
-| CLI `init` / `audit` / `generate` / `agent` | Judgment + retrieval artifacts | Yes for agent-ready docs |
+| CLI `init` / `build` / `check` | Front door, `llms.txt`, `.dewey/site/`, consistency gate | Yes |
 | React components + CSS | Optional human UI in host app | No |
-| `dewey create` | Scaffold standalone site | Alternative to embed |
+| `dewey create` (frozen) | Scaffold standalone Next.js/Astro site | Existing sites only |
 
-Dewey is a **docs agent**, not a docs framework. Embedding components does not replace generation.
+Embedding components does not replace `build` and `check`.
 
 ## Decision table
 
 | Situation | Action |
 |---|---|
 | Existing React/Next app needs `/docs` | Embed components (this doc) |
-| No site yet | `bunx dewey create … --template nextjs` |
-| Agents only | `bunx dewey generate` (+ audit/agent); skip UI |
+| Static site is enough | `bunx dewey build`; serve `.dewey/site/` |
+| Agents only | `bunx dewey build` + `check`; ignore the site |
 
 ## Install
 
@@ -45,20 +45,19 @@ bun add @arach/dewey gray-matter
 
 Router dependency: none. `react-router-dom` is not a peer dependency.
 
-**Themes:** `neutral` \| `ocean` \| `emerald` \| `purple` \| `dusk` \| `rose` \| `github` \| `warm` \| `midnight` \| `editorial` \| `mono` \| `hudson`
+**Themes:** `neutral` \| `ocean` \| `emerald` \| `purple` \| `dusk` \| `rose` \| `github` \| `warm` \| `midnight` \| `editorial` \| `mono` \| `hudson` \| `ink` \| `slate`
 
 ## Onboarding sequence (shared)
 
 | # | Step | Command / action |
 |---|---|---|
 | 1 | Install | `bun add @arach/dewey gray-matter` |
-| 2 | Init | `bunx dewey init` (if no `docs/` + config) |
-| 3 | Author | Human `.md` + optional `.agent.md` |
-| 4 | Generate | `bunx dewey generate` |
-| 5 | Audit | `bunx dewey audit` / `--json` |
-| 6 | Score | `bunx dewey agent` / `--json` |
+| 2 | Init | `bunx dewey init --purpose "…" --no-rules` (once) |
+| 3 | Author | Guides/references (`.md`), maps (`<area>.agent.md`, `kind: map`) |
+| 4 | Review | `bunx dewey review docs/<area>.agent.md` |
+| 5 | Build | `bunx dewey build` |
+| 6 | Check | `bunx dewey check` / `--json` |
 | 7 | Embed UI | Host routes + provider + loaders |
-| 8 | Optional | `bunx dewey create` only for separate site |
 
 ## Architecture (Next App Router)
 
@@ -87,7 +86,7 @@ Compose `Header`, `Sidebar`, `MarkdownContent`, `AutoTableOfContents` for maximu
 - Twelve presets; light and dark.
 - Shared semantic `--dw-*` contract across components, CSS, Tailwind, generated sites.
 - Categories: surfaces/foregrounds; primary/secondary/accent; border/ring; status pairs; code/syntax; sidebar/header; typography/radius/shadow/motion.
-- Tests: complete/dead tokens, WCAG AA text pairs, focus, reduced motion, component semantics, 24 Playwright screenshots.
+- Tests: complete/dead tokens, WCAG AA text pairs, focus, reduced motion, component semantics, 28 Playwright screenshots.
 
 ## Static export
 
@@ -115,8 +114,8 @@ module.exports = {
 | Agent colocated | `<slug>.agent.md` beside human file |
 | Agent nested | `docs/agent/<slug>.agent.md` |
 | Slug | path without `.md` (e.g. `guides/install`) |
-| Generate default | `agent.sections: []` → all human docs recursively |
-| CLI override | `dewey generate --source <path> --output <path>` |
+| Maps | `*.agent.md` with `kind: map` are internal; `build` leaves them off the site. Filter on `kind` |
+| Nav data | `.dewey/site/nav.json` from `build` (groups of `{title,summary,url,markdown,source}`); `docs.json` only from frozen `generate` |
 
 ## Provider snippet contract
 
@@ -140,21 +139,19 @@ Root `<html suppressHydrationWarning>` recommended for theme class hydration.
 
 | Script | Command |
 |---|---|
-| `docs:generate` | `bunx dewey generate` |
-| `docs:audit` | `bunx dewey audit` |
-| `docs:agent` | `bunx dewey agent` |
-| `prebuild` | generate before `next build` when importing `docs.json` / public artifacts |
+| `docs:build` | `dewey build` |
+| `docs:check` | `dewey check` |
+| `prebuild` | `docs:build` before `next build` when serving files from `.dewey/site/` |
 
 ## CI (minimum)
 
 ```bash
 bun install
-bunx dewey generate
-bunx dewey audit --json
-bunx dewey agent --json
+bunx dewey build
+bunx dewey check
 ```
 
-Gate on audit failures and/or agent score thresholds as policy.
+Check exits 1 on any issue. Commit `.dewey/project.json` and `.dewey/reviews.json`.
 
 ## Public agent URLs (optional)
 
@@ -162,24 +159,23 @@ Gate on audit failures and/or agent score thresholds as policy.
 |---|---|
 | `llms.txt` | `/llms.txt` |
 | `AGENTS.md` | `/AGENTS.md` |
-| `install.md` | `/install.md` |
-| `agent/**` | `/agent/**` |
+| `llms-full.txt` | `/llms-full.txt` |
 
-Write via `docs.output` / `--output public` or post-generate copy.
+Copy from `.dewey/site/` (and root `AGENTS.md`) after `build`, keeping relative `.md` paths.
 
 ## Monorepo
 
 | Case | Approach |
 |---|---|
 | Docs at repo root | Resolve `docsDirectory` to monorepo root, not app `cwd` alone |
-| Docs package | `--source` to package; app depends on `@arach/dewey` |
-| Multi-app | Generate once at root; ship static `agent/` + `docs.json` |
+| Docs package | `dewey init` in that package; app depends on `@arach/dewey` |
+| Multi-app | `dewey build` once at root; copy from `.dewey/site/` |
 
 ## Anti-patterns
 
 | Don't | Do |
 |---|---|
-| Treat embed as replacing `generate` | Always run generate for agent surface |
+| Treat embed as replacing `build`/`check` | Always run them |
 | Import hooks in server `page.tsx` | Split page (server) / content (client) |
 | Use only top-level `docs/*.md` walk | Recursive walk; nested routes |
 | Prefer `@arach/dewey/react` as different API | Import from `@arach/dewey` |
@@ -192,5 +188,5 @@ Write via `docs.output` / `--output public` or post-generate copy.
 | `docs/integrate-existing-site.md` | Human narrative guide |
 | `docs/quickstart.md` | Greenfield sequence |
 | `docs/cli.md` | Flags |
-| `docs/maintenance.md` | Update/eject ownership, adoption, backups, recovery, release |
+| `docs/maintenance.md` | Frozen create/update/eject sites, release |
 | `packages/docs/src/cli/templates/nextjs.ts` | Canonical scaffold reference (implementation, not consumer edit target) |

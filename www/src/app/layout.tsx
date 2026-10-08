@@ -8,7 +8,7 @@ import { Providers } from './providers'
 
 export const metadata: Metadata = {
   title: 'Dewey — Agent-ready documentation',
-  description: 'Documentation toolkit that audits, scores, and generates agent-ready docs.',
+  description: 'Dewey keeps Markdown docs, AGENTS.md and llms.txt in step with the code, and builds a static docs site from them.',
   generator: 'Dewey',
 }
 

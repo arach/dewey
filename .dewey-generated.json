@@ -15,19 +15,23 @@
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "d6045f79b704788a08aeb310b3598ba93c20ce78cb8ecd53f4a0b3ba68320b50",
+      "hash": "d0cb2b7a0198e4ea291dff84b4029f2e0bf7946154ca216a8f821de6ac5f6c28",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
-      "hash": "166971cbcb3faa78507bf9c7bf0bb9a03cb4f40111b450fb1870897a68985566",
+      "hash": "d4f098b757aa2af16a46245d12ac04a3d01a54b6d234e1700fb0d55f87f4b7a8",
+      "scope": "agentArtifacts"
+    },
+    "agent/diagram.json": {
+      "hash": "14050567df1b131fb4efb9c212f204e6a65699f48f459d26127d55b6dce46292",
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "4aef84efcb9a38c5368ee288540471462c1bdddf78928cd08893f2904bc10cb3",
+      "hash": "616771cb7ea92fc4926930105b9a2d1213e6d500d560c8dc425e1e70848323ed",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "d6045f79b704788a08aeb310b3598ba93c20ce78cb8ecd53f4a0b3ba68320b50",
+      "hash": "d0cb2b7a0198e4ea291dff84b4029f2e0bf7946154ca216a8f821de6ac5f6c28",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {

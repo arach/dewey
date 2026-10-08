@@ -2,7 +2,7 @@
 export default {
   project: {
     name: 'dewey',
-    version: '0.4.0',
+    version: '0.5.0',
     tagline: 'Documentation toolkit for AI-agent-ready docs',
     type: 'npm-package',
   },

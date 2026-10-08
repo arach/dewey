@@ -15,7 +15,7 @@
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "d0cb2b7a0198e4ea291dff84b4029f2e0bf7946154ca216a8f821de6ac5f6c28",
+      "hash": "c5a18232985579f1cd99666a5f62b6f131043496e00540b4ac47809025fd0da7",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
@@ -27,15 +27,15 @@
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "616771cb7ea92fc4926930105b9a2d1213e6d500d560c8dc425e1e70848323ed",
+      "hash": "d979ef9d8dde1bb558b7929d5c0a4b052d1a2ed1927c52a5eb78bf9e36586fac",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "d0cb2b7a0198e4ea291dff84b4029f2e0bf7946154ca216a8f821de6ac5f6c28",
+      "hash": "c5a18232985579f1cd99666a5f62b6f131043496e00540b4ac47809025fd0da7",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {
-      "hash": "f053729e8591e6aa0cbf6ad4a78a59213dc07bda4a35b2a390626a98ba64be59",
+      "hash": "15ed3c5df6d7b98e0622c09191d0a13cac0a5756644be6d5c0366b6014e859bf",
       "scope": "agentArtifacts"
     },
     "agent/prompts/audit-docs.md": {
@@ -115,19 +115,19 @@
       "scope": "agentArtifacts"
     },
     "AGENTS.md": {
-      "hash": "062ddb66ba0f05c94871b19749fe07ff58db7be7882541164e7483f7bdfb6fa2",
+      "hash": "a6e980dc75851e682094653d8ecf5432c38ef5a9d51cb2b0e9d52b1efd55de81",
       "scope": "agentsMd"
     },
     "docs.json": {
-      "hash": "357e9b82d1c3261234f90c6c9d7f6f81520d58d07a40e32fe9160577906a8008",
+      "hash": "7d5650f0b5718645c24b2699fc72231b68442b67b14b1324c99869a81390df09",
       "scope": "docsJson"
     },
     "install.md": {
-      "hash": "427188a6d5fe666792581c1bd4055e93ddaa0f53fcea3b1538e82fa18aa70658",
+      "hash": "9a06850396cce80e43800fffa8a81f6e3db9c70d93d9dc5b54f418631da755e8",
       "scope": "installMd"
     },
     "llms.txt": {
-      "hash": "3f60ea0e2a1aef9cf2cf483ff2d8343f4e6863783795b1c3e3608393bef650cf",
+      "hash": "16c97e24694f8d5b649151994f660081795292a1131c0218abcacd32758e810a",
       "scope": "llmsTxt"
     }
   }

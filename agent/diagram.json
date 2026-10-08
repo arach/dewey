@@ -106,14 +106,14 @@
       "icon": "FileCode",
       "name": "Overview",
       "subtitle": "overview",
-      "description": "Documentation toolkit for AI-agent-ready docs",
+      "description": "What Dewey does and how its docs loop works",
       "color": "blue"
     },
     "quickstart": {
       "icon": "FileCode",
       "name": "Quickstart",
       "subtitle": "quickstart",
-      "description": "Get your documentation agent-ready in under 5 minutes",
+      "description": "Set up Dewey in a project, author the drafts, and get a passing check",
       "color": "blue"
     },
     "api": {
@@ -141,7 +141,7 @@
       "icon": "Cpu",
       "name": "Integrate existing site (agent)",
       "subtitle": "agent/integrate-existing-site.agent",
-      "description": "Dense contract for embedding Dewey components in React/Next.js while keeping gen",
+      "description": "Dense contract for embedding Dewey components in React/Next.js while dewey build",
       "color": "emerald"
     },
     "agent-maintenance-agent": {
@@ -155,7 +155,7 @@
       "icon": "Cpu",
       "name": "dewey - Agent Context",
       "subtitle": "agent/overview.agent",
-      "description": "init → author → generate → audit → agent → optional UI",
+      "description": "Frozen (warn, still run, read dewey.config.ts): audit, generate, agent, create, ",
       "color": "emerald"
     },
     "agent-quickstart-agent": {
@@ -167,37 +167,36 @@
     },
     "agent-skills-agent": {
       "icon": "Cpu",
-      "name": "Skills for agents",
+      "name": "Agent Skills.agent",
       "subtitle": "agent/skills.agent",
-      "description": "Dewey skill inventory and authoring contract",
       "color": "emerald"
     },
     "AGENTS": {
       "icon": "FileCode",
       "name": "dewey",
       "subtitle": "AGENTS",
-      "description": "Documentation toolkit for AI-agent-ready docs and retrieval artifacts",
+      "description": "Keeps docs usable by people and coding agents, and checks they still match the c",
       "color": "blue"
     },
     "cli": {
       "icon": "FileCode",
       "name": "CLI Reference",
       "subtitle": "cli",
-      "description": "Dewey commands and their main options",
+      "description": "Dewey commands, their options, and the settings in .dewey/project.json",
       "color": "blue"
     },
     "integrate-existing-site": {
       "icon": "FileCode",
       "name": "Integrate into an existing site",
       "subtitle": "integrate-existing-site",
-      "description": "Embed Dewey docs components in an existing React or Next.js app while keeping ag",
+      "description": "Embed Dewey docs components in an existing React or Next.js app while dewey buil",
       "color": "blue"
     },
     "maintenance": {
       "icon": "FileCode",
       "name": "Maintaining generated sites",
       "subtitle": "maintenance",
-      "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+      "description": "Update, eject and recover sites made by the frozen dewey create, and release Dew",
       "color": "blue"
     },
     "prompts-audit-docs": {
@@ -218,7 +217,7 @@
       "icon": "FileCode",
       "name": "Skills",
       "subtitle": "skills",
-      "description": "Expert instructions that guide AI agents through specific documentation tasks",
+      "description": "The skill files dewey init writes, and the prompt templates the package exports",
       "color": "blue"
     }
   },

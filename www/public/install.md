@@ -8,20 +8,20 @@ installation commands.
 
 ## OBJECTIVE
 
-Install Dewey and generate agent-ready documentation for your project.
+Install Dewey, set up a project, and get a passing dewey check.
 
 ## DONE WHEN
 
-`bunx @arach/dewey agent` returns Agent Readiness Report with score
+`bunx dewey check` returns Dewey check passed
 
 ## TODO
 
 - [ ] Install the package
-- [ ] Initialize documentation structure
-- [ ] Edit dewey.config.ts with your project context
-- [ ] Write documentation in docs/
-- [ ] Generate agent files
-- [ ] Check agent-readiness score
+- [ ] Set up the project; repeat --rule for each hard rule, or pass --no-rules
+- [ ] Finish the drafts in docs/ and remove draft: true from each
+- [ ] Record a review for each map after checking it against the code
+- [ ] Build the site and llms.txt
+- [ ] Check docs against the code
 
 ## Prerequisites
 
@@ -34,30 +34,30 @@ Install Dewey and generate agent-ready documentation for your project.
 bun add -d @arach/dewey
 ```
 
-## Step 2: Initialize documentation structure
+## Step 2: Set up the project; repeat --rule for each hard rule, or pass --no-rules
 
 ```bash
-bunx @arach/dewey init
+bunx dewey init --purpose "What this project is for" --rule "A hard rule for agents"
 ```
 
-## Step 3: Edit dewey.config.ts with your project context
+## Step 3: Finish the drafts in docs/ and remove draft: true from each
 
-## Step 4: Write documentation in docs/
+## Step 4: Record a review for each map after checking it against the code
 
 ```bash
-ls docs/
+bunx dewey review docs/src.agent.md
 ```
 
-## Step 5: Generate agent files
+## Step 5: Build the site and llms.txt
 
 ```bash
-bunx @arach/dewey generate
+bunx dewey build
 ```
 
-## Step 6: Check agent-readiness score
+## Step 6: Check docs against the code
 
 ```bash
-bunx @arach/dewey agent
+bunx dewey check
 ```
 
 ## EXECUTE NOW

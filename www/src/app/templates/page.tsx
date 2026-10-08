@@ -23,6 +23,8 @@ export default function TemplatesGalleryPage() {
           <p className="gallery-desc">
             Templates define structure — layout, navigation, and density. Themes change
             colors and typography within a template. Preview any option in light or dark.
+            These are the templates of the frozen <code>dewey create</code>; new projects use{' '}
+            <code>dewey build</code> and set a skin or theme in <code>.dewey/project.json</code>.
           </p>
         </header>
 

@@ -1,12 +1,14 @@
 ---
 title: Maintaining generated sites
-description: Safely adopt, update, eject, recover, and release Dewey-generated sites
+description: Update, eject and recover sites made by the frozen dewey create, and release Dewey
 order: 7
 group: Guides
 groupId: guides
 ---
 
-Dewey separates source documentation from the optional generated site. `dewey generate` owns agent-facing artifacts through `.dewey-generated.json`; `dewey create`, `update`, and `eject` maintain the standalone site through `.dewey-manifest.json`. Review those ownership boundaries before forcing a write.
+`dewey create`, `update` and `eject` are frozen in 0.5.0: they still run, print a warning and will be removed. New projects use `dewey build`, which writes a static site to `.dewey/site/`; see [Quickstart](./quickstart.md). This page is for sites already made with `create`.
+
+The frozen commands keep two ownership records. `dewey generate` tracks agent-facing artifacts in `.dewey-generated.json`; `dewey create`, `update` and `eject` track the standalone site in `.dewey-manifest.json`. Review those ownership boundaries before forcing a write.
 
 ## Safe update workflow
 
@@ -72,13 +74,13 @@ Releases use `packages/docs/package.json` as the package-version source of truth
 3. Regenerate artifacts and confirm `.dewey-generated.json`, root artifacts, and `agent/` have no drift.
 4. Run `bun run verify:package`.
 5. Commit the release candidate so the checkout is clean and the tested package is reviewable.
-6. Run `bun run verify:release-smoke` to pack, install in an isolated consumer, import the public API, exercise packed CLI `init`/`generate`, and build a generated Next.js site. If it fails, fix and commit, then rerun.
+6. Run `bun run verify:release-smoke` to pack, install in an isolated consumer, import the public API, run the packed CLI `init` and `build` in a fixture, then `create` and build a generated Next.js site. If it fails, fix and commit, then rerun.
 7. Create the exact tag only after the smoke passes, then let the publish workflow repeat package and smoke verification.
 
 The release smoke script requires a clean checkout and removes its isolated temporary directory whether it passes or fails. See `RELEASING.md` for the authoritative repository checklist.
 
 ## Related
 
-- [CLI Reference](./cli.md) — command flags and generation semantics
+- [CLI Reference](./cli.md) — commands, including [Frozen commands](./cli.md#frozen-commands)
 - [Integrate into an existing site](./integrate-existing-site.md) — use components without a standalone scaffold
 - [API Reference](./api.md) — package, component, theme, and artifact contracts

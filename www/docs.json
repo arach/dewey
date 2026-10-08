@@ -9,17 +9,17 @@
         {
           "id": "overview",
           "title": "Overview",
-          "description": "Documentation toolkit for AI-agent-ready docs"
+          "description": "What Dewey does and how its docs loop works"
         },
         {
           "id": "quickstart",
           "title": "Quickstart",
-          "description": "Get your documentation agent-ready in under 5 minutes"
+          "description": "Set up Dewey in a project, author the drafts, and get a passing check"
         },
         {
           "id": "skills",
           "title": "Skills",
-          "description": "Built-in LLM prompt templates"
+          "description": "The skill files dewey init writes, and the prompt templates the package exports"
         }
       ]
     },
@@ -30,7 +30,7 @@
         {
           "id": "cli",
           "title": "CLI Reference",
-          "description": "Dewey commands and their main options"
+          "description": "Dewey commands, their options, and the settings in .dewey/project.json"
         },
         {
           "id": "api",
@@ -45,7 +45,7 @@
         {
           "id": "maintenance",
           "title": "Maintaining generated sites",
-          "description": "Update, eject, recover, and release Dewey-generated sites"
+          "description": "Update, eject and recover sites made by the frozen dewey create, and release Dewey"
         }
       ]
     },

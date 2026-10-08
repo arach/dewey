@@ -1,110 +1,116 @@
 ---
 title: Quickstart
-description: Get your documentation agent-ready in under 5 minutes
+description: Set up Dewey in a project, author the drafts, and get a passing check
 order: 2
 ---
 
-Requires Node.js 18+ and pnpm (recommended) or npm.
+Requires Node.js 18+ or Bun 1.3+.
+
+| Step | Command | Result |
+|------|---------|--------|
+| 1. Install | `bun add -d @arach/dewey` | Local `dewey` binary |
+| 2. Init | `bunx dewey init --purpose "…" --rule "…"` | Front door, drafts, skills, first site build |
+| 3. Author | Edit the drafts in `docs/` | Real guide and maps |
+| 4. Review | `bunx dewey review docs/src.agent.md` | Review recorded for each map |
+| 5. Build | `bunx dewey build` | `.dewey/site/` and `llms.txt` |
+| 6. Check | `bunx dewey check` | Pass, or a list of issues with fixes |
 
 ### 1. Install
 
 ```bash
-pnpm add -D @arach/dewey
+bun add -d @arach/dewey
 ```
+
+`npm install -D @arach/dewey` and `npx dewey` work the same. For a one-off run without installing, use `bunx @arach/dewey <command>`.
 
 ### 2. Initialize
 
-```bash
-npx dewey init
-```
-
-Creates a `docs/` folder with starter templates and a `dewey.config.ts` configuration file.
-
-### 3. Configure
-
-<div class="doc-file-block">
-<div class="doc-file-bar">dewey.config.ts</div>
-
-```typescript
-export default {
-  project: {
-    name: 'your-project',
-    tagline: 'What your project does',
-    type: 'npm-package', // or cli-tool, react-library, etc.
-  },
-
-  agent: {
-    criticalContext: [
-      // Rules AI agents MUST know
-      'NEVER do X when Y',
-    ],
-    entryPoints: {
-      'main': 'src/',
-    },
-  },
-
-  install: {
-    objective: 'Install and configure your-project.',
-    steps: [
-      { description: 'Install', command: 'pnpm add your-project' },
-    ],
-  },
-}
-```
-
-</div>
-
-### 4. Write docs
-
-Create pages in the `docs/` folder:
-
-```
-docs/
-  overview.md          # Project introduction
-  quickstart.md        # Getting started guide
-  api.md               # API reference
-  overview.agent.md    # Agent-optimized version
-```
-
-### 5. Generate agent files
+Run from the project root:
 
 ```bash
-npx dewey generate
+bunx dewey init \
+  --purpose "Count lines in log files" \
+  --rule "Never write to input files"
 ```
 
-Outputs `AGENTS.md`, `llms.txt`, `docs.json`, and `install.md` — everything an AI agent needs to understand your project.
+- `--purpose` defaults to the `description` in `package.json`, then to the README's first paragraph.
+- Repeat `--rule` for each hard rule, or pass `--no-rules` to declare none.
+- In a terminal, init asks for anything missing. In CI or a script, it fails and asks for the flags.
+- Pass `--host <file>` (repeatable) to write a pointer file, such as a tool-specific instruction file, that redirects to `AGENTS.md`.
 
-### 6. Check your score
-
-<div class="doc-file-block">
-<div class="doc-file-bar">npx dewey agent</div>
+For a project with `src/index.ts` and `src/sync/index.ts`, init writes:
 
 ```
-Agent Readiness Report
-Overall Score: 75/100 (Grade: C)
-
-Categories:
-✓ Project Context: 20/25
-○ Agent-Optimized Files: 20/30
-...
+AGENTS.md
+SKILL.md
+llms.txt
+.agents/skills/dewey-author/SKILL.md
+.dewey/project.json
+.dewey/site/
+docs/quickstart.md        # draft guide
+docs/src.agent.md         # draft map, covers src/*
+docs/src-sync.agent.md    # draft map, covers src/sync/*
 ```
 
-</div>
+In a repo that already has docs, init keeps your files. It appends a marked region to an existing `AGENTS.md` and `llms.txt`, leaves existing guides, maps, `SKILL.md` and host files alone, and adds a `kind` to docs that lack one, guessed from the path. If anything fails, it restores every file it touched.
 
-### 7. Create a doc site
+### 3. Author the drafts
+
+Open each draft and replace the comments with what the code does. A map lists its files, data flow, and invariants and traps. The guide states a task, its prerequisites and how to tell it worked. Remove `draft: true` from each file when it is done.
+
+To add docs later:
 
 ```bash
-npx dewey create my-docs --source ./docs --theme ocean
-cd my-docs && pnpm install && pnpm dev
+bunx dewey new guide "Deploy to staging"   # docs/deploy-to-staging.md
+bunx dewey new reference "CLI flags"       # docs/reference/cli-flags.md
+bunx dewey new history "Why JSONL"         # docs/history/<date>-why-jsonl.md
+bunx dewey new map src/net                 # docs/src-net.agent.md
 ```
 
-Generates a full static site with Astro, Pagefind search, color themes, dark mode, and auto-navigation from frontmatter.
+### 4. Review the maps
+
+After you have checked a map against the code, record it:
+
+```bash
+bunx dewey review docs/src.agent.md
+bunx dewey review docs/src-sync.agent.md
+```
+
+This stores hashes of the doc and the files it covers in `.dewey/reviews.json`. When covered code changes, `check` reports `REVIEW_REQUIRED` and names the files that changed. `build` never records a review for you.
+
+### 5. Build
+
+```bash
+bunx dewey build
+```
+
+Writes the static site to `.dewey/site/`, a `.md` copy of each page, `llms-full.txt`, `nav.json`, and refreshes the marked regions of `AGENTS.md` and `llms.txt`. To look at it:
+
+```bash
+python3 -m http.server 4387 --bind 127.0.0.1 --directory .dewey/site
+```
+
+### 6. Check
+
+```bash
+bunx dewey check
+bunx dewey check --json   # for CI
+```
+
+On a fresh init, check fails with `DOC_DRAFT` and `REVIEW_REQUIRED`. Once the drafts are done and reviewed and the site is built, it prints:
+
+```
+Dewey check passed: references, coverage, reviews and outputs are consistent. It does not prove the prose is true.
+```
+
+Check exits 1 on any issue. Each issue prints `path:line CODE message` followed by a fix.
 
 ---
 
 ## Next steps
 
-- Create `.agent.md` versions of your docs for denser, structured content
-- Add skills to `.agents/skills/` for custom agent-guided reviews
-- Run `npx dewey audit` to check documentation completeness
-- Browse [templates](/templates) to pick a theme for your doc site
+- Commit `.dewey/project.json` and `.dewey/reviews.json` so CI checks against the same reviewed baseline.
+- Run `dewey build` and `dewey check` in CI.
+- Use `dewey which <path>` before changing code to find the docs that cover it, and `dewey uncovered` to find files no map covers.
+- Change the site's look with a `skin` or `site` block in `.dewey/project.json` ([site settings](./cli.md#site-settings)).
+- [CLI Reference](./cli.md) · [Skills](./skills.md) · [Integrate into an existing site](./integrate-existing-site.md)

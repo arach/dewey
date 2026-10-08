@@ -60,20 +60,20 @@ export const homeGroups = [
   {
     title: 'Get Started',
     cards: [
-      { title: 'Overview', description: 'What Dewey is and how it works.', href: '/docs/overview' },
-      { title: 'Quickstart', description: 'Install and generate your first agent files.', href: '/docs/quickstart' },
-      { title: 'Skills', description: 'LLM prompt templates for docs review and design critique.', href: '/docs/skills' },
-      { title: 'Doc Site Generator', description: 'Scaffold a static Astro site from markdown.', href: '/docs/quickstart#create-a-doc-site' },
-      { title: 'Templates', description: 'Browse layout and color themes for your doc site.', href: '/templates' },
+      { title: 'Overview', description: 'What Dewey does and how its docs loop works.', href: '/docs/overview' },
+      { title: 'Quickstart', description: 'Init, author, review, build and check.', href: '/docs/quickstart' },
+      { title: 'Skills', description: 'The skill files init writes, and prompt templates.', href: '/docs/skills' },
+      { title: 'Docs Site', description: 'dewey build writes a static site to .dewey/site.', href: '/docs/quickstart#5-build' },
+      { title: 'Templates', description: 'Layouts and color themes for sites made with the frozen dewey create.', href: '/templates' },
     ],
   },
   {
     title: 'Reference',
     cards: [
-      { title: 'CLI Reference', description: 'Every command and its options.', href: '/docs/cli' },
+      { title: 'CLI Reference', description: 'Every command, its options, and site settings.', href: '/docs/cli' },
       { title: 'API Reference', description: 'TypeScript, React, theme, and artifact contracts.', href: '/docs/api' },
       { title: 'Integrate', description: 'Embed Dewey in an existing React or Next.js app.', href: '/docs/integrate-existing-site' },
-      { title: 'Maintenance', description: 'Update, eject, and release generated sites.', href: '/docs/maintenance' },
+      { title: 'Maintenance', description: 'Frozen site commands and release checks.', href: '/docs/maintenance' },
     ],
   },
   {

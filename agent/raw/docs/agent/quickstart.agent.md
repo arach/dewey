@@ -6,85 +6,33 @@ order: 2
 
 # Dewey quickstart contract
 
-## Preconditions
+Requires Node.js 18+ or Bun 1.3+. Run from the project root.
 
-| Requirement | Value |
-|---|---|
-| Runtime | Node.js 18+ |
-| Preferred package manager | Bun 1.3+ |
-| Package | `@arach/dewey` |
-
-## Execution sequence
-
-| Step | Command or action | Expected result |
+| Step | Command | Expected |
 |---|---|---|
-| Install | `bun add -d @arach/dewey` (or `bun add` if importing components) | Local `dewey` binary available |
-| Initialize | `bunx dewey init --type <ProjectType>` | Type-specific paired docs and `dewey.config.ts` created |
-| Configure | Edit `dewey.config.ts` | Project context, document paths, agent rules defined |
-| Author | Add human `.md` and agent `.agent.md` pages | Paired documentation source exists |
-| Generate | `bunx dewey generate` | Standard files and `agent/` retrieval surface written |
-| Audit | `bunx dewey audit` / `--json` | Deterministic documentation checks reported |
-| Score | `bunx dewey agent` / `--json` | Agent-readiness score and recommendations reported |
-| Embed UI (optional) | Host React/Next routes | See `docs/integrate-existing-site.md` |
-| Create site (optional) | `bunx dewey create …` | Standalone static site only |
+| Install | `bun add -d @arach/dewey` | local `dewey` bin; one-off: `bunx @arach/dewey <cmd>` |
+| Init | `bunx dewey init --purpose "…" --rule "…"` (or `--no-rules`) | files below; first build |
+| Author | edit drafts in `docs/`, remove `draft: true` | no `DOC_DRAFT` |
+| Review | `bunx dewey review docs/<area>.agent.md` | `.dewey/reviews.json` |
+| Build | `bunx dewey build` | `.dewey/site/`, root `llms.txt` region, `AGENTS.md` region |
+| Check | `bunx dewey check` / `--json` | exit 0 and `Dewey check passed: …` |
 
-Order is fixed for greenfield and embed alike: **init → author → generate → audit → agent → optional UI**.
+## Init inputs
 
-## Generated outputs
+- `--purpose` default: `package.json` description, then README first paragraph.
+- No TTY and missing rules → fails: `Supply --purpose and either --rule or --no-rules in non-interactive use.`
+- `--host <file.md>` repeatable: pointer file redirecting to `AGENTS.md`.
 
-| Path | Contract |
-|---|---|
-| `AGENTS.md` | Combined project context and selected docs |
-| `llms.txt` | Compact LLM-facing index and summaries |
-| `docs.json` | Structured documentation manifest |
-| `install.md` | installmd.org-compatible execution guide |
-| `agent/manifest.json` | Retrieval discovery manifest |
-| `agent/docs.json` | Structured document entries with non-prompt content |
-| `agent/prompts.json` | Prompt registry with prompt content |
-| `agent/context.md` | Compact retrieval index; no repeated corpus |
-| `agent/raw/docs/**` | Recursive raw Markdown mirror |
+## Init writes
 
-## Selection rules
+`AGENTS.md`, `SKILL.md`, `llms.txt`, `.agents/skills/dewey-author/SKILL.md`, `.dewey/project.json`, `.dewey/outputs.json`, `.dewey/site/`, `docs/quickstart.md` (draft guide), one draft map per uncovered source area (`docs/src.agent.md` covers `src/*`; `docs/src-sync.agent.md` covers `src/sync/*`).
 
-| Configuration | Behavior |
-|---|---|
-| `agent.sections: []` | Include all human `.md` documents recursively |
-| Non-empty `agent.sections` | Include exact document IDs only |
-| `generate --source <path>` | Override `docs.path` for one run |
-| `generate --output <path>` | Override `docs.output`; create directory recursively |
+Existing repos: marked region appended to existing `AGENTS.md`/`llms.txt`; existing guides, maps, `SKILL.md`, host files kept; missing `kind` guessed from path; all-or-nothing restore on failure.
 
-## Project type initialization
+## Fresh check
 
-`ProjectType = 'macos-app' | 'npm-package' | 'cli-tool' | 'react-library' | 'monorepo' | 'generic'`
+Fails with `DOC_DRAFT` and `REVIEW_REQUIRED` until drafts are finished and maps reviewed.
 
-Type selects paired focus page, required docs, install defaults, verification command, and audit/agent evidence profile. Invalid type is a hard error.
+## Later
 
-## Check report contract
-
-`audit --json` and `agent --json` include:
-
-- `projectType`: label/pass/evidence.
-- `drift`: status/counts/structured issues.
-
-Drift scope: pairing, orphan agent docs, cited paths, literal unions/enums across human/agent/source. Limitation: regex/evidence consistency only; no semantic prose or example execution.
-
-## Canonical generation
-
-- Discovery/frontmatter parse shared by `generate`, `create`, artifact API.
-- Manifest drives link tables/read order/bundles.
-- Full content: `agent/docs.json` for non-prompts, `agent/prompts.json` for prompts, raw/bundle Markdown for retrieval.
-- Context surfaces contain indexes, not another full corpus.
-- `llms.txt` summary fallback: frontmatter description → prose → list → heading → title.
-- Scoped install package names preserved; prompt URLs do not duplicate `prompts/`.
-- Generated site dependencies pinned to tested versions; Pagefind declared.
-
-## Optional publishing
-
-| Mode | Entry |
-|---|---|
-| Embed in existing React/Next | `docs/integrate-existing-site.md` + `docs/agent/integrate-existing-site.agent.md` |
-| Standalone site | `bunx dewey create my-docs --source ./docs --theme ocean` |
-
-Publishing is optional; generated agent artifacts remain the core contract.
-
-Maintenance: `docs/maintenance.md` + `docs/agent/maintenance.agent.md`.
+`dewey new guide|reference|history|map <name>`, `dewey which <path>`, `dewey uncovered`. Commit `.dewey/project.json` and `.dewey/reviews.json`; run `build` + `check` in CI.

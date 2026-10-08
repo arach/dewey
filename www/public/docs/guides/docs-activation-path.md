@@ -32,7 +32,7 @@ Use your actual product commands. Do not copy an untested command from a design 
 From your product repository root, install the version used in this guide:
 
 ```sh
-bun add -d @arach/dewey@0.5.0
+bun add -d @deweydocs/dewey@0.5.1
 bunx dewey init --purpose 'Deliver verified webhook events to applications' --rule 'Never put credentials in documentation'
 ```
 

@@ -7,7 +7,7 @@ title: Make docs the path to first success
 | Field | Contract |
 | --- | --- |
 | Outcome | One verified product result; installation and page views are intermediate events. |
-| Setup | From product repo: `bun add -d @arach/dewey@0.5.0`; `bunx dewey init --purpose "Deliver verified webhook events" --rule "Never document credentials"`. |
+| Setup | From product repo: `bun add -d @deweydocs/dewey@0.5.1`; `bunx dewey init --purpose "Deliver verified webhook events" --rule "Never document credentials"`. |
 | Author | Replace `docs/quickstart.md` draft with prerequisites, exact supported steps, expected output, recovery, next task. Test in a clean environment and fresh agent session. |
 | Review | Finish maps; remove `draft: true`; run `bunx dewey review <document>` for each nonempty `covers` list. |
 | Verify | `bunx dewey build`; `bunx dewey check --json`; run the product task separately. |

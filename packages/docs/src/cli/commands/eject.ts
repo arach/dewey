@@ -21,8 +21,8 @@ async function fileExists(path: string): Promise<boolean> {
 export function generateWrapComponent(name: string, meta: EjectibleComponent): string {
   return `'use client'
 
-import { ${meta.defaultImport} as Default${meta.defaultImport} } from '@arach/dewey'
-import type { ${meta.propsType} } from '@arach/dewey'
+import { ${meta.defaultImport} as Default${meta.defaultImport} } from '@deweydocs/dewey'
+import type { ${meta.propsType} } from '@deweydocs/dewey'
 
 export default function ${name}(props: ${meta.propsType}) {
   // Wrap the default — add your own header, footer, or behavior
@@ -50,7 +50,7 @@ export function generateFullComponent(name: string, meta: EjectibleComponent): s
 
   return `'use client'
 
-import type { ${meta.propsType} } from '@arach/dewey'
+import type { ${meta.propsType} } from '@deweydocs/dewey'
 
 export default function ${name}(${destructured}: ${meta.propsType}) {
   return (

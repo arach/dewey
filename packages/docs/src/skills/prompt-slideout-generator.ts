@@ -17,7 +17,7 @@
  * - expectedOutput: validation rules for the AI
  *
  * @example
- * import { promptSlideoutGenerator } from '@arach/dewey'
+ * import { promptSlideoutGenerator } from '@deweydocs/dewey'
  *
  * // Generate PromptSlideout content for a docs page
  * const prompt = promptSlideoutGenerator.generate

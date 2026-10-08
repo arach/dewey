@@ -2,11 +2,11 @@
 
 Documentation toolkit for AI-agent-ready docs. Audits, scores, generates retrieval artifacts, and can publish a static docs site when useful.
 
-[![npm](https://img.shields.io/npm/v/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
-[![npm downloads](https://img.shields.io/npm/dm/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
-[![license](https://img.shields.io/npm/l/@arach/dewey)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@deweydocs/dewey)](https://www.npmjs.com/package/@deweydocs/dewey)
+[![npm downloads](https://img.shields.io/npm/dm/@deweydocs/dewey)](https://www.npmjs.com/package/@deweydocs/dewey)
+[![license](https://img.shields.io/npm/l/@deweydocs/dewey)](LICENSE)
 
-**[npm](https://www.npmjs.com/package/@arach/dewey)** · **[docs](https://deweydocs.com)** · **[github](https://github.com/arach/dewey)**
+**[npm](https://www.npmjs.com/package/@deweydocs/dewey)** · **[docs](https://deweydocs.com)** · **[github](https://github.com/arach/dewey)**
 
 ## What It Does
 
@@ -21,13 +21,13 @@ Dewey is a **docs agent**, not a docs framework. It focuses on preparation and j
 ## Installation
 
 ```bash
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 ```
 
 Or run directly:
 
 ```bash
-bunx @arach/dewey@latest <command>
+bunx @deweydocs/dewey@latest <command>
 ```
 
 ## Quick Start
@@ -125,7 +125,7 @@ import {
   buildPromptRegistry,
   buildContextBundle,
   writeAgentArtifacts,
-} from '@arach/dewey/agent-artifacts'
+} from '@deweydocs/dewey/agent-artifacts'
 ```
 
 ## Agent Content Pattern
@@ -193,13 +193,17 @@ Custom skills go in `.agents/skills/` as markdown files.
 Optional React components for documentation UIs (not required for agent generation):
 
 ```tsx
-import { DocsApp, MarkdownContent, Callout } from '@arach/dewey'
-import '@arach/dewey/css'
+import { DocsApp, MarkdownContent, Callout } from '@deweydocs/dewey'
+import '@deweydocs/dewey/css'
 ```
 
 Components include DocsLayout, Sidebar, TableOfContents, CodeBlock, Callout, Tabs, Steps, Card, FileTree, ApiTable, Badge, AgentContext, PromptSlideout, and more.
 
-For embedding into an **existing** Next.js or React app (provider, static export, nested docs, CI), follow [docs/integrate-existing-site.md](./docs/integrate-existing-site.md). Prefer imports from `@arach/dewey` (`@arach/dewey/react` is the same export surface).
+For embedding into an **existing** Next.js or React app (provider, static export, nested docs, CI), follow [docs/integrate-existing-site.md](./docs/integrate-existing-site.md). Prefer imports from `@deweydocs/dewey` (`@deweydocs/dewey/react` is the same export surface).
+
+## npm scope
+
+Releases from 0.5.1 use `@deweydocs/dewey`. The CLI command is still `dewey`. `@arach/dewey` releases up to 0.5.0 remain available. To migrate, replace the dependency and update imports from `@arach/dewey` (including subpaths) to `@deweydocs/dewey`.
 
 ## License
 

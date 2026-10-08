@@ -79,7 +79,7 @@ export interface CreateThemeSpec {
   id: ThemeId
   label: string
   description: string
-  cssImport: `@arach/dewey/css/colors/${ThemeId}.css`
+  cssImport: `@deweydocs/dewey/css/colors/${ThemeId}.css`
   fontUrls?: readonly string[]
   swatch: { primary: string; background: string; darkBackground: string }
 }
@@ -97,56 +97,56 @@ export const CREATE_THEME_SPECS: Record<ThemeId, CreateThemeSpec> = {
     id: 'neutral',
     label: 'Neutral',
     description: 'Warm and elegant with orange accent',
-    cssImport: '@arach/dewey/css/colors/neutral.css',
+    cssImport: '@deweydocs/dewey/css/colors/neutral.css',
     swatch: { primary: '#ea580c', background: '#fffcf9', darkBackground: '#0f172a' },
   },
   ocean: {
     id: 'ocean',
     label: 'Ocean',
     description: 'Cool, professional blue',
-    cssImport: '@arach/dewey/css/colors/ocean.css',
+    cssImport: '@deweydocs/dewey/css/colors/ocean.css',
     swatch: { primary: 'hsl(210, 100%, 50%)', background: 'hsl(210, 20%, 98%)', darkBackground: 'hsl(215, 30%, 8%)' },
   },
   emerald: {
     id: 'emerald',
     label: 'Emerald',
     description: 'Fresh, natural green accents',
-    cssImport: '@arach/dewey/css/colors/emerald.css',
+    cssImport: '@deweydocs/dewey/css/colors/emerald.css',
     swatch: { primary: 'hsl(158, 64%, 42%)', background: 'hsl(150, 10%, 98%)', darkBackground: 'hsl(155, 25%, 7%)' },
   },
   purple: {
     id: 'purple',
     label: 'Purple',
     description: 'Elegant violet tones',
-    cssImport: '@arach/dewey/css/colors/purple.css',
+    cssImport: '@deweydocs/dewey/css/colors/purple.css',
     swatch: { primary: 'hsl(262, 83%, 58%)', background: 'hsl(270, 10%, 98%)', darkBackground: 'hsl(265, 25%, 8%)' },
   },
   dusk: {
     id: 'dusk',
     label: 'Dusk',
     description: 'Warm evening with amber accents',
-    cssImport: '@arach/dewey/css/colors/dusk.css',
+    cssImport: '@deweydocs/dewey/css/colors/dusk.css',
     swatch: { primary: 'hsl(24, 95%, 53%)', background: 'hsl(30, 20%, 98%)', darkBackground: 'hsl(25, 20%, 7%)' },
   },
   rose: {
     id: 'rose',
     label: 'Rose',
     description: 'Soft pink for a friendly feel',
-    cssImport: '@arach/dewey/css/colors/rose.css',
+    cssImport: '@deweydocs/dewey/css/colors/rose.css',
     swatch: { primary: 'hsl(346, 77%, 56%)', background: 'hsl(350, 15%, 98%)', darkBackground: 'hsl(345, 20%, 7%)' },
   },
   github: {
     id: 'github',
     label: 'GitHub',
     description: 'Clean and professional, GitHub-inspired',
-    cssImport: '@arach/dewey/css/colors/github.css',
+    cssImport: '@deweydocs/dewey/css/colors/github.css',
     swatch: { primary: 'hsl(212, 92%, 45%)', background: '#ffffff', darkBackground: 'hsl(215, 21%, 11%)' },
   },
   warm: {
     id: 'warm',
     label: 'Warm',
     description: 'Cream and terracotta, Arc-inspired',
-    cssImport: '@arach/dewey/css/colors/warm.css',
+    cssImport: '@deweydocs/dewey/css/colors/warm.css',
     fontUrls: [
       'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300..700&display=swap',
     ],
@@ -156,14 +156,14 @@ export const CREATE_THEME_SPECS: Record<ThemeId, CreateThemeSpec> = {
     id: 'midnight',
     label: 'Midnight',
     description: 'Deep navy with electric blue',
-    cssImport: '@arach/dewey/css/colors/midnight.css',
+    cssImport: '@deweydocs/dewey/css/colors/midnight.css',
     swatch: { primary: '#3b82f6', background: '#f8fafc', darkBackground: '#0c0e14' },
   },
   mono: {
     id: 'mono',
     label: 'Mono',
     description: 'Ultra-clean monochrome, Vercel-inspired',
-    cssImport: '@arach/dewey/css/colors/mono.css',
+    cssImport: '@deweydocs/dewey/css/colors/mono.css',
     fontUrls: [
       'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap',
     ],

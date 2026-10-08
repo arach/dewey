@@ -1,5 +1,5 @@
 import docsJson from '../../docs.json'
-import type { PageNode } from '@arach/dewey'
+import type { PageNode } from '@deweydocs/dewey'
 
 interface DocsGroup {
   id: string

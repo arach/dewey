@@ -36,7 +36,7 @@ const consumer = join(scratch, 'consumer')
 mkdirSync(consumer, { recursive: true })
 writeFileSync(join(consumer, 'package.json'), JSON.stringify({ name: 'consumer', private: true }))
 run('bun', ['add', join(packDir, tarball)], consumer)
-const bin = join(consumer, 'node_modules/@arach/dewey/dist/cli/index.js')
+const bin = join(consumer, 'node_modules/@deweydocs/dewey/dist/cli/index.js')
 if (!existsSync(bin)) throw new Error(`installed package has no CLI at ${bin}`)
 
 for (const runtime of ['node', 'bun']) {

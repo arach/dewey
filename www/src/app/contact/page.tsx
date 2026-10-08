@@ -25,8 +25,8 @@ const CHANNELS = [
     desc: 'Bugs and feature requests, in the open',
   },
   {
-    href: 'https://www.npmjs.com/package/@arach/dewey',
-    label: '@arach/dewey on npm',
+    href: 'https://www.npmjs.com/package/@deweydocs/dewey',
+    label: '@deweydocs/dewey on npm',
     desc: 'Package page, versions, and install stats',
   },
 ]

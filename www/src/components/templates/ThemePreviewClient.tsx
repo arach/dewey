@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import type { DocsAppLayoutConfig } from '@/lib/templates'
-import type { ThemeId } from '@arach/dewey/registry'
+import type { ThemeId } from '@deweydocs/dewey/registry'
 
 const DocsAppThemePreview = dynamic(
   () =>

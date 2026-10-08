@@ -1,5 +1,5 @@
 {
-  "name": "@arach/dewey-www",
+  "name": "@deweydocs/dewey-www",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@arach/dewey": "workspace:*",
+    "@deweydocs/dewey": "workspace:*",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.577.0",

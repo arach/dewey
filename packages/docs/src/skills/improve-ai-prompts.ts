@@ -5,7 +5,7 @@
  * Works for any codebase. Each pass extracts more value and refines output.
  *
  * @example
- * import { improveAIPrompts } from '@arach/dewey'
+ * import { improveAIPrompts } from '@deweydocs/dewey'
  *
  * // Use pass 1 to discover what exists
  * const discoveryPrompt = improveAIPrompts.passes.discovery.prompt

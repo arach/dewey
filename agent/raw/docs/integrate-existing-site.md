@@ -26,14 +26,14 @@ Embedding does not replace `dewey build` and `dewey check`. Keep running them; u
 |-------------|--------|
 | Node.js 18+ | |
 | Bun 1.3+ (recommended) | Examples below use Bun |
-| React 18 or 19 | Peer dependency of `@arach/dewey` |
+| React 18 or 19 | Peer dependency of `@deweydocs/dewey` |
 | Next.js App Router | Patterns below target App Router; adapt for Pages Router if needed |
 | Existing Markdown under `docs/` | With a `kind` in each file's frontmatter; see [Kinds of doc](./overview.md#kinds-of-doc) |
 
 ## Package and CSS installation
 
 ```bash
-bun add @arach/dewey gray-matter
+bun add @deweydocs/dewey gray-matter
 ```
 
 - Runtime dependency (not only `-d`) when the site imports Dewey components.
@@ -46,19 +46,19 @@ Import base styles, design tokens, and one color theme in a root layout or globa
 
 ```tsx
 // app/layout.tsx (or app/docs/layout.tsx)
-import '@arach/dewey/css/base.css'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/colors/ocean.css'
+import '@deweydocs/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/colors/ocean.css'
 ```
 
 | Export | Purpose |
 |--------|---------|
-| `@arach/dewey/css` | Full bundle (base + tokens + default theme wiring) |
-| `@arach/dewey/css/base.css` | Reset and base rules |
-| `@arach/dewey/css/tokens` | Semantic `--dw-*` CSS variables |
-| `@arach/dewey/css/colors/<theme>.css` | Color preset |
-| `@arach/dewey/styles` | Alias of the full CSS bundle |
-| `@arach/dewey/tailwind` | Tailwind preset for `--dw-*` utilities |
+| `@deweydocs/dewey/css` | Full bundle (base + tokens + default theme wiring) |
+| `@deweydocs/dewey/css/base.css` | Reset and base rules |
+| `@deweydocs/dewey/css/tokens` | Semantic `--dw-*` CSS variables |
+| `@deweydocs/dewey/css/colors/<theme>.css` | Color preset |
+| `@deweydocs/dewey/styles` | Alias of the full CSS bundle |
+| `@deweydocs/dewey/tailwind` | Tailwind preset for `--dw-*` utilities |
 
 **Themes:** `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `midnight`, `editorial`, `mono`, `hudson`, `ink`, `slate`.
 
@@ -68,7 +68,7 @@ The complete semantic contract covers surfaces and foregrounds; primary, seconda
 
 ### Import path note
 
-`@arach/dewey` and `@arach/dewey/react` resolve to the **same** module surface. Prefer `@arach/dewey` in new code; treat `/react` as a compatibility alias, not a separate React-only package.
+`@deweydocs/dewey` and `@deweydocs/dewey/react` resolve to the **same** module surface. Prefer `@deweydocs/dewey` in new code; treat `/react` as a compatibility alias, not a separate React-only package.
 
 ```tsx
 import {
@@ -78,7 +78,7 @@ import {
   MarkdownContent,
   AutoTableOfContents,
   CopyButtons,
-} from '@arach/dewey'
+} from '@deweydocs/dewey'
 ```
 
 ## Recommended architecture
@@ -115,8 +115,8 @@ Dewey layout and content components use React hooks (theme, TOC scroll-spy, copy
 // app/providers.tsx
 'use client'
 
-import { DeweyProvider } from '@arach/dewey'
-import type { DeweyProviderProps } from '@arach/dewey'
+import { DeweyProvider } from '@deweydocs/dewey'
+import type { DeweyProviderProps } from '@deweydocs/dewey'
 import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
 
@@ -138,9 +138,9 @@ Wire `Providers` once in the root layout (server component):
 ```tsx
 // app/layout.tsx
 import type { Metadata } from 'next'
-import '@arach/dewey/css/base.css'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/colors/ocean.css'
+import '@deweydocs/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/colors/ocean.css'
 import { Providers } from './providers'
 
 export const metadata: Metadata = {
@@ -192,7 +192,7 @@ export default async function DocPage({ params }: PageProps) {
 // app/docs/[...slug]/content.tsx
 'use client'
 
-import { MarkdownContent, AutoTableOfContents, CopyButtons } from '@arach/dewey'
+import { MarkdownContent, AutoTableOfContents, CopyButtons } from '@deweydocs/dewey'
 import type { DocData } from '@/lib/docs'
 
 export function DocContent({ doc }: { doc: DocData }) {
@@ -227,7 +227,7 @@ For fully static hosting (GitHub Pages, S3, many CDNs):
 const nextConfig = {
   output: 'export',
   images: { unoptimized: true },
-  transpilePackages: ['@arach/dewey'],
+  transpilePackages: ['@deweydocs/dewey'],
 }
 
 module.exports = nextConfig
@@ -237,7 +237,7 @@ module.exports = nextConfig
 |---------|-----|
 | `output: 'export'` | Emits a static `out/` directory |
 | `images.unoptimized` | Required when using `output: 'export'` with Next Image |
-| `transpilePackages: ['@arach/dewey']` | Ensures Dewey ESM ships correctly through Next’s bundler |
+| `transpilePackages: ['@deweydocs/dewey']` | Ensures Dewey ESM ships correctly through Next’s bundler |
 
 `generateStaticParams` must return every docs slug you want pre-rendered. Without it, nested routes are missing from the export.
 
@@ -335,7 +335,7 @@ In 0.5.0 a `*.agent.md` file under `docs/` is usually a map (`kind: map`): an in
 ```ts
 // lib/navigation.ts
 import docsJson from '../../docs.json'
-import type { PageNode } from '@arach/dewey'
+import type { PageNode } from '@deweydocs/dewey'
 
 export function getNavTree(): PageNode[] {
   return (docsJson as { groups: { title: string; items: { id: string; title: string; description?: string }[] }[] })
@@ -379,14 +379,14 @@ Or partial overrides:
 </DeweyProvider>
 ```
 
-Pair the CSS file (`@arach/dewey/css/colors/purple.css`) with the matching `theme` prop so tokens and components stay in sync.
+Pair the CSS file (`@deweydocs/dewey/css/colors/purple.css`) with the matching `theme` prop so tokens and components stay in sync.
 
 Optional Tailwind:
 
 ```ts
 // tailwind.config.ts
 import type { Config } from 'tailwindcss'
-import deweyPreset from '@arach/dewey/tailwind'
+import deweyPreset from '@deweydocs/dewey/tailwind'
 
 export default {
   presets: [deweyPreset],
@@ -401,7 +401,7 @@ export default {
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Header, Sidebar } from '@arach/dewey'
+import { Header, Sidebar } from '@deweydocs/dewey'
 import { getNavTree } from '@/lib/navigation'
 
 const basePath = '/docs'
@@ -435,7 +435,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 Prefer composing `Header`, `Sidebar`, `MarkdownContent`, and `AutoTableOfContents` when you want full control. The packaged `DocsLayout` is also router-neutral: it uses anchors by default and accepts `LinkComponent` plus `currentPage`.
 
 ```tsx
-import { DocsLayout, MarkdownContent } from '@arach/dewey'
+import { DocsLayout, MarkdownContent } from '@deweydocs/dewey'
 
 <DocsLayout
   title={doc.title}
@@ -456,7 +456,7 @@ Keep Dewey in the **same repository** as the host app. Components render Markdow
 
 | Step | Command | Role |
 |------|---------|------|
-| 1. Install | `bun add @arach/dewey gray-matter` | Package on the site; CLI available via `bunx` |
+| 1. Install | `bun add @deweydocs/dewey gray-matter` | Package on the site; CLI available via `bunx` |
 | 2. Init (once) | `bunx dewey init --purpose "…" --no-rules` | Front door, draft maps and guide, `.dewey/project.json` |
 | 3. Author | Finish the drafts in `docs/` | Guides, references and maps |
 | 4. Review | `bunx dewey review docs/<area>.agent.md` | Record each map as checked against the code |
@@ -524,13 +524,13 @@ Commit `.dewey/project.json` and `.dewey/reviews.json` so CI checks against the 
 
 | Setup | Approach |
 |-------|----------|
-| Docs package + app package | Run `dewey init` in the package whose `docs/` you render; depend on `@arach/dewey` from the app |
+| Docs package + app package | Run `dewey init` in the package whose `docs/` you render; depend on `@deweydocs/dewey` from the app |
 | Shared `docs/` at repo root | `process.cwd()` in Next is the app package — set `docsDirectory` to a path relative to the monorepo root (or symlink `docs` into the app) |
 | One docs set for many apps | Run `dewey build` at the repo root; copy files from `.dewey/site/` into each app's static assets |
 
 ## Checklist
 
-- [ ] `@arach/dewey` + CSS theme imported
+- [ ] `@deweydocs/dewey` + CSS theme imported
 - [ ] `DeweyProvider` in a client `Providers` wrapper with Next `Link` / `Image`
 - [ ] Server `page.tsx` + client `content.tsx` split
 - [ ] `generateStaticParams` covers recursive slugs (if static export)

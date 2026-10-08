@@ -1,8 +1,8 @@
-/** @type {import('@arach/dewey').DeweyConfig} */
+/** @type {import('@deweydocs/dewey').DeweyConfig} */
 export default {
   project: {
     name: 'dewey',
-    version: '0.5.0',
+    version: '0.5.1',
     tagline: 'Documentation toolkit for AI-agent-ready docs',
     type: 'npm-package',
   },
@@ -54,7 +54,7 @@ export default {
     ],
 
     steps: [
-      { description: 'Install the package', command: 'bun add -d @arach/dewey' },
+      { description: 'Install the package', command: 'bun add -d @deweydocs/dewey' },
       { description: 'Set up the project; repeat --rule for each hard rule, or pass --no-rules', command: 'bunx dewey init --purpose "What this project is for" --rule "A hard rule for agents"' },
       { description: 'Finish the drafts in docs/ and remove draft: true from each' },
       { description: 'Record a review for each map after checking it against the code', command: 'bunx dewey review docs/src.agent.md' },

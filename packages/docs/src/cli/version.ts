@@ -10,7 +10,7 @@ function loadVersion(): string {
     for (let i = 0; i < 5; i++) {
       try {
         const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8'))
-        if (pkg.name === '@arach/dewey') return pkg.version
+        if (pkg.name === '@deweydocs/dewey') return pkg.version
       } catch {}
       dir = dirname(dir)
     }

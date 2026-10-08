@@ -161,7 +161,7 @@ export default async function DocPage({ params }: PageProps) {
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Bot, User } from 'lucide-react'
-import { MarkdownContent, CopyButtons } from '@arach/dewey'
+import { MarkdownContent, CopyButtons } from '@deweydocs/dewey'
 import type { NavGroup } from '@/lib/dewey-docs'
 
 // ── Heading extraction ──────────────────────────────────────────────────

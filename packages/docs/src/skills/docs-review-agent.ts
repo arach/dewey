@@ -6,7 +6,7 @@
  * Creates a standard review structure in .dewey/reviews/.
  *
  * @example
- * import { docsReviewAgent } from '@arach/dewey'
+ * import { docsReviewAgent } from '@deweydocs/dewey'
  *
  * // Review a single page
  * const prompt = docsReviewAgent.reviewPage

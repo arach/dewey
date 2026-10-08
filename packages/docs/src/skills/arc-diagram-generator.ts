@@ -13,7 +13,7 @@
  * (Arc MCP) or `validateDiagramShape()` from @arach/arc.
  *
  * @example
- * import { arcDiagramGenerator } from '@arach/dewey'
+ * import { arcDiagramGenerator } from '@deweydocs/dewey'
  *
  * const prompt = arcDiagramGenerator.generate
  *   .replace('{DOCS_CONTEXT}', contextMarkdown)

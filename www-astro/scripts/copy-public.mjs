@@ -46,7 +46,7 @@ await writeAgentArtifacts({
 async function ensureAgentArtifactsModule() {
   if (await isCurrent(agentArtifactsModule, agentArtifactsSource)) return
 
-  await execFileAsync('bun', ['run', '--filter', '@arach/dewey', 'build'], {
+  await execFileAsync('bun', ['run', '--filter', '@deweydocs/dewey', 'build'], {
     cwd: repoRoot,
     maxBuffer: 1024 * 1024 * 20,
   })

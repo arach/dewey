@@ -27,7 +27,7 @@ if (import.meta.main) {
     ) as { version?: unknown }
     const packageVersion = typeof manifest.version === 'string' ? manifest.version : ''
     const verified = verifyReleaseVersion(packageVersion, process.argv[2])
-    console.log(`✓ Release source of truth: @arach/dewey@${verified}`)
+    console.log(`✓ Release source of truth: @deweydocs/dewey@${verified}`)
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
     process.exitCode = 1

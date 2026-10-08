@@ -1,6 +1,6 @@
 {
-  "name": "@arach/dewey",
-  "version": "0.5.0",
+  "name": "@deweydocs/dewey",
+  "version": "0.5.1",
   "description": "Documentation toolkit for AI-agent-ready docs — audit, score, generate AGENTS.md/llms.txt/docs.json, and optionally publish a static site",
   "homepage": "https://deweydocs.com",
   "bugs": {
@@ -213,5 +213,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/arach/dewey"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

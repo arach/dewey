@@ -7,10 +7,10 @@ import '@/app/site-header.css'
 import '@/app/landing-v3.css'
 
 const PKG_COMMANDS: Record<string, string> = {
-  bun: 'bun add @arach/dewey',
-  npm: 'npm install @arach/dewey',
-  pnpm: 'pnpm add @arach/dewey',
-  yarn: 'yarn add @arach/dewey',
+  bun: 'bun add @deweydocs/dewey',
+  npm: 'npm install @deweydocs/dewey',
+  pnpm: 'pnpm add @deweydocs/dewey',
+  yarn: 'yarn add @deweydocs/dewey',
   npx: 'npx dewey init',
 }
 
@@ -312,7 +312,7 @@ export function LandingPage() {
           <div className="v3-footer-links">
             <Link href="/docs">Docs</Link>
             <Link href="/contact">Contact</Link>
-            <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.npmjs.com/package/@deweydocs/dewey" target="_blank" rel="noopener noreferrer">
               npm
             </a>
             <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">

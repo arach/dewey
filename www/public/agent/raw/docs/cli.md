@@ -11,14 +11,14 @@ groupId: reference
 Install Dewey in a project and use its local binary:
 
 ```bash
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 bunx dewey --help
 ```
 
 For a one-off run without installing it first, address the scoped package:
 
 ```bash
-bunx @arach/dewey@latest --help
+bunx @deweydocs/dewey@latest --help
 ```
 
 `npx` works the same under Node. Every command runs from the project root.

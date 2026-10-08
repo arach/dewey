@@ -10,7 +10,7 @@ groupId: reference
 
 ## Purpose
 
-Public contracts for `@arach/dewey`. The CLI (`init`, `build`, `check`) is the primary product; TypeScript artifact APIs enable retrieval automation; React/theme APIs are optional presentation.
+Public contracts for `@deweydocs/dewey`. The CLI (`init`, `build`, `check`) is the primary product; TypeScript artifact APIs enable retrieval automation; React/theme APIs are optional presentation.
 
 ## Source of truth
 
@@ -35,9 +35,9 @@ Public contracts for `@arach/dewey`. The CLI (`init`, `build`, `check`) is the p
 | Set up a project | `bunx dewey init` |
 | Site, `llms.txt`, `AGENTS.md` region | `bunx dewey build` |
 | Consistency gate | `bunx dewey check` / `--json` |
-| Typed config for frozen commands | `defineConfig` from `@arach/dewey` (`dewey.config.ts`) |
-| Programmatic retrieval/build/write | `@arach/dewey/agent-artifacts` |
-| Existing React/Next UI | components from `@arach/dewey` + CSS subpaths |
+| Typed config for frozen commands | `defineConfig` from `@deweydocs/dewey` (`dewey.config.ts`) |
+| Programmatic retrieval/build/write | `@deweydocs/dewey/agent-artifacts` |
+| Existing React/Next UI | components from `@deweydocs/dewey` + CSS subpaths |
 | Standalone docs UI | `bunx dewey build` → `.dewey/site/` (frozen: `dewey create`) |
 
 Invariant: the CLI is the product contract. React components and generated sites are optional human-facing layers. Frozen `audit`, `generate`, `agent`, `create`, `update`, `eject` still run with a warning.
@@ -46,21 +46,21 @@ Invariant: the CLI is the product contract. React components and generated sites
 
 | Import | Contract |
 |---|---|
-| `@arach/dewey` | Main JS/types |
-| `@arach/dewey/react` | Exact compatibility alias of main JS/types |
-| `@arach/dewey/agent-artifacts` | Artifact JS/types |
-| `@arach/dewey/css` | Full CSS |
-| `@arach/dewey/styles` | Full CSS alias |
-| `@arach/dewey/css/base.css` | Base CSS |
-| `@arach/dewey/css/tokens` | Semantic token CSS |
-| `@arach/dewey/css/tailwind` | Tailwind-oriented CSS |
-| `@arach/dewey/css/colors/{theme}.css` | Explicit per-theme CSS export; no wildcard |
-| `@arach/dewey/tailwind` | Tailwind preset JS/types |
+| `@deweydocs/dewey` | Main JS/types |
+| `@deweydocs/dewey/react` | Exact compatibility alias of main JS/types |
+| `@deweydocs/dewey/agent-artifacts` | Artifact JS/types |
+| `@deweydocs/dewey/css` | Full CSS |
+| `@deweydocs/dewey/styles` | Full CSS alias |
+| `@deweydocs/dewey/css/base.css` | Base CSS |
+| `@deweydocs/dewey/css/tokens` | Semantic token CSS |
+| `@deweydocs/dewey/css/tailwind` | Tailwind-oriented CSS |
+| `@deweydocs/dewey/css/colors/{theme}.css` | Explicit per-theme CSS export; no wildcard |
+| `@deweydocs/dewey/tailwind` | Tailwind preset JS/types |
 
 ## Config
 
 ```ts
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   project: { name: 'pkg', type: 'npm-package', version: '1.0.0' },
@@ -111,7 +111,7 @@ Main config types: `AgentRule`, `DeweyConfig`, `InstallConfig`, `ProjectType`.
 
 ## Artifact API
 
-Import only from `@arach/dewey/agent-artifacts`.
+Import only from `@deweydocs/dewey/agent-artifacts`.
 
 | Export | Contract |
 |---|---|
@@ -130,7 +130,7 @@ import {
   collectMarkdownArtifacts,
   buildAgentManifest,
   writeAgentArtifacts,
-} from '@arach/dewey/agent-artifacts'
+} from '@deweydocs/dewey/agent-artifacts'
 
 const input = { rootDir: process.cwd(), docsDir: './docs' }
 const project = { name: 'pkg', version: '1.0.0' }
@@ -183,7 +183,7 @@ ThemeName = ThemePreset =
 | `isThemeName(string)` | type guard |
 | `resolveTheme(string?)` | valid theme or `'neutral'` fallback |
 
-All current themes are published and generated-site-valid. Pair `theme="ocean"` with `@arach/dewey/css/colors/ocean.css`.
+All current themes are published and generated-site-valid. Pair `theme="ocean"` with `@deweydocs/dewey/css/colors/ocean.css`.
 
 Custom `ThemeConfig`: `preset?: ThemePreset`; `colors?: {primary?,background?,foreground?,accent?}`; `fonts?: {sans?,mono?}`.
 
@@ -196,10 +196,10 @@ import {
   CopyButtons,
   DeweyProvider,
   MarkdownContent,
-} from '@arach/dewey'
-import '@arach/dewey/css/base.css'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/colors/ocean.css'
+} from '@deweydocs/dewey'
+import '@deweydocs/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/colors/ocean.css'
 
 export function Page({ markdown, agentMarkdown }: {
   markdown: string
@@ -304,11 +304,11 @@ legacy DocSection.level = 2 | 3
 ## Structured agent content
 
 ```ts
-import { agentContent, renderAgentMarkdown } from '@arach/dewey'
+import { agentContent, renderAgentMarkdown } from '@deweydocs/dewey'
 
 const content = agentContent('api', 'API', 'Public contracts')
   .enums('Themes', { ThemePreset: ['neutral', 'ocean'] })
-  .code('Import', 'ts', "import { defineConfig } from '@arach/dewey'")
+  .code('Import', 'ts', "import { defineConfig } from '@deweydocs/dewey'")
   .build()
 
 const markdown = renderAgentMarkdown(content)

@@ -316,7 +316,7 @@ describe('create composition and dependency compatibility', () => {
       scripts: Record<string, string>
     }
     expect(packageJson.dependencies).toMatchObject({
-      '@arach/dewey': DEWEY_VERSION,
+      '@deweydocs/dewey': DEWEY_VERSION,
       'next': '14.2.35',
       'react': '18.3.1',
     })

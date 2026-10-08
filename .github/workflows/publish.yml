@@ -79,21 +79,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: bun run --cwd packages/docs verify:release ${{ steps.tag_version.outputs.VERSION }}
 
-      - name: Publish @arach/dewey (tag)
+      - name: Publish @deweydocs/dewey (tag)
         if: startsWith(github.ref, 'refs/tags/v')
         working-directory: packages/docs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public
 
-      - name: Publish @arach/dewey (manual)
+      - name: Publish @deweydocs/dewey (manual)
         if: github.event_name == 'workflow_dispatch'
         working-directory: packages/docs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "DRY RUN: Would publish @arach/dewey"
+            echo "DRY RUN: Would publish @deweydocs/dewey"
             npm publish --dry-run --access public
           else
             npm publish --access public

@@ -1,29 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DocsApp, type ThemeId } from '@arach/dewey'
+import { DocsApp, type ThemeId } from '@deweydocs/dewey'
 import type { DocsAppLayoutConfig } from '@/lib/templates'
 import { previewDataset, sampleDocs, previewDocsAppConfig } from '@/lib/preview-content'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/base.css'
 
 const THEME_CSS: Record<ThemeId, () => Promise<unknown>> = {
-  neutral: () => import('@arach/dewey/css/colors/neutral.css'),
-  ocean: () => import('@arach/dewey/css/colors/ocean.css'),
-  emerald: () => import('@arach/dewey/css/colors/emerald.css'),
-  purple: () => import('@arach/dewey/css/colors/purple.css'),
-  dusk: () => import('@arach/dewey/css/colors/dusk.css'),
-  rose: () => import('@arach/dewey/css/colors/rose.css'),
-  github: () => import('@arach/dewey/css/colors/github.css'),
-  warm: () => import('@arach/dewey/css/colors/warm.css'),
-  midnight: () => import('@arach/dewey/css/colors/midnight.css'),
-  mono: () => import('@arach/dewey/css/colors/mono.css'),
+  neutral: () => import('@deweydocs/dewey/css/colors/neutral.css'),
+  ocean: () => import('@deweydocs/dewey/css/colors/ocean.css'),
+  emerald: () => import('@deweydocs/dewey/css/colors/emerald.css'),
+  purple: () => import('@deweydocs/dewey/css/colors/purple.css'),
+  dusk: () => import('@deweydocs/dewey/css/colors/dusk.css'),
+  rose: () => import('@deweydocs/dewey/css/colors/rose.css'),
+  github: () => import('@deweydocs/dewey/css/colors/github.css'),
+  warm: () => import('@deweydocs/dewey/css/colors/warm.css'),
+  midnight: () => import('@deweydocs/dewey/css/colors/midnight.css'),
+  mono: () => import('@deweydocs/dewey/css/colors/mono.css'),
 }
 
 const SKIN_CSS: Record<string, () => Promise<unknown>> = {
-  atlas: () => import('@arach/dewey/css/skins/atlas.css'),
-  endpoint: () => import('@arach/dewey/css/skins/endpoint.css'),
-  terminal: () => import('@arach/dewey/css/skins/terminal.css'),
+  atlas: () => import('@deweydocs/dewey/css/skins/atlas.css'),
+  endpoint: () => import('@deweydocs/dewey/css/skins/endpoint.css'),
+  terminal: () => import('@deweydocs/dewey/css/skins/terminal.css'),
 }
 
 export function DocsAppThemePreview({

@@ -31,7 +31,7 @@ function packageRoot(): string {
   let directory = dirname(fileURLToPath(import.meta.url))
   while (dirname(directory) !== directory) {
     const path = join(directory, 'package.json')
-    if (existsSync(path) && JSON.parse(readFileSync(path, 'utf8')).name === '@arach/dewey') return directory
+    if (existsSync(path) && JSON.parse(readFileSync(path, 'utf8')).name === '@deweydocs/dewey') return directory
     directory = dirname(directory)
   }
   throw new Error('Cannot locate the Dewey renderer assets')

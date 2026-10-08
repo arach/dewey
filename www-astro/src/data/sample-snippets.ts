@@ -38,7 +38,7 @@ export const standardSections: StandardSection[] = [
     heading: 'Installation',
     prose: '<p>Install the package using your preferred package manager:</p>',
     codeSnippets: [
-      { code: 'npm install -D @arach/dewey', lang: 'bash' },
+      { code: 'npm install -D @deweydocs/dewey', lang: 'bash' },
     ],
     afterProse: '<p>Or with pnpm:</p>',
   },
@@ -47,7 +47,7 @@ export const standardSections: StandardSection[] = [
     heading: '',
     prose: '',
     codeSnippets: [
-      { code: 'pnpm add -D @arach/dewey', lang: 'bash' },
+      { code: 'pnpm add -D @deweydocs/dewey', lang: 'bash' },
     ],
   },
   {
@@ -61,7 +61,7 @@ export const standardSections: StandardSection[] = [
 # This creates docs/ and dewey.config.ts
 # Edit the config with your project context:
 
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',
@@ -141,13 +141,13 @@ export const splitpaneSections: SplitpaneSection[] = [
     codeSnippets: [
       {
         code: `# npm
-npm install -D @arach/dewey
+npm install -D @deweydocs/dewey
 
 # pnpm
-pnpm add -D @arach/dewey
+pnpm add -D @deweydocs/dewey
 
 # yarn
-yarn add -D @arach/dewey`,
+yarn add -D @deweydocs/dewey`,
         lang: 'bash',
       },
     ],
@@ -159,7 +159,7 @@ yarn add -D @arach/dewey`,
 <p>Edit <code>dewey.config.ts</code> with your project context to customize output generation.</p>`,
     codeSnippets: [
       {
-        code: `import { defineConfig } from '@arach/dewey'
+        code: `import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',

@@ -67,7 +67,7 @@ export const NEXTJS_TEMPLATES: Record<string, (args: NextjsTemplateArgs) => stri
 const nextConfig = {
   output: 'export',
   images: { unoptimized: true },
-  transpilePackages: ['@arach/dewey'],
+  transpilePackages: ['@deweydocs/dewey'],
 }
 
 module.exports = nextConfig
@@ -101,9 +101,9 @@ module.exports = nextConfig
       ? 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap'
       : 'https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap'
     return `import type { Metadata } from 'next'
-import '@arach/dewey/css/base.css'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/colors/${args.theme}.css'
+import '@deweydocs/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/colors/${args.theme}.css'
 import './globals.css'
 import { Providers } from './providers'
 
@@ -431,7 +431,7 @@ ${fontOverrides}
 
   'src/app/providers.tsx': () => `'use client'
 
-import { DeweyProvider } from '@arach/dewey'
+import { DeweyProvider } from '@deweydocs/dewey'
 import { providerProps } from '@/lib/dewey'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -686,7 +686,7 @@ export default async function DocPage({ params }: PageProps) {
 
 import { useState } from 'react'
 import { components } from '@/lib/dewey'
-import { CopyButtons } from '@arach/dewey'
+import { CopyButtons } from '@deweydocs/dewey'
 import type { DocData } from '@/lib/docs'
 
 const { MarkdownContent, TableOfContents } = components
@@ -827,7 +827,7 @@ export function getAllDocSlugs(): string[] {
 `,
 
   'src/lib/navigation.ts': () => `import docsJson from '../../docs.json'
-import type { PageNode } from '@arach/dewey'
+import type { PageNode } from '@deweydocs/dewey'
 
 interface DocsGroup {
   id: string
@@ -897,8 +897,8 @@ export function generateDeweyTsx(args: NextjsTemplateArgs): string {
   Sidebar as DefaultSidebar,
   AutoTableOfContents as DefaultToc,
   MarkdownContent as DefaultContent,
-} from '@arach/dewey'
-import type { DeweyProviderProps } from '@arach/dewey'
+} from '@deweydocs/dewey'
+import type { DeweyProviderProps } from '@deweydocs/dewey'
 import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
 
@@ -946,7 +946,7 @@ export function generateNextjsPackageJson(args: NextjsTemplateArgs): string {
       lint: 'next lint',
     },
     dependencies: {
-      '@arach/dewey': DEWEY_VERSION,
+      '@deweydocs/dewey': DEWEY_VERSION,
       'gray-matter': '4.0.3',
       'next': '14.2.35',
       'react': '18.3.1',

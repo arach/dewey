@@ -1,6 +1,6 @@
 ---
 title: API Reference
-description: Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey
+description: Public TypeScript, React, theme, and agent-artifact APIs for @deweydocs/dewey
 order: 5
 group: Reference
 groupId: reference
@@ -15,10 +15,10 @@ Dewey’s primary product surface is the CLI: `dewey init`, `build` and `check` 
 | Set up docs, front door and site | CLI | `bunx dewey init` |
 | Build the site, `llms.txt`, `.md` copies and `llms-full.txt` | CLI | `bunx dewey build` |
 | Check maps, reviews, references and outputs | CLI | `bunx dewey check` |
-| Collect or build 0.4 retrieval artifacts in code | Artifact subpath | `@arach/dewey/agent-artifacts` |
-| Render Markdown in an existing React app | Optional UI | `@arach/dewey` + CSS subpaths |
-| Style a site with a house skin | CSS subpath | `@arach/dewey/css/skins/<name>.css` |
-| Type-check a `dewey.config.ts` for the frozen commands | Main TypeScript module | `@arach/dewey` |
+| Collect or build 0.4 retrieval artifacts in code | Artifact subpath | `@deweydocs/dewey/agent-artifacts` |
+| Render Markdown in an existing React app | Optional UI | `@deweydocs/dewey` + CSS subpaths |
+| Style a site with a house skin | CSS subpath | `@deweydocs/dewey/css/skins/<name>.css` |
+| Type-check a `dewey.config.ts` for the frozen commands | Main TypeScript module | `@deweydocs/dewey` |
 
 The React components render Markdown for people inside an app you already have. They do not replace `dewey build`, which writes its own static site.
 
@@ -26,17 +26,17 @@ The React components render Markdown for people inside an app you already have. 
 
 | Package path | Contents |
 |---|---|
-| `@arach/dewey` | Configuration helper, themes, React components, hooks, skills, utilities, and types |
-| `@arach/dewey/react` | Compatibility alias for the same module as `@arach/dewey` |
-| `@arach/dewey/agent-artifacts` | Markdown collection, manifests, bundles, and ownership-safe artifact writing |
-| `@arach/dewey/css` | Full CSS bundle |
-| `@arach/dewey/styles` | Alias for the full CSS bundle |
-| `@arach/dewey/css/base.css` | Base component styles |
-| `@arach/dewey/css/tokens` | Semantic `--dw-*` tokens |
-| `@arach/dewey/css/tailwind` | Tailwind-oriented CSS |
-| `@arach/dewey/css/colors/<theme>.css` | One published color preset |
-| `@arach/dewey/css/skins/<name>.css` | One site skin: `dewey`, `openscout`, `talkie`, `lattices`, `hudsonkit`, `atlas`, `endpoint`, `terminal` |
-| `@arach/dewey/tailwind` | Tailwind preset module |
+| `@deweydocs/dewey` | Configuration helper, themes, React components, hooks, skills, utilities, and types |
+| `@deweydocs/dewey/react` | Compatibility alias for the same module as `@deweydocs/dewey` |
+| `@deweydocs/dewey/agent-artifacts` | Markdown collection, manifests, bundles, and ownership-safe artifact writing |
+| `@deweydocs/dewey/css` | Full CSS bundle |
+| `@deweydocs/dewey/styles` | Alias for the full CSS bundle |
+| `@deweydocs/dewey/css/base.css` | Base component styles |
+| `@deweydocs/dewey/css/tokens` | Semantic `--dw-*` tokens |
+| `@deweydocs/dewey/css/tailwind` | Tailwind-oriented CSS |
+| `@deweydocs/dewey/css/colors/<theme>.css` | One published color preset |
+| `@deweydocs/dewey/css/skins/<name>.css` | One site skin: `dewey`, `openscout`, `talkie`, `lattices`, `hudsonkit`, `atlas`, `endpoint`, `terminal` |
+| `@deweydocs/dewey/tailwind` | Tailwind preset module |
 
 There is no wildcard color export. `<theme>` must be one of the fourteen published names listed under [Themes](#themes).
 
@@ -46,7 +46,7 @@ There is no wildcard color export. `<theme>` must be one of the fourteen publish
 
 ```ts
 // dewey.config.ts
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   project: {
@@ -102,7 +102,7 @@ export default defineConfig({
 
 ## Programmatic agent artifacts
 
-Import this surface from `@arach/dewey/agent-artifacts`, implemented in `packages/docs/src/cli/agent-artifacts.ts`.
+Import this surface from `@deweydocs/dewey/agent-artifacts`, implemented in `packages/docs/src/cli/agent-artifacts.ts`.
 
 ```ts
 import {
@@ -110,7 +110,7 @@ import {
   collectMarkdownArtifacts,
   getMarkdownArtifact,
   writeAgentArtifacts,
-} from '@arach/dewey/agent-artifacts'
+} from '@deweydocs/dewey/agent-artifacts'
 
 const options = {
   rootDir: process.cwd(),
@@ -176,10 +176,10 @@ import {
   CopyButtons,
   DeweyProvider,
   MarkdownContent,
-} from '@arach/dewey'
-import '@arach/dewey/css/base.css'
-import '@arach/dewey/css/tokens'
-import '@arach/dewey/css/colors/ocean.css'
+} from '@deweydocs/dewey'
+import '@deweydocs/dewey/css/base.css'
+import '@deweydocs/dewey/css/tokens'
+import '@deweydocs/dewey/css/colors/ocean.css'
 
 export function DocPage({ markdown, agentMarkdown }: {
   markdown: string
@@ -258,7 +258,7 @@ import {
   isThemeName,
   resolveTheme,
   type ThemeName,
-} from '@arach/dewey'
+} from '@deweydocs/dewey'
 
 const input = process.env.DOCS_THEME
 const theme: ThemeName = resolveTheme(input) // invalid or missing -> 'neutral'
@@ -301,11 +301,11 @@ import {
   agentContent,
   renderAgentJson,
   renderAgentMarkdown,
-} from '@arach/dewey'
+} from '@deweydocs/dewey'
 
 const api = agentContent('api', 'API', 'Public package contracts')
   .enums('Themes', { ThemePreset: ['neutral', 'ocean'] })
-  .code('Import', 'ts', "import { defineConfig } from '@arach/dewey'")
+  .code('Import', 'ts', "import { defineConfig } from '@deweydocs/dewey'")
   .build()
 
 const markdown = renderAgentMarkdown(api)

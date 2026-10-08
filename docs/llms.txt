@@ -11,7 +11,7 @@
 
 ## Installation
 
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 
 ## CLI
 
@@ -50,4 +50,4 @@ Frozen (warn, will be removed): audit, generate, agent, create, update, eject
 ## Links
 
 - GitHub: https://github.com/arach/dewey
-- npm: https://www.npmjs.com/package/@arach/dewey
+- npm: https://www.npmjs.com/package/@deweydocs/dewey

@@ -1,7 +1,7 @@
  'use client'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import '@/app/landing-minimal.css'
-const commands: Record<string,string> = {bun:'bun add -d @arach/dewey',npm:'npm install -D @arach/dewey',pnpm:'pnpm add -D @arach/dewey',yarn:'yarn add -D @arach/dewey'}
+const commands: Record<string,string> = {bun:'bun add -d @deweydocs/dewey',npm:'npm install -D @deweydocs/dewey',pnpm:'pnpm add -D @deweydocs/dewey',yarn:'yarn add -D @deweydocs/dewey'}
 function selectTab(tab: HTMLElement) {
  const group=tab.closest('[role="tablist"]')!;
  group.querySelectorAll<HTMLElement>('[role="tab"]').forEach(t=>{
@@ -49,7 +49,7 @@ export function MinimalLandingPage(){return <div className="dewey-home" onClick=
 <button type="button" role="tab" data-pkg="pnpm" aria-selected="false" tabIndex={-1}>{"pnpm"}</button>
 <button type="button" role="tab" data-pkg="yarn" aria-selected="false" tabIndex={-1}>{"yarn"}</button>
 </div>
-<div className="install-row"><code data-cmd>{"bun add -d @arach/dewey"}</code><button type="button" data-copy>{"Copy"}</button></div>
+<div className="install-row"><code data-cmd>{"bun add -d @deweydocs/dewey"}</code><button type="button" data-copy>{"Copy"}</button></div>
 </div>
 <div className="actions">
 <a className="btn primary" href="/docs/quickstart">{"Read the quickstart "}<span aria-hidden="true">{"\u2192"}</span></a>
@@ -123,7 +123,7 @@ export function MinimalLandingPage(){return <div className="dewey-home" onClick=
 <li id="q-init">{"Initialise with the project\u2019s purpose and hard rules."}</li>
 <li id="q-verify">{"Build, then check."}</li>
 </ol>
-<pre className="snippet">{"bun add -d @arach/dewey\nbunx dewey init --purpose \"\u2026\" --no-rules\nbunx dewey build\nbunx dewey check   "}<span className="c">{"# Dewey check passed"}</span></pre>
+<pre className="snippet">{"bun add -d @deweydocs/dewey\nbunx dewey init --purpose \"\u2026\" --no-rules\nbunx dewey build\nbunx dewey check   "}<span className="c">{"# Dewey check passed"}</span></pre>
 </div>
 <div className="pane" id="pane-agent" role="tabpanel" aria-labelledby="tab-agent" tabIndex={0} hidden>
 <p className="kv-title">{"src.agent.md"}</p>
@@ -251,7 +251,7 @@ export function MinimalLandingPage(){return <div className="dewey-home" onClick=
 <nav aria-label="Footer">
 <a href="/docs">{"Docs"}</a>
 <a href="/contact">{"Contact"}</a>
-<a href="https://www.npmjs.com/package/@arach/dewey">{"npm"}</a>
+<a href="https://www.npmjs.com/package/@deweydocs/dewey">{"npm"}</a>
 <a href="https://github.com/arach/dewey">{"GitHub"}</a>
 </nav>
 </div>

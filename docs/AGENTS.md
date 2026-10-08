@@ -56,7 +56,7 @@ Skills are exportable LLM prompts that guide agents:
 ### Using Skills
 
 ```typescript
-import { docsReviewAgent } from '@arach/dewey'
+import { docsReviewAgent } from '@deweydocs/dewey'
 
 // Get the prompt template
 const prompt = docsReviewAgent.reviewPage

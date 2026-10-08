@@ -1,6 +1,6 @@
 {
   "name": "@arach/dewey",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Documentation toolkit for AI-agent-ready docs — audit, score, generate AGENTS.md/llms.txt/docs.json, and optionally publish a static site",
   "homepage": "https://deweydocs.com",
   "bugs": {
@@ -50,6 +50,14 @@
       "style": "./dist/css/colors/emerald.css",
       "default": "./dist/css/colors/emerald.css"
     },
+    "./css/colors/ink.css": {
+      "style": "./dist/css/colors/ink.css",
+      "default": "./dist/css/colors/ink.css"
+    },
+    "./css/colors/slate.css": {
+      "style": "./dist/css/colors/slate.css",
+      "default": "./dist/css/colors/slate.css"
+    },
     "./css/colors/purple.css": {
       "style": "./dist/css/colors/purple.css",
       "default": "./dist/css/colors/purple.css"
@@ -94,6 +102,26 @@
       "style": "./dist/css/skins/terminal.css",
       "default": "./dist/css/skins/terminal.css"
     },
+    "./css/skins/dewey.css": {
+      "style": "./dist/css/skins/dewey.css",
+      "default": "./dist/css/skins/dewey.css"
+    },
+    "./css/skins/openscout.css": {
+      "style": "./dist/css/skins/openscout.css",
+      "default": "./dist/css/skins/openscout.css"
+    },
+    "./css/skins/talkie.css": {
+      "style": "./dist/css/skins/talkie.css",
+      "default": "./dist/css/skins/talkie.css"
+    },
+    "./css/skins/lattices.css": {
+      "style": "./dist/css/skins/lattices.css",
+      "default": "./dist/css/skins/lattices.css"
+    },
+    "./css/skins/hudsonkit.css": {
+      "style": "./dist/css/skins/hudsonkit.css",
+      "default": "./dist/css/skins/hudsonkit.css"
+    },
     "./css/colors/hudson.css": {
       "style": "./dist/css/colors/hudson.css",
       "default": "./dist/css/colors/hudson.css"
@@ -129,6 +157,7 @@
     "test": "bun test test/*.test.ts tests/*.test.ts",
     "test:visual": "playwright test",
     "verify:package": "bun scripts/verify-package.ts",
+    "verify:install": "bun scripts/package-install-smoke.ts",
     "verify:release": "bun scripts/verify-release-version.ts"
   },
   "peerDependencies": {
@@ -150,6 +179,8 @@
     "highlight.js": "^11.11.1",
     "lucide-react": "^1.22.0",
     "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.6.0",

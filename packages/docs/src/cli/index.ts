@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { initCommand } from './commands/init.js'
+import { freshInit, freshBuild, freshCheck, freshNew, reviewDocument } from './fresh/commands.js'
+import { freshUncovered, freshWhich } from './fresh/query.js'
 import { auditCommand } from './commands/audit.js'
 import { generateCommand } from './commands/generate.js'
 import { agentCoachCommand } from './commands/agent-coach.js'
@@ -11,6 +12,12 @@ import { DEWEY_VERSION } from './version.js'
 import { VALID_THEMES } from '../themes.js'
 
 const program = new Command()
+// The v2 commands are frozen: they still run, but new work goes into init/build/check.
+const FROZEN = new Set(['audit', 'generate', 'agent', 'create', 'update', 'eject'])
+program.hook('preAction', (_, command) => {
+  // JSON callers get clean stderr.
+  if (FROZEN.has(command.name()) && !command.opts().json) console.error(`dewey ${command.name()} is frozen and will be removed. Use dewey init, build and check instead.`)
+})
 
 program
   .name('dewey')
@@ -19,21 +26,50 @@ program
 
 program
   .command('init')
-  .description('Initialize docs structure and dewey.config.ts')
-  .option('-t, --type <type>', 'Project type (macos-app, npm-package, cli-tool, react-library, monorepo)', 'generic')
-  .option('-f, --force', 'Overwrite existing files')
-  .action(initCommand)
+  .description('Start a fresh project: front door, maps, guides, skill, and docs site')
+  .option('--purpose <text>', 'Project purpose (defaults to package description)')
+  .option('--rule <text>', 'Hard rule; repeat for multiple rules', (value: string, previous: string[]) => [...(previous ?? []), value], undefined)
+  .option('--no-rules', 'Explicitly declare no project-specific hard rules')
+  .option('--host <file>', 'Tool-specific instruction file that should redirect to AGENTS.md; repeatable', (value: string, previous: string[]) => [...(previous ?? []), value], undefined)
+  .action(options => freshInit(options))
+
+program.command('build')
+  .description('Build the human docs site and llms.txt from the same Markdown')
+  .action(() => freshBuild())
+
+program.command('check')
+  .description('Check maps, review state, references, front door, site links, navigation, and freshness')
+  .option('--json', 'Output structured issues')
+  .action(freshCheck)
+
+program.command('review <document>')
+  .description('Acknowledge that a covered document was reviewed against current source')
+  .action(document => reviewDocument(document))
+
+program.command('new <kind> <name>')
+  .description('Create a draft doc: map <source area>, guide <title>, reference <title> or history <title>')
+  .action((kind, name) => freshNew(kind, name))
+
+program.command('which <path>')
+  .description('List the docs that cover a file or directory, with their size')
+  .option('--json', 'Output structured results')
+  .action((path, options) => freshWhich(path, options))
+
+program.command('uncovered')
+  .description('List source files that no map covers, by area')
+  .option('--json', 'Output structured results')
+  .action(freshUncovered)
 
 program
   .command('audit')
-  .description('Validate documentation completeness')
+  .description('[frozen] Validate documentation completeness')
   .option('-v, --verbose', 'Show detailed output')
   .option('--json', 'Output as JSON')
   .action(auditCommand)
 
 program
   .command('generate')
-  .description('Generate agent-ready files (AGENTS.md, llms.txt, docs.json, install.md)')
+  .description('[frozen] Generate agent-ready files (AGENTS.md, llms.txt, docs.json, install.md)')
   .option('-o, --output <dir>', 'Output directory')
   .option('-s, --source <path>', 'Override the configured docs source directory')
   .option('--agents-md', 'Generate only AGENTS.md')
@@ -49,14 +85,14 @@ program
 
 program
   .command('agent')
-  .description('Check agent-readiness and get recommendations')
+  .description('[frozen] Check agent-readiness and get recommendations')
   .option('-v, --verbose', 'Show detailed check results')
   .option('--json', 'Output as JSON')
   .action(agentCoachCommand)
 
 program
   .command('create <project-dir>')
-  .description('Create a new docs site from markdown sources')
+  .description('[frozen] Create a new docs site from markdown sources')
   .option('-s, --source <path>', 'Path to markdown docs directory', './docs')
   .option('-n, --name <name>', 'Project name (defaults to directory name)')
   .option('-t, --template <template>', 'Template to use (nextjs, astro)', 'nextjs')
@@ -65,19 +101,22 @@ program
 
 program
   .command('update [dir]')
-  .description('Update Dewey-owned site files to the latest version')
+  .description('[frozen] Update Dewey-owned site files to the latest version')
   .option('--dry-run', 'Preview changes without writing')
   .option('--force', 'Overwrite user-modified files (creates backups)')
   .action(updateCommand)
 
 program
   .command('eject <component>')
-  .description('Eject a component for customization (Header, Sidebar, TableOfContents, MarkdownContent)')
+  .description('[frozen] Eject a component for customization (Header, Sidebar, TableOfContents, MarkdownContent)')
   .argument('[dir]', 'Target Dewey site directory', '.')
   .option('--full', 'Full eject (no default import, complete replacement)')
   .action(ejectCommand)
 
-program.parse()
+program.parseAsync().catch(error => {
+  console.error(error instanceof Error ? error.message : String(error))
+  process.exitCode = 1
+})
 
 // Export for programmatic use
 export { defineConfig } from './schema.js'

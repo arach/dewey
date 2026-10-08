@@ -1,11 +1,11 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeSlug from 'rehype-slug'
 import matter from 'gray-matter'
-import { useMemo } from 'react'
+import { Children, isValidElement, useMemo, type ReactNode } from 'react'
 import { CodeBlock } from './CodeBlock'
 import { HeadingLink } from './HeadingLink'
 import { rehypeDwSplit } from '../utils/rehype-split'
+import { markdownRehype } from '../utils/rehype-html'
 
 export interface MarkdownContentProps {
   content: string
@@ -33,28 +33,28 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
     <div className={`dw-prose${isDark ? ' dark' : ''}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={split ? [rehypeSlug, rehypeDwSplit] : [rehypeSlug]}
+        rehypePlugins={split ? [...markdownRehype, rehypeDwSplit] : markdownRehype}
         components={{
         // Headings with anchor links
-        h1: ({ children, id, ...props }) => (
+        h1: ({ children, id, node: _node, ...props }) => (
           <h1 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="lg" />}
           </h1>
         ),
-        h2: ({ children, id, ...props }) => (
+        h2: ({ children, id, node: _node, ...props }) => (
           <h2 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="lg" />}
           </h2>
         ),
-        h3: ({ children, id, ...props }) => (
+        h3: ({ children, id, node: _node, ...props }) => (
           <h3 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="md" />}
           </h3>
         ),
-        h4: ({ children, id, ...props }) => (
+        h4: ({ children, id, node: _node, ...props }) => (
           <h4 id={id} className="dw-markdown-heading group" {...props}>
             {children}
             {id && <HeadingLink id={id} size="sm" />}
@@ -62,35 +62,34 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         ),
 
         // Code blocks
+        // A fence is always a block, with or without a language; bare `code` is inline.
         pre: ({ children }) => {
-          // The pre tag wraps code, so we pass through
-          return <>{children}</>
-        },
-        code: ({ className, children }) => {
-          const isInline = !className?.includes('language-')
-          const code = String(children).replace(/\n$/, '')
-
+          const child = Children.toArray(children)[0]
+          const props = (isValidElement(child) ? child.props : {}) as { className?: string, children?: ReactNode }
           return (
-            <CodeBlock
-              className={className}
-              inline={isInline}
-              isDark={isDark}
-            >
-              {code}
+            <CodeBlock className={props.className} inline={false} isDark={isDark}>
+              {String(props.children ?? '').replace(/\n$/, '')}
             </CodeBlock>
           )
         },
+        code: ({ className, children }) => (
+          <CodeBlock className={className} inline isDark={isDark}>
+            {String(children)}
+          </CodeBlock>
+        ),
 
         // Blockquotes
-        blockquote: ({ children, ...props }) => (
-          <blockquote className="dw-markdown-blockquote" {...props}>
+        blockquote: ({ children, className, node: _node, ...props }) => (
+          <blockquote className={className ? `dw-markdown-blockquote ${className}` : 'dw-markdown-blockquote'} {...props}>
             {children}
           </blockquote>
         ),
 
         // Links
-        a: ({ href, children, ...props }) => {
-          const isExternal = href?.startsWith('http')
+        a: ({ href, children, node, ...props }) => {
+          // A linked image or badge needs no arrow after it.
+          const imageOnly = node?.children.every(child => (child.type === 'element' && child.tagName === 'img') || (child.type === 'text' && !child.value.trim()))
+          const isExternal = href?.startsWith('http') && !imageOnly
 
           // Convert internal .md links to clean routes
           const processedHref = normalizeMarkdownHref(href)
@@ -112,7 +111,7 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         },
 
         // Tables
-        table: ({ children, ...props }) => (
+        table: ({ children, node: _node, ...props }) => (
           <div className="dw-markdown-table-scroll">
             <table {...props}>
               {children}
@@ -121,7 +120,7 @@ export function MarkdownContent({ content, isDark = false, split = false }: Mark
         ),
 
         // Images
-        img: ({ src, alt, ...props }) => (
+        img: ({ src, alt, node: _node, ...props }) => (
           <img
             src={src}
             alt={alt}

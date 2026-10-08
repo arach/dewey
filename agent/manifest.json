@@ -3,7 +3,7 @@
   "version": 1,
   "project": {
     "name": "dewey",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "tagline": "Documentation toolkit for AI-agent-ready docs",
     "repository": null
   },
@@ -21,6 +21,7 @@
     "allMarkdown": "/agent/bundles/all.md",
     "promptBundle": "/agent/bundles/prompts.md",
     "rawMarkdownBase": "/agent/raw/docs/",
+    "diagram": "/agent/diagram.json",
     "bundles": {
       "core": "/agent/bundles/core.md",
       "prompts": "/agent/bundles/prompts.md",

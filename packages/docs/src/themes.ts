@@ -19,6 +19,8 @@ export const THEME_REGISTRY = {
   editorial: { cssFile: 'editorial.css', generatedSite: true },
   mono: { cssFile: 'mono.css', generatedSite: true },
   hudson: { cssFile: 'hudson.css', generatedSite: true },
+  ink: { cssFile: 'ink.css', generatedSite: true },
+  slate: { cssFile: 'slate.css', generatedSite: true },
 } as const satisfies Record<string, ThemeDefinition>
 
 export type ThemePreset = keyof typeof THEME_REGISTRY

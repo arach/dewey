@@ -94,9 +94,9 @@ async function smokeRelease(): Promise<void> {
     const fixtureDir = join(workDir, 'fixture')
     await mkdir(fixtureDir)
     await writeFile(join(fixtureDir, 'package.json'), JSON.stringify({ name: 'release-smoke-fixture' }))
-    run(cli, ['init'], fixtureDir, environment)
-    run(cli, ['generate'], fixtureDir, environment)
-    for (const output of ['AGENTS.md', 'llms.txt', 'docs.json', 'install.md', 'agent/manifest.json']) {
+    run(cli, ['init', '--purpose', 'Release smoke fixture', '--no-rules'], fixtureDir, environment)
+    run(cli, ['build'], fixtureDir, environment)
+    for (const output of ['AGENTS.md', 'llms.txt', '.dewey/project.json', '.dewey/site/index.html', '.dewey/site/llms.txt']) {
       await readFile(join(fixtureDir, output))
     }
 
@@ -109,7 +109,7 @@ async function smokeRelease(): Promise<void> {
     run('bun', ['run', 'build'], siteDir, environment)
 
     console.log(`✓ Release smoke passed for ${summary.name}@${summary.version}`)
-    console.log('  clean checkout, pack inspection, install/import, CLI generation, generated Next.js build')
+    console.log('  clean checkout, pack inspection, install/import, init and build, generated Next.js build')
   } finally {
     await rm(workDir, { recursive: true, force: true })
   }

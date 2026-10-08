@@ -1,0 +1,353 @@
+{
+  "layout": {
+    "width": 1240,
+    "height": 890
+  },
+  "nodes": {
+    "project": {
+      "x": 60,
+      "y": 70,
+      "size": "l"
+    },
+    "overview": {
+      "x": 340,
+      "y": 70,
+      "size": "m"
+    },
+    "quickstart": {
+      "x": 620,
+      "y": 70,
+      "size": "m"
+    },
+    "api": {
+      "x": 900,
+      "y": 70,
+      "size": "m"
+    },
+    "agent-api-agent": {
+      "x": 900,
+      "y": 220,
+      "size": "m"
+    },
+    "agent-cli-agent": {
+      "x": 620,
+      "y": 220,
+      "size": "m"
+    },
+    "agent-integrate-existing-site-agent": {
+      "x": 340,
+      "y": 220,
+      "size": "m"
+    },
+    "agent-maintenance-agent": {
+      "x": 60,
+      "y": 220,
+      "size": "m"
+    },
+    "agent-overview-agent": {
+      "x": 60,
+      "y": 370,
+      "size": "m"
+    },
+    "agent-quickstart-agent": {
+      "x": 340,
+      "y": 370,
+      "size": "m"
+    },
+    "agent-skills-agent": {
+      "x": 620,
+      "y": 370,
+      "size": "m"
+    },
+    "AGENTS": {
+      "x": 900,
+      "y": 370,
+      "size": "m"
+    },
+    "cli": {
+      "x": 900,
+      "y": 520,
+      "size": "m"
+    },
+    "integrate-existing-site": {
+      "x": 620,
+      "y": 520,
+      "size": "m"
+    },
+    "maintenance": {
+      "x": 340,
+      "y": 520,
+      "size": "m"
+    },
+    "prompts-audit-docs": {
+      "x": 60,
+      "y": 520,
+      "size": "m"
+    },
+    "prompts-create-agent-md": {
+      "x": 60,
+      "y": 670,
+      "size": "m"
+    },
+    "skills": {
+      "x": 340,
+      "y": 670,
+      "size": "m"
+    }
+  },
+  "nodeData": {
+    "project": {
+      "icon": "Package",
+      "name": "dewey",
+      "subtitle": "Documentation toolkit for AI-agent-ready docs",
+      "color": "orange"
+    },
+    "overview": {
+      "icon": "FileCode",
+      "name": "Overview",
+      "subtitle": "overview",
+      "description": "Documentation toolkit for AI-agent-ready docs",
+      "color": "blue"
+    },
+    "quickstart": {
+      "icon": "FileCode",
+      "name": "Quickstart",
+      "subtitle": "quickstart",
+      "description": "Get your documentation agent-ready in under 5 minutes",
+      "color": "blue"
+    },
+    "api": {
+      "icon": "FileCode",
+      "name": "API Reference",
+      "subtitle": "api",
+      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+      "color": "blue"
+    },
+    "agent-api-agent": {
+      "icon": "Cpu",
+      "name": "API Reference",
+      "subtitle": "agent/api.agent",
+      "description": "Dense contract for Dewey's public TypeScript, React, theme, and artifact APIs",
+      "color": "emerald"
+    },
+    "agent-cli-agent": {
+      "icon": "Cpu",
+      "name": "CLI Reference",
+      "subtitle": "agent/cli.agent",
+      "description": "Dense Dewey CLI contract for agents",
+      "color": "emerald"
+    },
+    "agent-integrate-existing-site-agent": {
+      "icon": "Cpu",
+      "name": "Integrate existing site (agent)",
+      "subtitle": "agent/integrate-existing-site.agent",
+      "description": "Dense contract for embedding Dewey components in React/Next.js while keeping gen",
+      "color": "emerald"
+    },
+    "agent-maintenance-agent": {
+      "icon": "Cpu",
+      "name": "Maintaining generated sites",
+      "subtitle": "agent/maintenance.agent",
+      "description": "Dense ownership, update, ejection, recovery, backup, and release contract",
+      "color": "emerald"
+    },
+    "agent-overview-agent": {
+      "icon": "Cpu",
+      "name": "dewey - Agent Context",
+      "subtitle": "agent/overview.agent",
+      "description": "init → author → generate → audit → agent → optional UI",
+      "color": "emerald"
+    },
+    "agent-quickstart-agent": {
+      "icon": "Cpu",
+      "name": "Quickstart for agents",
+      "subtitle": "agent/quickstart.agent",
+      "description": "Deterministic setup sequence and expected Dewey outputs",
+      "color": "emerald"
+    },
+    "agent-skills-agent": {
+      "icon": "Cpu",
+      "name": "Skills for agents",
+      "subtitle": "agent/skills.agent",
+      "description": "Dewey skill inventory and authoring contract",
+      "color": "emerald"
+    },
+    "AGENTS": {
+      "icon": "FileCode",
+      "name": "dewey",
+      "subtitle": "AGENTS",
+      "description": "Documentation toolkit for AI-agent-ready docs and retrieval artifacts",
+      "color": "blue"
+    },
+    "cli": {
+      "icon": "FileCode",
+      "name": "CLI Reference",
+      "subtitle": "cli",
+      "description": "Dewey commands and their main options",
+      "color": "blue"
+    },
+    "integrate-existing-site": {
+      "icon": "FileCode",
+      "name": "Integrate into an existing site",
+      "subtitle": "integrate-existing-site",
+      "description": "Embed Dewey docs components in an existing React or Next.js app while keeping ag",
+      "color": "blue"
+    },
+    "maintenance": {
+      "icon": "FileCode",
+      "name": "Maintaining generated sites",
+      "subtitle": "maintenance",
+      "description": "Safely adopt, update, eject, recover, and release Dewey-generated sites",
+      "color": "blue"
+    },
+    "prompts-audit-docs": {
+      "icon": "Terminal",
+      "name": "Prompts Audit Docs",
+      "subtitle": "prompts/audit-docs",
+      "description": "Use this prompt to audit a project's documentation for agent-readiness.",
+      "color": "amber"
+    },
+    "prompts-create-agent-md": {
+      "icon": "Terminal",
+      "name": "Prompts Create Agent Md",
+      "subtitle": "prompts/create-agent-md",
+      "description": "Use this prompt to convert human documentation to agent-optimized format.",
+      "color": "amber"
+    },
+    "skills": {
+      "icon": "FileCode",
+      "name": "Skills",
+      "subtitle": "skills",
+      "description": "Expert instructions that guide AI agents through specific documentation tasks",
+      "color": "blue"
+    }
+  },
+  "connectors": [
+    {
+      "from": "project",
+      "to": "overview",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "overview",
+      "to": "quickstart",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "quickstart",
+      "to": "api",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "api",
+      "to": "agent-api-agent",
+      "fromAnchor": "bottom",
+      "toAnchor": "top",
+      "style": "reads"
+    },
+    {
+      "from": "agent-api-agent",
+      "to": "agent-cli-agent",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "agent-cli-agent",
+      "to": "agent-integrate-existing-site-agent",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "agent-integrate-existing-site-agent",
+      "to": "agent-maintenance-agent",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "agent-maintenance-agent",
+      "to": "agent-overview-agent",
+      "fromAnchor": "bottom",
+      "toAnchor": "top",
+      "style": "reads"
+    },
+    {
+      "from": "agent-overview-agent",
+      "to": "agent-quickstart-agent",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "agent-quickstart-agent",
+      "to": "agent-skills-agent",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "agent-skills-agent",
+      "to": "AGENTS",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    },
+    {
+      "from": "AGENTS",
+      "to": "cli",
+      "fromAnchor": "bottom",
+      "toAnchor": "top",
+      "style": "reads"
+    },
+    {
+      "from": "cli",
+      "to": "integrate-existing-site",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "integrate-existing-site",
+      "to": "maintenance",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "maintenance",
+      "to": "prompts-audit-docs",
+      "fromAnchor": "left",
+      "toAnchor": "right",
+      "style": "reads"
+    },
+    {
+      "from": "prompts-audit-docs",
+      "to": "prompts-create-agent-md",
+      "fromAnchor": "bottom",
+      "toAnchor": "top",
+      "style": "reads"
+    },
+    {
+      "from": "prompts-create-agent-md",
+      "to": "skills",
+      "fromAnchor": "right",
+      "toAnchor": "left",
+      "style": "reads"
+    }
+  ],
+  "connectorStyles": {
+    "reads": {
+      "color": "zinc",
+      "strokeWidth": 1.5,
+      "label": "reads"
+    }
+  }
+}

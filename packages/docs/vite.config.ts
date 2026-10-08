@@ -96,12 +96,13 @@ function copyCssPlugin() {
 }
 
 // micromark (used by react-markdown) creates a DOM element at module evaluation
-// time for decoding named character references. Guard every declaration form so
+// time for decoding named character references. Guard every declaration form, and the
+// renamed element$N the bundler may emit, so
 // optimized bundles remain importable in Node/SSR.
 export function guardTopLevelDocumentAccess(code: string): string {
   return code.replace(
-    /\b(const|let|var) element = document\.createElement\("i"\)/g,
-    '$1 element = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" }',
+    /\b(const|let|var) (element[\w$]*) = document\.createElement\("i"\)/g,
+    '$1 $2 = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" }',
   )
 }
 

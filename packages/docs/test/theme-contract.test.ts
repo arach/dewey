@@ -7,7 +7,7 @@ import { deweyPreset } from '../src/tailwind/preset'
 import { THEME_TOKENS } from '../src/cli/templates/astro'
 
 /**
- * Semantic-token contract + WCAG AA regression guard for the 12 color presets.
+ * Semantic-token contract + WCAG AA regression guard for the 13 color presets.
  *
  * Every preset must resolve the full token contract in light AND dark (either
  * itself or via the tokens.css floor), and the pairs that base.css actually
@@ -142,7 +142,7 @@ describe('theme token contract', () => {
     }
   })
 
-  test('all 12 presets resolve the full contract in light and dark', () => {
+  test('all 13 presets resolve the full contract in light and dark', () => {
     expect(themeFiles.map(file => file.replace(/\.css$/, ''))).toEqual([...PUBLISHED_CSS_THEMES].sort())
     for (const file of themeFiles) {
       const css = readFileSync(`${cssDir}/colors/${file}`, 'utf8')

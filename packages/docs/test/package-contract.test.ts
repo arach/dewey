@@ -39,4 +39,9 @@ describe('server-safe package bundle', () => {
       expect(guarded).not.toContain(`${declaration} element = document.createElement`)
     }
   })
+
+  test('guards the element the bundler renamed to avoid a clash', () => {
+    const guarded = guardTopLevelDocumentAccess('var element$4 = document.createElement("i");')
+    expect(guarded).toBe('var element$4 = typeof document !== "undefined" ? document.createElement("i") : { innerHTML: "", textContent: "" };')
+  })
 })

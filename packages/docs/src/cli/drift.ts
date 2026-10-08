@@ -1,4 +1,4 @@
-import { access, readdir, readFile } from 'fs/promises'
+import { access, readdir, readFile, stat } from 'fs/promises'
 import { extname, join, relative, resolve, sep } from 'path'
 
 export interface DriftDocument {
@@ -129,8 +129,23 @@ function extractSourceReferences(content: string): string[] {
   return sortedValues(references)
 }
 
+async function sourcePathStats(path: string) {
+  try {
+    return await stat(path)
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === 'ENOENT' || code === 'ENOTDIR') return null
+    throw error
+  }
+}
+
 async function collectFiles(path: string, output: Set<string>): Promise<void> {
-  if (!await fileExists(path)) return
+  const stats = await sourcePathStats(path)
+  if (stats?.isFile()) {
+    if (SOURCE_EXTENSIONS.has(extname(path))) output.add(path)
+    return
+  }
+  if (!stats?.isDirectory()) return
 
   const entries = await readdir(path, { withFileTypes: true })
   for (const entry of entries) {
@@ -152,7 +167,7 @@ async function collectSourceFiles(projectRoot: string, configuredPaths: string[]
 
   for (const parentName of ['packages', 'apps']) {
     const parent = join(projectRoot, parentName)
-    if (!await fileExists(parent)) continue
+    if (!(await sourcePathStats(parent))?.isDirectory()) continue
     const entries = await readdir(parent, { withFileTypes: true })
     for (const entry of entries) {
       if (!entry.isDirectory()) continue
@@ -164,11 +179,7 @@ async function collectSourceFiles(projectRoot: string, configuredPaths: string[]
   for (const configuredPath of configuredPaths) {
     const absolutePath = resolve(projectRoot, configuredPath)
     if (!absolutePath.startsWith(`${resolve(projectRoot)}${sep}`) && absolutePath !== resolve(projectRoot)) continue
-    if (SOURCE_EXTENSIONS.has(extname(absolutePath)) && await fileExists(absolutePath)) {
-      files.add(absolutePath)
-    } else {
-      await collectFiles(absolutePath, files)
-    }
+    await collectFiles(absolutePath, files)
   }
 
   return [...files].sort((a, b) => a.localeCompare(b))

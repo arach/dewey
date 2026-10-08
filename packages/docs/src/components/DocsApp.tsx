@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { Menu, Sun, Moon, ArrowLeft } from 'lucide-react'
 import { DeweyProvider, useDewey, useLink, type DeweyProviderProps } from './DeweyProvider'
 import { Sidebar } from './Sidebar'
@@ -21,8 +21,12 @@ export interface DocsAppConfig {
   tagline?: string
   /** Base path for docs (default: '/docs') */
   basePath?: string
-  /** Link back to main site */
-  homeUrl?: string
+  /** Link back to main site; false hides the header's Home link */
+  homeUrl?: string | false
+  /** Header label at the right; false hides it (default: 'DOCS') */
+  headerLabel?: string | false
+  /** Extra controls rendered in the header before the theme toggle */
+  headerActions?: ReactNode
   /** Navigation structure */
   navigation?: NavigationConfig
   /** Layout options — see TemplateLayoutSpec for the full model */
@@ -131,6 +135,8 @@ function DocsLayoutInternal({
     tagline,
     basePath = '/docs',
     homeUrl = '/',
+    headerLabel = 'DOCS',
+    headerActions,
     layout = {},
   } = config
 
@@ -261,14 +267,13 @@ function DocsLayoutInternal({
                 <span className="dw-header-brand-name">{name}</span>
               </Link>
 
-              {/* Divider */}
-              <span className="dw-header-divider" aria-hidden="true" />
-
-              {/* Home link */}
-              <Link href={homeUrl} className="dw-header-back">
-                <ArrowLeft className="dw-header-back-icon" aria-hidden="true" />
-                Home
-              </Link>
+              {homeUrl !== false && <>
+                <span className="dw-header-divider" aria-hidden="true" />
+                <Link href={homeUrl} className="dw-header-back">
+                  <ArrowLeft className="dw-header-back-icon" aria-hidden="true" />
+                  Home
+                </Link>
+              </>}
             </div>
 
             {/* Command bar is the primary nav surface in command mode */}
@@ -279,6 +284,7 @@ function DocsLayoutInternal({
             )}
 
             <div className="dw-header-right">
+              {headerActions}
               {/* Theme toggle */}
               <button
                 type="button"
@@ -290,8 +296,7 @@ function DocsLayoutInternal({
                 {isDark ? <Sun style={{ width: '1rem', height: '1rem' }} aria-hidden="true" /> : <Moon style={{ width: '1rem', height: '1rem' }} aria-hidden="true" />}
               </button>
 
-              {/* DOCS label */}
-              <span className="dw-header-label">DOCS</span>
+              {headerLabel !== false && <span className="dw-header-label">{headerLabel}</span>}
             </div>
           </div>
         </header>

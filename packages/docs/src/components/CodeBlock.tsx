@@ -62,7 +62,7 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   }
 
   // For inline code, use simple styling
-  if (inline || !className?.includes('language-')) {
+  if (inline) {
     return (
       <code className={`dw-inline-code${isDark ? ' dark' : ''}`}>
         {children}
@@ -71,12 +71,12 @@ export function CodeBlock({ children, className, inline, isDark = false }: CodeB
   }
 
   // Highlight the code
-  const code = typeof children === 'string' ? children.trim() : String(children).trim()
-  let highlighted: string
-  try {
-    highlighted = hljs.highlight(code, { language }).value
-  } catch {
-    highlighted = code
+  const code = String(children).replace(/^\n+|\s+$/g, '')
+  // Unregistered languages (text, mermaid, …) render as escaped plain code.
+  const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  let highlighted = escaped
+  if (hljs.getLanguage(language)) {
+    try { highlighted = hljs.highlight(code, { language }).value } catch { highlighted = escaped }
   }
 
   return (

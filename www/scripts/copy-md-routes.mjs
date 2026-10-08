@@ -43,3 +43,14 @@ async function walk(dir, onFile) {
 }
 
 await copyMarkdownRoutes()
+// Growth guides are authored in the canonical site, not the legacy root docs.
+// Publish their raw routes too so View as Markdown and assistant links resolve.
+const growthGuidesDir = resolve(root, 'docs/guides')
+await walk(growthGuidesDir, async (filePath) => {
+  const rel = relative(growthGuidesDir, filePath)
+  if (!rel.endsWith('.md')) return
+  const agent = rel.endsWith('.agent.md')
+  const dest = join(publicDir, agent ? 'agents/guides' : 'docs/guides', agent ? rel.replace(/\.agent\.md$/, '.md') : rel)
+  await mkdir(resolve(dest, '..'), { recursive: true })
+  await copyFile(filePath, dest)
+})

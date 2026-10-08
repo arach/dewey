@@ -19,31 +19,12 @@ interface DocsGroup {
 
 const data = docsIndex as { groups: DocsGroup[] }
 
-const coreItems: NavItem[] = data.groups
-  .find((g) => g.id === 'core')
-  ?.items.map((item) => ({
-    title: item.title,
-    href: `/docs/${item.id}`,
-  })) ?? []
-
-const referenceItems: NavItem[] = data.groups
-  .find((g) => g.id === 'reference')
-  ?.items.map((item) => ({
-    title: item.title,
-    href: `/docs/${item.id}`,
-  })) ?? []
-
-const promptItems: NavItem[] = data.groups
-  .find((g) => g.id === 'prompts')
-  ?.items.map((item) => ({
-    title: item.title,
-    href: `/docs/${item.id}`,
-  })) ?? []
-
 export const navGroups: NavGroup[] = [
-  { id: 'core', title: 'Core', items: coreItems },
-  { id: 'reference', title: 'Reference', items: referenceItems },
-  { id: 'prompts', title: 'Prompts', items: promptItems },
+  ...data.groups.map((group) => ({
+    id: group.id,
+    title: group.title,
+    items: group.items.map((item) => ({ title: item.title, href: `/docs/${item.id}` })),
+  })),
   { id: 'customization', title: 'Customization', items: [{ title: 'Templates', href: '/templates' }] },
   {
     id: 'agent-files',

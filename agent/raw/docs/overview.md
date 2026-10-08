@@ -81,7 +81,7 @@ The 0.4 commands `audit`, `generate`, `agent`, `create`, `update` and `eject` st
 
 ## Package extras
 
-The `@arach/dewey` package also exports React components for rendering docs inside an existing app ([Integrate into an existing site](./integrate-existing-site.md)), theme CSS, and prompt templates ([Skills](./skills.md)).
+The `@deweydocs/dewey` package also exports React components for rendering docs inside an existing app ([Integrate into an existing site](./integrate-existing-site.md)), theme CSS, and prompt templates ([Skills](./skills.md)).
 
 ## Quick links
 

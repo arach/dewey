@@ -32,7 +32,7 @@ The package also exports prompt templates. They do not inspect a repository or c
 `improveAIPrompts` is the public name. `improveAIPromptsSkill` is exported only as a deprecated compatibility alias and references the same object.
 
 ```ts
-import { improveAIPrompts } from '@arach/dewey'
+import { improveAIPrompts } from '@deweydocs/dewey'
 
 const discovery = improveAIPrompts.passes.discovery.prompt
 const review = improveAIPrompts.passes.review.prompt

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { CREATE_TEMPLATE_SPECS } from '@arach/dewey/registry'
+import { CREATE_TEMPLATE_SPECS } from '@deweydocs/dewey/registry'
 import {
   galleryStaticParams,
   getEntry,

@@ -22,9 +22,9 @@ Activate this skill when the user asks to:
 ## Installation
 
 ```bash
-pnpm add @arach/dewey
+pnpm add @deweydocs/dewey
 # or
-npm install @arach/dewey
+npm install @deweydocs/dewey
 ```
 
 ## CLI Commands
@@ -41,7 +41,7 @@ npm install @arach/dewey
 
 ```bash
 # 1. Install
-pnpm add @arach/dewey
+pnpm add @deweydocs/dewey
 
 # 2. Initialize
 npx dewey init
@@ -78,7 +78,7 @@ cd my-docs && pnpm install && pnpm dev
 ## Configuration (dewey.config.ts)
 
 ```typescript
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   project: {
@@ -222,7 +222,7 @@ Dewey provides 22 components for building documentation sites:
 ## Theme Presets
 
 ```typescript
-import { DeweyProvider } from '@arach/dewey'
+import { DeweyProvider } from '@deweydocs/dewey'
 
 <DeweyProvider theme="neutral">
   {/* Your docs */}
@@ -239,7 +239,7 @@ Dewey includes LLM prompt templates for documentation workflows:
 ### docsReviewAgent
 Reviews documentation quality, catches drift from codebase:
 ```typescript
-import { docsReviewAgent } from '@arach/dewey'
+import { docsReviewAgent } from '@deweydocs/dewey'
 
 const prompt = docsReviewAgent.reviewPage
   .replace('{DOC_FILE}', 'docs/api.md')
@@ -250,7 +250,7 @@ const prompt = docsReviewAgent.reviewPage
 ### docsDesignCritic
 Critiques page structure and visual design — heading hierarchy, information density, component usage, visual rhythm, reading flow:
 ```typescript
-import { docsDesignCritic } from '@arach/dewey'
+import { docsDesignCritic } from '@deweydocs/dewey'
 
 const prompt = docsDesignCritic.critiquePage
   .replace('{DOC_FILE}', 'docs/quickstart.md')

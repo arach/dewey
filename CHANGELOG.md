@@ -1,8 +1,18 @@
 # Changelog
 
-All notable changes to Dewey are recorded here. Versions follow the published `@arach/dewey` package.
+All notable changes to Dewey are recorded here. Versions follow the published `@deweydocs/dewey` package (`@arach/dewey` up to 0.5.0).
 
 ## Unreleased
+
+## 0.5.1 - 2026-10-08
+
+### Changed
+
+- Published as `@deweydocs/dewey`. The CLI is still `dewey`. To migrate, replace the `@arach/dewey` dependency and imports (including subpaths) with `@deweydocs/dewey`.
+
+### Fixed
+
+- Frozen commands no longer tell you to run `dewey init` when `dewey.config.ts` is missing; they point to `dewey build` and `dewey check`.
 
 ## 0.5.0 - 2026-10-08
 

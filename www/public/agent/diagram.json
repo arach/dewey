@@ -120,7 +120,7 @@
       "icon": "FileCode",
       "name": "API Reference",
       "subtitle": "api",
-      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @deweydocs/dewey",
       "color": "blue"
     },
     "agent-api-agent": {

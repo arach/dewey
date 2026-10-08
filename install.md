@@ -31,7 +31,7 @@ Install Dewey, set up a project, and get a passing dewey check.
 ## Step 1: Install the package
 
 ```bash
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 ```
 
 ## Step 2: Set up the project; repeat --rule for each hard rule, or pass --no-rules

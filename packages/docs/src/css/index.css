@@ -5,16 +5,16 @@
  * Import this file to get all base styles with the neutral color preset.
  *
  * Usage:
- *   import '@arach/dewey/css'
+ *   import '@deweydocs/dewey/css'
  *
  * For a different color preset, import it after this file:
- *   import '@arach/dewey/css'
- *   import '@arach/dewey/css/colors/ocean.css'
+ *   import '@deweydocs/dewey/css'
+ *   import '@deweydocs/dewey/css/colors/ocean.css'
  *
  * For Tailwind v4 projects, also import the theme integration:
  *   @import "tailwindcss";
- *   @import "@arach/dewey/css";
- *   @import "@arach/dewey/css/tailwind";
+ *   @import "@deweydocs/dewey/css";
+ *   @import "@deweydocs/dewey/css/tailwind";
  */
 
 /* Design tokens (radius, spacing, typography, etc.) */

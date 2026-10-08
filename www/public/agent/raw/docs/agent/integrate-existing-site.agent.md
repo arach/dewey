@@ -29,19 +29,19 @@ Embedding components does not replace `build` and `check`.
 ## Install
 
 ```bash
-bun add @arach/dewey gray-matter
+bun add @deweydocs/dewey gray-matter
 ```
 
 | Export | Use |
 |---|---|
-| `@arach/dewey` | Canonical JS/TS imports |
-| `@arach/dewey/react` | **Same as main** — compatibility alias only |
-| `@arach/dewey/css` | Full CSS bundle |
-| `@arach/dewey/css/base.css` | Base |
-| `@arach/dewey/css/tokens` | `--dw-*` tokens |
-| `@arach/dewey/css/colors/<theme>.css` | Theme preset |
-| `@arach/dewey/tailwind` | Tailwind preset |
-| `@arach/dewey/agent-artifacts` | Programmatic collectors |
+| `@deweydocs/dewey` | Canonical JS/TS imports |
+| `@deweydocs/dewey/react` | **Same as main** — compatibility alias only |
+| `@deweydocs/dewey/css` | Full CSS bundle |
+| `@deweydocs/dewey/css/base.css` | Base |
+| `@deweydocs/dewey/css/tokens` | `--dw-*` tokens |
+| `@deweydocs/dewey/css/colors/<theme>.css` | Theme preset |
+| `@deweydocs/dewey/tailwind` | Tailwind preset |
+| `@deweydocs/dewey/agent-artifacts` | Programmatic collectors |
 
 Router dependency: none. `react-router-dom` is not a peer dependency.
 
@@ -51,7 +51,7 @@ Router dependency: none. `react-router-dom` is not a peer dependency.
 
 | # | Step | Command / action |
 |---|---|---|
-| 1 | Install | `bun add @arach/dewey gray-matter` |
+| 1 | Install | `bun add @deweydocs/dewey gray-matter` |
 | 2 | Init | `bunx dewey init --purpose "…" --no-rules` (once) |
 | 3 | Author | Guides/references (`.md`), maps (`<area>.agent.md`, `kind: map`) |
 | 4 | Review | `bunx dewey review docs/<area>.agent.md` |
@@ -95,7 +95,7 @@ Compose `Header`, `Sidebar`, `MarkdownContent`, `AutoTableOfContents` for maximu
 module.exports = {
   output: 'export',
   images: { unoptimized: true },
-  transpilePackages: ['@arach/dewey'],
+  transpilePackages: ['@deweydocs/dewey'],
 }
 ```
 
@@ -103,7 +103,7 @@ module.exports = {
 |---|---|
 | `output: 'export'` | Pure static `out/` |
 | `images.unoptimized` | Next Image under export |
-| `transpilePackages` | Bundle `@arach/dewey` ESM |
+| `transpilePackages` | Bundle `@deweydocs/dewey` ESM |
 | `generateStaticParams` | Pre-render every nested slug |
 
 ## Content discovery rules
@@ -121,7 +121,7 @@ module.exports = {
 
 ```tsx
 'use client'
-import { DeweyProvider } from '@arach/dewey'
+import { DeweyProvider } from '@deweydocs/dewey'
 import type { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
 
@@ -168,7 +168,7 @@ Copy from `.dewey/site/` (and root `AGENTS.md`) after `build`, keeping relative 
 | Case | Approach |
 |---|---|
 | Docs at repo root | Resolve `docsDirectory` to monorepo root, not app `cwd` alone |
-| Docs package | `dewey init` in that package; app depends on `@arach/dewey` |
+| Docs package | `dewey init` in that package; app depends on `@deweydocs/dewey` |
 | Multi-app | `dewey build` once at root; copy from `.dewey/site/` |
 
 ## Anti-patterns
@@ -178,7 +178,7 @@ Copy from `.dewey/site/` (and root `AGENTS.md`) after `build`, keeping relative 
 | Treat embed as replacing `build`/`check` | Always run them |
 | Import hooks in server `page.tsx` | Split page (server) / content (client) |
 | Use only top-level `docs/*.md` walk | Recursive walk; nested routes |
-| Prefer `@arach/dewey/react` as different API | Import from `@arach/dewey` |
+| Prefer `@deweydocs/dewey/react` as different API | Import from `@deweydocs/dewey` |
 | Frame as competing docs frameworks | Present as optional UI on agent pipeline |
 
 ## Related paths

@@ -1,5 +1,5 @@
 // Template & theme gallery registry — split template/theme model.
-// CLI create specs live in @arach/dewey (packages/docs/src/templates/registry.ts).
+// CLI create specs live in @deweydocs/dewey (packages/docs/src/templates/registry.ts).
 
 import {
   CREATE_THEME_SPECS,
@@ -9,7 +9,7 @@ import {
   type TemplateId,
   type TemplateLayoutSpec,
   type ThemeId,
-} from '@arach/dewey/registry'
+} from '@deweydocs/dewey/registry'
 
 export type { TemplateId, ThemeId, TemplateLayoutSpec, DocsAppLayoutConfig }
 

@@ -1,7 +1,7 @@
 # dewey - Agent Context
 
 ## Package
-@arach/dewey
+@deweydocs/dewey
 
 ## Purpose
 Keeps a project's docs usable by people and coding agents and checks they still match the code. One folder of Markdown produces `AGENTS.md` (front door), `llms.txt` (agent index) and a static site in `.dewey/site/`.

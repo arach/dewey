@@ -3,7 +3,7 @@ import type { Config } from 'tailwindcss'
 const config: Config = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@arach/dewey/dist/**/*.js',
+    './node_modules/@deweydocs/dewey/dist/**/*.js',
   ],
   theme: {
     extend: {},

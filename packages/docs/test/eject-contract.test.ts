@@ -29,7 +29,7 @@ describe('eject component contract', () => {
       expect(packageEntry).toContain(metadata.propsType)
 
       const wrapped = generateWrapComponent(componentName, metadata)
-      expect(wrapped).toContain(`import type { ${metadata.propsType} } from '@arach/dewey'`)
+      expect(wrapped).toContain(`import type { ${metadata.propsType} } from '@deweydocs/dewey'`)
       expect(wrapped).toContain(`props: ${metadata.propsType}`)
     }
   })
@@ -49,7 +49,7 @@ describe('eject component contract', () => {
   test('verifies both the import and component-map rewrite', () => {
     const source = `import {
   Header as DefaultHeader,
-} from '@arach/dewey'
+} from '@deweydocs/dewey'
 
 export const components = {
   Header: DefaultHeader,
@@ -65,7 +65,7 @@ export const components = {
   })
 
   test('reports a failed map rewrite without claiming success', () => {
-    const rewrite = rewriteDeweyTsx("import { Header } from '@arach/dewey'\n", 'Header')
+    const rewrite = rewriteDeweyTsx("import { Header } from '@deweydocs/dewey'\n", 'Header')
 
     expect(rewrite.importReady).toBe(true)
     expect(rewrite.mappingReady).toBe(false)
@@ -78,7 +78,7 @@ export const components = {
     await mkdir(join(dir, 'src/lib'), { recursive: true })
     await writeFile(join(dir, 'src/lib/dewey.tsx'), `import {
   Header as DefaultHeader,
-} from '@arach/dewey'
+} from '@deweydocs/dewey'
 
 export const components = { Header: DefaultHeader }
 `)

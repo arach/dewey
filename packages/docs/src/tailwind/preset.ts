@@ -6,7 +6,7 @@
  *
  * @example
  * // tailwind.config.js
- * import { deweyPreset } from '@arach/dewey/tailwind'
+ * import { deweyPreset } from '@deweydocs/dewey/tailwind'
  *
  * export default {
  *   presets: [deweyPreset({ colors: 'ocean' })],
@@ -102,7 +102,7 @@ export function deweyPreset(options: DeweyPresetOptions = {}): Partial<Config> {
  *
  * @example
  * // tailwind.config.js
- * import { deweyPlugin } from '@arach/dewey/tailwind'
+ * import { deweyPlugin } from '@deweydocs/dewey/tailwind'
  *
  * export default {
  *   plugins: [deweyPlugin({ colors: 'ocean' })],

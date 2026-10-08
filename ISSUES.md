@@ -11,7 +11,7 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 - [x] Exclude `.agent.md` files from human-document discovery while associating them with their human page.
 - [x] Create missing output directories and add `generate --source`.
 - [x] Default `agent.sections` to all documentation rather than a narrow scaffold list.
-- [x] Fix generated config imports and export `defineConfig` plus configuration types from `@arach/dewey`.
+- [x] Fix generated config imports and export `defineConfig` plus configuration types from `@deweydocs/dewey`.
 - [x] Add CLI documentation, including the shipped `update` and `eject` commands.
 - [x] Replace broken direct-run examples with package-qualified commands.
 - [x] Add the MIT license to the repository and published package.
@@ -78,7 +78,7 @@ This is the canonical, deduplicated backlog from the July 2026 repository audit.
 - [x] Document the server-to-client wrapper and static export pattern for Next.js.
 - [x] Present one coherent onboarding sequence across `init`, `audit`, `generate`, `agent`, and optional `create`.
 - [x] Explain the human `.md` / agent `.agent.md` pairing with concrete retrieval examples.
-- [x] Document or differentiate the redundant `@arach/dewey/react` export.
+- [x] Document or differentiate the redundant `@deweydocs/dewey/react` export.
 - [x] Decide whether `improveAIPrompts` is public and align code, exports, and docs.
 - [x] Make output locations and produced files explicit before commands write them.
 - [x] Add copy-paste examples for monorepos, custom source directories, and CI enforcement.

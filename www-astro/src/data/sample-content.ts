@@ -10,13 +10,13 @@ Welcome to **Dewey** — a documentation toolkit that makes your docs AI-agent-r
 Install the package using your preferred package manager:
 
 \`\`\`bash
-npm install -D @arach/dewey
+npm install -D @deweydocs/dewey
 \`\`\`
 
 Or with pnpm:
 
 \`\`\`bash
-pnpm add -D @arach/dewey
+pnpm add -D @deweydocs/dewey
 \`\`\`
 
 ## Quick Setup
@@ -30,7 +30,7 @@ npx dewey init
 This creates a \`docs/\` folder and a \`dewey.config.ts\` file:
 
 \`\`\`typescript
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',
@@ -94,7 +94,7 @@ Fine-tune Dewey's behavior for your project's needs.
 The \`dewey.config.ts\` file controls all generation options:
 
 \`\`\`typescript
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',

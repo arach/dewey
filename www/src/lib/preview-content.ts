@@ -36,13 +36,13 @@ const GETTING_STARTED_MD = `## Installation
 Install the package using your preferred package manager:
 
 \`\`\`bash
-npm install -D @arach/dewey
+npm install -D @deweydocs/dewey
 \`\`\`
 
 Or with pnpm:
 
 \`\`\`bash
-pnpm add -D @arach/dewey
+pnpm add -D @deweydocs/dewey
 \`\`\`
 
 ## Quick Setup
@@ -56,7 +56,7 @@ npx dewey init
 This creates a \`docs/\` folder and a \`dewey.config.ts\` file:
 
 \`\`\`typescript
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',
@@ -105,7 +105,7 @@ const CONFIGURATION_MD = `## Config File
 The \`dewey.config.ts\` file controls generation options:
 
 \`\`\`typescript
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 export default defineConfig({
   name: 'my-project',

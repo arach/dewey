@@ -8,7 +8,7 @@ Requires Node.js 18+ or Bun 1.3+.
 
 | Step | Command | Result |
 |------|---------|--------|
-| 1. Install | `bun add -d @arach/dewey` | Local `dewey` binary |
+| 1. Install | `bun add -d @deweydocs/dewey` | Local `dewey` binary |
 | 2. Init | `bunx dewey init --purpose "…" --rule "…"` | Front door, drafts, skills, first site build |
 | 3. Author | Edit the drafts in `docs/` | Real guide and maps |
 | 4. Review | `bunx dewey review docs/src.agent.md` | Review recorded for each map |
@@ -18,10 +18,10 @@ Requires Node.js 18+ or Bun 1.3+.
 ### 1. Install
 
 ```bash
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 ```
 
-`npm install -D @arach/dewey` and `npx dewey` work the same. For a one-off run without installing, use `bunx @arach/dewey <command>`.
+`npm install -D @deweydocs/dewey` and `npx dewey` work the same. For a one-off run without installing, use `bunx @deweydocs/dewey <command>`.
 
 ### 2. Initialize
 

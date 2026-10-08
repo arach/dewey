@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Bot, User } from 'lucide-react'
-import { CopyButtons } from '@arach/dewey'
+import { CopyButtons } from '@deweydocs/dewey'
 import type { NavGroup } from '@/lib/dewey-docs'
 
 type Heading = { id: string; title: string; depth: 2 | 3 }

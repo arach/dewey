@@ -1,11 +1,11 @@
-# @arach/dewey
+# @deweydocs/dewey
 
 Documentation toolkit for AI-agent-ready docs. Audits, scores, generates retrieval artifacts, and optionally publishes a static docs site.
 
-[![npm](https://img.shields.io/npm/v/@arach/dewey)](https://www.npmjs.com/package/@arach/dewey)
-[![license](https://img.shields.io/npm/l/@arach/dewey)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@deweydocs/dewey)](https://www.npmjs.com/package/@deweydocs/dewey)
+[![license](https://img.shields.io/npm/l/@deweydocs/dewey)](LICENSE)
 
-**[npm](https://www.npmjs.com/package/@arach/dewey)** · **[docs](https://deweydocs.com)** · **[github](https://github.com/arach/dewey)**
+**[npm](https://www.npmjs.com/package/@deweydocs/dewey)** · **[docs](https://deweydocs.com)** · **[github](https://github.com/arach/dewey)**
 
 ## What It Does
 
@@ -24,13 +24,13 @@ Dewey is a **docs agent**, not a docs framework. It focuses on preparation and j
 ## Install
 
 ```bash
-bun add -d @arach/dewey
+bun add -d @deweydocs/dewey
 ```
 
 Or run without installing:
 
 ```bash
-bunx @arach/dewey@latest <command>
+bunx @deweydocs/dewey@latest <command>
 ```
 
 ## Quick Start
@@ -130,7 +130,7 @@ import {
   buildPromptRegistry,
   buildContextBundle,
   writeAgentArtifacts,
-} from '@arach/dewey/agent-artifacts'
+} from '@deweydocs/dewey/agent-artifacts'
 ```
 
 ### Configuration
@@ -171,21 +171,21 @@ Dewey recognizes colocated agent docs (`docs/overview.agent.md`) and nested agen
 Optional React components for documentation UIs (agent generation works without them):
 
 ```tsx
-import { DocsApp, MarkdownContent, Callout } from '@arach/dewey'
-import '@arach/dewey/css'
+import { DocsApp, MarkdownContent, Callout } from '@deweydocs/dewey'
+import '@deweydocs/dewey/css'
 ```
 
 Includes `DocsLayout`, `Sidebar`, `TableOfContents`, `CodeBlock`, `Callout`, `Tabs`, `Steps`, `Card`, `FileTree`, `ApiTable`, `Badge`, `AgentContext`, `PromptSlideout`, and more.
 
-**Existing site?** Do not start with `dewey create`. Embed components with a server/client split, recursive markdown loading, and generate-in-CI — full guide: [docs/integrate-existing-site.md](../../docs/integrate-existing-site.md). `@arach/dewey/react` is identical to `@arach/dewey`.
+**Existing site?** Do not start with `dewey create`. Embed components with a server/client split, recursive markdown loading, and generate-in-CI — full guide: [docs/integrate-existing-site.md](../../docs/integrate-existing-site.md). `@deweydocs/dewey/react` is identical to `@deweydocs/dewey`.
 
 ### CSS themes
 
 Import a color theme alongside base styles:
 
 ```tsx
-import '@arach/dewey/css'
-import '@arach/dewey/css/colors/ocean.css'
+import '@deweydocs/dewey/css'
+import '@deweydocs/dewey/css/colors/ocean.css'
 ```
 
 Available themes: `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `github`, `warm`, `hudson`, `midnight`, `mono`, `editorial`.
@@ -193,7 +193,7 @@ Available themes: `neutral`, `ocean`, `emerald`, `purple`, `dusk`, `rose`, `gith
 ### Tailwind preset
 
 ```ts
-import deweyPreset from '@arach/dewey/tailwind'
+import deweyPreset from '@deweydocs/dewey/tailwind'
 ```
 
 ## Built-in Skills
@@ -208,7 +208,7 @@ Skills are LLM prompt templates exported from the package:
 | `installMdGenerator` | Create LLM-executable `install.md` |
 
 ```ts
-import { docsReviewAgent, installMdGenerator } from '@arach/dewey'
+import { docsReviewAgent, installMdGenerator } from '@deweydocs/dewey'
 ```
 
 ## Site Generator

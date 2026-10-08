@@ -31,7 +31,7 @@ Install Dewey and generate agent-ready documentation for your project.
 ## Step 1: Install the package
 
 ```bash
-pnpm add -D @arach/dewey
+pnpm add -D @deweydocs/dewey
 ```
 
 ## Step 2: Initialize documentation structure

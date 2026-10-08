@@ -225,7 +225,7 @@ export async function auditCommand(options: AuditOptions) {
   const loaded = await loadConfigWithRoot(cwd)
 
   if (!loaded) {
-    failAudit(options, 'CONFIG_NOT_FOUND', 'No Dewey configuration found. Run `dewey init` first.')
+    failAudit(options, 'CONFIG_NOT_FOUND', 'No dewey.config.ts found. `dewey audit` is frozen and only reads dewey.config.ts, which `dewey init` no longer writes. Use `dewey check` instead.')
   }
 
   const { config, projectRoot } = loaded

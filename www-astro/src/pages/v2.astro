@@ -436,7 +436,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       <a href="/v2" class="v2-logo">Dewey</a>
       <div class="v2-nav-links">
         <a href="/docs" class="v2-nav-link">Docs</a>
-        <a href="https://www.npmjs.com/package/@arach/dewey" class="v2-nav-link" target="_blank" rel="noopener noreferrer">npm</a>
+        <a href="https://www.npmjs.com/package/@deweydocs/dewey" class="v2-nav-link" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" class="v2-nav-link" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </nav>
@@ -466,7 +466,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
       <div class="v2-install">
         <div class="v2-install-box">
-          <span class="v2-install-cmd">$ <strong>pnpm add -D @arach/dewey</strong></span>
+          <span class="v2-install-cmd">$ <strong>pnpm add -D @deweydocs/dewey</strong></span>
           <button class="v2-copy-btn" id="v2-copy-btn">
             <span id="v2-copy-text">Copy</span>
           </button>
@@ -564,7 +564,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       <span class="v2-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System</span>
       <div class="v2-footer-links">
         <a href="/docs">Docs</a>
-        <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">npm</a>
+        <a href="https://www.npmjs.com/package/@deweydocs/dewey" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </footer>
@@ -572,7 +572,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
   <script is:inline>
     document.getElementById('v2-copy-btn')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('pnpm add -D @arach/dewey')
+      await navigator.clipboard.writeText('pnpm add -D @deweydocs/dewey')
       const textEl = document.getElementById('v2-copy-text')
       if (textEl) {
         textEl.textContent = 'Copied!'

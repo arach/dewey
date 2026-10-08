@@ -7,7 +7,7 @@
  * @see https://installmd.org
  *
  * @example
- * import { installMdGenerator } from '@arach/dewey'
+ * import { installMdGenerator } from '@deweydocs/dewey'
  *
  * // Generate install.md for a project
  * const prompt = installMdGenerator.generate

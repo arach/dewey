@@ -465,7 +465,7 @@ Update this map whenever a workspace is added, renamed, moved, or changes owners
 `,
 }
 
-const CONFIG_TEMPLATE = `/** @type {import('@arach/dewey').DeweyConfig} */
+const CONFIG_TEMPLATE = `/** @type {import('@deweydocs/dewey').DeweyConfig} */
 export default {
   project: {
     name: '{{PROJECT_NAME}}',

@@ -1,4 +1,4 @@
-import { defineConfig } from '@arach/dewey'
+import { defineConfig } from '@deweydocs/dewey'
 
 /**
  * Example Dewey config for a CLI tool

@@ -1,6 +1,6 @@
 # Releasing Dewey
 
-`packages/docs/package.json` is the source of truth for the published `@arach/dewey` version. Git tags mirror that version exactly as `v<version>`; workflows never mutate versions.
+`packages/docs/package.json` is the source of truth for the published `@deweydocs/dewey` version. Git tags mirror that version exactly as `v<version>`; workflows never mutate versions.
 
 ## Release checklist
 

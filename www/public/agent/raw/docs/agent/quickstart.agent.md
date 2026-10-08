@@ -10,7 +10,7 @@ Requires Node.js 18+ or Bun 1.3+. Run from the project root.
 
 | Step | Command | Expected |
 |---|---|---|
-| Install | `bun add -d @arach/dewey` | local `dewey` bin; one-off: `bunx @arach/dewey <cmd>` |
+| Install | `bun add -d @deweydocs/dewey` | local `dewey` bin; one-off: `bunx @deweydocs/dewey <cmd>` |
 | Init | `bunx dewey init --purpose "…" --rule "…"` (or `--no-rules`) | files below; first build |
 | Author | edit drafts in `docs/`, remove `draft: true` | no `DOC_DRAFT` |
 | Review | `bunx dewey review docs/<area>.agent.md` | `.dewey/reviews.json` |

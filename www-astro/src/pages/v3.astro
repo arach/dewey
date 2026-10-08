@@ -984,7 +984,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
           <div class="v3-nav-links">
             <a href="/docs" class="v3-nav-link">Products</a>
             <a href="/docs" class="v3-nav-link">Features</a>
-            <a href="https://www.npmjs.com/package/@arach/dewey" class="v3-nav-link" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="https://www.npmjs.com/package/@deweydocs/dewey" class="v3-nav-link" target="_blank" rel="noopener noreferrer">Blog</a>
             <a href="/docs/quickstart" class="v3-nav-link">Pricing</a>
           </div>
         </div>
@@ -1032,7 +1032,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
               <span class="v3-terminal-dot"></span>
             </div>
             <div class="v3-terminal-body">
-              <span class="v3-install-cmd">$ <strong>pnpm add -D @arach/dewey</strong></span>
+              <span class="v3-install-cmd">$ <strong>pnpm add -D @deweydocs/dewey</strong></span>
               <button class="v3-install-copy" id="v3-copy-btn">
                 <span id="v3-copy-text">Copy</span>
               </button>
@@ -1171,7 +1171,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
       <span class="v3-footer-note">Named after Melvil Dewey, creator of the Dewey Decimal System. Made with ❤️ by <a href="https://github.com/arach" target="_blank" rel="noopener noreferrer" style="color: var(--s-text-muted); text-decoration: underline; text-underline-offset: 2px;">arach</a></span>
       <div class="v3-footer-links">
         <a href="/docs">Docs</a>
-        <a href="https://www.npmjs.com/package/@arach/dewey" target="_blank" rel="noopener noreferrer">npm</a>
+        <a href="https://www.npmjs.com/package/@deweydocs/dewey" target="_blank" rel="noopener noreferrer">npm</a>
         <a href="https://github.com/arach/dewey" target="_blank" rel="noopener noreferrer">GitHub</a>
       </div>
     </footer>
@@ -1231,7 +1231,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
           <a href="https://github.com/arach/dewey" class="v3-agent-nav-item" target="_blank" rel="noopener noreferrer">
             <span>GitHub</span>
           </a>
-          <a href="https://www.npmjs.com/package/@arach/dewey" class="v3-agent-nav-item" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.npmjs.com/package/@deweydocs/dewey" class="v3-agent-nav-item" target="_blank" rel="noopener noreferrer">
             <span>npm</span>
           </a>
         </nav>
@@ -1316,7 +1316,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
         </div>
 
         <div class="v3-agent-install">
-          <code>$ <strong>pnpm add -D @arach/dewey</strong></code>
+          <code>$ <strong>pnpm add -D @deweydocs/dewey</strong></code>
           <button id="v3-agent-copy-install">copy</button>
         </div>
       </main>
@@ -1326,7 +1326,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
   <script is:inline>
     // Copy install command (human view)
     document.getElementById('v3-copy-btn')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('pnpm add -D @arach/dewey')
+      await navigator.clipboard.writeText('pnpm add -D @deweydocs/dewey')
       const textEl = document.getElementById('v3-copy-text')
       if (textEl) {
         textEl.textContent = 'Copied!'
@@ -1357,7 +1357,7 @@ import LandingLayout from '../layouts/LandingLayout.astro'
 
     // Copy install command (agent view)
     document.getElementById('v3-agent-copy-install')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText('pnpm add -D @arach/dewey')
+      await navigator.clipboard.writeText('pnpm add -D @deweydocs/dewey')
       const btn = document.getElementById('v3-agent-copy-install')
       if (btn) {
         btn.textContent = 'copied!'

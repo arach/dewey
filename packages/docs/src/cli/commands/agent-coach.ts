@@ -282,7 +282,7 @@ async function performReadinessChecks(projectRoot: string, config: DeweyConfig |
     passed: hasConfig,
     points: hasConfig ? 5 : 0,
     maxPoints: 5,
-    hint: hasConfig ? undefined : 'Run `dewey init` to create configuration',
+    hint: hasConfig ? undefined : '`dewey agent` is frozen and only reads dewey.config.ts. Use `dewey check` instead',
   })
 
   const contextScore = contextChecks.reduce((s, c) => s + c.points, 0)

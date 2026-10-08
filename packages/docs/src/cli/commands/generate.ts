@@ -399,7 +399,7 @@ export async function generateCommand(options: GenerateOptions) {
   const config = await loadConfig(cwd)
 
   if (!config) {
-    console.log(chalk.red('\n❌ No dewey.config.ts found. Run') + chalk.cyan(' dewey init ') + chalk.red('first.\n'))
+    console.log(chalk.red('\n❌ No dewey.config.ts found.') + ' This command is frozen and only reads dewey.config.ts, which ' + chalk.cyan('dewey init') + ' no longer writes. Use ' + chalk.cyan('dewey build') + ' and ' + chalk.cyan('dewey check') + ' instead.\n')
     process.exit(1)
   }
 

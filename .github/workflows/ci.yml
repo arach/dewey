@@ -17,7 +17,7 @@ jobs:
         with:
           bun-version: 1.3.11
       - run: bun install --frozen-lockfile
-      # www typecheck resolves @arach/dewey from packages/docs/dist (gitignored).
+      # www typecheck resolves @deweydocs/dewey from packages/docs/dist (gitignored).
       - run: bun run lint
       - run: bun run test
       - name: Dogfood public skill exports

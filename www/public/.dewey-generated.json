@@ -3,11 +3,11 @@
   "generator": "dewey",
   "files": {
     "agent/bundles/all.md": {
-      "hash": "06875a7ec7f053ebeb78f71c843a1a96be75a288cdd7d65c79b3985e524ad7aa",
+      "hash": "af2b31d30482e23067843eb33cf1b0a49f0ca9878fdd9832b7485b7169460e67",
       "scope": "agentArtifacts"
     },
     "agent/bundles/core.md": {
-      "hash": "920adb53258f7172033879d870f3c9304636ae6225cf33b6a765aea997743811",
+      "hash": "300c752d7ceed10c686a3ca28ec0cb7424f05c8d6460487b8c01759e83be4b5d",
       "scope": "agentArtifacts"
     },
     "agent/bundles/prompts.md": {
@@ -15,7 +15,7 @@
       "scope": "agentArtifacts"
     },
     "agent/context.json": {
-      "hash": "a86cfe30d0107a4f7f6ad081904bb4f0d439ee98d7b299832c7588d48bfa39cf",
+      "hash": "3c3bbb70c6cc5327cda52515bf94423275dd208823143f742fbf4c088b9298b1",
       "scope": "agentArtifacts"
     },
     "agent/context.md": {
@@ -23,15 +23,15 @@
       "scope": "agentArtifacts"
     },
     "agent/diagram.json": {
-      "hash": "4d7bec2a1e32f214864781d970b5260f33397dd005d68c3da9cfc44385153957",
+      "hash": "9897725bf842e4b80a2819c5662916dd33bb938113369bfb5dfbdedb1020a5e2",
       "scope": "agentArtifacts"
     },
     "agent/docs.json": {
-      "hash": "dbab82f04cae8dd3980aebcc3ccd70cbea423da1c63a5695f322acf09fbb5aa9",
+      "hash": "c3935f4626be64e812dc6595582cfb9e74697b4f2e6010569c3a72bb749be989",
       "scope": "agentArtifacts"
     },
     "agent/manifest.json": {
-      "hash": "a86cfe30d0107a4f7f6ad081904bb4f0d439ee98d7b299832c7588d48bfa39cf",
+      "hash": "3c3bbb70c6cc5327cda52515bf94423275dd208823143f742fbf4c088b9298b1",
       "scope": "agentArtifacts"
     },
     "agent/prompts.json": {
@@ -47,7 +47,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/api.agent.md": {
-      "hash": "fb548519df54c06cfba407f641674963ae2a671870c4547c6563a5f4e178c866",
+      "hash": "28b0a2119dbf6380c9d659fccb05e1a302191cf706dd771cf39907a2a2d0368e",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/cli.agent.md": {
@@ -55,7 +55,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/integrate-existing-site.agent.md": {
-      "hash": "383fd7bd983698bc15c3a24568818e73b5695f57fde23c11222a96932e49ea01",
+      "hash": "74d874b9e3f2041f4496a91a9559347a44f42422a4cd9cbf40a9ba1b09a2f93e",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/maintenance.agent.md": {
@@ -63,11 +63,11 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/overview.agent.md": {
-      "hash": "6112fe048258debaceba61533fcfdcb7b9473e92ffb5e1925e55744bb5344a80",
+      "hash": "a05ae6e30816b61a2f80b598cde87082842c53b383b7895e779d2aacc7ba670d",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/quickstart.agent.md": {
-      "hash": "a11181699f66844e5a0385240734b9c6a9d9f8b5c8da32a20124268dfa01e477",
+      "hash": "f0dd7d41c965a132a2a3b18893d7fa304d47bab737db70f25c6215941af9f141",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/agent/skills.agent.md": {
@@ -75,19 +75,19 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/AGENTS.md": {
-      "hash": "9afef96e4753242e854aee5505c16360f55bbde7525a963e4fd29e985dbc2bb0",
+      "hash": "171c0fddc05e8044df756c80f0549241e6fd591ddfa4bbf096f25aeb2bcb4da7",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/api.md": {
-      "hash": "5dc745903f4afb03a84adff096f2efc1a7e83df50c46815647c5ee3cb6131f99",
+      "hash": "ee88f5526e1bff6c2024507a3c88744202a503cd5e1a5370f2cf5c22350ca2d5",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/cli.md": {
-      "hash": "a811b079a035654778f933f0eb907fd19c4fb3f4c952874f529ab195a9eedbaf",
+      "hash": "4634b8b0398ccd1521c901b9ef46ca90fa3ff0dab320a73beccf42701d08a944",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/integrate-existing-site.md": {
-      "hash": "40e4129738f33d45f1b8fd4fd88ec330328f1193e8d8036dffa0156ec00c6866",
+      "hash": "8a0532567dd69768e5b0e30318f6acc15b8f3ccaaf913017349245fcb9ac2780",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/maintenance.md": {
@@ -95,7 +95,7 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/overview.md": {
-      "hash": "d6f1f443386cfc4d3e7a5c25efe8b234193751ecef5787fa32d2f4eaaa0d3eb7",
+      "hash": "418fe50da743564ae434c3b5c1cc98df11b4fd51f960f3348975025d858d845a",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/prompts/audit-docs.md": {
@@ -107,11 +107,11 @@
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/quickstart.md": {
-      "hash": "7dc682415598fac7034c0e95cd4071e7fec97e02797ab9a8b5379ac5150a5084",
+      "hash": "beda4525dfc5c9bd8486e2b222c1e8362f451008c983d84e777af77be8887812",
       "scope": "agentArtifacts"
     },
     "agent/raw/docs/skills.md": {
-      "hash": "04c35eff07a38ca372e7448713f1868f8dd83f63e1bb0dcda9811e782821a429",
+      "hash": "16fd01c3b202ba71e5d5e2bce1f9e626826fe313abcd13333fee03b3ba252c7c",
       "scope": "agentArtifacts"
     }
   }

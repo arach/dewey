@@ -153,7 +153,7 @@
       "slug": "api",
       "kind": "doc",
       "title": "API Reference",
-      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+      "description": "Public TypeScript, React, theme, and agent-artifact APIs for @deweydocs/dewey",
       "sourcePath": "docs/api.md",
       "url": "/docs/api",
       "rawUrl": "/agent/raw/docs/api.md",
@@ -237,7 +237,7 @@
       "tokensEstimate": 2905,
       "frontmatter": {
         "title": "API Reference",
-        "description": "Public TypeScript, React, theme, and agent-artifact APIs for @arach/dewey",
+        "description": "Public TypeScript, React, theme, and agent-artifact APIs for @deweydocs/dewey",
         "order": 5,
         "group": "Reference",
         "groupId": "reference"

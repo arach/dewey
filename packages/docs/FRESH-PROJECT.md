@@ -27,12 +27,12 @@ DEWEY_RUNTIME=node DEWEY_CLI="$PWD/packages/docs/dist/cli/index.js" \
 Run these commands from the new project's root:
 
 ```sh
-bunx @arach/dewey init \
+bunx @deweydocs/dewey init \
   --purpose 'Describe the project purpose' \
   --rule 'State a real hard rule'
 ```
 
-`npx @arach/dewey init` works the same under Node. To use this checkout instead, run `bun <checkout>/packages/docs/src/cli/index.ts`; it needs no build first. Below, `dewey` means either.
+`npx @deweydocs/dewey init` works the same under Node. To use this checkout instead, run `bun <checkout>/packages/docs/src/cli/index.ts`; it needs no build first. Below, `dewey` means either.
 
 `bun run --cwd packages/docs verify:install` packs the package, installs the tarball into a scratch project, and runs init, build and check there under Node and Bun.
 
@@ -171,7 +171,7 @@ to sort it; pages without `order` sort by path.
 To match another docs site, set `"skin"` in `.dewey/project.json` to `openscout`, `talkie`,
 `lattices` or `hudsonkit`. A skin brings that site's fonts, colors, header, sidebar, page head
 and code blocks. The default is `dewey`. Set `ink` for a plain look with a menu of color
-themes (ink, ocean, neutral, emerald, editorial, slate). Each skin is also exported as `@arach/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
+themes (ink, ocean, neutral, emerald, editorial, slate). Each skin is also exported as `@deweydocs/dewey/css/skins/<name>.css`. A page's `description` frontmatter shows under its title.
 
 A `"site"` block in `.dewey/project.json` fits the site to the product. Every field is optional:
 

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { verifyPackedPackage } from '../scripts/verify-package'
 
 const manifest = {
-  name: '@arach/dewey',
+  name: '@deweydocs/dewey',
   version: '1.2.3',
   description: 'Test package',
   license: 'MIT',
@@ -30,13 +30,13 @@ const packedFiles = [
 describe('packed package verification', () => {
   test('accepts complete metadata, exports, and an executable CLI', () => {
     expect(verifyPackedPackage(manifest, {
-      id: '@arach/dewey@1.2.3',
-      name: '@arach/dewey',
+      id: '@deweydocs/dewey@1.2.3',
+      name: '@deweydocs/dewey',
       version: '1.2.3',
       entryCount: packedFiles.length,
       files: packedFiles,
     })).toEqual({
-      name: '@arach/dewey',
+      name: '@deweydocs/dewey',
       version: '1.2.3',
       fileCount: packedFiles.length,
       exportTargetCount: 3,
@@ -46,8 +46,8 @@ describe('packed package verification', () => {
 
   test('reports every missing or unsafe package contract', () => {
     expect(() => verifyPackedPackage(manifest, {
-      id: '@arach/dewey@1.2.3',
-      name: '@arach/dewey',
+      id: '@deweydocs/dewey@1.2.3',
+      name: '@deweydocs/dewey',
       version: '1.2.3',
       entryCount: packedFiles.length - 2,
       files: packedFiles

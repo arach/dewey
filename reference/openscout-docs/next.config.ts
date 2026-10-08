@@ -5,7 +5,7 @@ const isProductionBuild = process.env.NODE_ENV === "production"
 const nextConfig: NextConfig = {
   ...(isProductionBuild ? { output: "export" as const } : {}),
   images: { unoptimized: true },
-  transpilePackages: ["@arach/dewey"],
+  transpilePackages: ["@deweydocs/dewey"],
 }
 
 export default nextConfig

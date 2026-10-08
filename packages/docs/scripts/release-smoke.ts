@@ -80,13 +80,13 @@ async function smokeRelease(): Promise<void> {
       private: true,
       type: 'module',
       dependencies: {
-        '@arach/dewey': `file:${tarball}`,
+        '@deweydocs/dewey': `file:${tarball}`,
         react: '^19.0.0',
         'react-dom': '^19.0.0',
       },
     }, null, 2))
     run('bun', ['install'], consumerDir, environment)
-    run('bun', ['-e', "import('@arach/dewey').then(m => { if (!m.defineConfig) process.exit(1) })"], consumerDir, environment)
+    run('bun', ['-e', "import('@deweydocs/dewey').then(m => { if (!m.defineConfig) process.exit(1) })"], consumerDir, environment)
 
     const cli = join(consumerDir, 'node_modules/.bin/dewey')
     run(cli, ['--help'], consumerDir, environment)
@@ -103,7 +103,7 @@ async function smokeRelease(): Promise<void> {
     run(cli, ['create', 'site', '--source', 'docs', '--template', 'nextjs'], fixtureDir, environment)
     const siteDir = join(fixtureDir, 'site')
     const siteManifest = JSON.parse(await readFile(join(siteDir, 'package.json'), 'utf8'))
-    siteManifest.dependencies['@arach/dewey'] = `file:${tarball}`
+    siteManifest.dependencies['@deweydocs/dewey'] = `file:${tarball}`
     await writeFile(join(siteDir, 'package.json'), `${JSON.stringify(siteManifest, null, 2)}\n`)
     run('bun', ['install'], siteDir, environment)
     run('bun', ['run', 'build'], siteDir, environment)

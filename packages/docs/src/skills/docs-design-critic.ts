@@ -7,7 +7,7 @@
  * focuses on content accuracy and completeness.
  *
  * @example
- * import { docsDesignCritic } from '@arach/dewey'
+ * import { docsDesignCritic } from '@deweydocs/dewey'
  *
  * // Critique a single page
  * const prompt = docsDesignCritic.critiquePage

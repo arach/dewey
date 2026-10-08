@@ -199,7 +199,7 @@ export async function siteInitCommand(options: SiteInitOptions) {
   } catch {}
   const allDeps = { ...pkgJson.dependencies, ...pkgJson.devDependencies }
   const missing: string[] = []
-  if (!allDeps['@arach/dewey']) missing.push('@arach/dewey')
+  if (!allDeps['@deweydocs/dewey']) missing.push('@deweydocs/dewey')
   if (!allDeps['gray-matter']) missing.push('gray-matter')
   if (!allDeps['lucide-react']) missing.push('lucide-react')
 

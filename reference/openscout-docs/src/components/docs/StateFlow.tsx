@@ -1,3 +1,3 @@
 'use client'
 
-export { StateFlow } from '@arach/dewey'
+export { StateFlow } from '@deweydocs/dewey'

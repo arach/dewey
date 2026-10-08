@@ -24,6 +24,37 @@
       ]
     },
     {
+      "id": "growth-guides",
+      "title": "Growth guides",
+      "items": [
+        {
+          "id": "guides/docs-activation-path",
+          "title": "Make docs the path to first success",
+          "description": "Define and verify one developer activation outcome."
+        },
+        {
+          "id": "guides/agent-assisted-onboarding",
+          "title": "Make your product usable by coding agents",
+          "description": "Publish and verify an agent integration path."
+        },
+        {
+          "id": "guides/measure-docs-time-to-value",
+          "title": "Measure time-to-value from docs",
+          "description": "Define clocks, cohorts, events, and product outcomes."
+        },
+        {
+          "id": "guides/keep-onboarding-docs-current",
+          "title": "Keep onboarding docs current as you ship",
+          "description": "Track source changes and require explicit documentation review."
+        },
+        {
+          "id": "guides/docs-onboarding-experiments",
+          "title": "Run docs-led onboarding experiments",
+          "description": "Test a bounded onboarding change for one audience."
+        }
+      ]
+    },
+    {
       "id": "reference",
       "title": "Reference",
       "items": [
